@@ -1,0 +1,3 @@
+[submodule "3rdparty/libaudiotool"]
+	path = 3rdparty/libaudiotool
+	url = https://github.com/jcelerier/libaudiotool
