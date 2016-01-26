@@ -5,7 +5,7 @@ namespace Audio
 {
 struct ProcessMetadata
 {
-        static const ProcessFactoryKey& factoryKey();
+        static const ProcessFactoryKey& abstractFactoryKey();
 
         static QString processObjectName();
 

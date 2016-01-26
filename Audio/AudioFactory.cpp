@@ -7,7 +7,7 @@ QString Audio::ProcessFactory::prettyName() const
 
 const ProcessFactoryKey&Audio::ProcessFactory::key_impl() const
 {
-    return Audio::ProcessMetadata::factoryKey();
+    return Audio::ProcessMetadata::abstractFactoryKey();
 }
 
 ::Process*Audio::ProcessFactory::makeModel(const TimeValue& duration, const Id<::Process>& id, QObject* parent)

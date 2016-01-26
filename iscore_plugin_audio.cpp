@@ -16,9 +16,9 @@ std::pair<const CommandParentFactoryKey, CommandGeneratorMap> iscore_plugin_audi
 
 std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::factories(
         const iscore::ApplicationContext& ctx,
-        const iscore::FactoryBaseKey& factoryName) const
+        const iscore::AbstractFactoryKey& factoryName) const
 {
-    if(factoryName == ProcessFactory::staticFactoryKey())
+    if(factoryName == ProcessFactory::static_abstractFactoryKey())
     {
         return make_ptr_vector<iscore::FactoryInterfaceBase,
                 Audio::ProcessFactory>();

@@ -45,7 +45,7 @@ class ProcessModel final : public RecreateOnPlay::OSSIAProcessModel
 
         const ProcessFactoryKey& key() const override
         {
-            return Audio::ProcessMetadata::factoryKey();
+            return Audio::ProcessMetadata::abstractFactoryKey();
         }
 
         QString prettyName() const override;
