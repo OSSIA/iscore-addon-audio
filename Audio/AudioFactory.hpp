@@ -14,7 +14,7 @@ class ProcessFactory final : public ::ProcessFactory
     public:
         QString prettyName() const override;
 
-        const ProcessFactoryKey& key_impl() const override;
+        const UuidKey<Process::ProcessFactory>& key_impl() const override;
 
 
         ::Process* makeModel(

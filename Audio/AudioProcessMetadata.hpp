@@ -1,11 +1,11 @@
 #pragma once
-#include <Process/ProcessFactoryKey.hpp>
+
 
 namespace Audio
 {
 struct ProcessMetadata
 {
-        static const ProcessFactoryKey& abstractFactoryKey();
+        static const UuidKey<Process::ProcessFactory>& abstractFactoryKey();
 
         static QString processObjectName();
 

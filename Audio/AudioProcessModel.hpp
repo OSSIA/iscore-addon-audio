@@ -43,7 +43,7 @@ class ProcessModel final : public RecreateOnPlay::OSSIAProcessModel
                 const Id<Process>& newId,
                 QObject* newParent) const override;
 
-        const ProcessFactoryKey& key() const override
+        const UuidKey<Process::ProcessFactory>& key() const override
         {
             return Audio::ProcessMetadata::abstractFactoryKey();
         }

@@ -5,7 +5,7 @@ QString Audio::ProcessFactory::prettyName() const
     return Audio::ProcessMetadata::factoryPrettyName();
 }
 
-const ProcessFactoryKey&Audio::ProcessFactory::key_impl() const
+const UuidKey<Process::ProcessFactory>&Audio::ProcessFactory::key_impl() const
 {
     return Audio::ProcessMetadata::abstractFactoryKey();
 }
