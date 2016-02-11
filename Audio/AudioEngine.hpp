@@ -32,6 +32,8 @@ public:
         parameters.deviceId = audio.getDefaultOutputDevice();
         parameters.nChannels = 2;
         parameters.firstChannel = 0;
+
+        options.flags = RTAUDIO_NONINTERLEAVED | RTAUDIO_MINIMIZE_LATENCY;
     }
 
     ~RtAudioOutput()
@@ -50,17 +52,17 @@ public:
             try {
                 unsigned int sampleRate = this->conf.samplingRate;
                 unsigned int bufferFrames = this->conf.bufferSize;
+
                 audio.openStream( &parameters,
                                   nullptr,
                                   RTAUDIO_FLOAT32,
                                   sampleRate,
                                   &bufferFrames,
                                   &generate,
-                                  (void*)this);
+                                  (void*)this,
+                                  &options);
 
                 audio.startStream();
-
-
             }
             catch (RtAudioError &error) {
                 error.printMessage();
@@ -96,6 +98,7 @@ private:
 
     RtAudio audio{RtAudio::LINUX_ALSA};
     RtAudio::StreamParameters parameters;
+    RtAudio::StreamOptions options;
     bool isRunning{};
 };
 

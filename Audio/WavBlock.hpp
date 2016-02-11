@@ -7,12 +7,12 @@ namespace Audio
 class WavBlock : public AudioBlock
 {
     public:
-        std::vector<float> m_audio;
+        AudioArray m_audio;
 
         WavBlock(
-                std::vector<float> audio,
+                AudioArray audio,
                 AudioEngine& params);
 
-        std::vector<float> data(int size, int buffer, int offset) const override;
+        AudioArray data(int size, int buffer, int offset) const override;
 };
 }

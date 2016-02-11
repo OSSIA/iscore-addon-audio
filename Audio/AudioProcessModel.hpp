@@ -79,7 +79,7 @@ class ProcessModel final : public Process::ProcessModel
         Process::LayerModel* cloneLayer_impl(const Id<Process::LayerModel>& newId, const Process::LayerModel& source, QObject* parent) override;
 
     private:
-        std::vector<float> readFile(const QString& filename);
+        AudioArray readFile(const QString& filename);
 
         QString m_script;
         QString m_audioFile;

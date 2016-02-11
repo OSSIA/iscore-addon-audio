@@ -38,7 +38,7 @@ static std::array<float*, 2> wrap_vector(const std::vector<std::vector<float>>& 
     return {vec[0].data(), vec[1].data()};
 }
 
-std::vector<float> Block::data(int size, int buffer, int off) const
+AudioArray Block::data(int size, int buffer, int off) const
 {
     if(m_faustPlug)
     {
@@ -47,7 +47,7 @@ std::vector<float> Block::data(int size, int buffer, int off) const
         m_faustPlug->compute(
                     parameters().bufferSize, in.data(), out.data());
 
-        return out_vec_cnt[0];
+        return out_vec_cnt;
     }
     else
     {

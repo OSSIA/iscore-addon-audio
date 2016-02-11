@@ -3,6 +3,7 @@
 #include <QString>
 #include <libwatermark/Parameters.h>
 
+using AudioArray = std::vector<std::vector<float>>;
 class AudioEngine;
 class AudioBlock
 {
@@ -16,7 +17,7 @@ class AudioBlock
         const Parameters<float>& parameters() const;
 
         virtual ~AudioBlock();
-        virtual std::vector<float> data(int size, int buffer, int offset) const = 0;
+        virtual AudioArray data(int size, int buffer, int offset) const = 0;
 
         void start();
         void stop();

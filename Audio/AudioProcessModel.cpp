@@ -51,7 +51,7 @@ void Visitor<Writer<JSONObject>>::writeTo(Audio::ProcessModel& proc)
 
 namespace Audio
 {
-std::vector<float> ProcessModel::readFile(const QString& filename)
+AudioArray ProcessModel::readFile(const QString& filename)
 {
     auto myf = SndfileHandle(filename.toStdString());
     switch(myf.channels())
@@ -65,8 +65,7 @@ std::vector<float> ProcessModel::readFile(const QString& filename)
         {
             std::vector<float> vec(myf.frames());
             myf.read(vec.data(), myf.frames());
-            return vec;
-            break;
+            return {vec};
         }
         default:
         {
@@ -76,14 +75,10 @@ std::vector<float> ProcessModel::readFile(const QString& filename)
             for(int i = 0; i < myf.channels(); ++i)
                 myf.read(vec.data() + i * (myf.frames() + parity),  myf.frames() + parity);
 
-            std::vector<std::vector<float>> channels =
-                    MathUtil::deinterleave(
+            return MathUtil::deinterleave(
                         vec,
                         (unsigned int) myf.channels(),
                         (unsigned int) myf.frames());
-
-            return channels[0];
-            break;
         }
 
     }

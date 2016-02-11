@@ -20,11 +20,11 @@ class Block : public AudioBlock
         ~FaustAudioBlock();
 
 
-        std::vector<float> data(int size, int buffer, int offset) const override;
+        AudioArray data(int size, int buffer, int offset) const override;
 
     private:
-        std::vector<std::vector<float>> in_vec_cnt(2);
-        std::vector<std::vector<float>> out_vec_cnt(2);
+        AudioArray in_vec_cnt(2);
+        AudioArray out_vec_cnt(2);
 };
 }
 }
