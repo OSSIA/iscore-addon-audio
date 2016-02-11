@@ -7,6 +7,9 @@
 #include <sndfile.hh>
 #include <libwatermark/mathutils/math_util.h>
 
+#include <QFile>
+#include <Audio/WavBlock.hpp>
+
 // MOVEME
 template<>
 void Visitor<Reader<DataStream>>::readFrom_impl(const Audio::ProcessModel& proc)
@@ -99,16 +102,27 @@ ProcessModel::ProcessModel(
                       iscore::IDocument::documentContext(*parent),
                       this};
 
+
     m_audioFile = "test.wav";
-    setScript("phasor(f)   = f/48000 : (+,1.0:fmod) ~ _ ;"
-              "process     = phasor(f) * 6.28318530718 : sin;");
+    if(QFile::exists(m_audioFile))
+    {
+        m_block = std::make_unique<WavBlock>(
+                    readFile(m_audioFile),
+                    iscore::IDocument::documentContext(*this).plugin<AudioDocumentPlugin>().engine());
+    }
+    setScript("phasor(f)   = f/48000 : (+,1.0:fmod) ~ _ ; "
+              "process = phasor(220) * 6.28 : sin;");
 }
 
 ProcessModel::ProcessModel(
         const ProcessModel& source,
         const Id<Process::ProcessModel>& id,
         QObject* parent):
-    Process::ProcessModel{source.duration(), id, Metadata<ObjectKey_k, ProcessModel>::get(), parent},
+    Process::ProcessModel{
+        source.duration(),
+        id,
+        Metadata<ObjectKey_k, ProcessModel>::get(),
+        parent},
     m_script{source.m_script}
 {
     pluginModelList = new iscore::ElementPluginModelList{
@@ -116,7 +130,8 @@ ProcessModel::ProcessModel(
                       this};
 }
 
-void ProcessModel::setScript(const QString& script)
+void ProcessModel::setScript(
+        const QString& script)
 {
     m_script = script;
     /*

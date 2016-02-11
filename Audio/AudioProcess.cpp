@@ -1,42 +1,40 @@
 #include "AudioProcess.hpp"
 #include <Audio/AudioProcessModel.hpp>
+#include <Audio/AudioDocumentPlugin.hpp>
 
 namespace RecreateOnPlay
 {
 namespace Audio
 {
-Process::Process(AudioEngine& conf):
+Executor::Executor(
+        AudioBlock& block,
+        AudioEngine& conf):
     m_conf{conf},
+    m_block{block},
     m_start{OSSIA::State::create()},
     m_end{OSSIA::State::create()}
 {
 
 }
 
-
-void Process::setAudioBlock(std::unique_ptr<AudioBlock>&& val)
-{
-    m_block = std::move(val);
-}
-
-std::shared_ptr<OSSIA::StateElement> Process::state(const OSSIA::TimeValue& t, const OSSIA::TimeValue&)
+std::shared_ptr<OSSIA::StateElement> Executor::state(
+        const OSSIA::TimeValue& t,
+        const OSSIA::TimeValue&)
 {
     if(double(t) == 0)
-        if(m_block)
-            m_block->start();
+        m_block.start();
     if(double(t) >= 0.99)
-        if(m_block)
-            m_block->stop();
+        m_block.stop();
 
     return {};
 }
 
-const std::shared_ptr<OSSIA::State>&Process::getStartState() const
+const std::shared_ptr<OSSIA::State>&Executor::getStartState() const
 {
     return m_start;
 }
 
-const std::shared_ptr<OSSIA::State>&Process::getEndState() const
+const std::shared_ptr<OSSIA::State>&Executor::getEndState() const
 {
     return m_end;
 }
@@ -46,11 +44,15 @@ const std::shared_ptr<OSSIA::State>&Process::getEndState() const
 Component::Component(
         RecreateOnPlay::ConstraintElement& parentConstraint,
         ::Audio::ProcessModel& element,
+        AudioBlock& block,
         const Context& ctx,
         const Id<iscore::Component>& id,
         QObject* parent):
     ProcessComponent{parentConstraint, element, id, "AudioComponent", parent}
 {
+    m_ossia_process = std::make_shared<Executor>(
+                block,
+                ctx.doc.plugin< ::Audio::AudioDocumentPlugin>().engine());
 }
 
 Component::~Component()
@@ -77,17 +79,23 @@ ProcessComponent* ComponentFactory::make(
         const Id<iscore::Component>& id,
         QObject* parent) const
 {
-    return new Component{
-                cst,
-                static_cast< ::Audio::ProcessModel&>(proc),
-                ctx, id, parent};
+    auto& audio_proc = static_cast< ::Audio::ProcessModel&>(proc);
+    if(auto b = audio_proc.block())
+    {
+        return new Component{
+            cst,
+                    audio_proc,
+                    *b,
+                    ctx, id, parent};
+    }
 
+    return nullptr;
 }
 
 const ComponentFactory::ConcreteFactoryKey&
 ComponentFactory::concreteFactoryKey() const
 {
-    static ComponentFactory::ConcreteFactoryKey k("60e3b412-559d-4385-9a58-bdcd19bb9fa7");
+    static ComponentFactory::ConcreteFactoryKey k("9af86804-e9a5-4e6f-b765-2de26ebe745f");
     return k;
 }
 

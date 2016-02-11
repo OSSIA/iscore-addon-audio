@@ -24,13 +24,12 @@ public:
     RtAudioOutput(Parameters<data_type>& cfg):
         conf(cfg)
     {
-        for(int i = 0; i < audio.getDeviceCount() ; i ++ )
+        for(std::size_t i = 0; i < audio.getDeviceCount() ; i ++ )
         {
-
-            auto info = audio.getDeviceInfo(3);
-            qDebug() << "=====" << info.outputChannels << info.name.c_str() << "\n";
+            auto info = audio.getDeviceInfo(i);
+            qDebug() << "=====" << i << info.outputChannels << info.name.c_str() << "\n";
         }
-        parameters.deviceId = 3;//audio.getDefaultOutputDevice();
+        parameters.deviceId = audio.getDefaultOutputDevice();
         parameters.nChannels = 2;
         parameters.firstChannel = 0;
     }
@@ -95,7 +94,7 @@ public:
 private:
 
 
-    RtAudio audio{RtAudio::LINUX_PULSE};
+    RtAudio audio{RtAudio::LINUX_ALSA};
     RtAudio::StreamParameters parameters;
     bool isRunning{};
 };

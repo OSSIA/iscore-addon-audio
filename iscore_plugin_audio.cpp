@@ -4,9 +4,10 @@
 #include <core/document/Document.hpp>
 #include <iscore/plugins/application/GUIApplicationContextPlugin.hpp>
 #include <Scenario/Application/ScenarioApplicationPlugin.hpp>
-
+#include <Audio/AudioProcess.hpp>
 #include <iscore/plugins/customfactory/FactoryFamily.hpp>
 #include <core/document/DocumentModel.hpp>
+#include <iscore/plugins/customfactory/FactorySetup.hpp>
 #include <QAction>
 
 std::pair<const CommandParentFactoryKey, CommandGeneratorMap> iscore_plugin_audio::make_commands()
@@ -16,14 +17,16 @@ std::pair<const CommandParentFactoryKey, CommandGeneratorMap> iscore_plugin_audi
 
 std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::factories(
         const iscore::ApplicationContext& ctx,
-        const iscore::AbstractFactoryKey& factoryName) const
+        const iscore::AbstractFactoryKey& key) const
 {
-    if(factoryName == Process::ProcessFactory::static_abstractFactoryKey())
-    {
-        return make_ptr_vector<iscore::FactoryInterfaceBase,
-                Audio::ProcessFactory>();
-    }
-    return {};
+    return instantiate_factories<
+            iscore::ApplicationContext,
+    TL<
+        FW<Process::ProcessFactory,
+            Audio::ProcessFactory>,
+        FW<RecreateOnPlay::ProcessComponentFactory,
+             RecreateOnPlay::Audio::ComponentFactory>
+    >>(ctx, key);
 }
 
 iscore_plugin_audio::iscore_plugin_audio()
@@ -71,7 +74,18 @@ class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPl
 
 };
 }
+
 iscore::GUIApplicationContextPlugin*iscore_plugin_audio::make_applicationPlugin(const iscore::ApplicationContext& app)
 {
     return new Audio::ApplicationPlugin{app};
+}
+
+iscore::Version iscore_plugin_audio::version() const
+{
+    return iscore::Version{1};
+}
+
+UuidKey<iscore::Plugin> iscore_plugin_audio::key() const
+{
+    return "f07abe79-1b83-4abd-b002-958c878755c1";
 }

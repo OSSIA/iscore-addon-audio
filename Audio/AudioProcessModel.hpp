@@ -37,6 +37,9 @@ class ProcessModel final : public Process::ProcessModel
         const QString& script() const
         { return m_script; }
 
+        AudioBlock* block() const
+        { return m_block.get(); }
+
         // Process interface
         ProcessModel* clone(
                 const Id<Process::ProcessModel>& newId,
@@ -80,5 +83,7 @@ class ProcessModel final : public Process::ProcessModel
 
         QString m_script;
         QString m_audioFile;
+
+        std::unique_ptr<AudioBlock> m_block;
 };
 }

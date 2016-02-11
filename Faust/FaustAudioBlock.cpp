@@ -1,4 +1,4 @@
-#include "Block.hpp"
+#include "FaustAudioBlock.hpp"
 namespace Audio
 {
 namespace Faust
@@ -6,20 +6,25 @@ namespace Faust
 
 Block::Block(
         const QString& script,
-        std::vector<float> audio,
         AudioEngine& params):
-    AudioBlock{params},
-    m_audio{audio}
+    AudioBlock{params}
 {
     std::string target;
     m_faustFactory = createDSPFactoryFromString(
                          "name",
-                         "phasor(f)   = f/48000 : (+,1.0:fmod) ~ _ ; process = phasor(220) * 6.28 : sin;",//script.toStdString(),
+                         "phasor(f)   = f/48000 : (+,1.0:fmod) ~ _ ; "
+                         "process = phasor(220) * 6.28 : sin;",//script.toStdString(),
                          0, nullptr, "", target);
     if(m_faustFactory)
     {
         m_faustPlug = createDSPInstance(m_faustFactory);
     }
+
+    for(auto& vec : in_vec_cnt)
+        vec.resize(parameters().bufferSize);
+    for(auto& vec : out_vec_cnt)
+        vec.resize(parameters().bufferSize);
+
 }
 
 Block::~Block()
@@ -27,45 +32,27 @@ Block::~Block()
     deleteDSPFactory(m_faustFactory);
 }
 
+static std::array<float*, 2> wrap_vector(const std::vector<std::vector<float>>& vec)
+{
+    ISCORE_ASSERT(vec.size() == 2);
+    return {vec[0].data(), vec[1].data()};
+}
+
 std::vector<float> Block::data(int size, int buffer, int off) const
 {
     if(m_faustPlug)
-    {/*
-        if(buffer * parameters().bufferSize > m_audio.size())
-        {
-            return {};
-        }
-        else
-        {
-        */
-            float ** in_vec;
-            in_vec = new float*[2];
-            in_vec[0] = new float[parameters().bufferSize];
-            in_vec[1] = new float[parameters().bufferSize];
+    {
+        auto in = wrap_vector(in_vec_cnt);
+        auto out = wrap_vector(out_vec_cnt);
+        m_faustPlug->compute(
+                    parameters().bufferSize, in.data(), out.data());
 
-            float ** out_vec;
-            out_vec = new float*[2];
-            out_vec[0] = new float[parameters().bufferSize];
-            out_vec[1] = new float[parameters().bufferSize];
-            /*for(int i = 0; i < size; i++)
-            {
-                vec[0][i] = m_audio[buffer * size + i];
-            }*/
-
-            m_faustPlug->compute(parameters().bufferSize, in_vec, out_vec);
-            return std::vector<float>(out_vec[0], out_vec[0] + parameters().bufferSize);
-
-          //  std::vector<float> out(vec[1], vec[1] + buffer);
-          //  return out;
-        //}
+        return out_vec_cnt[0];
     }
     else
     {
         return {};
-
     }
-
-
 }
 
 }

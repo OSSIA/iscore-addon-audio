@@ -5,14 +5,15 @@ void AudioEngine::play()
 {
     output.startStream([&] (void* outputBuffer) {
         float *out = static_cast<float *>(outputBuffer);
-        for(int i = 0; i < params.bufferSize; i++)
+        for(std::size_t i = 0; i < params.bufferSize; i++)
             out[i] = 0;
 
         bool turn = true;
-        int handle_i = 0;
+        std::size_t handle_i = 0;
         while(turn)
         {
             std::lock_guard<std::mutex> lock(handles_lock);
+            // Mark all "played" handles to remove them and only loop on unplayed handles.
             if(handle_i < handles.size())
             {
                 AudioBlock* proc = handles[handle_i];
@@ -20,7 +21,7 @@ void AudioEngine::play()
 
                 if(data.size() >= params.bufferSize)
                 {
-                    for(int i = 0; i < params.bufferSize; i++)
+                    for(std::size_t i = 0; i < params.bufferSize; i++)
                     {
                         out[i] += data[i] * 0.2;
                     }

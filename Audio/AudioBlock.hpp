@@ -26,4 +26,3 @@ class AudioBlock
 
         AudioEngine& m_engine;
 };
-

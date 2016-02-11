@@ -18,12 +18,12 @@ namespace RecreateOnPlay
 {
 namespace Audio
 {
-class Process final : public TimeProcessWithConstraint
+class Executor final : public TimeProcessWithConstraint
 {
     public:
-        Process(AudioEngine& conf);
-
-        void setAudioBlock(std::unique_ptr<AudioBlock>&& block);
+        Executor(
+                AudioBlock& block,
+                AudioEngine& conf);
 
         std::shared_ptr<OSSIA::StateElement> state(
                 const OSSIA::TimeValue& t,
@@ -33,15 +33,15 @@ class Process final : public TimeProcessWithConstraint
         const std::shared_ptr<OSSIA::State>& getStartState() const override;
         const std::shared_ptr<OSSIA::State>& getEndState() const override;
 
-        auto block() const
-        { return m_block.get(); }
+        auto& block() const
+        { return m_block; }
 
         auto& engine() const
         { return m_conf; }
 
     private:
         AudioEngine& m_conf;
-        std::unique_ptr<AudioBlock> m_block;
+        AudioBlock& m_block;
 
         std::shared_ptr<OSSIA::State> m_start;
         std::shared_ptr<OSSIA::State> m_end;
@@ -54,6 +54,7 @@ class Component final : public ProcessComponent
         Component(
                 ConstraintElement& parentConstraint,
                 ::Audio::ProcessModel& element,
+                AudioBlock& block,
                 const Context& ctx,
                 const Id<iscore::Component>& id,
                 QObject* parent);

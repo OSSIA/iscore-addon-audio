@@ -1,12 +1,13 @@
 #pragma once
 #include <QObject>
-
+#include <iscore/plugins/qt_interfaces/PluginRequirements_QtInterface.hpp>
 #include <iscore/plugins/qt_interfaces/GUIApplicationContextPlugin_QtInterface.hpp>
 #include <iscore/plugins/qt_interfaces/FactoryInterface_QtInterface.hpp>
 #include <iscore/plugins/qt_interfaces/GUIApplicationContextPlugin_QtInterface.hpp>
 
 class iscore_plugin_audio final:
         public QObject,
+        public iscore::Plugin_QtInterface,
         public iscore::GUIApplicationContextPlugin_QtInterface,
         public iscore::FactoryInterface_QtInterface,
         public iscore::CommandFactory_QtInterface
@@ -14,6 +15,7 @@ class iscore_plugin_audio final:
         Q_OBJECT
         Q_PLUGIN_METADATA(IID FactoryInterface_QtInterface_iid)
         Q_INTERFACES(
+                iscore::Plugin_QtInterface
                 iscore::GUIApplicationContextPlugin_QtInterface
                 iscore::FactoryInterface_QtInterface
                 iscore::CommandFactory_QtInterface
@@ -33,4 +35,7 @@ class iscore_plugin_audio final:
 
         // CommandFactory_QtInterface interface
         std::pair<const CommandParentFactoryKey, CommandGeneratorMap> make_commands() override;
+
+        iscore::Version version() const override;
+        UuidKey<iscore::Plugin> key() const override;
 };
