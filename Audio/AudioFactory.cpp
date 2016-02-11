@@ -77,15 +77,15 @@ void LayerView::setData(AudioArray data)
 void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
 {
     m_path = QPainterPath{};
+	m_path.setFillRule(Qt::WindingFill);
 
     if(m_data.size() == 0)
         return;
 
-    auto& chan = m_data[0];
+	const auto& chan = m_data[0];
     if(chan.size() < 1000)
         return;
 
-    std::vector<float> points;
     // Compute 1 point every 10 pixels
 
     // Get how much data point is 10 pixels :
@@ -95,27 +95,25 @@ void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
     // rate.rate.
 
     // Each "density" pixels we want to take a new data point
-    int density = 10;
+	const int density = 10;
 
     // The duration of 10 pixels is 10 * ratio
-    double interval_duration = density * ratio;
+	const double interval_duration = density * ratio;
 
-    int samples_in_interval = interval_duration * 44100 / 1000;
+	const int samples_in_interval = interval_duration * 44100 / 1000;
 
-    int n_samples = std::max(int(width() / density), int(chan.size() / density));
-    points.resize(n_samples);
-    for(int i = 0; i < n_samples; i ++)
-    {
-        if(i > points.size() || i * samples_in_interval > chan.size())
-            break;
-        points[i] = chan[i * samples_in_interval];
-    }
+	const auto h = height();
+	const auto w = width();
+	const auto chan_n = chan.size();
+	const int n_samples = std::max(int(w / density), int(chan_n / density));
+	const int n_mult = 1;
 
-    int n_mult = 6;
-    m_path.moveTo(0, points[0] * n_mult * height() + height() / 2.);
-    for(int i = 1; i < n_samples - 1; i ++)
-    {
-        m_path.lineTo(i * density, points[i] * n_mult * height() + height() / 2.);
+	m_path.moveTo(0, chan[0] * n_mult * h + h / 2.);
+	for(int i = 1; i < n_samples - 1 && i * samples_in_interval < chan_n; i ++)
+	{
+		m_path.lineTo(
+					i * density,
+					chan[i * samples_in_interval] * n_mult * h + h / 2.);
     }
 
     update();
@@ -126,11 +124,7 @@ void LayerView::paint_impl(QPainter* painter) const
     painter->setBrush(Qt::darkCyan);
     painter->setPen(Qt::darkBlue);
 
-    painter->drawPath(m_path);
-    QMatrix m;
-    m.scale(-1.0, -1.0);
-    painter->setMatrix(m);
-    painter->drawPath(m_path);
+	painter->drawPath(m_path);
 }
 
 void LayerView::mousePressEvent(QGraphicsSceneMouseEvent*)

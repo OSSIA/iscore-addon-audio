@@ -3,7 +3,7 @@
 
 void AudioEngine::play()
 {
-    output.startStream([&] (void* outputBuffer) {
+	output.startStream([&] (void* outputBuffer) {
         float *out = static_cast<float *>(outputBuffer);
         for(std::size_t i = 0; i < 2 * params.bufferSize; i++)
             out[i] = 0;

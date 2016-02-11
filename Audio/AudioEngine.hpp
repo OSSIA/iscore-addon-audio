@@ -33,7 +33,7 @@ public:
         parameters.nChannels = 2;
         parameters.firstChannel = 0;
 
-        options.flags = RTAUDIO_NONINTERLEAVED | RTAUDIO_MINIMIZE_LATENCY;
+		options.flags = RTAUDIO_NONINTERLEAVED;
     }
 
     ~RtAudioOutput()
@@ -60,7 +60,7 @@ public:
                                   &bufferFrames,
                                   &generate,
                                   (void*)this,
-                                  &options);
+								  &options);
 
                 audio.startStream();
             }
@@ -96,7 +96,7 @@ public:
 private:
 
 
-    RtAudio audio{RtAudio::LINUX_ALSA};
+	RtAudio audio{RtAudio::MACOSX_CORE};
     RtAudio::StreamParameters parameters;
     RtAudio::StreamOptions options;
     bool isRunning{};
