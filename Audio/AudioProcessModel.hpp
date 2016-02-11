@@ -1,5 +1,5 @@
 #pragma once
-#include <OSSIA/Executor/ProcessModel/ProcessModel.hpp>
+#include <Process/Process.hpp>
 #include <iscore/serialization/DataStreamVisitor.hpp>
 #include <iscore/serialization/JSONVisitor.hpp>
 #include <iscore/serialization/VisitorCommon.hpp>
@@ -8,7 +8,7 @@
 
 namespace Audio
 {
-class ProcessModel final : public RecreateOnPlay::OSSIAProcessModel
+class ProcessModel final : public Process::ProcessModel
 {
         ISCORE_SERIALIZE_FRIENDS(Audio::ProcessModel, DataStream)
         ISCORE_SERIALIZE_FRIENDS(Audio::ProcessModel, JSONObject)
@@ -16,20 +16,19 @@ class ProcessModel final : public RecreateOnPlay::OSSIAProcessModel
     public:
         explicit ProcessModel(
                 const TimeValue& duration,
-                const Id<Process>& id,
+                const Id<Process::ProcessModel>& id,
                 QObject* parent);
 
         explicit ProcessModel(
                 const ProcessModel& source,
-                const Id<Process>& id,
+                const Id<Process::ProcessModel>& id,
                 QObject* parent);
 
         template<typename Impl>
         explicit ProcessModel(
                 Deserializer<Impl>& vis,
                 QObject* parent) :
-            OSSIAProcessModel{vis, parent},
-            m_ossia_process{makeProcess()}
+            Process::ProcessModel{vis, parent}
         {
             vis.writeTo(*this);
         }
@@ -40,12 +39,12 @@ class ProcessModel final : public RecreateOnPlay::OSSIAProcessModel
 
         // Process interface
         ProcessModel* clone(
-                const Id<Process>& newId,
+                const Id<Process::ProcessModel>& newId,
                 QObject* newParent) const override;
 
-        const UuidKey<Process::ProcessFactory>& key() const override
+        UuidKey<Process::ProcessFactory> concreteFactoryKey() const override
         {
-            return Audio::ProcessMetadata::abstractFactoryKey();
+            return Metadata<ConcreteFactoryKey_k, Audio::ProcessModel>::get();
         }
 
         QString prettyName() const override;
@@ -66,20 +65,17 @@ class ProcessModel final : public RecreateOnPlay::OSSIAProcessModel
         Selection selectedChildren() const override;
         void setSelection(const Selection& s) const override;
 
-        void serialize(const VisitorVariant& vis) const override;
+        void serialize_impl(const VisitorVariant& vis) const override;
 
     protected:
-        LayerModel* makeLayer_impl(const Id<LayerModel>& viewModelId, const QByteArray& constructionData, QObject* parent) override;
-        LayerModel* loadLayer_impl(const VisitorVariant&, QObject* parent) override;
-        LayerModel* cloneLayer_impl(const Id<LayerModel>& newId, const LayerModel& source, QObject* parent) override;
+        Process::LayerModel* makeLayer_impl(
+                const Id<Process::LayerModel>& viewModelId,
+                const QByteArray& constructionData,
+                QObject* parent) override;
+        Process::LayerModel* loadLayer_impl(const VisitorVariant&, QObject* parent) override;
+        Process::LayerModel* cloneLayer_impl(const Id<Process::LayerModel>& newId, const Process::LayerModel& source, QObject* parent) override;
 
     private:
-        std::shared_ptr<TimeProcessWithConstraint> process() const override
-        { return m_ossia_process; }
-
-        std::shared_ptr<Audio::Process> makeProcess() const;
-        std::shared_ptr<Audio::Process> m_ossia_process;
-
         std::vector<float> readFile(const QString& filename);
 
         QString m_script;

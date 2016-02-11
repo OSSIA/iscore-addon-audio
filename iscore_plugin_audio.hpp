@@ -1,6 +1,5 @@
 #pragma once
 #include <QObject>
-#include <faust/dsp/llvm-dsp.h>
 
 #include <iscore/plugins/qt_interfaces/GUIApplicationContextPlugin_QtInterface.hpp>
 #include <iscore/plugins/qt_interfaces/FactoryInterface_QtInterface.hpp>

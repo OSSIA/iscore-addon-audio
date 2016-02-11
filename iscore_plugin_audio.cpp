@@ -18,7 +18,7 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
         const iscore::ApplicationContext& ctx,
         const iscore::AbstractFactoryKey& factoryName) const
 {
-    if(factoryName == ProcessFactory::static_abstractFactoryKey())
+    if(factoryName == Process::ProcessFactory::static_abstractFactoryKey())
     {
         return make_ptr_vector<iscore::FactoryInterfaceBase,
                 Audio::ProcessFactory>();
@@ -51,7 +51,7 @@ class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPl
             auto plug = new AudioDocumentPlugin{*doc, &doc->model()};
             doc->model().addPluginModel(plug);
 
-            auto& ctrl = doc->context().app.components.applicationPlugin<ScenarioApplicationPlugin>();
+            auto& ctrl = doc->context().app.components.applicationPlugin<Scenario::ScenarioApplicationPlugin>();
             auto acts = ctrl.actions();
             for(const auto& act : acts)
             {

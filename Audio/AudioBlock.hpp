@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include <faust/dsp/llvm-dsp.h>
 #include <QString>
 #include <libwatermark/Parameters.h>
 
@@ -28,23 +27,3 @@ class AudioBlock
         AudioEngine& m_engine;
 };
 
-class FaustAudioBlock : public AudioBlock
-{
-    public:
-        llvm_dsp_factory* m_faustFactory{};
-        llvm_dsp* m_faustPlug{};
-        std::vector<float> m_audio;
-
-
-        FaustAudioBlock(
-                const QString& script,
-                std::vector<float> audio,
-                AudioEngine& params);
-
-        ~FaustAudioBlock();
-
-
-        std::vector<float> data(int size, int buffer, int offset) const override;
-
-
-};

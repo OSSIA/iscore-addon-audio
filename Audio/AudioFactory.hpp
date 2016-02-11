@@ -9,30 +9,32 @@
 
 namespace Audio
 {
-class ProcessFactory final : public ::ProcessFactory
+class ProcessFactory final : public Process::ProcessFactory
 {
     public:
         QString prettyName() const override;
 
-        const UuidKey<Process::ProcessFactory>& key_impl() const override;
+        const UuidKey<Process::ProcessFactory>& concreteFactoryKey() const override;
 
 
-        ::Process* makeModel(
+        Process::ProcessModel* makeModel(
                 const TimeValue& duration,
-                const Id<::Process>& id,
+                const Id<Process::ProcessModel>& id,
                 QObject* parent) override;
 
         QByteArray makeStaticLayerConstructionData() const override;
 
-        ::Process* loadModel(const VisitorVariant& vis, QObject* parent) override;
-
-        LayerPresenter* makeLayerPresenter(
-                const LayerModel& model,
-                LayerView* v,
+        Process::ProcessModel* load(
+                const VisitorVariant& vis,
                 QObject* parent) override;
 
-        LayerView* makeLayerView(
-                const LayerModel&,
+        Process::LayerPresenter* makeLayerPresenter(
+                const Process::LayerModel& model,
+                Process::LayerView* v,
+                QObject* parent) override;
+
+        Process::LayerView* makeLayerView(
+                const Process::LayerModel&,
                 QGraphicsItem* parent) override;
 };
 }
