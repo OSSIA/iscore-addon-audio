@@ -98,13 +98,7 @@ ProcessModel::ProcessModel(
                       this};
 
 
-    m_audioFile = "test.wav";
-    if(QFile::exists(m_audioFile))
-    {
-        m_block = std::make_unique<WavBlock>(
-                    readFile(m_audioFile),
-                    iscore::IDocument::documentContext(*this).plugin<AudioDocumentPlugin>().engine());
-    }
+    setFile("test.wav");
     setScript("phasor(f)   = f/48000 : (+,1.0:fmod) ~ _ ; "
               "process = phasor(220) * 6.28 : sin;");
 }
@@ -122,7 +116,12 @@ ProcessModel::ProcessModel(
 {
     pluginModelList = new iscore::ElementPluginModelList{
                       *source.pluginModelList,
-                      this};
+            this};
+}
+
+ProcessModel::~ProcessModel()
+{
+
 }
 
 void ProcessModel::setScript(
@@ -140,6 +139,21 @@ void ProcessModel::setScript(
                                            ));
     }
     */
+}
+
+void ProcessModel::setFile(const QString &file)
+{
+    if(file != m_file)
+    {
+        m_file = file;
+        if(QFile::exists(m_file))
+        {
+            m_block = std::make_unique<WavBlock>(
+                        readFile(m_file),
+                        iscore::IDocument::documentContext(*this).plugin<AudioDocumentPlugin>().engine());
+        }
+        emit fileChanged(m_file);
+    }
 }
 
 ProcessModel* ProcessModel::clone(
@@ -220,7 +234,7 @@ Process::LayerModel* ProcessModel::makeLayer_impl(
         const QByteArray& constructionData,
         QObject* parent)
 {
-    return new Dummy::DummyLayerModel{*this, viewModelId, parent};
+    return new LayerModel{*this, viewModelId, parent};
 }
 
 Process::LayerModel* ProcessModel::loadLayer_impl(
@@ -229,7 +243,7 @@ Process::LayerModel* ProcessModel::loadLayer_impl(
 {
     return deserialize_dyn(vis, [&] (auto&& deserializer)
     {
-        auto autom = new Dummy::DummyLayerModel{
+        auto autom = new LayerModel{
                         deserializer, *this, parent};
 
         return autom;
@@ -241,8 +255,8 @@ Process::LayerModel* ProcessModel::cloneLayer_impl(
         const Process::LayerModel& source,
         QObject* parent)
 {
-    return new Dummy::DummyLayerModel{
-        safe_cast<const Dummy::DummyLayerModel&>(source),
+    return new LayerModel{
+        safe_cast<const LayerModel&>(source),
                 *this,
                 newId,
                 parent};

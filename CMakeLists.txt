@@ -29,6 +29,7 @@ set(HDRS ${HDRS}
 "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioEngine.hpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioBlock.hpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/Audio/WavBlock.hpp"
+"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.hpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioDocumentPlugin.hpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.hpp"
 )
@@ -42,6 +43,7 @@ set(SRCS
 "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioBlock.cpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/Audio/WavBlock.cpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioDocumentPlugin.cpp"
+"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.cpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.cpp"
 )
 

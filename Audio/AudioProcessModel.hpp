@@ -5,14 +5,52 @@
 #include <iscore/serialization/VisitorCommon.hpp>
 #include <Audio/AudioProcess.hpp>
 #include <Audio/AudioProcessMetadata.hpp>
+#include <DummyProcess/DummyLayerPanelProxy.hpp>
+#include <Process/LayerModel.hpp>
 
 namespace Audio
 {
+class ProcessModel;
+
+class LayerModel final : public Process::LayerModel
+{
+        ISCORE_SERIALIZE_FRIENDS(LayerModel, DataStream)
+        ISCORE_SERIALIZE_FRIENDS(LayerModel, JSONObject)
+
+    public:
+        explicit LayerModel(
+                ProcessModel& model,
+                const Id<Process::LayerModel>& id,
+                QObject* parent);
+
+        // Copy
+        explicit LayerModel(
+                const LayerModel& source,
+                ProcessModel& model,
+                const Id<Process::LayerModel>& id,
+                QObject* parent);
+
+        // Load
+        template<typename Impl>
+        explicit LayerModel(
+                Deserializer<Impl>& vis,
+                ProcessModel& model,
+                QObject* parent) :
+            Process::LayerModel {vis, model, parent}
+        {
+            vis.writeTo(*this);
+        }
+
+        void serialize(const VisitorVariant&) const override;
+        Process::LayerModelPanelProxy* make_panelProxy(QObject* parent) const override;
+};
+
 class ProcessModel final : public Process::ProcessModel
 {
         ISCORE_SERIALIZE_FRIENDS(Audio::ProcessModel, DataStream)
         ISCORE_SERIALIZE_FRIENDS(Audio::ProcessModel, JSONObject)
 
+        Q_OBJECT
     public:
         explicit ProcessModel(
                 const TimeValue& duration,
@@ -23,6 +61,8 @@ class ProcessModel final : public Process::ProcessModel
                 const ProcessModel& source,
                 const Id<Process::ProcessModel>& id,
                 QObject* parent);
+
+        virtual ~ProcessModel();
 
         template<typename Impl>
         explicit ProcessModel(
@@ -36,6 +76,11 @@ class ProcessModel final : public Process::ProcessModel
         void setScript(const QString& script);
         const QString& script() const
         { return m_script; }
+
+        void setFile(const QString& file);
+
+        const QString& file() const
+        { return m_file; }
 
         AudioBlock* block() const
         { return m_block.get(); }
@@ -70,6 +115,9 @@ class ProcessModel final : public Process::ProcessModel
 
         void serialize_impl(const VisitorVariant& vis) const override;
 
+    signals:
+        void fileChanged(const QString&);
+
     protected:
         Process::LayerModel* makeLayer_impl(
                 const Id<Process::LayerModel>& viewModelId,
@@ -82,7 +130,7 @@ class ProcessModel final : public Process::ProcessModel
         AudioArray readFile(const QString& filename);
 
         QString m_script;
-        QString m_audioFile;
+        QString m_file;
 
         std::unique_ptr<AudioBlock> m_block;
 };

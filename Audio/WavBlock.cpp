@@ -27,7 +27,6 @@ AudioArray WavBlock::data(int size, int buffer, int offset) const
     std::size_t min_n = buffer * size;
     std::size_t max_n = (1+buffer) * size;
 
-    qDebug() << n_chan;
     for(std::size_t i_chan = 0; i_chan < n_chan; i_chan++)
     {
         auto& src_chan = m_audio[i_chan];
