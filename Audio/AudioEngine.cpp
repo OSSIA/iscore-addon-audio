@@ -1,23 +1,48 @@
 #include "AudioEngine.hpp"
 #include <iscore/tools/std/Algorithms.hpp>
 
+AudioEngine::AudioEngine()
+{
+    m_handles.reserve(100);
+}
+
+AudioEngine::~AudioEngine()
+{
+	std::lock_guard<std::mutex> lock(handles_lock);
+    for(auto blck : m_handles)
+    {
+        blck->m_deleting = true;
+    }
+	m_handles.clear();
+}
+
 void AudioEngine::play()
 {
-	output.startStream([&] (void* outputBuffer) {
+    output.startStream([&] (void* outputBuffer, int size) {
+
         float *out = static_cast<float *>(outputBuffer);
-        for(std::size_t i = 0; i < 2 * params.bufferSize; i++)
+        for(std::size_t i = 0; i < 2 * size; i++)
             out[i] = 0;
 
         bool turn = true;
         std::size_t handle_i = 0;
         while(turn)
         {
-            std::lock_guard<std::mutex> lock(handles_lock);
+			std::vector<AudioBlock*> handles;
+			{
+				std::lock_guard<std::mutex> lock(handles_lock);
+
+                if(m_handles.size() == 0)
+                    return 0;
+
+                handles = this->m_handles;
+			}
+
             // Mark all "played" handles to remove them and only loop on unplayed handles.
-            if(handle_i < handles.size())
+			if(handle_i < handles.size())
             {
-                AudioBlock* proc = handles[handle_i];
-                auto current = proc->data(params.bufferSize, proc->currentBuffer++, 0);
+				AudioBlock* proc = handles[handle_i];
+                auto current = proc->data(size, proc->currentBuffer++, 0);
 
                 switch(current.size())
                 {
@@ -26,19 +51,19 @@ void AudioEngine::play()
                     case 1:
                     {
                         auto& chan = current[0];
-                        if(chan.size() >= params.bufferSize)
+                        if(chan.size() >= size)
                         {
                             // Duplicate on each channel
-                            for(std::size_t i = 0; i < params.bufferSize; i++)
+                            for(std::size_t i = 0; i < size; i++)
                             {
                                 out[i] += chan[i] * 0.2;
                             }
 
-                            out = out + params.bufferSize;
+                            float* out_2 = out + size;
 
-                            for(std::size_t i = 0; i < params.bufferSize; i++)
+                            for(std::size_t i = 0; i < size; i++)
                             {
-                                out[i] += chan[i] * 0.2;
+                                out_2[i] += chan[i] * 0.2;
                             }
                         }
                         break;
@@ -48,11 +73,11 @@ void AudioEngine::play()
                         for(int i_chan = 0 ; i_chan < 2; i_chan++)
                         {
                             auto& chan = current[i_chan];
-                            if(chan.size() >= params.bufferSize)
+                            if(chan.size() >= size)
                             {
                                 // Duplicate on each channel
-                                float* current_out = out + i_chan * params.bufferSize;
-                                for(std::size_t i = 0; i < params.bufferSize; i++)
+                                float* current_out = out + i_chan * size;
+                                for(std::size_t i = 0; i < size; i++)
                                 {
                                     current_out[i] += chan[i] * 0.2;
                                 }
@@ -80,23 +105,33 @@ void AudioEngine::stop()
 {
     output.stopStream();
 
+	std::lock_guard<std::mutex> lock(handles_lock);
+	for(auto blck : m_handles)
+	{
+		blck->currentBuffer = 0;
+		blck->offset = 0;
+	}
+	m_handles.clear();
 }
 
 void AudioEngine::addHandle(AudioBlock* block)
 {
     std::lock_guard<std::mutex> lock(handles_lock);
 
-    auto it = find(handles, block);
-    if(it == handles.end())
-        handles.push_back(block);
+	auto it = find(m_handles, block);
+	if(it == m_handles.end())
+		m_handles.push_back(block);
 }
 
 void AudioEngine::removeHandle(AudioBlock* block)
 {
     std::lock_guard<std::mutex> lock(handles_lock);
-    auto it = find(handles, block);
-    if(it != handles.end())
+	auto it = find(m_handles, block);
+	if(it != m_handles.end())
     {
-        handles.erase(it);
+		AudioBlock* blck = *it;
+		blck->currentBuffer = 0;
+		blck->offset = 0;
+		m_handles.erase(it);
     }
 }

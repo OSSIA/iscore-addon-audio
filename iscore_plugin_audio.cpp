@@ -9,6 +9,7 @@
 #include <core/document/DocumentModel.hpp>
 #include <iscore/plugins/customfactory/FactorySetup.hpp>
 #include <QAction>
+#include <Audio/Inspector/AudioInspector.hpp>
 
 std::pair<const CommandParentFactoryKey, CommandGeneratorMap> iscore_plugin_audio::make_commands()
 {
@@ -25,7 +26,9 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
         FW<Process::ProcessFactory,
             Audio::ProcessFactory>,
         FW<RecreateOnPlay::ProcessComponentFactory,
-             RecreateOnPlay::Audio::ComponentFactory>
+             RecreateOnPlay::Audio::ComponentFactory>,
+        FW<ProcessInspectorWidgetDelegateFactory,
+            Audio::InspectorFactory>
     >>(ctx, key);
 }
 

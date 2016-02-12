@@ -6,16 +6,18 @@ const Parameters<float>&AudioBlock::parameters() const
 
 AudioBlock::~AudioBlock()
 {
-    m_engine.removeHandle(this);
-
+	if(!m_deleting)
+		m_engine.removeHandle(this);
 }
 
 void AudioBlock::start()
 {
-    m_engine.addHandle(this);
+	if(!m_deleting)
+		m_engine.addHandle(this);
 }
 
 void AudioBlock::stop()
 {
-    m_engine.removeHandle(this);
+	if(!m_deleting)
+		m_engine.removeHandle(this);
 }

@@ -20,7 +20,7 @@ class RtAudioOutput
 {
 public:
         Parameters<data_type>& conf;
-        using handle_t = std::function<int(void*)> ;
+        using handle_t = std::function<int(void*, int)> ;
     RtAudioOutput(Parameters<data_type>& cfg):
         conf(cfg)
     {
@@ -78,7 +78,6 @@ public:
     void stopStream()
     {
         try {
-            qDebug() << Q_FUNC_INFO;
             // Stop and close the stream
             if(audio.isStreamRunning())
                 audio.stopStream();
@@ -93,8 +92,7 @@ public:
     }
 
     handle_t _handler;
-private:
-
+  private:
 
 	RtAudio audio{RtAudio::MACOSX_CORE};
     RtAudio::StreamParameters parameters;
@@ -117,13 +115,15 @@ inline int generate(void *outputBuffer,
         std::cerr << "[WARNING] Buffer underrun.";
     }
 
-    return obj->_handler(outputBuffer);
+    return obj->_handler(outputBuffer, nFrames);
 }
 
 class AudioEngine : public QObject
 {
         Q_OBJECT
     public:
+        AudioEngine();
+		~AudioEngine();
 
         Parameters<float> params;
         void play();
@@ -135,7 +135,7 @@ class AudioEngine : public QObject
 
     private:
         std::mutex handles_lock;
-        std::vector<AudioBlock*> handles;
+        std::vector<AudioBlock*> m_handles;
 
         RtAudioOutput<float> output{params};
 };

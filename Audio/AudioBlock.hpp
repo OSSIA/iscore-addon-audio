@@ -25,5 +25,6 @@ class AudioBlock
         int currentBuffer = 0;
         int offset = 0; // Offset in samples between the playing audio and the buffer.
 
+		bool m_deleting = false;
         AudioEngine& m_engine;
 };
