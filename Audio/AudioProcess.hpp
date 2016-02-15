@@ -29,10 +29,6 @@ class Executor final : public TimeProcessWithConstraint
                 const OSSIA::TimeValue& t,
                 const OSSIA::TimeValue&) override;
 
-
-        const std::shared_ptr<OSSIA::State>& getStartState() const override;
-        const std::shared_ptr<OSSIA::State>& getEndState() const override;
-
         auto& block() const
         { return m_block; }
 

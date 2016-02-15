@@ -29,17 +29,6 @@ std::shared_ptr<OSSIA::StateElement> Executor::state(
     return {};
 }
 
-const std::shared_ptr<OSSIA::State>&Executor::getStartState() const
-{
-    return m_start;
-}
-
-const std::shared_ptr<OSSIA::State>&Executor::getEndState() const
-{
-    return m_end;
-}
-
-
 /// Component
 Component::Component(
         RecreateOnPlay::ConstraintElement& parentConstraint,
