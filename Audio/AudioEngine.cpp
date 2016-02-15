@@ -8,12 +8,12 @@ AudioEngine::AudioEngine()
 
 AudioEngine::~AudioEngine()
 {
-	std::lock_guard<std::mutex> lock(handles_lock);
+    std::lock_guard<std::mutex> lock(handles_lock);
     for(auto blck : m_handles)
     {
         blck->m_deleting = true;
     }
-	m_handles.clear();
+    m_handles.clear();
 }
 
 void AudioEngine::play()
@@ -28,20 +28,20 @@ void AudioEngine::play()
         std::size_t handle_i = 0;
         while(turn)
         {
-			std::vector<AudioBlock*> handles;
-			{
-				std::lock_guard<std::mutex> lock(handles_lock);
+            std::vector<AudioBlock*> handles;
+            {
+                std::lock_guard<std::mutex> lock(handles_lock);
 
                 if(m_handles.size() == 0)
                     return 0;
 
                 handles = this->m_handles;
-			}
+            }
 
             // Mark all "played" handles to remove them and only loop on unplayed handles.
-			if(handle_i < handles.size())
+            if(handle_i < handles.size())
             {
-				AudioBlock* proc = handles[handle_i];
+                AudioBlock* proc = handles[handle_i];
                 auto current = proc->data(size, proc->currentBuffer++, 0);
 
                 switch(current.size())
@@ -105,33 +105,33 @@ void AudioEngine::stop()
 {
     output.stopStream();
 
-	std::lock_guard<std::mutex> lock(handles_lock);
-	for(auto blck : m_handles)
-	{
-		blck->currentBuffer = 0;
-		blck->offset = 0;
-	}
-	m_handles.clear();
+    std::lock_guard<std::mutex> lock(handles_lock);
+    for(auto blck : m_handles)
+    {
+        blck->currentBuffer = 0;
+        blck->offset = 0;
+    }
+    m_handles.clear();
 }
 
 void AudioEngine::addHandle(AudioBlock* block)
 {
     std::lock_guard<std::mutex> lock(handles_lock);
 
-	auto it = find(m_handles, block);
-	if(it == m_handles.end())
-		m_handles.push_back(block);
+    auto it = find(m_handles, block);
+    if(it == m_handles.end())
+        m_handles.push_back(block);
 }
 
 void AudioEngine::removeHandle(AudioBlock* block)
 {
     std::lock_guard<std::mutex> lock(handles_lock);
-	auto it = find(m_handles, block);
-	if(it != m_handles.end())
+    auto it = find(m_handles, block);
+    if(it != m_handles.end())
     {
-		AudioBlock* blck = *it;
-		blck->currentBuffer = 0;
-		blck->offset = 0;
-		m_handles.erase(it);
+        AudioBlock* blck = *it;
+        blck->currentBuffer = 0;
+        blck->offset = 0;
+        m_handles.erase(it);
     }
 }
