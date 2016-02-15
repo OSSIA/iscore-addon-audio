@@ -22,6 +22,13 @@ public:
         Parameters<data_type>& conf;
         using handle_t = std::function<int(void*, int)> ;
     RtAudioOutput(Parameters<data_type>& cfg):
+        audio(
+        #if defined(__APPLE__)
+            RtAudio::MACOSX_CORE
+        #elif defined(__linux)
+            RtAudio::LINUX_PULSE
+        #endif
+            ),
         conf(cfg)
     {
         for(std::size_t i = 0; i < audio.getDeviceCount() ; i ++ )
@@ -33,7 +40,7 @@ public:
         parameters.nChannels = 2;
         parameters.firstChannel = 0;
 
-		options.flags = RTAUDIO_NONINTERLEAVED;
+        options.flags = RTAUDIO_NONINTERLEAVED;
     }
 
     ~RtAudioOutput()
@@ -60,7 +67,7 @@ public:
                                   &bufferFrames,
                                   &generate,
                                   (void*)this,
-								  &options);
+                                  &options);
 
                 audio.startStream();
             }
@@ -94,7 +101,7 @@ public:
     handle_t _handler;
   private:
 
-	RtAudio audio{RtAudio::MACOSX_CORE};
+    RtAudio audio;
     RtAudio::StreamParameters parameters;
     RtAudio::StreamOptions options;
     bool isRunning{};
@@ -123,7 +130,7 @@ class AudioEngine : public QObject
         Q_OBJECT
     public:
         AudioEngine();
-		~AudioEngine();
+        ~AudioEngine();
 
         Parameters<float> params;
         void play();
