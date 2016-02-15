@@ -19,17 +19,16 @@ template<typename data_type>
 class RtAudioOutput
 {
 public:
-        Parameters<data_type>& conf;
         using handle_t = std::function<int(void*, int)> ;
     RtAudioOutput(Parameters<data_type>& cfg):
+        conf(cfg),
         audio(
         #if defined(__APPLE__)
             RtAudio::MACOSX_CORE
         #elif defined(__linux)
             RtAudio::LINUX_PULSE
         #endif
-            ),
-        conf(cfg)
+            )
     {
         for(std::size_t i = 0; i < audio.getDeviceCount() ; i ++ )
         {
@@ -99,6 +98,7 @@ public:
     }
 
     handle_t _handler;
+    Parameters<data_type>& conf;
   private:
 
     RtAudio audio;
