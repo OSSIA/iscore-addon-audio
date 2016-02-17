@@ -1,6 +1,7 @@
 #include "AudioProcess.hpp"
 #include <Audio/AudioProcessModel.hpp>
 #include <Audio/AudioDocumentPlugin.hpp>
+#include <Editor/TimeConstraint.h>
 
 namespace RecreateOnPlay
 {
@@ -17,13 +18,12 @@ Executor::Executor(
 
 }
 
-std::shared_ptr<OSSIA::StateElement> Executor::state(
-        const OSSIA::TimeValue& t,
-        const OSSIA::TimeValue&)
+std::shared_ptr<OSSIA::StateElement> Executor::state()
 {
-    if(double(t) == 0)
+    double t = parentConstraint()->getPosition();
+    if(t == 0)
         m_block.start();
-    if(double(t) >= 0.99)
+    if(t >= 0.99)
         m_block.stop();
 
     return {};

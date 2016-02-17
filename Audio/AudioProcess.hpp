@@ -25,9 +25,7 @@ class Executor final : public TimeProcessWithConstraint
                 AudioBlock& block,
                 AudioEngine& conf);
 
-        std::shared_ptr<OSSIA::StateElement> state(
-                const OSSIA::TimeValue& t,
-                const OSSIA::TimeValue&) override;
+        std::shared_ptr<OSSIA::StateElement> state() override;
 
         auto& block() const
         { return m_block; }
