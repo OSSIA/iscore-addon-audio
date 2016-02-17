@@ -1,6 +1,6 @@
 #pragma once
 #include <OSSIA/Executor/ProcessElement.hpp>
-#include <OSSIA/ProcessModel/TimeProcessWithConstraint.hpp>
+#include <Editor/TimeProcess.h>
 #include <Editor/TimeValue.h>
 #include <Explorer/DocumentPlugin/DeviceDocumentPlugin.hpp>
 #include <Audio/AudioBlock.hpp>
@@ -18,7 +18,7 @@ namespace RecreateOnPlay
 {
 namespace Audio
 {
-class Executor final : public TimeProcessWithConstraint
+class Executor final : public OSSIA::TimeProcess
 {
     public:
         Executor(
@@ -26,6 +26,7 @@ class Executor final : public TimeProcessWithConstraint
                 AudioEngine& conf);
 
         std::shared_ptr<OSSIA::StateElement> state() override;
+        std::shared_ptr<OSSIA::StateElement> offset(const OSSIA::TimeValue &) override;
 
         auto& block() const
         { return m_block; }

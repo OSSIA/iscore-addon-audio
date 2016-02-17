@@ -20,13 +20,19 @@ Executor::Executor(
 
 std::shared_ptr<OSSIA::StateElement> Executor::state()
 {
-    double t = getParentTimeConstraint()->getPosition();
+    double t = parent->getPosition();
     if(t == 0)
         m_block.start();
     if(t >= 0.99)
         m_block.stop();
 
     return {};
+}
+
+std::shared_ptr<OSSIA::StateElement> Executor::offset(const OSSIA::TimeValue & t)
+{
+    ISCORE_TODO;
+    return OSSIA::State::create();
 }
 
 /// Component
