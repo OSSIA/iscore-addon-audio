@@ -20,7 +20,7 @@ Executor::Executor(
 
 std::shared_ptr<OSSIA::StateElement> Executor::state()
 {
-    double t = parentConstraint()->getPosition();
+    double t = getParentTimeConstraint()->getPosition();
     if(t == 0)
         m_block.start();
     if(t >= 0.99)
