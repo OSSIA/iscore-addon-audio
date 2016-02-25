@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.1)
 project(iscore_plugin_audio LANGUAGES CXX)
 
+if(NOT TARGET iscore_plugin_ossia)
+    return()
+endif()
 find_package(Sndfile)
 find_package(RtAudio)
 

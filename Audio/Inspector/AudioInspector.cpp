@@ -57,7 +57,7 @@ InspectorWidget::InspectorWidget(
         const ProcessModel &object,
         const iscore::DocumentContext &doc,
         QWidget *parent):
-    ProcessInspectorWidgetDelegate_T {object, parent},
+    InspectorWidgetDelegate_T {object, parent},
     m_dispatcher{doc.commandStack}
 {
     setObjectName("AudioInspectorWidget");
@@ -91,7 +91,7 @@ InspectorFactory::~InspectorFactory()
 
 }
 
-ProcessInspectorWidgetDelegate* InspectorFactory::make(
+Process::InspectorWidgetDelegate* InspectorFactory::make(
         const Process::ProcessModel& process,
         const iscore::DocumentContext& doc,
         QWidget* parent) const

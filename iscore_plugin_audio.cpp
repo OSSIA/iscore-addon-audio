@@ -27,7 +27,7 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
             Audio::ProcessFactory>,
         FW<RecreateOnPlay::ProcessComponentFactory,
              RecreateOnPlay::Audio::ComponentFactory>,
-        FW<ProcessInspectorWidgetDelegateFactory,
+        FW<Process::InspectorWidgetDelegateFactory,
             Audio::InspectorFactory>
     >>(ctx, key);
 }
