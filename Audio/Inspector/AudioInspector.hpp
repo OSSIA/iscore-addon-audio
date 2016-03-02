@@ -13,7 +13,7 @@ namespace Audio
 {
 class ProcessModel;
 class InspectorWidget final :
-        public ProcessInspectorWidgetDelegate_T<ProcessModel>
+        public Process::InspectorWidgetDelegate_T<ProcessModel>
 {
     public:
         explicit InspectorWidget(
@@ -27,7 +27,7 @@ class InspectorWidget final :
 };
 
 class InspectorFactory final :
-        public ProcessInspectorWidgetDelegateFactory
+        public Process::InspectorWidgetDelegateFactory
 {
         ISCORE_CONCRETE_FACTORY_DECL("10360b4c-4d73-4274-8339-408644408cab")
     public:
@@ -35,7 +35,7 @@ class InspectorFactory final :
         virtual ~InspectorFactory();
 
     private:
-        ProcessInspectorWidgetDelegate* make(
+        Process::InspectorWidgetDelegate* make(
                 const Process::ProcessModel&,
                 const iscore::DocumentContext&,
                 QWidget* parent) const override;
