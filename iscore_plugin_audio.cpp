@@ -53,7 +53,7 @@ class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPl
         }
 
         void on_newDocument(iscore::Document* doc) override
-		{
+        {
             auto plug = new AudioDocumentPlugin{*doc, &doc->model()};
             doc->model().addPluginModel(plug);
 

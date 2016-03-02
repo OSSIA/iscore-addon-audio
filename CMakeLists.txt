@@ -8,7 +8,10 @@ if(NOT SNDFILE_LIBRARY OR NOT RtAudio_LIBRARY)
 message("audio plugin requires libsndfile, portaudio")
 return()
 endif()
-
+# add_subdirectory(3rdparty/llvm)
+set(FAUST_NO_EXECUTABLE True)
+add_subdirectory(3rdparty/faudiostream-code)
+add_subdirectory(3rdparty/libaudiostream)
 set(CMAKE_AUTOMOC OFF)
 include_directories(3rdparty/libaudiotool/src/)
 
@@ -50,7 +53,7 @@ iscore_generate_command_list_file(${PROJECT_NAME} "${HDRS}")
 target_link_libraries(${PROJECT_NAME} PUBLIC
                      Qt5::Core Qt5::Widgets Qt5::Multimedia
                      iscore_lib_base iscore_plugin_ossia iscore_lib_dummyprocess
-					 ${RtAudio_LIBRARY} ${SNDFILE_LIBRARIES})
+                                         ${RtAudio_LIBRARY} ${SNDFILE_LIBRARIES})
 
 setup_iscore_plugin(${PROJECT_NAME})
 

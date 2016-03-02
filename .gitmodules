@@ -4,3 +4,9 @@
 [submodule "libaudiostream"]
 	path = 3rdparty/libaudiostream
 	url = https://github.com/jcelerier/libaudiostream
+[submodule "3rdparty/faudiostream-code"]
+	path = 3rdparty/faudiostream-code
+	url = git://git.code.sf.net/p/faudiostream/code
+[submodule "3rdparty/llvm"]
+	path = 3rdparty/llvm
+	url = https://github.com/llvm-mirror/llvm
