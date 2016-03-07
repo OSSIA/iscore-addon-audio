@@ -10,7 +10,7 @@ WavBlock::WavBlock(
 
 }
 
-AudioArray make_array(int channels, int buffer)
+static AudioArray make_array(int channels, int buffer)
 {
     AudioArray out;
     out.resize(channels);
