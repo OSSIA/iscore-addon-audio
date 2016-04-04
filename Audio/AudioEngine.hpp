@@ -1,7 +1,7 @@
 #pragma once
 #include <QObject>
 #include <functional>
-#include <RtAudio.h>
+#include <rtaudio/RtAudio.h>
 #include <QDebug>
 #include <mutex>
 #include <libwatermark/Parameters.h>
