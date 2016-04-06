@@ -1,55 +1,16 @@
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
 #include <DummyProcess/DummyLayerModel.hpp>
 #include <Explorer/DocumentPlugin/DeviceDocumentPlugin.hpp>
-#include <Audio/CustomEngine/AudioBlock.hpp>
-#include <Audio/AudioDocumentPlugin.hpp>
+#include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 #include <iscore/plugins/documentdelegate/plugin/ElementPluginModelList.hpp>
-#include <sndfile.hh>
-#include <libwatermark/mathutils/math_util.h>
 
 #include <QFile>
 #include <Audio/SoundProcess/SoundProcessLayer.hpp>
-#include <Audio/CustomEngine/WavBlock.hpp>
 
 namespace Audio
 {
 namespace SoundProcess
 {
-AudioArray ProcessModel::readFile(const QString& filename)
-{
-    auto myf = SndfileHandle(filename.toStdString());
-    switch(myf.channels())
-    {
-        case 0:
-        {
-            return {};
-            break;
-        }
-        case 1:
-        {
-            std::vector<float> vec(myf.frames());
-            myf.read(vec.data(), myf.frames());
-            return {vec};
-        }
-        default:
-        {
-            std::vector<float> vec(myf.frames() * myf.channels());
-
-            int parity = (myf.frames() % 2 != 0) ? -1 : 0;
-            for(int i = 0; i < myf.channels(); ++i)
-                myf.read(vec.data() + i * (myf.frames() + parity),  myf.frames() + parity);
-
-            return MathUtil::deinterleave(
-                        vec,
-                        (unsigned int) myf.channels(),
-                        (unsigned int) myf.frames());
-        }
-
-    }
-
-
-
-}
 
 ProcessModel::ProcessModel(
         const TimeValue& duration,
@@ -61,10 +22,7 @@ ProcessModel::ProcessModel(
                       iscore::IDocument::documentContext(*parent),
                       this};
 
-
     setFile("test.wav");
-    setScript("phasor(f)   = f/48000 : (+,1.0:fmod) ~ _ ; "
-              "process = phasor(220) * 6.28 : sin;");
 }
 
 ProcessModel::ProcessModel(
@@ -76,7 +34,7 @@ ProcessModel::ProcessModel(
         id,
         Metadata<ObjectKey_k, ProcessModel>::get(),
         parent},
-    m_script{source.m_script}
+    m_file{source.m_file}
 {
     pluginModelList = new iscore::ElementPluginModelList{
                       *source.pluginModelList,
@@ -88,38 +46,19 @@ ProcessModel::~ProcessModel()
 
 }
 
-void ProcessModel::setScript(
-        const QString& script)
-{
-    m_script = script;
-    /*
-    //auto vec = readFile(m_audioFile);
-    //if(vec.size() > 0)
-    {
-        m_ossia_process->setAudioBlock(std::make_unique<FaustAudioBlock>(
-                                           script,
-        std::vector<float>{},
-                                           m_ossia_process->engine()
-                                           ));
-    }
-    */
-}
-
 void ProcessModel::setFile(const QString &file)
 {
-    if(file != m_file)
+    if(file != m_file.name())
     {
-        m_file = file;
-        /*
-        if(QFile::exists(m_file))
-        {
-            m_block = std::make_unique<WavBlock>(
-                        readFile(m_file),
-                        iscore::IDocument::documentContext(*this).plugin<AudioDocumentPlugin>().engine());
-        }
-        */
-        emit fileChanged(m_file);
+        m_file = MediaFileHandle(file);
+        emit fileChanged();
     }
+}
+
+void ProcessModel::setFile(const MediaFileHandle &file)
+{
+    m_file = file;
+    emit fileChanged();
 }
 
 ProcessModel* ProcessModel::clone(

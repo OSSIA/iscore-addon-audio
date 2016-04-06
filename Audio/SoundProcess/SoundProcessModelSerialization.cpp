@@ -6,7 +6,7 @@ void Visitor<Reader<DataStream>>::readFrom_impl(const Audio::SoundProcess::Proce
 {
     readFrom(*proc.pluginModelList);
 
-    m_stream << proc.m_script;
+    m_stream << proc.m_file;
 
     insertDelimiter();
 }
@@ -16,9 +16,7 @@ void Visitor<Writer<DataStream>>::writeTo(Audio::SoundProcess::ProcessModel& pro
 {
     proc.pluginModelList = new iscore::ElementPluginModelList{*this, &proc};
 
-    QString str;
-    m_stream >> str;
-    proc.setScript(str);
+    m_stream >> proc.m_file;
 
     checkDelimiter();
 }
@@ -27,7 +25,7 @@ template<>
 void Visitor<Reader<JSONObject>>::readFrom_impl(const Audio::SoundProcess::ProcessModel& proc)
 {
     m_obj["PluginsMetadata"] = toJsonValue(*proc.pluginModelList);
-    m_obj["Script"] = proc.script();
+    m_obj["File"] = toJsonObject(proc.file());
 }
 
 template<>
@@ -36,5 +34,5 @@ void Visitor<Writer<JSONObject>>::writeTo(Audio::SoundProcess::ProcessModel& pro
     Deserializer<JSONValue> elementPluginDeserializer(m_obj["PluginsMetadata"]);
     proc.pluginModelList = new iscore::ElementPluginModelList{elementPluginDeserializer, &proc};
 
-    proc.setScript(m_obj["Script"].toString());
+    proc.m_file = fromJsonObject<Audio::MediaFileHandle>(m_obj["Script"]);
 }

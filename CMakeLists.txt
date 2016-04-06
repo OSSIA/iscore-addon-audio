@@ -28,8 +28,8 @@ find_package(Qt5 5.3 REQUIRED COMPONENTS Core Widgets Multimedia)
 file(GLOB_RECURSE HDRS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libaudiotool/src/libwatermark/*.h")
 # Files & main target
 set(HDRS ${HDRS}
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioApplicationPlugin.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioDocumentPlugin.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioApplicationPlugin.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioDocumentPlugin.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioArray.hpp"
 
 #    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioBlock.hpp"
@@ -56,6 +56,8 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessPresenter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessView.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.hpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.hpp"
 )
 
@@ -63,8 +65,8 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessLayerSerialization.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessModelSerialization.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioApplicationPlugin.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioDocumentPlugin.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioApplicationPlugin.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioDocumentPlugin.cpp"
 
 #    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioBlock.cpp"
 #    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioEngine.cpp"
@@ -89,6 +91,8 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessPresenter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessView.cpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.cpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.cpp"
 )
 
@@ -101,4 +105,4 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 
 setup_iscore_plugin(${PROJECT_NAME})
 
-add_subdirectory(Faust)
+#add_subdirectory(Audio/CustomEngine/Faust)

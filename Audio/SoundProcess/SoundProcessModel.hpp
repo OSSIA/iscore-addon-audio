@@ -3,10 +3,11 @@
 #include <iscore/serialization/DataStreamVisitor.hpp>
 #include <iscore/serialization/JSONVisitor.hpp>
 #include <iscore/serialization/VisitorCommon.hpp>
-#include <Audio/CustomEngine/AudioProcess.hpp>
 #include <Audio/SoundProcess/SoundProcessMetadata.hpp>
 #include <DummyProcess/DummyLayerPanelProxy.hpp>
 #include <Process/LayerModel.hpp>
+#include <Audio/MediaFileHandle.hpp>
+
 
 namespace Audio
 {
@@ -42,17 +43,11 @@ class ProcessModel final : public Process::ProcessModel
             vis.writeTo(*this);
         }
 
-        void setScript(const QString& script);
-        const QString& script() const
-        { return m_script; }
-
         void setFile(const QString& file);
+        void setFile(const MediaFileHandle& file);
 
-        const QString& file() const
+        const MediaFileHandle& file() const
         { return m_file; }
-
-        AudioBlock* block() const
-        { return m_block.get(); }
 
         // Process interface
         ProcessModel* clone(
@@ -85,7 +80,7 @@ class ProcessModel final : public Process::ProcessModel
         void serialize_impl(const VisitorVariant& vis) const override;
 
     signals:
-        void fileChanged(const QString&);
+        void fileChanged();
 
     protected:
         Process::LayerModel* makeLayer_impl(
@@ -96,12 +91,7 @@ class ProcessModel final : public Process::ProcessModel
         Process::LayerModel* cloneLayer_impl(const Id<Process::LayerModel>& newId, const Process::LayerModel& source, QObject* parent) override;
 
     private:
-        AudioArray readFile(const QString& filename);
-
-        QString m_script;
-        QString m_file;
-
-        std::unique_ptr<AudioBlock> m_block;
+        MediaFileHandle m_file;
 };
 }
 }

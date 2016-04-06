@@ -2,7 +2,9 @@
 #include <Process/LayerView.hpp>
 #include <Audio/AudioArray.hpp>
 #include <Process/TimeValue.hpp>
+#include <Audio/MediaFileHandle.hpp>
 #include <Process/ZoomHelper.hpp>
+
 namespace Audio
 {
 namespace SoundProcess
@@ -13,7 +15,7 @@ class LayerView final : public Process::LayerView
     public:
         explicit LayerView(QGraphicsItem* parent);
 
-        void setData(AudioArray data);
+        void setData(const MediaFileHandle& data);
         void recompute(const TimeValue& dur, ZoomRatio ratio);
     signals:
         void pressed();
@@ -22,7 +24,7 @@ class LayerView final : public Process::LayerView
         void paint_impl(QPainter*) const override;
         void mousePressEvent(QGraphicsSceneMouseEvent*) override;
 
-        AudioArray m_data;
+        AudioArray m_data{};
         QPainterPath m_path;
 };
 }

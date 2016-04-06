@@ -13,6 +13,7 @@ class LayerPresenter final :
         public Process::LayerPresenter
 {
     public:
+        using model_type = const Audio::SoundProcess::ProcessModel;
         explicit LayerPresenter(
                 const LayerModel& model,
                 LayerView* view,

@@ -1,6 +1,7 @@
 #pragma once
 #include <iscore/command/SerializableCommand.hpp>
 #include <Audio/Commands/AudioCommandFactory.hpp>
+#include <Audio/MediaFileHandle.hpp>
 namespace Audio
 {
 namespace SoundProcess {
@@ -45,7 +46,7 @@ class ChangeAudioFile : public iscore::SerializableCommand
 
     private:
         Path<SoundProcess::ProcessModel> m_model;
-        QString m_old, m_new;
+        MediaFileHandle m_old, m_new;
 };
 }
 }

@@ -1,17 +1,18 @@
 #include "SoundProcessPresenter.hpp"
 #include "SoundProcessView.hpp"
+#include <iscore/document/DocumentContext.hpp>
 namespace Audio
 {
 namespace SoundProcess
 {
 LayerPresenter::LayerPresenter(
-        const LayerModel& model,
+        const LayerModel& layer,
         LayerView* view,
         QObject* parent):
     Process::LayerPresenter{"AudioLayerPresenter", parent},
-    m_layer{model},
+    m_layer{layer},
     m_view{view},
-    m_focusDispatcher{iscore::IDocument::documentContext(model).document}
+    m_focusDispatcher{iscore::IDocument::documentContext(layer).document}
 {
     connect(view, &LayerView::pressed,
             this, [&] () {
@@ -19,27 +20,14 @@ LayerPresenter::LayerPresenter(
     });
 
     auto& pm = processModel();
-    /*
     con(pm, &ProcessModel::fileChanged,
         this, [&] () {
-        if(auto b = pm.block())
-        {
-            if(auto wb = dynamic_cast<WavBlock*>(b))
-            {
-                m_view->setData(wb->m_audio);
-                m_view->recompute(pm.duration(), m_ratio);
-            }
-        }
+        m_view->setData(model(*this).file());
+        m_view->recompute(model(*this).duration(), m_ratio);
     });
 
-    if(auto b = pm.block())
-    {
-        if(auto wb = dynamic_cast<WavBlock*>(b))
-        {
-            m_view->setData(wb->m_audio);
-            m_view->recompute(pm.duration(), m_ratio);
-        }
-    }*/
+    m_view->setData(model(*this).file());
+    m_view->recompute(model(*this).duration(), m_ratio);
 }
 
 void LayerPresenter::setWidth(qreal val)

@@ -14,7 +14,6 @@ ApplicationPlugin::ApplicationPlugin(const iscore::ApplicationContext& app):
 
 void ApplicationPlugin::on_newDocument(iscore::Document* doc)
 {
-    /*
     auto plug = new AudioDocumentPlugin{*doc, &doc->model()};
     doc->model().addPluginModel(plug);
 
@@ -26,15 +25,14 @@ void ApplicationPlugin::on_newDocument(iscore::Document* doc)
         {
             connect(act, &QAction::toggled,
                     plug, [=] (bool b)
-            { plug->engine().play(); });
+            { plug->play(); });
         }
         else if(act->objectName() == "Stop")
         {
             connect(act, &QAction::triggered,
-                    plug, [=] (bool b) { plug->engine().stop(); });
+                    plug, [=] (bool b) { plug->stop(); });
         }
     }
-    */
 }
 
 }

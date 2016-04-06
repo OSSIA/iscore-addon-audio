@@ -1,7 +1,6 @@
 #include "SoundProcessFactory.hpp"
 #include <Process/LayerModel.hpp>
 #include <DummyProcess/DummyLayerPanelProxy.hpp>
-#include <Audio/CustomEngine/WavBlock.hpp>
 #include <Audio/SoundProcess/SoundProcessPresenter.hpp>
 #include <Audio/SoundProcess/SoundProcessView.hpp>
 namespace Audio

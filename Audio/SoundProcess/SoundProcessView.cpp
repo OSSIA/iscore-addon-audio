@@ -9,9 +9,9 @@ LayerView::LayerView(QGraphicsItem* parent):
 {
 }
 
-void LayerView::setData(AudioArray data)
+void LayerView::setData(const MediaFileHandle& data)
 {
-    m_data = data;
+    m_data = data.data();
 }
 
 void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
@@ -33,6 +33,8 @@ void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
     // dur is milliseconds corresponding to width()
     // rate is 44100
     // rate.rate.
+    // TODO use real file rate
+    // TODO > 1 channels
 
     // Each "density" pixels we want to take a new data point
     const int density = 10;

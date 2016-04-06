@@ -1,17 +1,16 @@
 #include "iscore_plugin_audio.hpp"
 #include <Audio/SoundProcess/SoundProcessFactory.hpp>
-#include <Audio/AudioDocumentPlugin.hpp>
+#include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 #include <core/document/Document.hpp>
 #include <iscore/plugins/application/GUIApplicationContextPlugin.hpp>
 #include <Scenario/Application/ScenarioApplicationPlugin.hpp>
-#include <Audio/CustomEngine/AudioProcess.hpp>
 #include <iscore/plugins/customfactory/FactoryFamily.hpp>
 #include <core/document/DocumentModel.hpp>
 #include <iscore/plugins/customfactory/FactorySetup.hpp>
 #include <QAction>
 #include <Audio/Inspector/Factory.hpp>
 #include <Audio/SoundProcess/SoundProcessFactory.hpp>
-#include <Audio/AudioApplicationPlugin.hpp>
+#include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
 #include <Audio/Settings/Card/CardSettingsFactory.hpp>
 
 std::pair<const CommandParentFactoryKey, CommandGeneratorMap> iscore_plugin_audio::make_commands()

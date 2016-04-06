@@ -19,11 +19,11 @@ InspectorWidget::InspectorWidget(
 
     auto lay = new QFormLayout;
 
-    m_edit = new QLineEdit{object.file()};
+    m_edit = new QLineEdit{object.file().name()};
 
     con(process(), &SoundProcess::ProcessModel::fileChanged,
-        this, [&] (const QString& str) {
-        m_edit->setText(str);
+        this, [&] {
+        m_edit->setText(object.file().name());
     });
 
     connect(m_edit, &QLineEdit::editingFinished,
