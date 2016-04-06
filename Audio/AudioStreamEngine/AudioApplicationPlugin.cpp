@@ -5,6 +5,8 @@
 #include <Scenario/Application/ScenarioApplicationPlugin.hpp>
 namespace Audio
 {
+namespace AudioStreamEngine
+{
 
 ApplicationPlugin::ApplicationPlugin(const iscore::ApplicationContext& app):
     iscore::GUIApplicationContextPlugin{app, "AudioApplicationPlugin", nullptr}
@@ -14,7 +16,7 @@ ApplicationPlugin::ApplicationPlugin(const iscore::ApplicationContext& app):
 
 void ApplicationPlugin::on_newDocument(iscore::Document* doc)
 {
-    auto plug = new AudioDocumentPlugin{*doc, &doc->model()};
+    auto plug = new DocumentPlugin{*doc, &doc->model()};
     doc->model().addPluginModel(plug);
 
     auto& ctrl = doc->context().app.components.applicationPlugin<Scenario::ScenarioApplicationPlugin>();
@@ -35,4 +37,5 @@ void ApplicationPlugin::on_newDocument(iscore::Document* doc)
     }
 }
 
+}
 }

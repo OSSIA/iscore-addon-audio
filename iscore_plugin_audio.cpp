@@ -48,7 +48,7 @@ iscore_plugin_audio::~iscore_plugin_audio()
 
 iscore::GUIApplicationContextPlugin*iscore_plugin_audio::make_applicationPlugin(const iscore::ApplicationContext& app)
 {
-    return new Audio::ApplicationPlugin{app};
+    return new Audio::AudioStreamEngine::ApplicationPlugin{app};
 }
 
 iscore::Version iscore_plugin_audio::version() const

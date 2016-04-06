@@ -2,10 +2,12 @@
 #include <iscore/plugins/documentdelegate/plugin/DocumentDelegatePluginModel.hpp>
 namespace Audio
 {
-class AudioDocumentPlugin : public iscore::DocumentPlugin
+namespace AudioStreamEngine
+{
+class DocumentPlugin : public iscore::DocumentPlugin
 {
     public:
-        AudioDocumentPlugin(
+        DocumentPlugin(
                 iscore::Document& doc,
                 QObject* parent):
             iscore::DocumentPlugin{doc, "AudioDocumentPlugin", parent}
@@ -18,4 +20,5 @@ class AudioDocumentPlugin : public iscore::DocumentPlugin
 
     private:
 };
+}
 }

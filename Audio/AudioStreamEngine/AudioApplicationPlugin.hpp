@@ -3,6 +3,8 @@
 
 namespace Audio
 {
+namespace AudioStreamEngine
+{
 class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPlugin
 {
     public:
@@ -11,4 +13,5 @@ class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPl
         void on_newDocument(iscore::Document* doc) override;
 
 };
+}
 }
