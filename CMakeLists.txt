@@ -101,8 +101,11 @@ iscore_generate_command_list_file(${PROJECT_NAME} "${HDRS}")
 target_link_libraries(${PROJECT_NAME} PUBLIC
                      Qt5::Core Qt5::Widgets Qt5::Multimedia
                      iscore_lib_base iscore_plugin_ossia iscore_lib_dummyprocess
-                                         ${RtAudio_LIBRARY} ${SNDFILE_LIBRARIES})
+                     ${SNDFILE_LIBRARIES})
 
 setup_iscore_plugin(${PROJECT_NAME})
+if(NOT MSVC)
+target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-error=return-type-c-linkage")
+endif()
 
 #add_subdirectory(Audio/CustomEngine/Faust)
