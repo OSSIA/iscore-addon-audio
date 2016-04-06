@@ -1,8 +1,9 @@
 #pragma once
 #include <iscore/plugins/documentdelegate/plugin/DocumentDelegatePluginModel.hpp>
-#include <Audio/AudioEngine.hpp>
+#include <Audio/CustomEngine/AudioEngine.hpp>
 namespace Audio
 {
+/*
 class AudioDocumentPlugin : public iscore::DocumentPlugin
 {
     public:
@@ -18,5 +19,19 @@ class AudioDocumentPlugin : public iscore::DocumentPlugin
 
     private:
         AudioEngine m_engine;
+};
+*/
+
+
+class AudioDocumentPlugin : public iscore::DocumentPlugin
+{
+    public:
+        AudioDocumentPlugin(
+                iscore::Document& doc,
+                QObject* parent):
+            iscore::DocumentPlugin{doc, "AudioDocumentPlugin", parent}
+        {
+
+        }
 };
 }

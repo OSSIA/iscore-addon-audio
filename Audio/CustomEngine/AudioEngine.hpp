@@ -5,7 +5,7 @@
 #include <QDebug>
 #include <mutex>
 #include <libwatermark/Parameters.h>
-#include <Audio/AudioBlock.hpp>
+#include <Audio/CustomEngine/AudioBlock.hpp>
 
 
 int generate(void *outputBuffer,

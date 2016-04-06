@@ -28,39 +28,68 @@ find_package(Qt5 5.3 REQUIRED COMPONENTS Core Widgets Multimedia)
 file(GLOB_RECURSE HDRS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libaudiotool/src/libwatermark/*.h")
 # Files & main target
 set(HDRS ${HDRS}
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioFactory.hpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioProcess.hpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioProcessMetadata.hpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioProcessModel.hpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioEngine.hpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioBlock.hpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/WavBlock.hpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioApplicationPlugin.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioDocumentPlugin.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioArray.hpp"
 
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/Factory.hpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/Model.hpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/Presenter.hpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/View.hpp"
+#    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioBlock.hpp"
+#    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioEngine.hpp"
+#    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioProcess.hpp"
+#    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/WavBlock.hpp"
 
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioDocumentPlugin.hpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/ChangeAudioFile.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/AudioCommandFactory.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsFactory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsModel.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsPresenter.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsView.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessFactory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessLayer.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessLayerPanelProxy.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessMetadata.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessModel.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessPresenter.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessView.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.hpp"
 )
 
 set(SRCS
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioFactory.cpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioProcess.cpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioProcessModel.cpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioEngine.cpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioBlock.cpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/WavBlock.cpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessLayerSerialization.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessModelSerialization.cpp"
 
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/Factory.cpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/Model.cpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/Presenter.cpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/View.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioApplicationPlugin.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioDocumentPlugin.cpp"
 
-"${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.cpp"
+#    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioBlock.cpp"
+#    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioEngine.cpp"
+#    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioProcess.cpp"
+#    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/WavBlock.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/ChangeAudioFile.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/AudioCommandFactory.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsFactory.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsModel.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsPresenter.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsView.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessFactory.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessLayer.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessLayerPanelProxy.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessModel.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessPresenter.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessView.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.cpp"
 )
 
 add_library(${PROJECT_NAME} ${SRCS} ${HDRS})

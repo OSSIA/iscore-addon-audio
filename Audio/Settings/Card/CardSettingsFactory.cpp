@@ -1,7 +1,7 @@
-#include "Factory.hpp"
-#include "Model.hpp"
-#include "View.hpp"
-#include "Presenter.hpp"
+#include "CardSettingsFactory.hpp"
+#include "CardSettingsModel.hpp"
+#include "CardSettingsView.hpp"
+#include "CardSettingsPresenter.hpp"
 namespace Audio
 {
 namespace Settings

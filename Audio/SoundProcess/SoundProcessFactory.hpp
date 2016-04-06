@@ -1,32 +1,16 @@
 #pragma once
 
 #include <Process/ProcessFactory.hpp>
-#include <Audio/AudioProcessModel.hpp>
+#include <Audio/SoundProcess/SoundProcessModel.hpp>
 #include <DummyProcess/DummyLayerPresenter.hpp>
 #include <DummyProcess/DummyLayerView.hpp>
 #include <iscore/serialization/VisitorCommon.hpp>
-#include <Audio/AudioProcessMetadata.hpp>
+#include <Audio/SoundProcess/SoundProcessMetadata.hpp>
 
 namespace Audio
 {
-class LayerView final : public Process::LayerView
+namespace SoundProcess
 {
-        Q_OBJECT
-    public:
-        explicit LayerView(QGraphicsItem* parent);
-
-        void setData(AudioArray data);
-        void recompute(const TimeValue& dur, ZoomRatio ratio);
-    signals:
-        void pressed();
-
-    private:
-        void paint_impl(QPainter*) const override;
-        void mousePressEvent(QGraphicsSceneMouseEvent*) override;
-
-        AudioArray m_data;
-        QPainterPath m_path;
-};
 class ProcessFactory final : public Process::ProcessFactory
 {
     public:
@@ -55,4 +39,5 @@ class ProcessFactory final : public Process::ProcessFactory
                 const Process::LayerModel&,
                 QGraphicsItem* parent) override;
 };
+}
 }

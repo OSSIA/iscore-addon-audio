@@ -2,8 +2,8 @@
 #include <vector>
 #include <QString>
 #include <libwatermark/Parameters.h>
+#include <Audio/AudioArray.hpp>
 
-using AudioArray = std::vector<std::vector<float>>;
 class AudioEngine;
 class AudioBlock
 {
@@ -25,6 +25,6 @@ class AudioBlock
         int currentBuffer = 0;
         int offset = 0; // Offset in samples between the playing audio and the buffer.
 
-		bool m_deleting = false;
+        bool m_deleting = false;
         AudioEngine& m_engine;
 };

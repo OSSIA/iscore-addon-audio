@@ -1,5 +1,5 @@
 #include "AudioProcess.hpp"
-#include <Audio/AudioProcessModel.hpp>
+#include <Audio/CustomEngine/AudioProcessModel.hpp>
 #include <Audio/AudioDocumentPlugin.hpp>
 #include <Editor/TimeConstraint.h>
 
@@ -38,7 +38,7 @@ std::shared_ptr<OSSIA::StateElement> Executor::offset(const OSSIA::TimeValue & t
 /// Component
 Component::Component(
         RecreateOnPlay::ConstraintElement& parentConstraint,
-        ::Audio::ProcessModel& element,
+        ::Audio::SoundProcess::ProcessModel& element,
         AudioBlock& block,
         const Context& ctx,
         const Id<iscore::Component>& id,
@@ -74,7 +74,7 @@ ProcessComponent* ComponentFactory::make(
         const Id<iscore::Component>& id,
         QObject* parent) const
 {
-    auto& audio_proc = static_cast< ::Audio::ProcessModel&>(proc);
+    auto& audio_proc = static_cast< ::Audio::SoundProcess::ProcessModel&>(proc);
     if(auto b = audio_proc.block())
     {
         return new Component{
@@ -99,7 +99,7 @@ bool ComponentFactory::matches(
         const DocumentPlugin&,
         const iscore::DocumentContext&) const
 {
-    return dynamic_cast< ::Audio::ProcessModel*>(&proc);
+    return dynamic_cast< ::Audio::SoundProcess::ProcessModel*>(&proc);
 }
 }
 }

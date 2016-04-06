@@ -3,52 +3,21 @@
 #include <iscore/serialization/DataStreamVisitor.hpp>
 #include <iscore/serialization/JSONVisitor.hpp>
 #include <iscore/serialization/VisitorCommon.hpp>
-#include <Audio/AudioProcess.hpp>
-#include <Audio/AudioProcessMetadata.hpp>
+#include <Audio/CustomEngine/AudioProcess.hpp>
+#include <Audio/SoundProcess/SoundProcessMetadata.hpp>
 #include <DummyProcess/DummyLayerPanelProxy.hpp>
 #include <Process/LayerModel.hpp>
 
 namespace Audio
 {
-class ProcessModel;
-
-class LayerModel final : public Process::LayerModel
+namespace SoundProcess
 {
-        ISCORE_SERIALIZE_FRIENDS(LayerModel, DataStream)
-        ISCORE_SERIALIZE_FRIENDS(LayerModel, JSONObject)
-
-    public:
-        explicit LayerModel(
-                ProcessModel& model,
-                const Id<Process::LayerModel>& id,
-                QObject* parent);
-
-        // Copy
-        explicit LayerModel(
-                const LayerModel& source,
-                ProcessModel& model,
-                const Id<Process::LayerModel>& id,
-                QObject* parent);
-
-        // Load
-        template<typename Impl>
-        explicit LayerModel(
-                Deserializer<Impl>& vis,
-                ProcessModel& model,
-                QObject* parent) :
-            Process::LayerModel {vis, model, parent}
-        {
-            vis.writeTo(*this);
-        }
-
-        void serialize(const VisitorVariant&) const override;
-        Process::LayerModelPanelProxy* make_panelProxy(QObject* parent) const override;
-};
+class ProcessModel;
 
 class ProcessModel final : public Process::ProcessModel
 {
-        ISCORE_SERIALIZE_FRIENDS(Audio::ProcessModel, DataStream)
-        ISCORE_SERIALIZE_FRIENDS(Audio::ProcessModel, JSONObject)
+        ISCORE_SERIALIZE_FRIENDS(Audio::SoundProcess::ProcessModel, DataStream)
+        ISCORE_SERIALIZE_FRIENDS(Audio::SoundProcess::ProcessModel, JSONObject)
 
         Q_OBJECT
     public:
@@ -92,7 +61,7 @@ class ProcessModel final : public Process::ProcessModel
 
         UuidKey<Process::ProcessFactory> concreteFactoryKey() const override
         {
-            return Metadata<ConcreteFactoryKey_k, Audio::ProcessModel>::get();
+            return Metadata<ConcreteFactoryKey_k, Audio::SoundProcess::ProcessModel>::get();
         }
 
         QString prettyName() const override;
@@ -134,4 +103,5 @@ class ProcessModel final : public Process::ProcessModel
 
         std::unique_ptr<AudioBlock> m_block;
 };
+}
 }

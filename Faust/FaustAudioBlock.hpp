@@ -1,5 +1,5 @@
 #pragma once
-#include <Audio/AudioBlock.hpp>
+#include <Audio/CustomEngine/AudioBlock.hpp>
 #include <vector>
 #include <faust/dsp/llvm-dsp.h>
 namespace Audio

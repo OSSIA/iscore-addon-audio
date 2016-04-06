@@ -3,17 +3,20 @@
 #include <Editor/TimeProcess.h>
 #include <Editor/TimeValue.h>
 #include <Explorer/DocumentPlugin/DeviceDocumentPlugin.hpp>
-#include <Audio/AudioBlock.hpp>
-#include <Audio/AudioEngine.hpp>
+#include <Audio/CustomEngine/AudioBlock.hpp>
+#include <Audio/CustomEngine/AudioEngine.hpp>
 #include <State/Value.hpp>
 class DeviceDocumentPlugin;
 class DeviceList;
 
 namespace Audio
 {
+namespace SoundProcess
+{
 class ProcessModel;
 }
-
+}
+// TODO do it the other way round
 namespace RecreateOnPlay
 {
 namespace Audio
@@ -48,7 +51,7 @@ class Component final : public ProcessComponent
     public:
         Component(
                 ConstraintElement& parentConstraint,
-                ::Audio::ProcessModel& element,
+                ::Audio::SoundProcess::ProcessModel& element,
                 AudioBlock& block,
                 const Context& ctx,
                 const Id<iscore::Component>& id,
