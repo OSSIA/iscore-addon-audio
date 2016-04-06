@@ -36,6 +36,12 @@ set(HDRS ${HDRS}
 "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioBlock.hpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/Audio/WavBlock.hpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.hpp"
+
+"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/Factory.hpp"
+"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/Model.hpp"
+"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/Presenter.hpp"
+"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/View.hpp"
+
 "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioDocumentPlugin.hpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.hpp"
 )
@@ -48,6 +54,12 @@ set(SRCS
 "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioBlock.cpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/Audio/WavBlock.cpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.cpp"
+
+"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/Factory.cpp"
+"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/Model.cpp"
+"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/Presenter.cpp"
+"${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/View.cpp"
+
 "${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.cpp"
 )
 
