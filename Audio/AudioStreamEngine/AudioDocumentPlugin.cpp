@@ -3,14 +3,15 @@
 #include <Loop/LoopProcessModel.hpp>
 #include <map>
 #include <Scenario/Process/Algorithms/Accessors.hpp>
-
+#include <core/document/DocumentModel.hpp>
+#include <Scenario/Document/ScenarioDocument/ScenarioDocumentModel.hpp>
+#include <Audio/AudioStreamEngine/Scenario/ConstraintComponent.hpp>
 namespace Audio
 {
 namespace AudioStreamEngine
 {
 
 AudioStream CreateAudioStream(const Loop::ProcessModel& loop);
-AudioStream CreateAudioStream(const Scenario::ScenarioModel& loop);
 AudioStream CreateAudioStream(const Loop::ProcessModel& loop)
 {
     // Apply to the constraint
@@ -36,7 +37,12 @@ AudioStream CreateAudioStream(const Loop::ProcessModel& loop)
 
 void DocumentPlugin::play()
 {
-    // Initialize libaudiostream stuff
+    // First find the root constraint
+    auto doc = dynamic_cast<Scenario::ScenarioDocumentModel*>(&m_ctx.doc.document.model().modelDelegate());
+    if(!doc)
+        return;
+
+    // Initialize libaudiostream structures
     if(m_ctx.player)
         CloseAudioPlayer(m_ctx.player);
 
@@ -54,6 +60,21 @@ void DocumentPlugin::play()
     GetAudioRendererInfo(m_ctx.renderer, &m_ctx.renderer_info);
 
     // Create our tree
+    // TODO make id from components !!!!
+    auto comp = new ConstraintComponent(
+                Id<iscore::Component>{1},
+                doc->baseConstraint(),
+                *this,
+                m_ctx.doc,
+                this);
+    doc->baseConstraint().components.add(comp);
+
+    auto stream = comp->makeStream(
+                m_ctx,
+                GenRealDate(m_ctx.player, 0),
+                GenSymbolicDate(m_ctx.player));
+
+    StartSound(m_ctx.player, stream, GenRealDate(m_ctx.player, 0));
 
     // Play
     StartAudioPlayer(m_ctx.player);
@@ -62,7 +83,14 @@ void DocumentPlugin::play()
 void DocumentPlugin::stop()
 {
     if(m_ctx.player)
+    {
+        StopAudioPlayer(m_ctx.player);
         CloseAudioPlayer(m_ctx.player);
+    }
+    m_ctx.player = nullptr;
+    m_ctx.renderer = nullptr;
+    m_ctx.device_info = DeviceInfo{};
+    m_ctx.renderer_info = RendererInfo{};
 
 }
 }

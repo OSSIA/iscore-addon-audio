@@ -31,29 +31,29 @@ ConstraintComponent::~ConstraintComponent()
 {
 }
 
-AudioStream ConstraintComponent::CreateAudioStream(
+AudioStream ConstraintComponent::makeStream(
         const Context& player,
         SymbolicDate start,
         SymbolicDate end)
 {
-    using StreamPair = std::pair<Process::ProcessModel&, AudioStream>;
 
     auto& cst = m_baseComponent.constraint;
     if(cst.processes.empty())
     {
         // Silence
         auto sound = MakeNullSound(cst.duration.maxDuration().msec());
-
+        StartSound(player, sound, start);
+        StopSound(player, sound, end);
     }
     else if(cst.processes.size() == 1)
     {
-        auto& proc = *cst.processes.begin();
-        // if(auto mc_proc = dynamic_cast<MixerProcess*>(&proc)) { ... }
+        // Still silence, we assume only mixer process
+        auto sound = MakeNullSound(cst.duration.maxDuration().msec());
+        StartSound(player, sound, start);
+        StopSound(player, sound, end);
     }
     else
     {
-        std::vector<StreamPair> inputStreams;
-        std::vector<StreamPair> fxStreams;
         // MixProcess* mix_proc{};
         for(auto& proc : cst.processes)
         {

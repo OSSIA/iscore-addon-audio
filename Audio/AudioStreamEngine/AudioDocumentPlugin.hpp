@@ -12,8 +12,8 @@ struct Context
         const iscore::DocumentContext& doc;
         AudioPlayerPtr player{};
         AudioRendererPtr renderer{};
-        DeviceInfo device_info;
-        RendererInfo renderer_info;
+        DeviceInfo device_info{};
+        RendererInfo renderer_info{};
 
         long time(const TimeValue& t)
         {

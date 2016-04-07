@@ -7,10 +7,14 @@ namespace Audio
 {
 namespace AudioStreamEngine
 {
+// The Audio constraint components creates Constraint audio streams
+// and contains mixing data (i.e. for each "data" & each "effect" process,
+// how much of each data processes goes into effect proccesses.)
 class ConstraintComponent final :
         public iscore::Component
 {
     public:
+        using StreamPair = std::pair<Process::ProcessModel&, AudioStream>;
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
         using process_component_t = Audio::AudioStreamEngine::ProcessComponent;
         using process_component_factory_t = Audio::AudioStreamEngine::ProcessComponentFactory;
@@ -33,7 +37,7 @@ class ConstraintComponent final :
                 QObject* parent_comp);
         ~ConstraintComponent();
 
-        AudioStream CreateAudioStream(
+        AudioStream makeStream(
                 const Context& player,
                 SymbolicDate start,
                 SymbolicDate end);
@@ -50,6 +54,8 @@ class ConstraintComponent final :
 
     private:
         parent_t m_baseComponent;
+        std::vector<StreamPair> inputStreams;
+        std::vector<StreamPair> fxStreams;
 };
 
 
