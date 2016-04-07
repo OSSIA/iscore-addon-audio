@@ -1,5 +1,5 @@
 #include "ScenarioComponent.hpp"
-
+#include <Scenario/Process/Algorithms/Accessors.hpp>
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -14,6 +14,40 @@ ScenarioComponent::ScenarioComponent(
     ProcessComponent{scenario, id, "ScenarioComponent", parent_obj},
     m_hm{*this, scenario, doc, ctx, this}
 {
+}
+
+AudioStream ScenarioComponent::CreateAudioStream(const Context& ctx)
+{
+    auto& scenario = m_hm.scenario;
+    std::map<Id<Scenario::TimeNodeModel>, SymbolicDate> synchros;
+    std::map<Id<Scenario::ConstraintModel>, AudioStream> csts;
+    // First generate a symbolic date for each of the timenode (fixed if there is no trigger ?)
+    for(auto& tn : scenario.timeNodes)
+    {
+        // TODO right now audioplayer is not used in GenSymbolicDate but this may be dangerous...
+        synchros.insert(std::make_pair(tn.id(), GenSymbolicDate(AudioPlayerPtr{})));
+    }
+
+    // Then create a stream for all the constraints
+    // and set the start / end of each parent stream of the constraint
+    // to the symbolic date of the trigger
+    for(const hierarchy_t::ConstraintPair& cst : m_hm.constraints())
+    {
+        // Optimize me by storing the time node ids beforehand.
+        csts.insert(
+                    std::make_pair(
+                        cst.element.id(),
+                        cst.component.CreateAudioStream(
+                            ctx,
+                            synchros.at(Scenario::startEvent(cst.element, scenario).timeNode()),
+                            synchros.at(Scenario::endEvent(cst.element, scenario).timeNode())
+                            )
+                        )
+                    );
+    }
+
+
+    return {};
 }
 
 template<>

@@ -32,6 +32,11 @@ class ScenarioComponent final : public ProcessComponent
                const iscore::DocumentContext& ctx,
                QObject* parent_obj);
 
+
+       AudioStream CreateAudioStream(const Context& ctx);
+
+
+
        template<typename Component_T, typename Element>
        Component_T* make(
                const Id<Component>& id,

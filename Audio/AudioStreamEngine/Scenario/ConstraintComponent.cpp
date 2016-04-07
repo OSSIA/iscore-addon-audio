@@ -1,5 +1,7 @@
 #include "ConstraintComponent.hpp"
 #include <iscore/tools/std/Algorithms.hpp>
+#include <Scenario/Process/ScenarioModel.hpp>
+#include <Loop/LoopProcessModel.hpp>
 
 namespace Audio
 {
@@ -27,6 +29,62 @@ ConstraintComponent::ConstraintComponent(
 
 ConstraintComponent::~ConstraintComponent()
 {
+}
+
+AudioStream ConstraintComponent::CreateAudioStream(
+        const Context& player,
+        SymbolicDate start,
+        SymbolicDate end)
+{
+    using StreamPair = std::pair<Process::ProcessModel&, AudioStream>;
+
+    auto& cst = m_baseComponent.constraint;
+    if(cst.processes.empty())
+    {
+        // Silence
+        auto sound = MakeNullSound(cst.duration.maxDuration().msec());
+
+    }
+    else if(cst.processes.size() == 1)
+    {
+        auto& proc = *cst.processes.begin();
+        // if(auto mc_proc = dynamic_cast<MixerProcess*>(&proc)) { ... }
+    }
+    else
+    {
+        std::vector<StreamPair> inputStreams;
+        std::vector<StreamPair> fxStreams;
+        // MixProcess* mix_proc{};
+        for(auto& proc : cst.processes)
+        {
+            if(auto scenar = dynamic_cast<Scenario::ScenarioModel*>(&proc))
+            {
+                //inputStreams.emplace_back(*scenar, CreateAudioStream(*scenar));
+            }
+            else if(auto loop = dynamic_cast<Loop::ProcessModel*>(&proc))
+            {
+                //inputStreams.emplace_back(*loop, CreateAudioStream(*loop));
+            }
+            /*
+                    else if(auto fx = dynamic_cast<Audio::EffectsProcess*>(&proc))
+                    {
+                        inputStreams.emplace_back(*fx, CreateAudioStream(*fx));
+                    }
+                    else if(auto mix = dynamic_cast<Audio::MixProcess*>(&proc))
+                    {
+                        mix_proc = mix;
+                    }
+                    */
+        }
+    }
+    // Look for all the "contents" process :
+    // - Scenario
+    // - Loop
+    // Look for all the "effects" process and apply them
+
+    // Then look for the "Mix" process and do the mix
+
+    return {};
 }
 
 
