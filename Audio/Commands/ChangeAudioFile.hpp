@@ -4,7 +4,7 @@
 #include <Audio/MediaFileHandle.hpp>
 namespace Audio
 {
-namespace SoundProcess {
+namespace Sound {
 class ProcessModel;
 }
 
@@ -15,7 +15,7 @@ class ChangeAudioFile : public iscore::SerializableCommand
            ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), ChangeAudioFile, "Change audio file")
     public:
         ChangeAudioFile(
-                Path<SoundProcess::ProcessModel>&& model,
+                Path<Sound::ProcessModel>&& model,
                 const QString& text):
             m_model{std::move(model)},
             m_new{text}
@@ -45,7 +45,7 @@ class ChangeAudioFile : public iscore::SerializableCommand
         }
 
     private:
-        Path<SoundProcess::ProcessModel> m_model;
+        Path<Sound::ProcessModel> m_model;
         MediaFileHandle m_old, m_new;
 };
 }

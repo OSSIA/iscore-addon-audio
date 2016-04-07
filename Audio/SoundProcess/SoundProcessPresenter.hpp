@@ -5,7 +5,7 @@
 #include <Audio/SoundProcess/SoundProcessLayer.hpp>
 namespace Audio
 {
-namespace SoundProcess
+namespace Sound
 {
 class LayerView;
 
@@ -13,7 +13,7 @@ class LayerPresenter final :
         public Process::LayerPresenter
 {
     public:
-        using model_type = const Audio::SoundProcess::ProcessModel;
+        using model_type = const Audio::Sound::ProcessModel;
         explicit LayerPresenter(
                 const LayerModel& model,
                 LayerView* view,

@@ -1,15 +1,14 @@
-#include <Audio/SoundProcess/SoundProcessModel.hpp>
+#include <Audio/MixProcess/MixProcessModel.hpp>
 #include <DummyProcess/DummyLayerModel.hpp>
 #include <Explorer/DocumentPlugin/DeviceDocumentPlugin.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 #include <iscore/plugins/documentdelegate/plugin/ElementPluginModelList.hpp>
 
 #include <QFile>
-#include <Audio/SoundProcess/SoundProcessLayer.hpp>
 
 namespace Audio
 {
-namespace Sound
+namespace Mix
 {
 
 ProcessModel::ProcessModel(
@@ -21,8 +20,6 @@ ProcessModel::ProcessModel(
     pluginModelList = new iscore::ElementPluginModelList{
                       iscore::IDocument::documentContext(*parent),
                       this};
-
-    setFile("test.wav");
 }
 
 ProcessModel::ProcessModel(
@@ -33,8 +30,7 @@ ProcessModel::ProcessModel(
         source.duration(),
         id,
         Metadata<ObjectKey_k, ProcessModel>::get(),
-        parent},
-    m_file{source.m_file}
+        parent}
 {
     pluginModelList = new iscore::ElementPluginModelList{
                       *source.pluginModelList,
@@ -46,21 +42,6 @@ ProcessModel::~ProcessModel()
 
 }
 
-void ProcessModel::setFile(const QString &file)
-{
-    if(file != m_file.name())
-    {
-        m_file = MediaFileHandle(file);
-        emit fileChanged();
-    }
-}
-
-void ProcessModel::setFile(const MediaFileHandle &file)
-{
-    m_file = file;
-    emit fileChanged();
-}
-
 ProcessModel* ProcessModel::clone(
         const Id<Process::ProcessModel>& newId,
         QObject* newParent) const
@@ -70,7 +51,7 @@ ProcessModel* ProcessModel::clone(
 
 QString ProcessModel::prettyName() const
 {
-    return "Audio Process";
+    return "Mix Process";
 }
 
 QByteArray ProcessModel::makeLayerConstructionData() const
@@ -139,7 +120,7 @@ Process::LayerModel* ProcessModel::makeLayer_impl(
         const QByteArray& constructionData,
         QObject* parent)
 {
-    return new LayerModel{*this, viewModelId, parent};
+    return new Dummy::DummyLayerModel{*this, viewModelId, parent};
 }
 
 Process::LayerModel* ProcessModel::loadLayer_impl(
@@ -148,7 +129,7 @@ Process::LayerModel* ProcessModel::loadLayer_impl(
 {
     return deserialize_dyn(vis, [&] (auto&& deserializer)
     {
-        auto autom = new LayerModel{
+        auto autom = new Dummy::DummyLayerModel{
                         deserializer, *this, parent};
 
         return autom;
@@ -160,8 +141,8 @@ Process::LayerModel* ProcessModel::cloneLayer_impl(
         const Process::LayerModel& source,
         QObject* parent)
 {
-    return new LayerModel{
-        safe_cast<const LayerModel&>(source),
+    return new Dummy::DummyLayerModel{
+        safe_cast<const Dummy::DummyLayerModel&>(source),
                 *this,
                 newId,
                 parent};

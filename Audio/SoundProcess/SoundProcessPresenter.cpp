@@ -3,7 +3,7 @@
 #include <iscore/document/DocumentContext.hpp>
 namespace Audio
 {
-namespace SoundProcess
+namespace Sound
 {
 LayerPresenter::LayerPresenter(
         const LayerModel& layer,

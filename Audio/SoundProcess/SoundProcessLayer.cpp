@@ -2,7 +2,7 @@
 #include "SoundProcessModel.hpp"
 namespace Audio
 {
-namespace SoundProcess
+namespace Sound
 {
 
 LayerModel::LayerModel(

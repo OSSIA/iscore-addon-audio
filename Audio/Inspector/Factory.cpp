@@ -20,14 +20,14 @@ Process::InspectorWidgetDelegate* InspectorFactory::make(
         QWidget* parent) const
 {
     return new InspectorWidget{
-        static_cast<const Audio::SoundProcess::ProcessModel&>(process),
+        static_cast<const Audio::Sound::ProcessModel&>(process),
                 doc,
                 parent};
 }
 
 bool InspectorFactory::matches(const Process::ProcessModel& process) const
 {
-    return dynamic_cast<const Audio::SoundProcess::ProcessModel*>(&process);
+    return dynamic_cast<const Audio::Sound::ProcessModel*>(&process);
 }
 
 }

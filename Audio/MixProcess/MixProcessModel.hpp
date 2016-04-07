@@ -3,7 +3,7 @@
 #include <iscore/serialization/DataStreamVisitor.hpp>
 #include <iscore/serialization/JSONVisitor.hpp>
 #include <iscore/serialization/VisitorCommon.hpp>
-#include <Audio/SoundProcess/SoundProcessMetadata.hpp>
+#include <Audio/MixProcess/MixProcessMetadata.hpp>
 #include <DummyProcess/DummyLayerPanelProxy.hpp>
 #include <Process/LayerModel.hpp>
 #include <Audio/MediaFileHandle.hpp>
@@ -11,14 +11,14 @@
 
 namespace Audio
 {
-namespace Sound
+namespace Mix
 {
 class ProcessModel;
 
 class ProcessModel final : public Process::ProcessModel
 {
-        ISCORE_SERIALIZE_FRIENDS(Audio::Sound::ProcessModel, DataStream)
-        ISCORE_SERIALIZE_FRIENDS(Audio::Sound::ProcessModel, JSONObject)
+        ISCORE_SERIALIZE_FRIENDS(Audio::Mix::ProcessModel, DataStream)
+        ISCORE_SERIALIZE_FRIENDS(Audio::Mix::ProcessModel, JSONObject)
 
         Q_OBJECT
     public:
@@ -43,12 +43,6 @@ class ProcessModel final : public Process::ProcessModel
             vis.writeTo(*this);
         }
 
-        void setFile(const QString& file);
-        void setFile(const MediaFileHandle& file);
-
-        const MediaFileHandle& file() const
-        { return m_file; }
-
         // Process interface
         ProcessModel* clone(
                 const Id<Process::ProcessModel>& newId,
@@ -56,7 +50,7 @@ class ProcessModel final : public Process::ProcessModel
 
         UuidKey<Process::ProcessFactory> concreteFactoryKey() const override
         {
-            return Metadata<ConcreteFactoryKey_k, Audio::Sound::ProcessModel>::get();
+            return Metadata<ConcreteFactoryKey_k, Audio::Mix::ProcessModel>::get();
         }
 
         QString prettyName() const override;
@@ -89,9 +83,6 @@ class ProcessModel final : public Process::ProcessModel
                 QObject* parent) override;
         Process::LayerModel* loadLayer_impl(const VisitorVariant&, QObject* parent) override;
         Process::LayerModel* cloneLayer_impl(const Id<Process::LayerModel>& newId, const Process::LayerModel& source, QObject* parent) override;
-
-    private:
-        MediaFileHandle m_file;
 };
 }
 }

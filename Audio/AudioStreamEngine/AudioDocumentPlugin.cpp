@@ -39,7 +39,6 @@ AudioStream CreateAudioStream(const Scenario::ConstraintModel& cst, SymbolicDate
 {
     using StreamPair = std::pair<Process::ProcessModel&, AudioStream>;
 
-
     if(cst.processes.empty())
     {
 
@@ -93,7 +92,7 @@ AudioStream CreateAudioStream(const Scenario::ScenarioModel& scenario)
     for(auto& tn : scenario.timeNodes)
     {
         // TODO right now audioplayer is not used in GenSymbolicDate but this may be dangerous...
-        synchros.insert(std::make_pair(tn.id(), GenSymbolicDate({})));
+        synchros.insert(std::make_pair(tn.id(), GenSymbolicDate(AudioPlayerPtr{})));
     }
 
     // Then create a stream for all the constraints

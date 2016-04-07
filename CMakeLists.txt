@@ -5,9 +5,9 @@ if(NOT TARGET iscore_plugin_ossia)
     return()
 endif()
 find_package(Sndfile)
-find_package(RtAudio)
+# find_package(RtAudio)
 
-if(NOT SNDFILE_LIBRARY OR NOT RtAudio_LIBRARY)
+if(NOT SNDFILE_LIBRARY)
 message("audio plugin requires libsndfile, portaudio")
 return()
 endif()
@@ -65,6 +65,14 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessPresenter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessView.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessFactory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessMetadata.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessModel.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessFactory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessMetadata.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessModel.hpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.hpp"
@@ -73,6 +81,10 @@ set(HDRS ${HDRS}
 set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessLayerSerialization.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessModelSerialization.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessModelSerialization.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessModelSerialization.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioApplicationPlugin.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioDocumentPlugin.cpp"
@@ -108,6 +120,12 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessPresenter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessView.cpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessFactory.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessModel.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessFactory.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessModel.cpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.cpp"
@@ -118,7 +136,8 @@ iscore_generate_command_list_file(${PROJECT_NAME} "${HDRS}")
 target_link_libraries(${PROJECT_NAME} PUBLIC
                      Qt5::Core Qt5::Widgets Qt5::Multimedia
                      iscore_lib_base iscore_plugin_ossia iscore_lib_dummyprocess
-                     ${SNDFILE_LIBRARIES})
+                     ${SNDFILE_LIBRARIES}
+                     libaudiostream)
 
 setup_iscore_plugin(${PROJECT_NAME})
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")

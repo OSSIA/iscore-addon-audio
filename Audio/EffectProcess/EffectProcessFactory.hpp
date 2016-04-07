@@ -1,15 +1,15 @@
 #pragma once
 
 #include <Process/ProcessFactory.hpp>
-#include <Audio/SoundProcess/SoundProcessModel.hpp>
+#include <Audio/EffectProcess/EffectProcessModel.hpp>
 #include <DummyProcess/DummyLayerPresenter.hpp>
 #include <DummyProcess/DummyLayerView.hpp>
 #include <iscore/serialization/VisitorCommon.hpp>
-#include <Audio/SoundProcess/SoundProcessMetadata.hpp>
+#include <Audio/EffectProcess/EffectProcessMetadata.hpp>
 
 namespace Audio
 {
-namespace Sound
+namespace Effect
 {
 class ProcessFactory final : public Process::ProcessFactory
 {

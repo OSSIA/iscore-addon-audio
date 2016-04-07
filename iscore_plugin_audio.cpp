@@ -10,6 +10,8 @@
 #include <QAction>
 #include <Audio/Inspector/Factory.hpp>
 #include <Audio/SoundProcess/SoundProcessFactory.hpp>
+#include <Audio/EffectProcess/EffectProcessFactory.hpp>
+#include <Audio/MixProcess/MixProcessFactory.hpp>
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
 #include <Audio/Settings/Card/CardSettingsFactory.hpp>
 
@@ -26,7 +28,10 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
             iscore::ApplicationContext,
     TL<
         FW<Process::ProcessFactory,
-            Audio::SoundProcess::ProcessFactory>,/*
+            Audio::Sound::ProcessFactory,
+            Audio::Effect::ProcessFactory,
+            Audio::Mix::ProcessFactory
+            >,/*
         FW<RecreateOnPlay::ProcessComponentFactory,
             RecreateOnPlay::Audio::ComponentFactory>,*/
         FW<Process::InspectorWidgetDelegateFactory,

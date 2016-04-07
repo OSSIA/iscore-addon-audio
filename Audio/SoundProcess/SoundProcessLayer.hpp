@@ -3,7 +3,7 @@
 
 namespace Audio
 {
-namespace SoundProcess
+namespace Sound
 {
 class ProcessModel;
 class LayerModel final : public Process::LayerModel

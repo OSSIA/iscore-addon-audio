@@ -10,16 +10,16 @@ class Document;
 
 namespace Audio
 {
-namespace SoundProcess
+namespace Sound
 {
 class ProcessModel;
 }
 class InspectorWidget final :
-        public Process::InspectorWidgetDelegate_T<SoundProcess::ProcessModel>
+        public Process::InspectorWidgetDelegate_T<Sound::ProcessModel>
 {
     public:
         explicit InspectorWidget(
-                const SoundProcess::ProcessModel& object,
+                const Sound::ProcessModel& object,
                 const iscore::DocumentContext& doc,
                 QWidget* parent);
 

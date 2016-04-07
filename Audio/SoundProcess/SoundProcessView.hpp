@@ -7,7 +7,7 @@
 
 namespace Audio
 {
-namespace SoundProcess
+namespace Sound
 {
 class LayerView final : public Process::LayerView
 {

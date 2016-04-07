@@ -9,7 +9,7 @@ class ProcessFactory;
 
 namespace Audio
 {
-namespace Sound
+namespace Mix
 {
 class ProcessModel;
 }
@@ -17,11 +17,11 @@ class ProcessModel;
 
 PROCESS_METADATA(
         ISCORE_PLUGIN_AUDIO_EXPORT,
-        Audio::Sound::ProcessModel,
-        "e4cd0c16-0b5a-4d75-b8f4-067f52bb4c50",
-        "Audio",
-        "Audio"
+        Audio::Mix::ProcessModel,
+        "8d2eb884-398c-4812-a777-dc457f898106",
+        "Mix",
+        "Mix"
         )
 
 
-UNDO_NAME_METADATA(EMPTY_MACRO, Audio::Sound::ProcessModel, "Audio")
+UNDO_NAME_METADATA(EMPTY_MACRO, Audio::Mix::ProcessModel, "Mix")

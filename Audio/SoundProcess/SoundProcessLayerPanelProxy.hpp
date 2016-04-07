@@ -1,7 +1,7 @@
 #pragma once
 namespace Audio
 {
-namespace SoundProcess
+namespace Sound
 {
 }
 }

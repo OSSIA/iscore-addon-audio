@@ -9,7 +9,7 @@
 namespace Audio
 {
 InspectorWidget::InspectorWidget(
-        const SoundProcess::ProcessModel &object,
+        const Sound::ProcessModel &object,
         const iscore::DocumentContext &doc,
         QWidget *parent):
     InspectorWidgetDelegate_T {object, parent},
@@ -21,7 +21,7 @@ InspectorWidget::InspectorWidget(
 
     m_edit = new QLineEdit{object.file().name()};
 
-    con(process(), &SoundProcess::ProcessModel::fileChanged,
+    con(process(), &Sound::ProcessModel::fileChanged,
         this, [&] {
         m_edit->setText(object.file().name());
     });

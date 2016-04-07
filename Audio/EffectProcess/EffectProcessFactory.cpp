@@ -1,11 +1,9 @@
-#include "SoundProcessFactory.hpp"
+#include "EffectProcessFactory.hpp"
 #include <Process/LayerModel.hpp>
 #include <DummyProcess/DummyLayerPanelProxy.hpp>
-#include <Audio/SoundProcess/SoundProcessPresenter.hpp>
-#include <Audio/SoundProcess/SoundProcessView.hpp>
 namespace Audio
 {
-namespace Sound
+namespace Effect
 {
 QString ProcessFactory::prettyName() const
 { // In factory list
@@ -43,17 +41,14 @@ Process::LayerPresenter *ProcessFactory::makeLayerPresenter(
         Process::LayerView* v,
         QObject* parent)
 {
-    return new LayerPresenter{
-        dynamic_cast<const LayerModel&>(model),
-                dynamic_cast<LayerView*>(v),
-                parent};
+    return new Dummy::DummyLayerPresenter{model, dynamic_cast<Dummy::DummyLayerView*>(v), parent};
 }
 
 Process::LayerView* ProcessFactory::makeLayerView(
         const Process::LayerModel&,
         QGraphicsItem* parent)
 {
-    return new LayerView{parent};
+    return new Dummy::DummyLayerView{parent};
 }
 }
 }

@@ -1,7 +1,7 @@
 #include "SoundProcessView.hpp"
 namespace Audio
 {
-namespace SoundProcess
+namespace Sound
 {
 
 LayerView::LayerView(QGraphicsItem* parent):
