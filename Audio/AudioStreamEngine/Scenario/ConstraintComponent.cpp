@@ -7,6 +7,7 @@
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
 #include <Audio/MixProcess/MixProcessModel.hpp>
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
+#include <Audio/AudioStreamEngine/Context.hpp>
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -118,8 +119,8 @@ AudioStream ConstraintComponent::makeStream(
     {
         // Silence
         auto sound = MakeNullSound(cst.duration.maxDuration().msec());
-        StartSound(player.player, sound, start);
-        StopSound(player.player, sound, end);
+        StartSound(player.audio.player, sound, start);
+        StopSound(player.audio.player, sound, end);
     }
     else
     {

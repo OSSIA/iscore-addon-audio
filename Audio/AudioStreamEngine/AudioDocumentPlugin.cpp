@@ -6,6 +6,8 @@
 #include <core/document/DocumentModel.hpp>
 #include <Scenario/Document/ScenarioDocument/ScenarioDocumentModel.hpp>
 #include <Audio/AudioStreamEngine/Scenario/ConstraintComponent.hpp>
+#include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
+
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -42,22 +44,10 @@ void DocumentPlugin::play()
     if(!doc)
         return;
 
-    // Initialize libaudiostream structures
-    if(m_ctx.player)
-        CloseAudioPlayer(m_ctx.player);
-
-    GetDeviceInfo(kJackRenderer, 0, &m_ctx.device_info);
-    auto& dev = m_ctx.device_info;
-    qDebug() << dev.fName
-             << dev.fMaxInputChannels
-             << dev.fMaxOutputChannels
-             << dev.fDefaultBufferSize
-             << dev.fDefaultSampleRate;
-
-    m_ctx.player = OpenAudioPlayer(0, 2, 44100, 512, 65536*4, 44100*60*20, kJackRenderer, 1);
-    m_ctx.renderer = GetAudioPlayerRenderer(m_ctx.player);
-
-    GetAudioRendererInfo(m_ctx.renderer, &m_ctx.renderer_info);
+    if(!m_ctx.audio.player)
+    {
+        iscore::AppContext().components.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().startEngine();
+    }
 
     // Create our tree
     // TODO make id from components !!!!
@@ -71,26 +61,19 @@ void DocumentPlugin::play()
 
     auto stream = comp->makeStream(
                 m_ctx,
-                GenRealDate(m_ctx.player, 0),
-                GenSymbolicDate(m_ctx.player));
+                GenRealDate(m_ctx.audio.player, 0),
+                GenSymbolicDate(m_ctx.audio.player));
 
-    StartSound(m_ctx.player, stream, GenRealDate(m_ctx.player, 0));
+    StartSound(m_ctx.audio.player, stream, GenRealDate(m_ctx.audio.player, 0));
 
     // Play
-    StartAudioPlayer(m_ctx.player);
+    StartAudioPlayer(m_ctx.audio.player);
 }
 
 void DocumentPlugin::stop()
 {
-    if(m_ctx.player)
-    {
-        StopAudioPlayer(m_ctx.player);
-        CloseAudioPlayer(m_ctx.player);
-    }
-    m_ctx.player = nullptr;
-    m_ctx.renderer = nullptr;
-    m_ctx.device_info = DeviceInfo{};
-    m_ctx.renderer_info = RendererInfo{};
+    if(m_ctx.audio.player)
+        StopAudioPlayer(m_ctx.audio.player);
 
 }
 }
