@@ -7,9 +7,6 @@ namespace Audio
 {
 namespace AudioStreamEngine
 {
-// The Audio constraint components creates Constraint audio streams
-// and contains mixing data (i.e. for each "data" & each "effect" process,
-// how much of each data processes goes into effect proccesses.)
 class ConstraintComponent final :
         public iscore::Component
 {
@@ -55,7 +52,11 @@ class ConstraintComponent final :
     private:
         parent_t m_baseComponent;
         std::vector<StreamPair> inputStreams;
-        std::vector<StreamPair> fxStreams;
+
+        // For now, only one mixer and one effect rack per constraint
+        // problem : how to perform undo - redo on components ?
+        // are they always created with the same id ?
+        //
 };
 
 

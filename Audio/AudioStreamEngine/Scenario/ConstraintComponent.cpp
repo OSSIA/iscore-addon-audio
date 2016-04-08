@@ -2,6 +2,8 @@
 #include <iscore/tools/std/Algorithms.hpp>
 #include <Scenario/Process/ScenarioModel.hpp>
 #include <Loop/LoopProcessModel.hpp>
+#include <boost/multi_index_container.hpp>
+
 
 namespace Audio
 {
@@ -42,18 +44,12 @@ AudioStream ConstraintComponent::makeStream(
     {
         // Silence
         auto sound = MakeNullSound(cst.duration.maxDuration().msec());
-        StartSound(player, sound, start);
-        StopSound(player, sound, end);
-    }
-    else if(cst.processes.size() == 1)
-    {
-        // Still silence, we assume only mixer process
-        auto sound = MakeNullSound(cst.duration.maxDuration().msec());
-        StartSound(player, sound, start);
-        StopSound(player, sound, end);
+        StartSound(player.player, sound, start);
+        StopSound(player.player, sound, end);
     }
     else
     {
+        // Input mix
         // MixProcess* mix_proc{};
         for(auto& proc : cst.processes)
         {

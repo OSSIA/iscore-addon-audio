@@ -37,7 +37,7 @@ AudioStream ScenarioComponent::CreateAudioStream(const Context& ctx)
         csts.insert(
                     std::make_pair(
                         cst.element.id(),
-                        cst.component.CreateAudioStream(
+                        cst.component.makeStream(
                             ctx,
                             synchros.at(Scenario::startEvent(cst.element, scenario).timeNode()),
                             synchros.at(Scenario::endEvent(cst.element, scenario).timeNode())
