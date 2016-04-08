@@ -50,6 +50,7 @@ void DocumentPlugin::play()
     }
 
     // Create our tree
+    /*
     // TODO make id from components !!!!
     auto comp = new ConstraintComponent(
                 Id<iscore::Component>{1},
@@ -68,6 +69,7 @@ void DocumentPlugin::play()
 
     // Play
     StartAudioPlayer(m_ctx.audio.player);
+    */
 }
 
 void DocumentPlugin::stop()

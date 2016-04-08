@@ -41,7 +41,10 @@ void ApplicationPlugin::startEngine()
 {
     // Initialize libaudiostream structures
     if(m_ctx.player)
+    {
+        StopAudioPlayer(m_ctx.player);
         CloseAudioPlayer(m_ctx.player);
+    }
 
     GetDeviceInfo(kJackRenderer, 0, &m_ctx.device_info);
     auto& dev = m_ctx.device_info;
