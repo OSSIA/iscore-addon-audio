@@ -3,13 +3,87 @@
 #include <Scenario/Process/ScenarioModel.hpp>
 #include <Loop/LoopProcessModel.hpp>
 #include <boost/multi_index_container.hpp>
-
-
+#include <Audio/SoundProcess/SoundProcessModel.hpp>
+#include <Audio/EffectProcess/EffectProcessModel.hpp>
+#include <Audio/MixProcess/MixProcessModel.hpp>
+#include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
 namespace Audio
 {
 namespace AudioStreamEngine
 {
 
+class SoundComponent final : public ProcessComponent
+{
+       COMPONENT_METADATA(Audio::AudioStreamEngine::SoundComponent)
+
+        using system_t = Audio::AudioStreamEngine::DocumentPlugin;
+    public:
+       SoundComponent(
+               const Id<Component>& id,
+               Sound::ProcessModel& sound,
+               const system_t& doc,
+               const iscore::DocumentContext& ctx,
+               QObject* parent_obj):
+           ProcessComponent{sound, id, "SoundComponent", parent_obj}
+       {
+
+       }
+
+
+       AudioStream CreateAudioStream(const Context& ctx)
+       {
+           return {};
+       }
+};
+
+
+class EffectComponent final : public ProcessComponent
+{
+       COMPONENT_METADATA(Audio::AudioStreamEngine::EffectComponent)
+
+        using system_t = Audio::AudioStreamEngine::DocumentPlugin;
+    public:
+       EffectComponent(
+               const Id<Component>& id,
+               Effect::ProcessModel& sound,
+               const system_t& doc,
+               const iscore::DocumentContext& ctx,
+               QObject* parent_obj):
+           ProcessComponent{sound, id, "EffectComponent", parent_obj}
+       {
+
+       }
+
+
+       AudioStream CreateAudioStream(const Context& ctx)
+       {
+           return {};
+       }
+};
+
+class MixComponent final : public ProcessComponent
+{
+       COMPONENT_METADATA(Audio::AudioStreamEngine::MixComponent)
+
+        using system_t = Audio::AudioStreamEngine::DocumentPlugin;
+    public:
+       MixComponent(
+               const Id<Component>& id,
+               Mix::ProcessModel& sound,
+               const system_t& doc,
+               const iscore::DocumentContext& ctx,
+               QObject* parent_obj):
+           ProcessComponent{sound, id, "MixComponent", parent_obj}
+       {
+
+       }
+
+
+       AudioStream CreateAudioStream(const Context& ctx)
+       {
+           return {};
+       }
+};
 
 const iscore::Component::Key&ConstraintComponent::key() const
 {
@@ -49,30 +123,42 @@ AudioStream ConstraintComponent::makeStream(
     }
     else
     {
+        using namespace std;
         // Input mix
-        // MixProcess* mix_proc{};
-        for(auto& proc : cst.processes)
+        map<Id<Process::ProcessModel>, pair<Scenario::ScenarioModel*, ScenarioComponent*>> scenarios;
+        //map<Id<Scenario::ScenarioModel>, Loop::ProcessModel*> loops;
+        map<Id<Process::ProcessModel>, pair<Sound::ProcessModel*, SoundComponent*>> sounds;
+        map<Id<Process::ProcessModel>, pair<Effect::ProcessModel*, EffectComponent*>> sfxs;
+        map<Id<Process::ProcessModel>, pair<Mix::ProcessModel*, MixComponent*>> mixs;
+
+        for(auto& proc_pair :  m_baseComponent.processes())
         {
+            auto& proc = proc_pair.process;
+            auto& comp = proc_pair.component;
             if(auto scenar = dynamic_cast<Scenario::ScenarioModel*>(&proc))
             {
-                //inputStreams.emplace_back(*scenar, CreateAudioStream(*scenar));
+                pair<Scenario::ScenarioModel*, ScenarioComponent*> f = make_pair(scenar, safe_cast<ScenarioComponent*>(&comp));
+                scenarios.insert(make_pair(scenar->id(), f));
             }
             else if(auto loop = dynamic_cast<Loop::ProcessModel*>(&proc))
             {
-                //inputStreams.emplace_back(*loop, CreateAudioStream(*loop));
+                //loops.insert(loop->id(), loop);
             }
-            /*
-                    else if(auto fx = dynamic_cast<Audio::EffectsProcess*>(&proc))
-                    {
-                        inputStreams.emplace_back(*fx, CreateAudioStream(*fx));
-                    }
-                    else if(auto mix = dynamic_cast<Audio::MixProcess*>(&proc))
-                    {
-                        mix_proc = mix;
-                    }
-                    */
+            else if(auto sound = dynamic_cast<Sound::ProcessModel*>(&proc))
+            {
+                sounds.insert(make_pair(sound->id(), make_pair(sound, safe_cast<SoundComponent*>(&comp))));
+            }
+            else if(auto sfx = dynamic_cast<Effect::ProcessModel*>(&proc))
+            {
+                sfxs.insert(make_pair(sfx->id(), make_pair(sfx, safe_cast<EffectComponent*>(&comp))));
+            }
+            else if(auto mix = dynamic_cast<Mix::ProcessModel*>(&proc))
+            {
+                mixs.insert(make_pair(mix->id(), make_pair(mix, safe_cast<MixComponent*>(&comp))));
+            }
         }
     }
+
     // Look for all the "contents" process :
     // - Scenario
     // - Loop
