@@ -1,4 +1,5 @@
 #include "SoundProcessView.hpp"
+#include <QPainter>
 namespace Audio
 {
 namespace Sound

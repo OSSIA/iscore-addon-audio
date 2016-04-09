@@ -3,6 +3,7 @@
 #include <core/document/Document.hpp>
 #include <core/document/DocumentModel.hpp>
 #include <Scenario/Application/ScenarioApplicationPlugin.hpp>
+#include <QAction>
 namespace Audio
 {
 namespace AudioStreamEngine
