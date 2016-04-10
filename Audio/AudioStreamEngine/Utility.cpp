@@ -16,7 +16,7 @@ AudioStream makeNStreamsParallel(const std::vector<AudioStream>& streams)
             return streams[0];
             break;
         case 2:
-            return MakeParSound(streams[0], streams[1]);
+            return MakeMixSound(streams[0], streams[1]);
             break;
         default:
             return std::accumulate(
@@ -24,7 +24,7 @@ AudioStream makeNStreamsParallel(const std::vector<AudioStream>& streams)
                         streams.end(),
                         streams[0],
                     [] (AudioStream a1, AudioStream a2) {
-                return MakeParSound(a1, a2);
+                return MakeMixSound(a1, a2);
             });
             break;
     }
