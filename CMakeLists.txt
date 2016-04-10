@@ -40,6 +40,15 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/ScenarioComponentFactory.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/SoundComponent.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/SoundComponentFactory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/EffectComponent.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/EffectComponentFactory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/MixComponent.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/MixComponentFactory.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Utility.hpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioArray.hpp"
 
 #    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioBlock.hpp"
@@ -97,6 +106,15 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/ProcessComponent.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/ScenarioComponent.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/ScenarioComponentFactory.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/SoundComponent.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/SoundComponentFactory.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/EffectComponent.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/EffectComponentFactory.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/MixComponent.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/MixComponentFactory.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Utility.cpp"
 
 #    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioBlock.cpp"
 #    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioEngine.cpp"

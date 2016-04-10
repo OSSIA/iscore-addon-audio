@@ -50,33 +50,57 @@ void DocumentPlugin::play()
     }
 
     // Create our tree
-    /*
+
     // TODO make id from components !!!!
-    auto comp = new ConstraintComponent(
-                Id<iscore::Component>{1},
-                doc->baseConstraint(),
-                *this,
-                m_ctx.doc,
-                this);
-    doc->baseConstraint().components.add(comp);
+    ConstraintComponent* comp = nullptr;
+    auto it = doc->baseConstraint().components.find(Id<iscore::Component>{1});
+    if(it != doc->baseConstraint().components.end())
+    {
+        comp = dynamic_cast<ConstraintComponent*>(&(*it));
+    }
+    else
+    {
+        comp = new ConstraintComponent(
+                    Id<iscore::Component>{1},
+                    doc->baseConstraint(),
+                    *this,
+                    m_ctx.doc,
+                    this);
+        doc->baseConstraint().components.add(comp);
+    }
 
-    auto stream = comp->makeStream(
-                m_ctx,
-                GenRealDate(m_ctx.audio.player, 0),
-                GenSymbolicDate(m_ctx.audio.player));
+    if(comp)
+    {
+        m_stream = comp->makeStream(
+                    m_ctx,
+                    GenRealDate(m_ctx.audio.player, 0),
+                    GenSymbolicDate(m_ctx.audio.player));
+    }
+    else
+    {
+        qDebug("No component!");
+    }
 
-    StartSound(m_ctx.audio.player, stream, GenRealDate(m_ctx.audio.player, 0));
+    if(m_stream)
+    {
+        StartSound(m_ctx.audio.player, m_stream, GenRealDate(m_ctx.audio.player, 0));
 
-    // Play
-    StartAudioPlayer(m_ctx.audio.player);
-    */
+        // Play
+        StartAudioPlayer(m_ctx.audio.player);
+    }
+    else
+    {
+        qDebug("No stream!");
+    }
 }
 
 void DocumentPlugin::stop()
 {
     if(m_ctx.audio.player)
+    {
         StopAudioPlayer(m_ctx.audio.player);
-
+        m_stream = {};
+    }
 }
 }
 }

@@ -6,7 +6,8 @@ Audio::AudioStreamEngine::ProcessComponent::ProcessComponent(
         const Id<iscore::Component>& id,
         const QString& name,
         QObject* parent):
-    Component{id, name, parent}
+    Component{id, name, parent},
+    m_process{process}
 {
 }
 

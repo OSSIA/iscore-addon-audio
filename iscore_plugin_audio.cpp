@@ -15,9 +15,23 @@
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
 #include <Audio/Settings/Card/CardSettingsFactory.hpp>
 
+#include <Audio/AudioStreamEngine/Scenario/ScenarioComponentFactory.hpp>
+#include <Audio/AudioStreamEngine/Audio/EffectComponentFactory.hpp>
+#include <Audio/AudioStreamEngine/Audio/SoundComponentFactory.hpp>
+#include <Audio/AudioStreamEngine/Audio/MixComponentFactory.hpp>
+#include <iscore_plugin_audio_commands_files.hpp>
+
 std::pair<const CommandParentFactoryKey, CommandGeneratorMap> iscore_plugin_audio::make_commands()
 {
-    return {};
+    using namespace Audio::Commands;
+    std::pair<const CommandParentFactoryKey, CommandGeneratorMap> cmds{Audio::CommandFactoryName(), CommandGeneratorMap{}};
+
+    using Types = TypeList<
+#include <iscore_plugin_audio_commands.hpp>
+      >;
+    for_each_type<Types>(iscore::commands::FactoryInserter{cmds.second});
+
+    return cmds;
 }
 
 std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::factories(
@@ -31,7 +45,13 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
             Audio::Sound::ProcessFactory,
             Audio::Effect::ProcessFactory,
             Audio::Mix::ProcessFactory
-            >,/*
+            >,
+        FW<Audio::AudioStreamEngine::ProcessComponentFactory,
+            Audio::AudioStreamEngine::EffectComponentFactory,
+            Audio::AudioStreamEngine::SoundComponentFactory,
+            Audio::AudioStreamEngine::MixComponentFactory,
+            Audio::AudioStreamEngine::ScenarioComponentFactory>,
+            /*
         FW<RecreateOnPlay::ProcessComponentFactory,
             RecreateOnPlay::Audio::ComponentFactory>,*/
         FW<Process::InspectorWidgetDelegateFactory,
@@ -54,6 +74,12 @@ iscore_plugin_audio::~iscore_plugin_audio()
 iscore::GUIApplicationContextPlugin*iscore_plugin_audio::make_applicationPlugin(const iscore::ApplicationContext& app)
 {
     return new Audio::AudioStreamEngine::ApplicationPlugin{app};
+}
+
+std::vector<std::unique_ptr<iscore::FactoryListInterface> > iscore_plugin_audio::factoryFamilies()
+{
+    return make_ptr_vector<iscore::FactoryListInterface,
+            Audio::AudioStreamEngine::ProcessComponentFactoryList>();
 }
 
 iscore::Version iscore_plugin_audio::version() const

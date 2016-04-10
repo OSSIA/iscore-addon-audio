@@ -4,12 +4,12 @@
 #include <Audio/AudioStreamEngine/Scenario/TimeNodeComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/StateComponent.hpp>
 #include <Scenario/Document/Components/ScenarioComponent.hpp>
-
+#include <QMetaObject>
 namespace Audio
 {
 namespace AudioStreamEngine
 {
-class ScenarioComponent final : public ProcessComponent
+class ScenarioComponent final : public ProcessComponent_T<Scenario::ScenarioModel>
 {
        COMPONENT_METADATA(Audio::AudioStreamEngine::ScenarioComponent)
 
@@ -33,7 +33,7 @@ class ScenarioComponent final : public ProcessComponent
                QObject* parent_obj);
 
 
-       AudioStream CreateAudioStream(const Context& ctx);
+       AudioStream makeStream(const Context& ctx) const override;
 
 
 
@@ -63,6 +63,9 @@ class ScenarioComponent final : public ProcessComponent
 
     private:
         hierarchy_t m_hm;
+
+        mutable std::map<Id<Scenario::TimeNodeModel>, std::pair<SymbolicDate, QMetaObject::Connection>> m_synchros;
+        mutable std::map<Id<Scenario::ConstraintModel>, AudioStream> m_csts;
 
 };
 

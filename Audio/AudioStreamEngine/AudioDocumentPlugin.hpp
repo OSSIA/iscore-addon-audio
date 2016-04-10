@@ -25,6 +25,7 @@ class DocumentPlugin : public iscore::DocumentPlugin
 
     private:
         Context m_ctx;
+        AudioStream m_stream;
 };
 }
 }

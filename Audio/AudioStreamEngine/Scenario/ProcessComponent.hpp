@@ -21,8 +21,12 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent : public iscore::Component
 
         virtual ~ProcessComponent();
 
-    private:
+        virtual AudioStream makeStream(const Context& ctx) const = 0;
+
+    protected:
+        const Process::ProcessModel& m_process;
 };
+
 
 class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponentFactory :
         public iscore::GenericComponentFactory<
@@ -48,5 +52,16 @@ using ProcessComponentFactoryList =
             Process::ProcessModel,
             DocumentPlugin,
             ProcessComponentFactory>;
+
+/// Utility class
+template<typename Process_T>
+class ProcessComponent_T : public ProcessComponent
+{
+    public:
+        using ProcessComponent::ProcessComponent;
+
+        const Process_T& process() const
+        { return static_cast<const Process_T&>(m_process); }
+};
 }
 }

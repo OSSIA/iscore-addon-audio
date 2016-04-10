@@ -8,83 +8,18 @@
 #include <Audio/MixProcess/MixProcessModel.hpp>
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
 #include <Audio/AudioStreamEngine/Context.hpp>
+#include <Audio/AudioStreamEngine/Scenario/ScenarioComponentFactory.hpp>
+#include <Audio/AudioStreamEngine/Audio/EffectComponentFactory.hpp>
+#include <Audio/AudioStreamEngine/Audio/SoundComponentFactory.hpp>
+#include <Audio/AudioStreamEngine/Audio/MixComponentFactory.hpp>
+#include <Audio/AudioStreamEngine/Audio/EffectComponent.hpp>
+#include <Audio/AudioStreamEngine/Audio/SoundComponent.hpp>
+#include <Audio/AudioStreamEngine/Audio/MixComponent.hpp>
+#include <Audio/AudioStreamEngine/Utility.hpp>
 namespace Audio
 {
 namespace AudioStreamEngine
 {
-
-class SoundComponent final : public ProcessComponent
-{
-       COMPONENT_METADATA(Audio::AudioStreamEngine::SoundComponent)
-
-        using system_t = Audio::AudioStreamEngine::DocumentPlugin;
-    public:
-       SoundComponent(
-               const Id<Component>& id,
-               Sound::ProcessModel& sound,
-               const system_t& doc,
-               const iscore::DocumentContext& ctx,
-               QObject* parent_obj):
-           ProcessComponent{sound, id, "SoundComponent", parent_obj}
-       {
-
-       }
-
-
-       AudioStream CreateAudioStream(const Context& ctx)
-       {
-           return {};
-       }
-};
-
-
-class EffectComponent final : public ProcessComponent
-{
-       COMPONENT_METADATA(Audio::AudioStreamEngine::EffectComponent)
-
-        using system_t = Audio::AudioStreamEngine::DocumentPlugin;
-    public:
-       EffectComponent(
-               const Id<Component>& id,
-               Effect::ProcessModel& sound,
-               const system_t& doc,
-               const iscore::DocumentContext& ctx,
-               QObject* parent_obj):
-           ProcessComponent{sound, id, "EffectComponent", parent_obj}
-       {
-
-       }
-
-
-       AudioStream CreateAudioStream(const Context& ctx)
-       {
-           return {};
-       }
-};
-
-class MixComponent final : public ProcessComponent
-{
-       COMPONENT_METADATA(Audio::AudioStreamEngine::MixComponent)
-
-        using system_t = Audio::AudioStreamEngine::DocumentPlugin;
-    public:
-       MixComponent(
-               const Id<Component>& id,
-               Mix::ProcessModel& sound,
-               const system_t& doc,
-               const iscore::DocumentContext& ctx,
-               QObject* parent_obj):
-           ProcessComponent{sound, id, "MixComponent", parent_obj}
-       {
-
-       }
-
-
-       AudioStream CreateAudioStream(const Context& ctx)
-       {
-           return {};
-       }
-};
 
 const iscore::Component::Key&ConstraintComponent::key() const
 {
@@ -107,6 +42,7 @@ ConstraintComponent::ConstraintComponent(
 ConstraintComponent::~ConstraintComponent()
 {
 }
+
 
 AudioStream ConstraintComponent::makeStream(
         const Context& player,
@@ -158,6 +94,21 @@ AudioStream ConstraintComponent::makeStream(
                 mixs.insert(make_pair(mix->id(), make_pair(mix, safe_cast<MixComponent*>(&comp))));
             }
         }
+        // For now we just put all the sound streams in parallel...
+        std::vector<AudioStream> soundStreams;
+        for(auto sound : sounds)
+        {
+            auto stream = sound.second.second->makeStream(player);
+            if(stream)
+                soundStreams.push_back(stream);
+        }
+        for(auto scenario : scenarios)
+        {
+            auto stream = scenario.second.second->makeStream(player);
+            if(stream)
+                soundStreams.push_back(stream);
+        }
+        return makeNStreamsParallel(soundStreams);
     }
 
     // Look for all the "contents" process :
