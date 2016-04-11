@@ -10,7 +10,8 @@ namespace AudioStreamEngine
 {
 
 ApplicationPlugin::ApplicationPlugin(const iscore::ApplicationContext& app):
-    iscore::GUIApplicationContextPlugin{app, "AudioApplicationPlugin", nullptr}
+    iscore::GUIApplicationContextPlugin{app, "AudioApplicationPlugin", nullptr},
+    m_ctx{*this}
 {
 
 }
@@ -67,6 +68,7 @@ void ApplicationPlugin::stopEngine()
     {
         StopAudioPlayer(m_ctx.player);
         CloseAudioPlayer(m_ctx.player);
+        AudioGlobalsDestroy();
     }
     m_ctx.player = nullptr;
     m_ctx.renderer = nullptr;

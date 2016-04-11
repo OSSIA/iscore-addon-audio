@@ -44,6 +44,7 @@ void DocumentPlugin::play()
     if(!doc)
         return;
 
+    qDebug() << (void*)m_ctx.audio.player;
     if(!m_ctx.audio.player)
     {
         iscore::AppContext().components.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().startEngine();
@@ -69,6 +70,9 @@ void DocumentPlugin::play()
         doc->baseConstraint().components.add(comp);
     }
 
+    // Play
+    StartAudioPlayer(m_ctx.audio.player);
+
     if(comp)
     {
         m_stream = comp->makeStream(
@@ -84,9 +88,6 @@ void DocumentPlugin::play()
     if(m_stream)
     {
         StartSound(m_ctx.audio.player, m_stream, GenRealDate(m_ctx.audio.player, 0));
-
-        // Play
-        StartAudioPlayer(m_ctx.audio.player);
     }
     else
     {
@@ -96,11 +97,8 @@ void DocumentPlugin::play()
 
 void DocumentPlugin::stop()
 {
-    if(m_ctx.audio.player)
-    {
-        StopAudioPlayer(m_ctx.audio.player);
-        m_stream = {};
-    }
+    m_ctx.audio.plugin.stopEngine();
+    m_stream = {};
 }
 }
 }

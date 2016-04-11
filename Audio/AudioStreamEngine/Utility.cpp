@@ -1,11 +1,12 @@
 #include "Utility.hpp"
 #include <algorithm>
+
 namespace Audio
 {
 namespace AudioStreamEngine
 {
 
-AudioStream makeNStreamsParallel(const std::vector<AudioStream>& streams)
+AudioStream MixNStreams(const std::vector<AudioStream>& streams)
 {
     switch(streams.size())
     {

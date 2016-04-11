@@ -1,6 +1,7 @@
 #include "ScenarioComponent.hpp"
 #include <Scenario/Process/Algorithms/Accessors.hpp>
 #include <Audio/AudioStreamEngine/Utility.hpp>
+#include <Audio/AudioStreamEngine/GroupAudioStream.h>
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -26,14 +27,20 @@ AudioStream ScenarioComponent::makeStream(const Context& ctx) const
     m_synchros.clear();
     m_csts.clear();
 
+    auto& player = ctx.audio.player;
+    auto stream = MakeNullSound(1000);
+    //auto player = MakeGroupPlayer();
+    //auto stream = MakeGroupStream(player);
+
     auto& scenario = process();
     // First generate a symbolic date for each of the timenode (fixed if there is no trigger ?)
     for(Scenario::TimeNodeModel& tn : scenario.timeNodes)
     {
-        auto date = GenSymbolicDate(ctx.audio.player);
+        auto date = GenSymbolicDate(player);
         auto con = connect(&tn, &Scenario::TimeNodeModel::triggeredByEngine,
                            this, [=, &ctx] () {
-            SetSymbolicDate(ctx.audio.player, date, GetAudioPlayerDateInFrame(ctx.audio.player));
+            qDebug( " yaaay");
+            qDebug() << SetSymbolicDate(ctx.audio.player, date, GetAudioPlayerDateInFrame(ctx.audio.player));
         });
         m_synchros.insert(std::make_pair(tn.id(), std::make_pair(date, con)));
     }
@@ -44,25 +51,31 @@ AudioStream ScenarioComponent::makeStream(const Context& ctx) const
     for(const hierarchy_t::ConstraintPair& cst : m_hm.constraints())
     {
         // Optimize me by storing the time node ids beforehand.
+
+        auto t_start = m_synchros.at(Scenario::startEvent(cst.element, scenario).timeNode()).first;
+        auto t_end = m_synchros.at(Scenario::endEvent(cst.element, scenario).timeNode()).first;
+        auto sound =  cst.component.makeStream(ctx, t_start, t_end);
         m_csts.insert(
                     std::make_pair(
                         cst.element.id(),
-                        cst.component.makeStream(
-                            ctx,
-                            m_synchros.at(Scenario::startEvent(cst.element, scenario).timeNode()).first,
-                            m_synchros.at(Scenario::endEvent(cst.element, scenario).timeNode()).first
-                            )
+                        sound
                         )
                     );
+
+        StartSound(player, sound, t_start);
+        StopSound(player, sound, t_end);
     }
 
     // We put our constraint sounds in parallel
+    /*
     std::vector<AudioStream> vec;
     for(auto cst : m_csts)
     {
         vec.push_back(cst.second);
     }
-    return makeNStreamsParallel(vec);
+    return MixNStreams(vec);
+    */
+    return stream;
 }
 
 template<>
