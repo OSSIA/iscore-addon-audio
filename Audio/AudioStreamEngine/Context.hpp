@@ -4,14 +4,18 @@
 
 namespace iscore
 {
-class DocumentContext;
+struct DocumentContext;
 }
 namespace Audio
 {
 namespace AudioStreamEngine
 {
+class ApplicationPlugin;
+
 struct AudioContext
 {
+        ApplicationPlugin& plugin;
+
         AudioPlayerPtr player{};
         AudioRendererPtr renderer{};
         DeviceInfo device_info{};

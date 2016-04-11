@@ -55,18 +55,17 @@ AudioStream ConstraintComponent::makeStream(
     {
         // Silence
         auto sound = MakeNullSound(cst.duration.maxDuration().msec());
-        StartSound(player.audio.player, sound, start);
-        StopSound(player.audio.player, sound, end);
+        return sound;
     }
     else
     {
         using namespace std;
         // Input mix
-        map<Id<Process::ProcessModel>, pair<Scenario::ScenarioModel*, ScenarioComponent*>> scenarios;
+        vector<pair<Scenario::ScenarioModel*, ScenarioComponent*>> scenarios;
         //map<Id<Scenario::ScenarioModel>, Loop::ProcessModel*> loops;
-        map<Id<Process::ProcessModel>, pair<Sound::ProcessModel*, SoundComponent*>> sounds;
-        map<Id<Process::ProcessModel>, pair<Effect::ProcessModel*, EffectComponent*>> sfxs;
-        map<Id<Process::ProcessModel>, pair<Mix::ProcessModel*, MixComponent*>> mixs;
+        vector<pair<Sound::ProcessModel*, SoundComponent*>> sounds;
+        vector<pair<Effect::ProcessModel*, EffectComponent*>> sfxs;
+        vector<pair<Mix::ProcessModel*, MixComponent*>> mixs;
 
         for(auto& proc_pair :  m_baseComponent.processes())
         {
@@ -74,8 +73,10 @@ AudioStream ConstraintComponent::makeStream(
             auto& comp = proc_pair.component;
             if(auto scenar = dynamic_cast<Scenario::ScenarioModel*>(&proc))
             {
-                pair<Scenario::ScenarioModel*, ScenarioComponent*> f = make_pair(scenar, safe_cast<ScenarioComponent*>(&comp));
-                scenarios.insert(make_pair(scenar->id(), f));
+                scenarios.push_back(
+                            make_pair(
+                                scenar,
+                                safe_cast<ScenarioComponent*>(&comp)));
             }
             else if(auto loop = dynamic_cast<Loop::ProcessModel*>(&proc))
             {
@@ -83,32 +84,40 @@ AudioStream ConstraintComponent::makeStream(
             }
             else if(auto sound = dynamic_cast<Sound::ProcessModel*>(&proc))
             {
-                sounds.insert(make_pair(sound->id(), make_pair(sound, safe_cast<SoundComponent*>(&comp))));
+                sounds.push_back(make_pair(
+                                  sound,
+                                  safe_cast<SoundComponent*>(&comp)));
             }
             else if(auto sfx = dynamic_cast<Effect::ProcessModel*>(&proc))
             {
-                sfxs.insert(make_pair(sfx->id(), make_pair(sfx, safe_cast<EffectComponent*>(&comp))));
+                sfxs.push_back(
+                            make_pair(
+                                sfx,
+                                safe_cast<EffectComponent*>(&comp)));
             }
             else if(auto mix = dynamic_cast<Mix::ProcessModel*>(&proc))
             {
-                mixs.insert(make_pair(mix->id(), make_pair(mix, safe_cast<MixComponent*>(&comp))));
+                mixs.push_back(
+                            make_pair(
+                                mix,
+                                safe_cast<MixComponent*>(&comp)));
             }
         }
         // For now we just put all the sound streams in parallel...
         std::vector<AudioStream> soundStreams;
         for(auto sound : sounds)
         {
-            auto stream = sound.second.second->makeStream(player);
+            auto stream = sound.second->makeStream(player);
             if(stream)
                 soundStreams.push_back(stream);
         }
         for(auto scenario : scenarios)
         {
-            auto stream = scenario.second.second->makeStream(player);
+            auto stream = scenario.second->makeStream(player);
             if(stream)
                 soundStreams.push_back(stream);
         }
-        return makeNStreamsParallel(soundStreams);
+        return MixNStreams(soundStreams);
     }
 
     // Look for all the "contents" process :

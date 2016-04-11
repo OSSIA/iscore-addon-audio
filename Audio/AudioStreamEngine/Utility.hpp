@@ -6,7 +6,7 @@ namespace Audio
 {
 namespace AudioStreamEngine
 {
-AudioStream makeNStreamsParallel(
+AudioStream MixNStreams(
         const std::vector<AudioStream>& streams);
 }
 }
