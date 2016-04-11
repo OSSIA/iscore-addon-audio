@@ -14,9 +14,7 @@ struct Keys
         static const QString samplingRate;
 };
 
-class Model :
-        public iscore::SettingsDelegateModelInterface
-{
+class Model : public iscore::SettingsDelegateModelInterface{
         Q_OBJECT
 
     public:

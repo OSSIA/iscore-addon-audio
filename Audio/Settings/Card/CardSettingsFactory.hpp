@@ -6,8 +6,7 @@ namespace Audio
 namespace Settings
 {
 
-class Factory :
-        public iscore::SettingsDelegateFactory
+class Factory : public iscore::SettingsDelegateFactory
 {
         ISCORE_CONCRETE_FACTORY_DECL("e7c0bd6d-a6e2-412f-844f-125a2ad07394")
 
