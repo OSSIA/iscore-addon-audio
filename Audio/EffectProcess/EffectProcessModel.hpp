@@ -7,8 +7,8 @@
 #include <DummyProcess/DummyLayerPanelProxy.hpp>
 #include <Process/LayerModel.hpp>
 #include <Audio/MediaFileHandle.hpp>
-
-
+#include <iscore/tools/NotifyingMap.hpp>
+#include <Audio/EffectProcess/EffectModel.hpp>
 namespace Audio
 {
 namespace Effect
@@ -42,6 +42,8 @@ class ProcessModel final : public Process::ProcessModel
         {
             vis.writeTo(*this);
         }
+
+        NotifyingMap<EffectModel> effects;
 
         // Process interface
         ProcessModel* clone(
@@ -83,6 +85,7 @@ class ProcessModel final : public Process::ProcessModel
                 QObject* parent) override;
         Process::LayerModel* loadLayer_impl(const VisitorVariant&, QObject* parent) override;
         Process::LayerModel* cloneLayer_impl(const Id<Process::LayerModel>& newId, const Process::LayerModel& source, QObject* parent) override;
+
 };
 }
 }
