@@ -5,6 +5,7 @@
 #include <3rdparty/libaudiostream/src/LibAudioStreamMC++.h>
 #include <iscore/application/ApplicationContext.hpp>
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
+#include <iostream>
 
 namespace Audio {
 namespace Settings {
@@ -25,7 +26,7 @@ View::View(AudioStreamEngine::ApplicationPlugin * p) : m_aseplug{p}, m_widg{new 
     lay->addRow(tr("Buffer size"), m_bsb);
     lay->addRow(tr("Sample rate (Hz)"), m_srb);
     lay->addRow(tr("Latency"), m_ll);
-    lay->addRow(tr("Renderers"), m_driverb);
+    lay->addRow(tr("Driver"), m_driverb);
     lay->addRow(tr("Audio device"), m_cardb);
     lay->addRow(tr("Device info"), m_infol);
 
@@ -33,10 +34,14 @@ View::View(AudioStreamEngine::ApplicationPlugin * p) : m_aseplug{p}, m_widg{new 
             this, &View::bufferSizeChanged);
     connect(m_srb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this, &View::rateChanged);
+
     connect(m_driverb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this, &View::driverChanged);
+
     connect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this, &View::displayInfos);
+    connect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this, &View::cardChanged);
 
     driversMapping.insert(std::pair<long, int> (kPortAudioRenderer, -1));
     driversMapping.insert(std::pair<long, int> (kJackRenderer, -1));
@@ -88,9 +93,11 @@ void View::setDriver(int index) {
 }
 
 long View::getDriver() {
+    std::cout << "current index is " << m_driverb->currentIndex() << " out of " << m_driverb->count() << std::endl;
     if (m_driverb->currentIndex() != -1) {
         for (const auto &pair : driversMapping) {
-            return pair.first;
+            if (pair.second == m_driverb->currentIndex())
+                return pair.first;
         }
     }
     return -1;
@@ -108,6 +115,7 @@ void View::displayLatency() {
 }
 
 void View::addDriverOption(long ren) {
+    int index = m_driverb->count();
     if (CheckRendererAvailability(ren)) {
         switch (ren) {
         case kPortAudioRenderer:
@@ -128,6 +136,7 @@ void View::addDriverOption(long ren) {
         default:
             break;
         }
+        driversMapping.find(ren)->second = index;
     }
 }
 
@@ -144,10 +153,18 @@ void View::populateDrivers() {
     else {
         populateCards();
     }
+
+    connect(m_driverb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this, &View::populateCards);
+    std::cout << "Drivers mapping:" << std::endl;
+    for (auto pair : driversMapping) {
+        std::cout << pair.first << " is at index " << pair.second << std::endl;
+    }
 }
 
 void View::populateCards() {
     long ren = getDriver();
+    std::cout << "populationg cards for driver " << ren << std::endl;
     if (ren != -1) {
         long ndev = GetDeviceCount(ren);
         DeviceInfo devinfo;
