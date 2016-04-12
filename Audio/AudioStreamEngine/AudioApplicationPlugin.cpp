@@ -41,13 +41,9 @@ void ApplicationPlugin::on_newDocument(iscore::Document* doc)
 
 void ApplicationPlugin::startEngine()
 {
-    // Initialize libaudiostream structures
-    if(m_ctx.player)
-    {
-        StopAudioPlayer(m_ctx.player);
-        CloseAudioPlayer(m_ctx.player);
-    }
+    stopEngine();
 
+    // Initialize libaudiostream structures
     GetDeviceInfo(kJackRenderer, 0, &m_ctx.device_info);
     auto& dev = m_ctx.device_info;
     qDebug() << dev.fName
@@ -56,10 +52,10 @@ void ApplicationPlugin::startEngine()
              << dev.fDefaultBufferSize
              << dev.fDefaultSampleRate;
 
-    m_ctx.player = OpenAudioPlayer(0, 2, 44100, 512, 65536*4, 44100*60*20, kJackRenderer, 1);
-    m_ctx.renderer = GetAudioPlayerRenderer(m_ctx.player);
-
+    AudioGlobalsInit(0, 2, 44100, 512, 65536*4, 44100*60*20, 1);
+    m_ctx.renderer = MakeAudioRenderer(kJackRenderer);
     GetAudioRendererInfo(m_ctx.renderer, &m_ctx.renderer_info);
+    OpenAudioRenderer(m_ctx.renderer, 0, 0, 0, 2, 512, 44100);
 }
 
 void ApplicationPlugin::stopEngine()
@@ -67,18 +63,24 @@ void ApplicationPlugin::stopEngine()
     if(m_ctx.player)
     {
         StopAudioPlayer(m_ctx.player);
-        CloseAudioPlayer(m_ctx.player);
-        AudioGlobalsDestroy();
+        CloseAudioClient(m_ctx.player);
+        m_ctx.player = nullptr;
     }
-    m_ctx.player = nullptr;
-    m_ctx.renderer = nullptr;
-    m_ctx.device_info = DeviceInfo{};
-    m_ctx.renderer_info = RendererInfo{};
+
+    if(m_ctx.renderer)
+    {
+        CloseAudioRenderer(m_ctx.renderer);
+        m_ctx.renderer = nullptr;
+        m_ctx.renderer_info = {};
+        m_ctx.device_info = {};
+    }
+
+    AudioGlobalsDestroy();
 }
 
 bool ApplicationPlugin::engineStatus() const
 {
-    return m_ctx.player;
+    return m_ctx.renderer;
 }
 
 }

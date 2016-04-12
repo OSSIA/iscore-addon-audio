@@ -11,7 +11,7 @@ class DocumentPlugin : public iscore::DocumentPlugin
 {
     public:
         DocumentPlugin(
-                const AudioContext& ctx,
+                AudioContext& ctx,
                 iscore::Document& doc,
                 QObject* parent):
             iscore::DocumentPlugin{doc, "AudioDocumentPlugin", parent},
@@ -24,6 +24,9 @@ class DocumentPlugin : public iscore::DocumentPlugin
         void stop();
 
     private:
+        void startPlayer();
+        void stopPlayer();
+
         Context m_ctx;
         AudioStream m_stream;
 };

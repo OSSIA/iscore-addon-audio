@@ -3,6 +3,7 @@
 #include <Loop/LoopProcessModel.hpp>
 #include <map>
 #include <Scenario/Process/Algorithms/Accessors.hpp>
+#include <core/document/Document.hpp>
 #include <core/document/DocumentModel.hpp>
 #include <Scenario/Document/ScenarioDocument/ScenarioDocumentModel.hpp>
 #include <Audio/AudioStreamEngine/Scenario/ConstraintComponent.hpp>
@@ -44,11 +45,15 @@ void DocumentPlugin::play()
     if(!doc)
         return;
 
-    qDebug() << (void*)m_ctx.audio.player;
-    if(!m_ctx.audio.player)
+    qDebug() << (void*)m_ctx.audio.renderer ;
+    if(!m_ctx.audio.renderer)
     {
         iscore::AppContext().components.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().startEngine();
     }
+
+    // Maybe reset the player
+    stopPlayer();
+    startPlayer();
 
     // Create our tree
 
@@ -68,6 +73,15 @@ void DocumentPlugin::play()
                     m_ctx.doc,
                     this);
         doc->baseConstraint().components.add(comp);
+
+        con(m_ctx.doc.document, &iscore::Document::aboutToClose,
+                this, [=] () {
+            // Stop
+            stop();
+
+            // Delete
+            doc->baseConstraint().components.remove(comp);
+        });
     }
 
     // Play
@@ -97,8 +111,26 @@ void DocumentPlugin::play()
 
 void DocumentPlugin::stop()
 {
-    m_ctx.audio.plugin.stopEngine();
+    stopPlayer();
     m_stream = {};
+}
+
+void DocumentPlugin::startPlayer()
+{
+    if(!m_ctx.audio.player)
+    {
+        m_ctx.audio.player = OpenAudioClient(m_ctx.audio.renderer);
+    }
+}
+
+void DocumentPlugin::stopPlayer()
+{
+    if(m_ctx.audio.player)
+    {
+        StopAudioPlayer(m_ctx.audio.player);
+        CloseAudioClient(m_ctx.audio.player);
+        m_ctx.audio.player = nullptr;
+    }
 }
 }
 }

@@ -25,7 +25,7 @@ struct AudioContext
 struct Context
 {
         const iscore::DocumentContext& doc;
-        const AudioContext& audio;
+        AudioContext& audio;
 
         long time(const TimeValue& t)
         {

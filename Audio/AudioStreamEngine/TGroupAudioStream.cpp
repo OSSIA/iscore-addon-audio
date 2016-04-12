@@ -1,5 +1,6 @@
 #include "TGroupAudioStream.hpp"
 
+#include "TSharedBuffers.h"
 #include "TExpAudioMixer.h"
 #include <3rdparty/libaudiostream/src/UAudioTools.h>
 long TGroupRenderer::OpenImp(long inputDevice, long outputDevice, long inChan, long outChan, long bufferSize, long sampleRate)
@@ -65,22 +66,46 @@ long TGroupRenderer::Cont()
     return Start();
 }
 
+/**
+ * @brief The SharedBufferLocker class
+ *
+ * Will save and restore the state of shared buffers
+ */
+class TSharedBufferLocker
+{
+        float** fPrevInBuffer{TSharedBuffers::GetInBuffer()};
+        float** fPrevOutBuffer{TSharedBuffers::GetOutBuffer()};
+
+    public:
+        TSharedBufferLocker(float** in, float** out)
+        {
+            TSharedBuffers::SetInBuffer(in);
+            TSharedBuffers::SetOutBuffer(out);
+        }
+
+        ~TSharedBufferLocker()
+        {
+            TSharedBuffers::SetInBuffer(fPrevInBuffer);
+            TSharedBuffers::SetOutBuffer(fPrevOutBuffer);
+        }
+};
+
 void TGroupRenderer::Process()
 {
-    // We don't use shared buffers here.
-    auto size = TAudioGlobals::fBufferSize;
+    TSharedBufferLocker shared_buffers(fInputBuffer, fOutputBuffer);
+    auto frames = TAudioGlobals::fBufferSize;
+
     // Clear output buffers
-    UAudioTools::ZeroFloatBlk(fOutputBuffer, size, fOutput);
+    UAudioTools::ZeroFloatBlk(fOutputBuffer, frames, fOutput);
 
     // Client callback are supposed to *mix* their result in outputs
     auto iter = fClientList.begin();
     while (iter != fClientList.end())
     {
-        TAudioClientPtr client = (*iter).fRTClient;
-        if (client)
+        if (auto client = iter->fRTClient)
         {
-            client->AudioCallback(fInputBuffer, fOutputBuffer, size);
-            iter++;
+            client->AudioCallback(fInputBuffer, fOutputBuffer, frames);
+            ++iter;
         }
         else
         {
