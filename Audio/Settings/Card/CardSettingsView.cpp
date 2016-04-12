@@ -5,6 +5,7 @@
 #include <3rdparty/libaudiostream/src/LibAudioStreamMC++.h>
 #include <iscore/application/ApplicationContext.hpp>
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
+
 namespace Audio {
 namespace Settings {
 
@@ -12,7 +13,7 @@ View::View() : View(nullptr) {}
 
 View::View(AudioStreamEngine::ApplicationPlugin & p) : View(&p) {}
 
-View::View(AudioStreamEngine::ApplicationPlugin * p) : m_aseplug{p}, m_widg{new QWidget}, m_cardb{new QComboBox}, m_bsb{new QComboBox}, m_srb{new QComboBox}, m_ll{new QLabel}, m_infol{new QLabel} {
+View::View(AudioStreamEngine::ApplicationPlugin * p) : m_aseplug{p}, m_widg{new QWidget}, m_driverb(new QComboBox), m_cardb{new QComboBox}, m_bsb{new QComboBox}, m_srb{new QComboBox}, m_ll{new QLabel}, m_infol{new QLabel}, driversMapping(std::map<long, int> ()) {
     auto lay = new QFormLayout;
     m_widg->setLayout(lay);
 
@@ -24,6 +25,7 @@ View::View(AudioStreamEngine::ApplicationPlugin * p) : m_aseplug{p}, m_widg{new 
     lay->addRow(tr("Buffer size"), m_bsb);
     lay->addRow(tr("Sample rate (Hz)"), m_srb);
     lay->addRow(tr("Latency"), m_ll);
+    lay->addRow(tr("Driver"), m_driverb);
     lay->addRow(tr("Audio device"), m_cardb);
     lay->addRow(tr("Device info"), m_infol);
 
@@ -31,12 +33,23 @@ View::View(AudioStreamEngine::ApplicationPlugin * p) : m_aseplug{p}, m_widg{new 
             this, &View::bufferSizeChanged);
     connect(m_srb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this, &View::rateChanged);
+
+    connect(m_driverb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this, &View::driverChanged);
+
     connect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this, &View::displayInfos);
+    connect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this, &View::cardChanged);
 
+    driversMapping.insert(std::pair<long, int> (kPortAudioRenderer, -1));
+    driversMapping.insert(std::pair<long, int> (kJackRenderer, -1));
+    driversMapping.insert(std::pair<long, int> (kNetJackRenderer, -1));
+    driversMapping.insert(std::pair<long, int> (kCoreAudioRenderer, -1));
+    driversMapping.insert(std::pair<long, int> (kOffLineAudioRenderer, -1));
+
+    populateDrivers();
     displayLatency();
-    populateCards();
-    displayInfos();
 }
 
 int View::getCardIndex(QString name) {
@@ -72,6 +85,22 @@ void View::setSampleRate(int index) {
     displayLatency();
 }
 
+void View::setDriver(int index) {
+    if (index != m_driverb->currentIndex())
+        m_driverb->setCurrentIndex(index);
+    populateCards();
+}
+
+long View::getDriver() {
+    if (m_driverb->currentIndex() != -1) {
+        for (const auto &pair : driversMapping) {
+            if (pair.second == m_driverb->currentIndex())
+                return pair.first;
+        }
+    }
+    return -1;
+}
+
 QWidget *View::getWidget() {
     return m_widg;
 }
@@ -83,42 +112,85 @@ void View::displayLatency() {
     m_ll->setText(QString::number(latency) + QString(" ms"));
 }
 
+void View::addDriverOption(long ren) {
+    int index = m_driverb->count();
+    if (CheckRendererAvailability(ren)) {
+        switch (ren) {
+        case kPortAudioRenderer:
+            m_driverb->addItem(QString("PortAudio"));
+            break;
+        case kJackRenderer:
+            m_driverb->addItem(QString("JACK"));
+            break;
+        case kNetJackRenderer:
+            m_driverb->addItem(QString("NetJACK"));
+            break;
+        case kCoreAudioRenderer:
+            m_driverb->addItem(QString("CoreAudio"));
+            break;
+        case kOffLineAudioRenderer:
+            m_driverb->addItem(QString("Offline"));
+            break;
+        default:
+            break;
+        }
+        driversMapping.find(ren)->second = index;
+    }
+}
+
+void View::populateDrivers() {
+    addDriverOption(kPortAudioRenderer);
+    addDriverOption(kJackRenderer);
+    addDriverOption(kCoreAudioRenderer);
+    addDriverOption(kOffLineAudioRenderer);
+    addDriverOption(kNetJackRenderer);
+
+    if (m_driverb->count() == 0) {
+        m_infol->setText(tr("No driver available"));
+    }
+    else {
+        populateCards();
+    }
+
+    connect(m_driverb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this, &View::populateCards);
+}
+
 void View::populateCards() {
-    if (m_aseplug != nullptr && m_aseplug->engineStatus()) {
-        AudioRendererPtr ren = m_aseplug->context().renderer;
-        long ndev = GetDeviceCount(*(long*)ren);
+    long ren = getDriver();
+    if (ren != -1) {
+        long ndev = GetDeviceCount(ren);
         DeviceInfo devinfo;
         for (long i = 0; i < ndev ; ++i) {
-            GetDeviceInfo(*(long*)ren, i, &devinfo);
+            GetDeviceInfo(ren, i, &devinfo);
             m_cardb->addItem(QString(devinfo.fName));
         }
         m_cardb->setCurrentIndex(0);
+
+        displayInfos();
     }
 }
 
 void View::displayInfos() {
-    if (m_aseplug != nullptr && m_aseplug->engineStatus()) {
-        AudioRendererPtr ren = m_aseplug->context().renderer;
+
+    std::string info = "No devices found";
+    long ren = getDriver();
+
+    if (ren != -1) {
         DeviceInfo devinfo;
-        GetDeviceInfo(*(long*)ren, m_cardb->currentIndex(), &devinfo);
+        GetDeviceInfo(ren, m_cardb->currentIndex(), &devinfo);
 
         std::stringstream ss;
-        ss << "<i>"<< tr("Default buffer size").toStdString() << ": </i>" << devinfo.fDefaultBufferSize << "\n";
-        ss << "<i>" << tr("Default sample rate").toStdString() << ": </i>" << devinfo.fDefaultSampleRate << "\n";
-        ss << "<i>" << tr("Max input channels").toStdString() << ": </i>" << devinfo.fMaxInputChannels << "\n";
-        ss << "<i>" << tr("Max output channels").toStdString() << ": </i>" << devinfo.fMaxOutputChannels << "\n";
+        ss << "<i>"<< tr("Default buffer size").toStdString() << ": </i>" << devinfo.fDefaultBufferSize << "<br>";
+        ss << "<i>" << tr("Default sample rate").toStdString() << ": </i>" << devinfo.fDefaultSampleRate << "<br>";
+        ss << "<i>" << tr("Max input channels").toStdString() << ": </i>" << devinfo.fMaxInputChannels << "<br>";
+        ss << "<i>" << tr("Max output channels").toStdString() << ": </i>" << devinfo.fMaxOutputChannels << "<br>";
 
-        std::string text = ss.str();
-        m_infol->setText(QString(text.c_str()));
+        info = ss.str();
+
     }
-    else {
-        if (m_aseplug == nullptr) {
-            m_infol->setText(QString("No plugin"));
-        }
-        else {
-            m_infol->setText(QString("Engine status: stopped"));
-        }
-    }
+
+    m_infol->setText(QString(info.c_str()));
 }
 
 View::~View() {
@@ -127,6 +199,7 @@ View::~View() {
     delete m_srb;
     delete m_ll;
     delete m_infol;
+    delete m_driverb;
 }
 
 }
