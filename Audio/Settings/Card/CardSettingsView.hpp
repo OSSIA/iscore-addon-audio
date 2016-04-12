@@ -19,14 +19,17 @@ public:
     void setCard(int);
     void setBufferSize(int);
     void setSampleRate(int);
+    void setDriver(int);
 
     int getCardIndex(QString);
+    long getDriver();
     ~View();
 
 signals:
     void cardChanged(int);
     void bufferSizeChanged(int);
     void rateChanged(int);
+    void driverChanged(int);
 
 private:
     View(AudioStreamEngine::ApplicationPlugin *);
@@ -34,6 +37,7 @@ private:
     QWidget* getWidget() override;
     QWidget* m_widg{};
 
+    QComboBox* m_driverb{};
     QComboBox* m_cardb{};
     QComboBox* m_bsb{};
     QComboBox* m_srb{};
@@ -44,10 +48,13 @@ private:
     QLabel* m_infol{};
 
     Audio::AudioStreamEngine::ApplicationPlugin* m_aseplug;
+    std::map<long, int> driversMapping;
 
     void displayLatency();
+    void populateDrivers();
     void populateCards();
     void displayInfos();
+    void addDriverOption(long);
 };
 
 }
