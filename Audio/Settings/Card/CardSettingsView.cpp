@@ -5,7 +5,6 @@
 #include <3rdparty/libaudiostream/src/LibAudioStreamMC++.h>
 #include <iscore/application/ApplicationContext.hpp>
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
-#include <iostream>
 
 namespace Audio {
 namespace Settings {
@@ -93,7 +92,6 @@ void View::setDriver(int index) {
 }
 
 long View::getDriver() {
-    std::cout << "current index is " << m_driverb->currentIndex() << " out of " << m_driverb->count() << std::endl;
     if (m_driverb->currentIndex() != -1) {
         for (const auto &pair : driversMapping) {
             if (pair.second == m_driverb->currentIndex())
@@ -156,15 +154,10 @@ void View::populateDrivers() {
 
     connect(m_driverb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this, &View::populateCards);
-    std::cout << "Drivers mapping:" << std::endl;
-    for (auto pair : driversMapping) {
-        std::cout << pair.first << " is at index " << pair.second << std::endl;
-    }
 }
 
 void View::populateCards() {
     long ren = getDriver();
-    std::cout << "populationg cards for driver " << ren << std::endl;
     if (ren != -1) {
         long ndev = GetDeviceCount(ren);
         DeviceInfo devinfo;
