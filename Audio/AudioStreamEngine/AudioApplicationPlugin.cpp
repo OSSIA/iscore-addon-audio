@@ -3,6 +3,7 @@
 #include <core/document/Document.hpp>
 #include <core/document/DocumentModel.hpp>
 #include <Scenario/Application/ScenarioApplicationPlugin.hpp>
+#include <OSSIA/OSSIAApplicationPlugin.hpp>
 #include <QAction>
 namespace Audio
 {
@@ -21,22 +22,11 @@ void ApplicationPlugin::on_newDocument(iscore::Document* doc)
     auto plug = new DocumentPlugin{m_ctx, *doc, &doc->model()};
     doc->model().addPluginModel(plug);
 
-    auto& ctrl = doc->context().app.components.applicationPlugin<Scenario::ScenarioApplicationPlugin>();
-    auto acts = ctrl.actions();
-    for(const auto& act : acts)
-    {
-        if(act->objectName() == "Play")
-        {
-            connect(act, &QAction::toggled,
-                    plug, [=] (bool b)
-            { plug->play(); });
-        }
-        else if(act->objectName() == "Stop")
-        {
-            connect(act, &QAction::triggered,
-                    plug, [=] (bool b) { plug->stop(); });
-        }
-    }
+    auto& ctrl = doc->context().app.components.applicationPlugin<OSSIAApplicationPlugin>();
+    con(ctrl, &OSSIAApplicationPlugin::requestPlay,
+            plug, [=] { plug->play(); });
+    con(ctrl, &OSSIAApplicationPlugin::requestStop,
+            plug, [=] { plug->stop(); });
 }
 
 void ApplicationPlugin::startEngine()

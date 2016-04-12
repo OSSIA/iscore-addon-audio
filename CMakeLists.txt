@@ -167,3 +167,4 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 endif()
 
 #add_subdirectory(Audio/CustomEngine/Faust)
+add_subdirectory(tests)

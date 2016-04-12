@@ -53,6 +53,15 @@ long TGroupRenderer::Start()
 
 long TGroupRenderer::Stop()
 {
+    for(const auto& clt : fClientList)
+    {
+        if(auto mixer = dynamic_cast<TExpAudioMixer*>(clt.fRTClient))
+        {
+            mixer->SetPos(0);
+        }
+    }
+    fInfo.fCurFrame = 0;
+    fInfo.fCurUsec = 0;
     return 0;
 }
 
@@ -92,15 +101,15 @@ class TSharedBufferLocker
 
 void TGroupRenderer::Process()
 {
-    TSharedBufferLocker shared_buffers(fInputBuffer, fOutputBuffer);
+    TSharedBufferLocker shared_buffers{fInputBuffer, fOutputBuffer};
     auto frames = TAudioGlobals::fBufferSize;
 
     // Clear output buffers
     UAudioTools::ZeroFloatBlk(fOutputBuffer, frames, fOutput);
 
     // Client callback are supposed to *mix* their result in outputs
-    auto iter = fClientList.begin();
-    while (iter != fClientList.end())
+    auto iter = fClientList.cbegin();
+    while (iter != fClientList.cend())
     {
         if (auto client = iter->fRTClient)
         {
@@ -112,6 +121,8 @@ void TGroupRenderer::Process()
             iter = fClientList.erase(iter);
         }
     }
+    fInfo.fCurFrame += frames;
+    fInfo.fCurUsec = ConvertSample2Usec(fInfo.fCurFrame);
 }
 
 float** TGroupRenderer::GetOutputBuffer() const
@@ -119,8 +130,79 @@ float** TGroupRenderer::GetOutputBuffer() const
 
 void TGroupRenderer::GetInfo(RendererInfoPtr info)
 {
-    // TODO
+    (*info) = fInfo;
 }
+
+
+//////////////////////////
+//////////////////////////
+
+
+
+TSinusAudioStream::TSinusAudioStream(long duration, float freq):
+    fDuration{duration},
+    fFreq{freq}
+{
+
+}
+
+TSinusAudioStream::~TSinusAudioStream()
+{
+
+}
+
+long TSinusAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos)
+{
+    assert_stream(framesNum, framePos);
+    float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
+    auto out = buffer->GetFrame(framePos, temp1);
+
+    auto cst = 2.*M_PI*fFreq / 44100.;
+    for(int i = 0; i < framesNum; i++)
+    {
+        out[0][i] = std::sin( cst * fCurI ) * 0.5;
+        out[1][i] = std::sin( cst * fCurI ) * 0.5;
+        fCurI++;
+        qDebug() << out[0][i];
+    }
+
+    return framesNum;
+}
+
+void TSinusAudioStream::Reset()
+{
+    fCurI = 0;
+}
+
+TAudioStreamPtr TSinusAudioStream::CutBegin(long frames)
+{
+    printf("TSinusAudioStream::CutBegin error\n");
+    assert(false);
+    return NULL;
+}
+
+long TSinusAudioStream::Length()
+{
+    return fDuration;
+}
+
+long TSinusAudioStream::Channels()
+{
+    return TAudioGlobals::fInput;
+}
+
+TAudioStreamPtr TSinusAudioStream::Copy()
+{
+    printf("TSinusAudioStream::Copy error\n");
+    assert(false);
+    return NULL;
+}
+
+
+
+
+//////////////////////////
+//////////////////////////
 
 TPlayerAudioStream::TPlayerAudioStream(TGroupRenderer &renderer):
     fRenderer{renderer}
@@ -132,23 +214,26 @@ TPlayerAudioStream::~TPlayerAudioStream()
 {
 
 }
-
+#include <QDebug>
 long TPlayerAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos)
 {
     assert_stream(framesNum, framePos);
+    qDebug() << framesNum << framePos ;
 
     float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
 
     fRenderer.Process();
-
+    auto out_buffer = fRenderer.GetOutputBuffer();
     UAudioTools::MixFrameToFrameBlk1(buffer->GetFrame(framePos, temp1),
-                                     fRenderer.GetOutputBuffer(),
+                                     out_buffer,
                                      framesNum, TAudioGlobals::fInput);
+
     return framesNum;
 }
 
 void TPlayerAudioStream::Reset()
 {
+    fRenderer.Stop();
 }
 
 TAudioStreamPtr TPlayerAudioStream::CutBegin(long frames)
@@ -176,6 +261,7 @@ TAudioStreamPtr TPlayerAudioStream::Copy()
 }
 
 
+#include <iscore_plugin_audio_export.h>
 //// API
 struct AudioPlayer {
     TAudioRendererPtr fRenderer;
@@ -188,11 +274,12 @@ typedef TAudioStreamPtr AudioStream;
 
 extern "C"
 {
-AudioRendererPtr MakeGroupPlayer();
-AudioStream MakeGroupStream(AudioRendererPtr p);
+ISCORE_PLUGIN_AUDIO_EXPORT AudioRendererPtr MakeGroupPlayer();
+ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeGroupStream(AudioRendererPtr p);
+ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSinusStream(long length, float freq);
 void CloseAudioPlayer(AudioPlayerPtr ext_player); // In libaudiostreammc
 
-AudioPlayerPtr MakeGroupPlayer()
+ISCORE_PLUGIN_AUDIO_EXPORT AudioPlayerPtr MakeGroupPlayer()
 {
     int res;
 
@@ -225,11 +312,16 @@ error:
     return 0;
 }
 
-AudioStream MakeGroupStream(AudioPlayerPtr p)
+ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeGroupStream(AudioPlayerPtr p)
 {
     auto renderer = static_cast<IntAudioPlayerPtr>(p)->fRenderer;
     if(auto grp = dynamic_cast<TGroupRenderer*>(renderer))
         return new TPlayerAudioStream{*grp};
     return nullptr;
+}
+
+ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSinusStream(long length, float freq)
+{
+    return new TSinusAudioStream{length, freq};
 }
 }
