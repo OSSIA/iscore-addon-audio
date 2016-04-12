@@ -12,7 +12,7 @@ View::View() : View(nullptr) {}
 
 View::View(AudioStreamEngine::ApplicationPlugin & p) : View(&p) {}
 
-void View::View(AudioStreamEngine::ApplicationPlugin * p) : m_aseplug{p}, m_widg{new QWidget}, m_cardb{new QComboBox}, m_bsb{new QComboBox}, m_srb{new QComboBox}, m_ll{new QLabel}, m_infol{new QLabel} {
+View::View(AudioStreamEngine::ApplicationPlugin * p) : m_aseplug{p}, m_widg{new QWidget}, m_cardb{new QComboBox}, m_bsb{new QComboBox}, m_srb{new QComboBox}, m_ll{new QLabel}, m_infol{new QLabel} {
     auto lay = new QFormLayout;
     m_widg->setLayout(lay);
 
