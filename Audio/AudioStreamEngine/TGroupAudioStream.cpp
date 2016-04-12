@@ -67,7 +67,26 @@ long TGroupRenderer::Cont()
 
 void TGroupRenderer::Process()
 {
-    Run(fInputBuffer, fOutputBuffer, TAudioGlobals::fBufferSize);
+    // We don't use shared buffers here.
+    auto size = TAudioGlobals::fBufferSize;
+    // Clear output buffers
+    UAudioTools::ZeroFloatBlk(fOutputBuffer, size, fOutput);
+
+    // Client callback are supposed to *mix* their result in outputs
+    auto iter = fClientList.begin();
+    while (iter != fClientList.end())
+    {
+        TAudioClientPtr client = (*iter).fRTClient;
+        if (client)
+        {
+            client->AudioCallback(fInputBuffer, fOutputBuffer, size);
+            iter++;
+        }
+        else
+        {
+            iter = fClientList.erase(iter);
+        }
+    }
 }
 
 float** TGroupRenderer::GetOutputBuffer() const
