@@ -6,7 +6,6 @@ extern "C"
 {
 AudioRendererPtr MakeGroupPlayer();
 AudioStream MakeGroupStream(AudioRendererPtr p);
-void CloseAudioPlayer(AudioPlayerPtr ext_player); // In libaudiostreammc
 }
 
 #endif
