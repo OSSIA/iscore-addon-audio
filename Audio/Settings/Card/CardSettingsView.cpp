@@ -157,18 +157,33 @@ void View::populateDrivers() {
 }
 
 void View::populateCards() {
+
+    disconnect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+               this, &View::displayInfos);
+    disconnect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+               this, &View::cardChanged);
+
+    m_cardb->clear();
     long ren = getDriver();
+
     if (ren != -1) {
         long ndev = GetDeviceCount(ren);
-        DeviceInfo devinfo;
-        for (long i = 0; i < ndev ; ++i) {
-            GetDeviceInfo(ren, i, &devinfo);
-            m_cardb->addItem(QString(devinfo.fName));
-        }
-        m_cardb->setCurrentIndex(0);
+        if (ndev > 0) {
+            DeviceInfo devinfo;
+            for (long i = 0; i < ndev ; ++i) {
+                GetDeviceInfo(ren, i, &devinfo);
+                m_cardb->addItem(QString(devinfo.fName));
+            }
+            m_cardb->setCurrentIndex(0);
 
-        displayInfos();
+            displayInfos();
+        }
     }
+
+    connect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+               this, &View::displayInfos);
+    connect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+               this, &View::cardChanged);
 }
 
 void View::displayInfos() {
