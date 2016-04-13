@@ -16,20 +16,18 @@ public:
     View(Audio::AudioStreamEngine::ApplicationPlugin&);
 
     void setCard(QString);
-    void setCard(int);
     void setBufferSize(int);
     void setSampleRate(int);
-    void setDriver(int);
+    void setDriver(QString);
 
-    int getCardIndex(QString);
     long getDriver();
     ~View();
 
 signals:
-    void cardChanged(int);
+    void cardChanged(QString);
     void bufferSizeChanged(int);
     void rateChanged(int);
-    void driverChanged(int);
+    void driverChanged(QString);
 
 private:
     View(AudioStreamEngine::ApplicationPlugin *);
@@ -49,6 +47,13 @@ private:
 
     Audio::AudioStreamEngine::ApplicationPlugin* m_aseplug;
     std::map<long, int> driversMapping;
+
+    int getCardIndex(QString);
+    int getDriverIndex(QString);
+    void setBufferSizeFromIndex(int);
+    void setSampleRateFromIndex(int);
+    void setDriverFromIndex(int);
+    void setCardFromIndex(int);
 
     void displayLatency();
     void populateDrivers();

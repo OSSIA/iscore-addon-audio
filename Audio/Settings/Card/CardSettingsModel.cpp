@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 
 #include <Process/Style/Skin.hpp>
+
 namespace Audio
 {
 namespace Settings
