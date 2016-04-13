@@ -30,16 +30,16 @@ View::View(AudioStreamEngine::ApplicationPlugin * p) : m_aseplug{p}, m_widg{new 
     lay->addRow(tr("Device info"), m_infol);
 
     connect(m_bsb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            this, &View::bufferSizeChanged);
+            this, &View::setBufferSizeFromIndex);
     connect(m_srb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            this, &View::rateChanged);
+            this, &View::setSampleRateFromIndex);
 
-    connect(m_driverb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+    connect(m_driverb, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged),
             this, &View::driverChanged);
 
     connect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this, &View::displayInfos);
-    connect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+    connect(m_cardb, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged),
             this, &View::cardChanged);
 
     driversMapping.insert(std::pair<long, int> (kPortAudioRenderer, -1));
@@ -64,31 +64,72 @@ int View::getCardIndex(QString name) {
 void View::setCard(QString name) {
     int idx = getCardIndex(name);
     if (idx != -1) {
-        m_cardb->setCurrentIndex(idx);
+        setCardFromIndex(idx);
     }
 }
 
-void View::setCard(int index) {
-    if (index != m_cardb->currentIndex())
+void View::setCardFromIndex(int index) {
+    if (index != m_cardb->currentIndex()) {
         m_cardb->setCurrentIndex(index);
+        emit cardChanged(m_cardb->currentText());
+        displayInfos();
+    }
 }
 
-void View::setBufferSize(int index) {
-    if(index != m_bsb->currentIndex())
+void View::setBufferSize(int bufferSize) {
+    int index = m_bsb->currentIndex();
+    for (int i = 0; i < m_bsb->count(); ++i) {
+        if (bufferSize == m_bsb->itemText(i).toInt())
+            index = i;
+    }
+    setBufferSizeFromIndex(index);
+}
+
+void View::setBufferSizeFromIndex(int index) {
+    if(index != m_bsb->currentIndex()) {
         m_bsb->setCurrentIndex(index);
+        emit bufferSizeChanged(m_bsb->currentText().toInt());
+    }
     displayLatency();
 }
 
-void View::setSampleRate(int index) {
-    if(index != m_srb->currentIndex())
+void View::setSampleRate(int sampleRate) {
+    int index = m_srb->currentIndex();
+    for (int i = 0; i < m_srb->count(); ++i) {
+        if (sampleRate == m_srb->itemText(i).toInt())
+            index = i;
+    }
+    setSampleRateFromIndex(index);
+}
+
+void View::setSampleRateFromIndex(int index) {
+    if(index != m_srb->currentIndex()) {
         m_srb->setCurrentIndex(index);
+        emit rateChanged(m_srb->currentText().toInt());
+    }
     displayLatency();
 }
 
-void View::setDriver(int index) {
-    if (index != m_driverb->currentIndex())
+int View::getDriverIndex(QString name) {
+    for (int i = 0; i < m_driverb->count(); ++i) {
+        if (name == m_driverb->itemText(i))
+            return i;
+    }
+    return -1;
+}
+
+void View::setDriver(QString name) {
+    int index = getDriverIndex(name);
+    if (index != -1)
+        setDriverFromIndex(index);
+}
+
+void View::setDriverFromIndex(int index) {
+    if (index != m_driverb->currentIndex()) {
         m_driverb->setCurrentIndex(index);
-    populateCards();
+        populateCards();
+        emit driverChanged(m_driverb->currentText());
+    }
 }
 
 long View::getDriver() {
@@ -106,10 +147,15 @@ QWidget *View::getWidget() {
 }
 
 void View::displayLatency() {
-    int bs = m_bsb->currentText().toInt();
-    int sr = m_srb->currentText().toInt();
-    double latency = (double)(1000 * bs) / sr;
-    m_ll->setText(QString::number(latency) + QString(" ms"));
+    if (m_bsb->currentIndex() != -1 && m_srb->currentIndex() != -1) {
+        int bs = m_bsb->currentText().toInt();
+        int sr = m_srb->currentText().toInt();
+        double latency = (double)(1000 * bs) / sr;
+        m_ll->setText(QString::number(latency) + QString(" ms"));
+    }
+    else {
+        m_ll->setText(QString("-"));
+    }
 }
 
 void View::addDriverOption(long ren) {
@@ -160,10 +206,16 @@ void View::populateCards() {
 
     disconnect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
                this, &View::displayInfos);
-    disconnect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+    disconnect(m_cardb, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged),
                this, &View::cardChanged);
 
     m_cardb->clear();
+
+    connect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+               this, &View::displayInfos);
+    connect(m_cardb, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged),
+               this, &View::cardChanged);
+
     long ren = getDriver();
 
     if (ren != -1) {
@@ -175,23 +227,17 @@ void View::populateCards() {
                 m_cardb->addItem(QString(devinfo.fName));
             }
             m_cardb->setCurrentIndex(0);
-
-            displayInfos();
         }
+        displayInfos();
     }
-
-    connect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-               this, &View::displayInfos);
-    connect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-               this, &View::cardChanged);
 }
 
 void View::displayInfos() {
 
-    std::string info = "No devices found";
+    QString info = tr("No device selected");
     long ren = getDriver();
 
-    if (ren != -1) {
+    if (ren != -1 && m_cardb->currentIndex() != -1) {
         DeviceInfo devinfo;
         GetDeviceInfo(ren, m_cardb->currentIndex(), &devinfo);
 
@@ -201,11 +247,11 @@ void View::displayInfos() {
         ss << "<i>" << tr("Max input channels").toStdString() << ": </i>" << devinfo.fMaxInputChannels << "<br>";
         ss << "<i>" << tr("Max output channels").toStdString() << ": </i>" << devinfo.fMaxOutputChannels << "<br>";
 
-        info = ss.str();
+        info = QString(ss.str().c_str());
 
     }
 
-    m_infol->setText(QString(info.c_str()));
+    m_infol->setText(info);
 }
 
 View::~View() {

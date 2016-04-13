@@ -24,6 +24,7 @@ Presenter::Presenter(
         }
     });
 
+
     con(m, &Model::bufferSizeChanged, &v, &View::setBufferSize);
     v.setBufferSize(m.getBufferSize());
 
@@ -37,6 +38,15 @@ Presenter::Presenter(
 
     con(m, &Model::rateChanged, &v, &View::setSampleRate);
     v.setSampleRate(m.getRate());
+
+    con(m, &Model::driverChanged, &v, &View::setDriver);
+    con(m, &Model::cardChanged, &v, &View::setCard);
+
+    con(v, &View::driverChanged, &m, &Model::setDriver);
+    con(v, &View::cardChanged, &m, &Model::setCard);
+
+    v.setDriver(m.getDriver());
+    v.setCard(m.getCard());
 }
 
 QString Presenter::settingsName()
@@ -46,7 +56,7 @@ QString Presenter::settingsName()
 
 QIcon Presenter::settingsIcon()
 {
-    return QApplication::style()->standardIcon(QStyle::SP_MediaPlay);
+    return QApplication::style()->standardIcon(QStyle::SP_MediaVolume);
 }
 
 
