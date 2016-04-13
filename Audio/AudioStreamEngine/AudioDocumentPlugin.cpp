@@ -51,12 +51,14 @@ void DocumentPlugin::play()
         iscore::AppContext().components.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().startEngine();
     }
 
+    if(!m_ctx.audio.plugin.engineStatus())
+        return;
+
     // Maybe reset the player
     stopPlayer();
     startPlayer();
 
     // Create our tree
-
     // TODO make id from components !!!!
     ConstraintComponent* comp = nullptr;
     auto it = doc->baseConstraint().components.find(Id<iscore::Component>{1});

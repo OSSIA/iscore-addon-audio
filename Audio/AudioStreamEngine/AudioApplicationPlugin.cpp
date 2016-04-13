@@ -51,9 +51,7 @@ void ApplicationPlugin::startEngine()
     if(api == -1)
         return;
 
-
     // Initialize libaudiostream structures
-
     auto card = CardIdFromString(api, stngs.getCard());
     if(card == -1)
         return;
