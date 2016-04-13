@@ -14,6 +14,7 @@ EffectModel*FaustEffectFactory::makeModel(
         const Id<EffectModel>&,
         QObject* parent) const
 {
+    ISCORE_TODO;
     return nullptr;
 }
 
@@ -21,6 +22,7 @@ EffectModel*FaustEffectFactory::load(
         const VisitorVariant& data,
         QObject* parent) const
 {
+    ISCORE_TODO;
     return nullptr;
 }
 

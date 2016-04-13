@@ -14,7 +14,19 @@ namespace Audio
 namespace Effect
 {
 class ProcessModel;
-
+/**
+ * @brief The Audio::Effect::ProcessModel class
+ *
+ * This class represents an effect chain.
+ * Each effect should provide a component that will create
+ * the corresponding LibAudioStream effect.
+ *
+ * Chaining two effects blocks [A] -> [B] is akin to
+ * doing :
+ *
+ * MakeEffectSound(MakeEffectSound(Original sound, A, 0, 0), B, 0, 0)
+ *
+ */
 class ProcessModel final : public Process::ProcessModel
 {
         ISCORE_SERIALIZE_FRIENDS(Audio::Effect::ProcessModel, DataStream)
@@ -43,6 +55,7 @@ class ProcessModel final : public Process::ProcessModel
             vis.writeTo(*this);
         }
 
+        // The actual effect instances
         NotifyingMap<EffectModel> effects;
 
         // Process interface
@@ -86,6 +99,9 @@ class ProcessModel final : public Process::ProcessModel
         Process::LayerModel* loadLayer_impl(const VisitorVariant&, QObject* parent) override;
         Process::LayerModel* cloneLayer_impl(const Id<Process::LayerModel>& newId, const Process::LayerModel& source, QObject* parent) override;
 
+    private:
+        // The effect chain.
+        std::list<Id<EffectModel> m_effectOrder;
 };
 }
 }

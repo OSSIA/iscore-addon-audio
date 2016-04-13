@@ -8,6 +8,15 @@ namespace Audio
 {
 namespace Effect
 {
+/**
+ * @brief The EffectModel class
+ *
+ * Abstract class for an effect instance.
+ * A concrete example class is FaustEffectModel,
+ * which represents a Faust effect; each instance
+ * of FaustEffectModel could be a different effect (e.g.
+ * reverb, distorsion, etc.)
+ */
 class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
         public IdentifiedObject<EffectModel>,
         public iscore::SerializableInterface<EffectFactory>
@@ -39,8 +48,6 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
         virtual EffectModel* clone(
                 const Id<EffectModel>& newId,
                 QObject* parent) const = 0;
-
-    private:
 };
 }
 }
