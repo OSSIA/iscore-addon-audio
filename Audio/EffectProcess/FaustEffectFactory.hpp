@@ -11,7 +11,7 @@ namespace Effect
  * Creates or load a Faust effect.
  * A Faust effect can be either given directly in
  * text form, or as a .dsp file;
- * this logic should be handled in FaustEffectModel constructor
+ * this logic is already handled by the LibAudioStream.
  *
  */
 class FaustEffectFactory final : public EffectFactory

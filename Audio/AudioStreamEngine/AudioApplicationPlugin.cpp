@@ -30,7 +30,8 @@ void ApplicationPlugin::on_newDocument(iscore::Document* doc)
             plug, [=] { plug->stop(); });
 }
 
-int CardIdFromString(int api, const QString& str)
+static int CardIdFromString(int api, const QString& str);
+static int CardIdFromString(int api, const QString& str)
 {
     for(int i = 0; i < GetDeviceCount(api); ++i)
     {

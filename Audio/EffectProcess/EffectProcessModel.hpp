@@ -55,8 +55,10 @@ class ProcessModel final : public Process::ProcessModel
             vis.writeTo(*this);
         }
 
-        // The actual effect instances
-        NotifyingMap<EffectModel> effects;
+        const auto& effects() const
+        { return m_effects; }
+        void insertEffect(EffectModel* eff, int pos);
+        void removeEffect(const EffectModel&);
 
         // Process interface
         ProcessModel* clone(
@@ -100,6 +102,9 @@ class ProcessModel final : public Process::ProcessModel
         Process::LayerModel* cloneLayer_impl(const Id<Process::LayerModel>& newId, const Process::LayerModel& source, QObject* parent) override;
 
     private:
+        // The actual effect instances
+        NotifyingMap<EffectModel> m_effects;
+
         // The effect chain.
         std::list<Id<EffectModel>> m_effectOrder;
 };

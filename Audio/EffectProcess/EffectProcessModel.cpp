@@ -42,6 +42,18 @@ ProcessModel::~ProcessModel()
 
 }
 
+void ProcessModel::insertEffect(
+        EffectModel* eff,
+        int pos)
+{
+    ISCORE_TODO;
+}
+
+void ProcessModel::removeEffect(const EffectModel& e)
+{
+    ISCORE_TODO;
+}
+
 ProcessModel* ProcessModel::clone(
         const Id<Process::ProcessModel>& newId,
         QObject* newParent) const

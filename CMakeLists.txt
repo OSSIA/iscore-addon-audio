@@ -60,6 +60,9 @@ set(HDRS ${HDRS}
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/ChangeAudioFile.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/AudioCommandFactory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/InsertEffect.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/MoveEffect.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/RemoveEffect.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.hpp"
@@ -136,6 +139,9 @@ set(SRCS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/ChangeAudioFile.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/AudioCommandFactory.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/InsertEffect.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/MoveEffect.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/RemoveEffect.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.cpp"
