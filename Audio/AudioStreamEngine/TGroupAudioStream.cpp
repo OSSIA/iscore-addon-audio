@@ -2,33 +2,40 @@
 
 #include "TSharedBuffers.h"
 #include <iostream>
+#include <QDebug>
 #include "TExpAudioMixer.h"
 #include <3rdparty/libaudiostream/src/UAudioTools.h>
-long TGroupRenderer::OpenImp(long inputDevice, long outputDevice, long inChan, long outChan, long bufferSize, long sampleRate)
+long TGroupRenderer::OpenImp(
+        long inputDevice,
+        long outputDevice,
+        long inChan,
+        long outChan,
+        long bufferSize,
+        long sampleRate)
 {
+    assert(false);
+    // Shouldn't be used.
     return 0;
 }
 
 TGroupRenderer::TGroupRenderer(): TAudioRenderer()
 {
-    fInputBuffer = new float*[TAudioGlobals::fInput];
-    fOutputBuffer = new float*[TAudioGlobals::fOutput];
-
-    for (int i = 0; i < TAudioGlobals::fInput; i++) {
-        fInputBuffer[i] = new float[TAudioGlobals::fBufferSize];
-    }
-    for (int i = 0; i < TAudioGlobals::fInput; i++) {
-        fOutputBuffer[i] = new float[TAudioGlobals::fBufferSize];
-    }
 }
 
 TGroupRenderer::~TGroupRenderer()
 {
-    for (int i = 0; i < TAudioGlobals::fInput; i++) {
-        delete [] fInputBuffer[i];
+    if(fInputBuffer)
+    {
+        for (int i = 0; i < fInput; i++) {
+            delete [] fInputBuffer[i];
+        }
     }
-    for (int i = 0; i < TAudioGlobals::fInput; i++) {
-        delete [] fOutputBuffer[i];;
+
+    if(fOutputBuffer)
+    {
+        for (int i = 0; i < fOutput; i++) {
+            delete [] fOutputBuffer[i];
+        }
     }
 
     delete [] fInputBuffer;
@@ -37,9 +44,19 @@ TGroupRenderer::~TGroupRenderer()
 
 long TGroupRenderer::Open(long inChan, long outChan, long bufferSize, long sampleRate)
 {
-    int inDevice = 0;
-    int outDevice = 0;
-    return OpenImp(inDevice, outDevice, inChan, outChan, bufferSize, sampleRate);
+    TAudioRenderer::Open(inChan, outChan, bufferSize, sampleRate);
+
+    fInputBuffer = new float*[inChan];
+    fOutputBuffer = new float*[outChan];
+
+    for (int i = 0; i < inChan; i++) {
+        fInputBuffer[i] = new float[bufferSize];
+    }
+    for (int i = 0; i < outChan; i++) {
+        fOutputBuffer[i] = new float[bufferSize];
+    }
+
+    return 0;
 }
 
 long TGroupRenderer::Close()
@@ -68,11 +85,13 @@ long TGroupRenderer::Stop()
 
 long TGroupRenderer::Pause()
 {
+    // TODO
     return Stop();
 }
 
 long TGroupRenderer::Cont()
 {
+    // TODO
     return Start();
 }
 
@@ -89,6 +108,7 @@ class TSharedBufferLocker
     public:
         TSharedBufferLocker(float** in, float** out)
         {
+            // TODO maybe we should also save the number of channels ... ?
             TSharedBuffers::SetInBuffer(in);
             TSharedBuffers::SetOutBuffer(out);
         }
@@ -103,10 +123,10 @@ class TSharedBufferLocker
 void TGroupRenderer::Process()
 {
     TSharedBufferLocker shared_buffers{fInputBuffer, fOutputBuffer};
-    auto frames = TAudioGlobals::fBufferSize;
+    auto frames = fBufferSize;
 
     // Clear output buffers
-    UAudioTools::ZeroFloatBlk(fOutputBuffer, frames, 2); // TODO set correct channel count
+    UAudioTools::ZeroFloatBlk(fOutputBuffer, frames, fOutput); // TODO set correct channel count
     // Client callback are supposed to *mix* their result in outputs
     auto iter = fClientList.cbegin();
     while (iter != fClientList.cend())
@@ -214,7 +234,7 @@ TPlayerAudioStream::~TPlayerAudioStream()
 {
 
 }
-#include <QDebug>
+
 long TPlayerAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos)
 {
     assert_stream(framesNum, framePos);
@@ -291,6 +311,8 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioPlayerPtr MakeGroupPlayer()
     }
 
     player->fRenderer = new TGroupRenderer;
+    res = player->fRenderer->Open(TAudioGlobals::fInput, TAudioGlobals::fOutput,
+                                  TAudioGlobals::fBufferSize, TAudioGlobals::fSampleRate);
     if (!player->fRenderer) {
         goto error;
     }
@@ -301,7 +323,6 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioPlayerPtr MakeGroupPlayer()
     }
 
     player->fRenderer->AddClient(player->fMixer);
-    res = player->fRenderer->Open(2, 2, 512, 44100);
 
     if (res == NO_ERR) {
         return player;

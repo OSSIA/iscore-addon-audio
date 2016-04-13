@@ -85,14 +85,12 @@ void DocumentPlugin::play()
     }
 
     // Play
-    StartAudioPlayer(m_ctx.audio.player);
 
+    StartAudioPlayer(m_ctx.audio.player);
     if(comp)
     {
         m_stream = comp->makeStream(
-                    m_ctx,
-                    GenRealDate(m_ctx.audio.player, 0),
-                    GenSymbolicDate(m_ctx.audio.player));
+                    m_ctx);
     }
     else
     {

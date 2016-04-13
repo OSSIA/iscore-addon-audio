@@ -36,67 +36,53 @@ class test1: public QObject
                      << dev.fDefaultBufferSize
                      << dev.fDefaultSampleRate;
 
-            if(1)
-            {
-                m_ctx.player = OpenAudioPlayer(2, 2, 44100, 512, 65536*4, 44100*60*20, kJackRenderer, 1);
-                m_ctx.renderer = GetAudioPlayerRenderer(m_ctx.player);
-            }
-            else
-            {
-                AudioGlobalsInit(2, 2, 44100, 512, 65536*4, 44100*60*20, 1);
-                m_ctx.renderer = MakeAudioRenderer(kJackRenderer);
-                m_ctx.player = OpenAudioClient(m_ctx.renderer);
-                OpenAudioRenderer(m_ctx.renderer, 0, 0, 2, 2, 512, 44100);
-            }
+            m_ctx.player = OpenAudioPlayer(2, 2, 44100, 512, 65536*4, 44100*60*20, kJackRenderer, 1);
+            m_ctx.renderer = GetAudioPlayerRenderer(m_ctx.player);
 
-            {
-                if(1)
-                {
+            auto player = MakeGroupPlayer();
+            auto symdate1 = GenSymbolicDate(player);
+            auto symdate2 = GenSymbolicDate(player);
 
+            // First sound
+            StartSound(player,
+                       MakeFadeSound(
+                           MakeSinusStream(44100 * 10, 330), 44100, 2048),
+                       symdate1);
 
-                    {
-                        auto player = MakeGroupPlayer();
+            // Second sound
+            StartSound(player,
+                       MakeFadeSound(
+                           MakeSinusStream(44100 * 10, 220), 44100, 2048),
+                       symdate2);
 
-                        // First sound
-                        StartSound(player,
-                                    MakeFadeSound(
-                                       MakeSinusStream(44100 * 10, 330), 44100, 2048),
-                                   GenRealDate(player, 0));
+            // Third sound
+            auto file = MakeReadSound("/tmp/1.wav");
+            StartSound(player, file, symdate2);
 
-                        // Second sound
-                        StartSound(player,
-                                   MakeFadeSound(
-                                       MakeSinusStream(44100 * 10, 220), 44100, 2048),
-                                   GenRealDate(player, 44100));
+            // Make a stream on the sound
+            auto stream = MakeGroupStream(player);
 
-                        // Third sound
-                        auto file = MakeReadSound("/tmp/1.wav");
-                        StartSound(player, file, GenRealDate(player, 88200));
+            // Add an effec on the stream
+            auto fx = MakeFaustAudioEffect("/tmp/examples/freeverb.dsp", "/tmp/examples", "");
+            qDebug() << GetLastLibError();
 
-                        auto stream = MakeGroupStream(player);
-                        auto fx = MakeFaustAudioEffect("/tmp/examples/freeverb.dsp", "/tmp/examples", "");
-                        qDebug() << GetLastLibError();
-
-                        auto effect = MakeEffectSound(stream, fx, 0, 0);
-                        StartSound(m_ctx.player, effect, GenRealDate(m_ctx.player, 0));
-                    }
-
-                    {/*
-                        auto file = MakeReadSound("/tmp/1.wav");
-                        StartSound(m_ctx.player, file, GenRealDate(m_ctx.player, 0));*/
-                    }//StartSound(m_ctx.player, sound, GenRealDate(m_ctx.player, 0));
-                }
-                else
-                {
-                    auto sound = MakeSinusStream(44100 * 2, 220);
-                    StartSound(m_ctx.player, sound, GenRealDate(m_ctx.player, 0));
-                }
-                StartAudioPlayer(m_ctx.player);
-            }
-
+            auto effect = MakeEffectSound(stream, fx, 0, 0);
+            StartSound(m_ctx.player, effect, GenRealDate(m_ctx.player, 0));
+            StartAudioPlayer(m_ctx.player);
 
             for(int i = 10; i --> 0;)
+            {
                 std::this_thread::sleep_for(1s);
+                switch(i)
+                {
+                    case 3:
+                        SetSymbolicDate(player, symdate1, GetAudioPlayerDateInFrame(player));
+                        break;
+                    case 5:
+                        SetSymbolicDate(player, symdate2, GetAudioPlayerDateInFrame(player));
+                        break;
+                }
+            }
 
             StopAudioPlayer(m_ctx.player);
             CloseAudioClient(m_ctx.player);

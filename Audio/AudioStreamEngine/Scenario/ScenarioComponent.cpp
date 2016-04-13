@@ -27,18 +27,17 @@ AudioStream ScenarioComponent::makeStream(const Context& ctx) const
     m_synchros.clear();
     m_csts.clear();
 
-    auto player = MakeGroupPlayer();
-    auto stream = MakeGroupStream(player);
+    m_renderer = MakeGroupPlayer();
+    m_group = MakeGroupStream(m_renderer);
 
     auto& scenario = process();
     // First generate a symbolic date for each of the timenode (fixed if there is no trigger ?)
     for(Scenario::TimeNodeModel& tn : scenario.timeNodes)
     {
-        auto date = GenSymbolicDate(player);
+        auto date = GenSymbolicDate(m_renderer);
         auto con = connect(&tn, &Scenario::TimeNodeModel::triggeredByEngine,
-                           this, [=, &ctx] () {
-            qDebug( " yaaay");
-            qDebug() << SetSymbolicDate(player, date, GetAudioPlayerDateInFrame(player));
+                           this, [=] () {
+            qDebug() << SetSymbolicDate(m_renderer, date, GetAudioPlayerDateInFrame(m_renderer));
         });
         m_synchros.insert(std::make_pair(tn.id(), std::make_pair(date, con)));
     }
@@ -52,7 +51,7 @@ AudioStream ScenarioComponent::makeStream(const Context& ctx) const
 
         auto t_start = m_synchros.at(Scenario::startEvent(cst.element, scenario).timeNode()).first;
         auto t_end = m_synchros.at(Scenario::endEvent(cst.element, scenario).timeNode()).first;
-        auto sound =  cst.component.makeStream(ctx, t_start, t_end);
+        auto sound =  cst.component.makeStream(ctx);
         m_csts.insert(
                     std::make_pair(
                         cst.element.id(),
@@ -60,20 +59,11 @@ AudioStream ScenarioComponent::makeStream(const Context& ctx) const
                         )
                     );
 
-        StartSound(player, sound, t_start);
-        StopSound(player, sound, t_end);
+        StartSound(m_renderer, sound, t_start);
+        StopSound(m_renderer, sound, t_end);
     }
 
-    // We put our constraint sounds in parallel
-    /*
-    std::vector<AudioStream> vec;
-    for(auto cst : m_csts)
-    {
-        vec.push_back(cst.second);
-    }
-    return MixNStreams(vec);
-    */
-    return stream;
+    return m_group;
 }
 
 template<>

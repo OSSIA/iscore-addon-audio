@@ -1,4 +1,5 @@
 #include "CardSettingsView.hpp"
+#include "CardSettingsModel.hpp"
 #include <QLabel>
 #include <QComboBox>
 #include <QFormLayout>
@@ -161,35 +162,20 @@ void View::displayLatency() {
 void View::addDriverOption(long ren) {
     int index = m_driverb->count();
     if (CheckRendererAvailability(ren)) {
-        switch (ren) {
-        case kPortAudioRenderer:
-            m_driverb->addItem(QString("PortAudio"));
-            break;
-        case kJackRenderer:
-            m_driverb->addItem(QString("JACK"));
-            break;
-        case kNetJackRenderer:
-            m_driverb->addItem(QString("NetJACK"));
-            break;
-        case kCoreAudioRenderer:
-            m_driverb->addItem(QString("CoreAudio"));
-            break;
-        case kOffLineAudioRenderer:
-            m_driverb->addItem(QString("Offline"));
-            break;
-        default:
-            break;
+
+        auto& idmap = DriverNameMap();
+        auto str = idmap.key(ren);
+        if(!str.isEmpty())
+        {
+            m_driverb->addItem(str);
         }
         driversMapping.find(ren)->second = index;
     }
 }
 
 void View::populateDrivers() {
-    addDriverOption(kPortAudioRenderer);
-    addDriverOption(kJackRenderer);
-    addDriverOption(kCoreAudioRenderer);
-    addDriverOption(kOffLineAudioRenderer);
-    addDriverOption(kNetJackRenderer);
+    for(int driver = kPortAudioRenderer; driver <= kNetJackRenderer; ++driver )
+        addDriverOption(driver);
 
     if (m_driverb->count() == 0) {
         m_infol->setText(tr("No driver available"));

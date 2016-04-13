@@ -34,10 +34,7 @@ class ConstraintComponent final :
                 QObject* parent_comp);
         ~ConstraintComponent();
 
-        AudioStream makeStream(
-                const Context& player,
-                SymbolicDate start,
-                SymbolicDate end);
+        AudioStream makeStream(const Context& player);
 
         ProcessComponent* make_processComponent(
                 const Id<Component> & id,

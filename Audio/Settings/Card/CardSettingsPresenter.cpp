@@ -16,6 +16,8 @@ Presenter::Presenter(
         QObject *parent):
     iscore::SettingsDelegatePresenterInterface{m, v, parent}
 {
+    // Buffer size
+    con(m, &Model::bufferSizeChanged, &v, &View::setBufferSize);
     con(v, &View::bufferSizeChanged,
         this, [&] (auto bufferSize) {
         if(bufferSize != m.getBufferSize())
@@ -24,10 +26,10 @@ Presenter::Presenter(
         }
     });
 
-
-    con(m, &Model::bufferSizeChanged, &v, &View::setBufferSize);
     v.setBufferSize(m.getBufferSize());
 
+    // Rate
+    con(m, &Model::rateChanged, &v, &View::setSampleRate);
     con(v, &View::rateChanged,
         this, [&] (auto sampleRate) {
         if(sampleRate != m.getRate())
@@ -36,17 +38,32 @@ Presenter::Presenter(
         }
     });
 
-    con(m, &Model::rateChanged, &v, &View::setSampleRate);
     v.setSampleRate(m.getRate());
 
+    // Driver
     con(m, &Model::driverChanged, &v, &View::setDriver);
-    con(m, &Model::cardChanged, &v, &View::setCard);
-
-    con(v, &View::driverChanged, &m, &Model::setDriver);
-    con(v, &View::cardChanged, &m, &Model::setCard);
-
+    con(v, &View::driverChanged,
+        this, [&] (auto driver) {
+        if(driver != m.getDriver())
+        {
+            m_disp.submitCommand<SetDriver>(this->model(this), driver);
+        }
+    });
     v.setDriver(m.getDriver());
+
+    // Card
+    con(m, &Model::cardChanged, &v, &View::setCard);
+    con(v, &View::cardChanged,
+        this, [&] (auto card) {
+        if(card != m.getCard())
+        {
+            m_disp.submitCommand<SetCard>(this->model(this), card);
+        }
+    });
+
     v.setCard(m.getCard());
+
+    qDebug() << m.getDriver() << m.getCard();
 }
 
 QString Presenter::settingsName()

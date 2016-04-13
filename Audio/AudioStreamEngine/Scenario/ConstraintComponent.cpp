@@ -44,12 +44,8 @@ ConstraintComponent::~ConstraintComponent()
 }
 
 
-AudioStream ConstraintComponent::makeStream(
-        const Context& player,
-        SymbolicDate start,
-        SymbolicDate end)
+AudioStream ConstraintComponent::makeStream(const Context& player)
 {
-
     auto& cst = m_baseComponent.constraint;
     if(cst.processes.empty())
     {
@@ -109,13 +105,19 @@ AudioStream ConstraintComponent::makeStream(
         {
             auto stream = sound.second->makeStream(player);
             if(stream)
+            {
+                qDebug() << "adding a sound";
                 soundStreams.push_back(stream);
+            }
         }
         for(auto scenario : scenarios)
         {
             auto stream = scenario.second->makeStream(player);
             if(stream)
+            {
+                qDebug() << "adding a scenario";
                 soundStreams.push_back(stream);
+            }
         }
         return MixNStreams(soundStreams);
     }

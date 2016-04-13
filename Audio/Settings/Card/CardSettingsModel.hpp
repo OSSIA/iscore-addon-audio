@@ -20,6 +20,7 @@ class Model : public iscore::SettingsDelegateModelInterface{
     public:
         Model();
 
+        int getDriverId() const;
         QString getDriver() const;
         void setDriver(const QString&);
 
@@ -51,5 +52,6 @@ ISCORE_SETTINGS_PARAMETER(Model, Card)
 ISCORE_SETTINGS_PARAMETER(Model, BufferSize)
 ISCORE_SETTINGS_PARAMETER(Model, Rate)
 
+const QMap<QString, int>& DriverNameMap();
 }
 }

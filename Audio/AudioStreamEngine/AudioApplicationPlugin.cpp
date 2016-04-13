@@ -5,6 +5,7 @@
 #include <Scenario/Application/ScenarioApplicationPlugin.hpp>
 #include <OSSIA/OSSIAApplicationPlugin.hpp>
 #include <QAction>
+#include <Audio/Settings/Card/CardSettingsModel.hpp>
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -29,12 +30,35 @@ void ApplicationPlugin::on_newDocument(iscore::Document* doc)
             plug, [=] { plug->stop(); });
 }
 
+int CardIdFromString(int api, const QString& str)
+{
+    for(int i = 0; i < GetDeviceCount(api); ++i)
+    {
+        DeviceInfo devinfo;
+        GetDeviceInfo(api, i, &devinfo);
+        if(str == QString::fromUtf8(devinfo.fName))
+            return i;
+    }
+    return -1;
+}
+
 void ApplicationPlugin::startEngine()
 {
     stopEngine();
 
+    auto& stngs = iscore::GUIApplicationContextPlugin::context.settings<Audio::Settings::Model>();
+    auto api = stngs.getDriverId();
+    if(api == -1)
+        return;
+
+
     // Initialize libaudiostream structures
-    GetDeviceInfo(kJackRenderer, 0, &m_ctx.device_info);
+
+    auto card = CardIdFromString(api, stngs.getCard());
+    if(card == -1)
+        return;
+
+    GetDeviceInfo(api, card, &m_ctx.device_info);
     auto& dev = m_ctx.device_info;
     qDebug() << dev.fName
              << dev.fMaxInputChannels
@@ -42,10 +66,15 @@ void ApplicationPlugin::startEngine()
              << dev.fDefaultBufferSize
              << dev.fDefaultSampleRate;
 
-    AudioGlobalsInit(0, 2, 44100, 512, 65536*4, 44100*60*20, 1);
-    m_ctx.renderer = MakeAudioRenderer(kJackRenderer);
+    AudioGlobalsInit(2, 2, stngs.getRate(),
+                     stngs.getBufferSize(),
+                     65536*4,
+                     stngs.getRate()*60*20,
+                     1);
+
+    m_ctx.renderer = MakeAudioRenderer(api);
     GetAudioRendererInfo(m_ctx.renderer, &m_ctx.renderer_info);
-    OpenAudioRenderer(m_ctx.renderer, 0, 0, 0, 2, 512, 44100);
+    OpenAudioRenderer(m_ctx.renderer, 0, card, 2, 2, stngs.getBufferSize(), stngs.getRate());
 }
 
 void ApplicationPlugin::stopEngine()

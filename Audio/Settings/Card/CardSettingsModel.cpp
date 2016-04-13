@@ -2,7 +2,7 @@
 #include <QSettings>
 #include <QFile>
 #include <QJsonDocument>
-
+#include <3rdparty/libaudiostream/src/LibAudioStreamMC++.h>
 #include <Process/Style/Skin.hpp>
 
 namespace Audio
@@ -29,13 +29,25 @@ Model::Model()
     }
     else
     {
-        setCard(s.value(Keys::driver).toString());
+        setDriver(s.value(Keys::driver).toString());
         setCard(s.value(Keys::card).toString());
         setBufferSize(s.value(Keys::bufferSize).toInt());
         setRate(s.value(Keys::samplingRate).toInt());
     }
 
     // TODO validate audio settings
+}
+
+int Model::getDriverId() const
+{
+    auto& idmap = DriverNameMap();
+    auto it = idmap.constFind(m_driver);
+    if(it != idmap.constEnd())
+    {
+        return *it;
+    }
+
+    return -1;
 }
 
 QString Model::getDriver() const
@@ -112,6 +124,19 @@ void Model::setFirstTimeSettings()
     setCard("");
     setBufferSize(512);
     setRate(44100);
+}
+
+const QMap<QString, int>& DriverNameMap()
+{
+    static const QMap<QString, int> idmap{
+        std::make_pair("PortAudio", kPortAudioRenderer),
+                std::make_pair("JACK", kJackRenderer),
+                std::make_pair("NetJACK", kNetJackRenderer),
+                std::make_pair("CoreAudio", kCoreAudioRenderer),
+                std::make_pair("Offline", kOffLineAudioRenderer)
+    };
+
+    return idmap;
 }
 
 }

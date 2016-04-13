@@ -67,6 +67,9 @@ class ScenarioComponent final : public ProcessComponent_T<Scenario::ScenarioMode
         mutable std::map<Id<Scenario::TimeNodeModel>, std::pair<SymbolicDate, QMetaObject::Connection>> m_synchros;
         mutable std::map<Id<Scenario::ConstraintModel>, AudioStream> m_csts;
 
+        mutable AudioRendererPtr m_renderer;
+        mutable AudioStream m_group;
+
 };
 
 }
