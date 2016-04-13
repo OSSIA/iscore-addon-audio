@@ -101,7 +101,7 @@ class ProcessModel final : public Process::ProcessModel
 
     private:
         // The effect chain.
-        std::list<Id<EffectModel> m_effectOrder;
+        std::list<Id<EffectModel>> m_effectOrder;
 };
 }
 }
