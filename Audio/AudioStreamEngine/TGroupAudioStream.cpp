@@ -1,6 +1,7 @@
 #include "TGroupAudioStream.hpp"
 
 #include "TSharedBuffers.h"
+#include <iostream>
 #include "TExpAudioMixer.h"
 #include <3rdparty/libaudiostream/src/UAudioTools.h>
 long TGroupRenderer::OpenImp(long inputDevice, long outputDevice, long inChan, long outChan, long bufferSize, long sampleRate)
@@ -105,8 +106,7 @@ void TGroupRenderer::Process()
     auto frames = TAudioGlobals::fBufferSize;
 
     // Clear output buffers
-    UAudioTools::ZeroFloatBlk(fOutputBuffer, frames, fOutput);
-
+    UAudioTools::ZeroFloatBlk(fOutputBuffer, frames, 2); // TODO set correct channel count
     // Client callback are supposed to *mix* their result in outputs
     auto iter = fClientList.cbegin();
     while (iter != fClientList.cend())
@@ -154,16 +154,16 @@ TSinusAudioStream::~TSinusAudioStream()
 long TSinusAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos)
 {
     assert_stream(framesNum, framePos);
+
     float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
     auto out = buffer->GetFrame(framePos, temp1);
 
     auto cst = 2.*M_PI*fFreq / 44100.;
     for(int i = 0; i < framesNum; i++)
     {
-        out[0][i] = std::sin( cst * fCurI ) * 0.5;
-        out[1][i] = std::sin( cst * fCurI ) * 0.5;
+        out[0][i] += std::sin( cst * fCurI ) * 0.25;
+        out[1][i] += std::sin( cst * fCurI ) * 0.25;
         fCurI++;
-        qDebug() << out[0][i];
     }
 
     return framesNum;
@@ -218,12 +218,12 @@ TPlayerAudioStream::~TPlayerAudioStream()
 long TPlayerAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos)
 {
     assert_stream(framesNum, framePos);
-    qDebug() << framesNum << framePos ;
 
     float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
 
     fRenderer.Process();
     auto out_buffer = fRenderer.GetOutputBuffer();
+
     UAudioTools::MixFrameToFrameBlk1(buffer->GetFrame(framePos, temp1),
                                      out_buffer,
                                      framesNum, TAudioGlobals::fInput);

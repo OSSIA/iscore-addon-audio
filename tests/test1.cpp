@@ -53,15 +53,38 @@ class test1: public QObject
                 if(1)
                 {
 
-                    auto sound = MakeSinusStream(44100 * 2, 220);
-                    auto player = MakeGroupPlayer();
-                    StartSound(player, sound, GenRealDate(player, 44100));
-                    auto stream = MakeGroupStream(player);
 
-                    auto file = MakeReadSound("/tmp/1.wav");
-                    StartSound(m_ctx.player, stream, GenRealDate(m_ctx.player, 44100));
-                    StartSound(m_ctx.player, file, GenRealDate(m_ctx.player, 0));
-                    //StartSound(m_ctx.player, sound, GenRealDate(m_ctx.player, 0));
+                    {
+                        auto player = MakeGroupPlayer();
+
+                        // First sound
+                        StartSound(player,
+                                    MakeFadeSound(
+                                       MakeSinusStream(44100 * 10, 330), 44100, 2048),
+                                   GenRealDate(player, 0));
+
+                        // Second sound
+                        StartSound(player,
+                                   MakeFadeSound(
+                                       MakeSinusStream(44100 * 10, 220), 44100, 2048),
+                                   GenRealDate(player, 44100));
+
+                        // Third sound
+                        auto file = MakeReadSound("/tmp/1.wav");
+                        StartSound(player, file, GenRealDate(player, 88200));
+
+                        auto stream = MakeGroupStream(player);
+                        auto fx = MakeFaustAudioEffect("/tmp/examples/freeverb.dsp", "/tmp/examples", "");
+                        qDebug() << GetLastLibError();
+
+                        auto effect = MakeEffectSound(stream, fx, 0, 0);
+                        StartSound(m_ctx.player, effect, GenRealDate(m_ctx.player, 0));
+                    }
+
+                    {/*
+                        auto file = MakeReadSound("/tmp/1.wav");
+                        StartSound(m_ctx.player, file, GenRealDate(m_ctx.player, 0));*/
+                    }//StartSound(m_ctx.player, sound, GenRealDate(m_ctx.player, 0));
                 }
                 else
                 {
