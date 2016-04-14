@@ -127,6 +127,7 @@ AudioStream ConstraintComponent::makeStream(const Context& player)
             }
         }
 
+
         auto stream = MixNStreams(soundStreams);
         auto timestretch = MakePitchSchiftTimeStretchSound(stream, &m_shift, &m_stretch);
         return timestretch;
