@@ -7,15 +7,89 @@
 #include <DummyProcess/DummyLayerPanelProxy.hpp>
 #include <Process/LayerModel.hpp>
 #include <Audio/MediaFileHandle.hpp>
+#include <unordered_set>
+
+#include <boost/multi_index/identity.hpp>
+
+namespace Audio
+{
+namespace Effect
+{
+class ProcessModel;
+}
+
+namespace Mix
+{
+struct Routing
+{
+        friend bool operator==(const Routing& lhs, const Routing& rhs)
+        {
+            return lhs.in == rhs.in && lhs.out == rhs.out;
+        }
+
+        Id<Process::ProcessModel> in;
+        Id<Process::ProcessModel> out;
+
+        double mix{};
+};
+
+using RoutingMap = bmi::multi_index_container<
+Routing,
+bmi::indexed_by<
+    bmi::hashed_unique<
+        bmi::identity<Routing>
+    >
+>
+>;
+}
+}
+
+
+namespace std {
+template<>
+struct hash<Audio::Mix::Routing> {
+public:
+    auto operator()(const Audio::Mix::Routing &s) const
+    {
+        auto h1 = id_hash<Process::ProcessModel>()(s.in);
+        auto h2 = id_hash<Process::ProcessModel>()(s.out);
+        return h1 ^ ( h2 << 1 );
+    }
+};
+}
+
+
+namespace boost {
+template<>
+struct hash<Audio::Mix::Routing> {
+public:
+    auto operator()(const Audio::Mix::Routing &s) const
+    {
+        auto h1 = id_hash<Process::ProcessModel>()(s.in);
+        auto h2 = id_hash<Process::ProcessModel>()(s.out);
+        return h1 ^ ( h2 << 1 );
+    }
+};
+}
+
+
 
 
 namespace Audio
 {
 namespace Mix
 {
-class ProcessModel;
-
-class ProcessModel final : public Process::ProcessModel
+/**
+ * @brief The Mix::ProcessModel class
+ *
+ * Cases to handle carefully :
+ * - Serialization
+ * - Copy, cloning
+ * - Recreation (undo - redo)
+ */
+class ProcessModel final :
+        public Process::ProcessModel,
+        public Nano::Observer
 {
         ISCORE_SERIALIZE_FRIENDS(Audio::Mix::ProcessModel, DataStream)
         ISCORE_SERIALIZE_FRIENDS(Audio::Mix::ProcessModel, JSONObject)
@@ -42,6 +116,8 @@ class ProcessModel final : public Process::ProcessModel
         {
             vis.writeTo(*this);
         }
+
+        void updateRouting(const Routing&);
 
         // Process interface
         ProcessModel* clone(
@@ -74,7 +150,7 @@ class ProcessModel final : public Process::ProcessModel
         void serialize_impl(const VisitorVariant& vis) const override;
 
     signals:
-        void fileChanged();
+        void routingChanged();
 
     protected:
         Process::LayerModel* makeLayer_impl(
@@ -83,6 +159,15 @@ class ProcessModel final : public Process::ProcessModel
                 QObject* parent) override;
         Process::LayerModel* loadLayer_impl(const VisitorVariant&, QObject* parent) override;
         Process::LayerModel* cloneLayer_impl(const Id<Process::LayerModel>& newId, const Process::LayerModel& source, QObject* parent) override;
+
+    private:
+        void init();
+        void on_processAdded(const Process::ProcessModel&);
+        void on_processRemoved(const Process::ProcessModel&);
+        RoutingMap m_routings;
+        std::list<Id<Process::ProcessModel>> m_dataProcesses;
+        std::list<Id<Process::ProcessModel>> m_fxProcesses;
+
 };
 }
 }

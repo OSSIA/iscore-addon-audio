@@ -54,37 +54,30 @@ void DocumentPlugin::play()
     if(!m_ctx.audio.plugin.engineStatus())
         return;
 
-    // Maybe reset the player
-    stopPlayer();
+    // Reset the player
+    stop();
+
+    // TODO make id from components !!!!
     startPlayer();
 
     // Create our tree
-    // TODO make id from components !!!!
-    ConstraintComponent* comp = nullptr;
-    auto it = doc->baseConstraint().components.find(Id<iscore::Component>{1});
-    if(it != doc->baseConstraint().components.end())
-    {
-        comp = dynamic_cast<ConstraintComponent*>(&(*it));
-    }
-    else
-    {
-        comp = new ConstraintComponent(
-                    Id<iscore::Component>{1},
-                    doc->baseConstraint(),
-                    *this,
-                    m_ctx.doc,
-                    this);
-        doc->baseConstraint().components.add(comp);
+    auto comp = new ConstraintComponent(
+                Id<iscore::Component>{1},
+                doc->baseConstraint(),
+                *this,
+                m_ctx.doc,
+                this);
+    doc->baseConstraint().components.add(comp);
 
-        con(m_ctx.doc.document, &iscore::Document::aboutToClose,
-                this, [=] () {
-            // Stop
-            stop();
+    con(m_ctx.doc.document, &iscore::Document::aboutToClose,
+        this, [=] () {
+        // Stop
+        stop();
 
-            // Delete
-            doc->baseConstraint().components.remove(comp);
-        });
-    }
+        // Delete
+        doc->baseConstraint().components.remove(Id<iscore::Component>{1});
+    });
+
 
     // Play
 
@@ -111,7 +104,23 @@ void DocumentPlugin::play()
 
 void DocumentPlugin::stop()
 {
-    stopPlayer();
+    if(m_ctx.audio.player)
+    {
+        StopAudioPlayer(m_ctx.audio.player);
+        CloseAudioClient(m_ctx.audio.player);
+        m_ctx.audio.player = nullptr;
+    }
+
+    auto doc = dynamic_cast<Scenario::ScenarioDocumentModel*>(&m_ctx.doc.document.model().modelDelegate());
+    if(doc)
+    {
+        auto it = doc->baseConstraint().components.find(Id<iscore::Component>{1});
+        if(it != doc->baseConstraint().components.end())
+        {
+            doc->baseConstraint().components.remove(Id<iscore::Component>{1});
+        }
+    }
+
     m_stream = {};
 }
 
@@ -123,14 +132,5 @@ void DocumentPlugin::startPlayer()
     }
 }
 
-void DocumentPlugin::stopPlayer()
-{
-    if(m_ctx.audio.player)
-    {
-        StopAudioPlayer(m_ctx.audio.player);
-        CloseAudioClient(m_ctx.audio.player);
-        m_ctx.audio.player = nullptr;
-    }
-}
 }
 }
