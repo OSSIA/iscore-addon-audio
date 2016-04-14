@@ -48,12 +48,6 @@ class ConstraintComponent final :
 
     private:
         parent_t m_baseComponent;
-        std::vector<StreamPair> inputStreams;
-
-        // For now, only one mixer and one effect rack per constraint
-        // problem : how to perform undo - redo on components ?
-        // are they always created with the same id ?
-        //
 };
 
 

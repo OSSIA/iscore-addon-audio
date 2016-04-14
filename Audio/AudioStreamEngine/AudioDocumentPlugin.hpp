@@ -25,7 +25,6 @@ class DocumentPlugin : public iscore::DocumentPlugin
 
     private:
         void startPlayer();
-        void stopPlayer();
 
         Context m_ctx;
         AudioStream m_stream;
