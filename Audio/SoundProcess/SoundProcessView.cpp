@@ -40,8 +40,6 @@ void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
         m_path.lineTo(w, c * h);
     }
 
-    const int density = 1;
-
     // Compute 1 point every <density> pixels
 
     // Get how much data point is <density> pixels :
@@ -50,23 +48,20 @@ void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
 
     // The duration of n pixels is n * ratio
 
-    const double interval_duration = density * ratio;
-
-    const int samples_in_interval = interval_duration * m_sampleRate / 1000.;
-
     for (int c = 0; c < nchannels; ++c) {
 
         const auto& chan = m_data[c];
         const auto chan_n = chan.size();
-        const int n_samples = std::max(int(w / density), int(chan_n / density));
-        const int current_height = c * h;
 
-//        for(int i = 1; i < n_samples - 1 && i * samples_in_interval < chan_n; i ++)
-//        {
-//            m_path.lineTo(
-//                        i * density,
-//                        chan[i * samples_in_interval] * n_mult * h + h / 2.);
-//        }
+        //const int density = (chan_n > w && w > 0) ? chan_n / w : 1;
+        const int density = 1;
+
+        const double interval_duration = density * ratio;
+        const int samples_in_interval = interval_duration * m_sampleRate / 1000.;
+
+        const int n_samples = std::max(int(w / density), int(chan_n / density));
+
+        const int current_height = c * h;
 
         std::vector<double> rmsv;
         double maxrms = 0;
@@ -77,7 +72,7 @@ void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
                 auto s = chan[i * samples_in_interval + j];
                 rms += s * s;
             }
-            rmsv.push_back(std::sqrt(rms) / density);
+            rmsv.push_back(std::sqrt(rms / density));
 
             if (rmsv[i] > maxrms)
                 maxrms = rmsv[i];
