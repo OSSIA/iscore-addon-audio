@@ -43,16 +43,20 @@ namespace Audio
 MediaFileHandle::MediaFileHandle(const QString &filename):
     m_file{filename}
 {
-    m_array = readFile(QFile(m_file));
+    m_array = readFile(QFile(m_file), &m_sampleRate);
 }
 
-AudioArray MediaFileHandle::readFile(const QFile &file)
+AudioArray MediaFileHandle::readFile(const QFile &file, int* sRate)
 {
     if(file.exists() && file.fileName().contains(".wav"))
     {
         auto myf = SndfileHandle(file.fileName().toStdString());
         if(myf.error() != SF_ERR_NO_ERROR)
             return {};
+
+        if (sRate != nullptr) {
+            *sRate = myf.samplerate();
+        }
 
         switch(myf.channels())
         {

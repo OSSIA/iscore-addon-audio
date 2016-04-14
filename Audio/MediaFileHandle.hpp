@@ -21,10 +21,14 @@ struct MediaFileHandle
         const AudioArray& data() const
         { return m_array; }
 
+        int sampleRate() const
+        { return m_sampleRate; }
+
     private:
-        AudioArray readFile(const QFile& filename);
+        AudioArray readFile(const QFile& filename, int* sRate = nullptr);
         QString m_file;
         AudioArray m_array;
+        int m_sampleRate;
 };
 }
 

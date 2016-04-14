@@ -26,6 +26,7 @@ class LayerView final : public Process::LayerView
 
         AudioArray m_data{};
         QPainterPath m_path;
+        int m_sampleRate;
 };
 }
 }
