@@ -57,6 +57,26 @@ void ProcessModel::updateRouting(const Routing & r)
     emit routingChanged();
 }
 
+void ProcessModel::updateDirectMix(const DirectMix & dmx)
+{
+    // TODO multi_index to the rescue...
+    auto it = find(m_dataProcesses, dmx.process);
+    if(it != m_dataProcesses.end())
+    {
+        it->mix = dmx.mix;
+        emit routingChanged();
+    }
+    else
+    {
+        auto it_2 = find(m_fxProcesses, dmx.process);
+        if(it_2 != m_fxProcesses.end())
+        {
+            it_2->mix = dmx.mix;
+            emit routingChanged();
+        }
+    }
+}
+
 ProcessModel* ProcessModel::clone(
         const Id<Process::ProcessModel>& newId,
         QObject* newParent) const
@@ -184,19 +204,19 @@ void ProcessModel::on_processAdded(const Process::ProcessModel & proc)
     bool isFx = false;
     if(auto scenar = dynamic_cast<const Scenario::ScenarioModel*>(&proc))
     {
-        m_dataProcesses.push_back(scenar->id());
+        m_dataProcesses.push_back({scenar->id(), 1.0});
     }
     else if(auto loop = dynamic_cast<const Loop::ProcessModel*>(&proc))
     {
-        m_dataProcesses.push_back(loop->id());
+        m_dataProcesses.push_back({loop->id(), 1.0});
     }
     else if(auto sound = dynamic_cast<const Sound::ProcessModel*>(&proc))
     {
-        m_dataProcesses.push_back(sound->id());
+        m_dataProcesses.push_back({sound->id(), 1.0});
     }
     else if(auto sfx = dynamic_cast<const Effect::ProcessModel*>(&proc))
     {
-        m_fxProcesses.push_back(sfx->id());
+        m_fxProcesses.push_back({sfx->id(), 1.0});
         isFx = true;
     }
     else if(auto mix = dynamic_cast<const Mix::ProcessModel*>(&proc))
@@ -213,14 +233,14 @@ void ProcessModel::on_processAdded(const Process::ProcessModel & proc)
     {
         for(const auto& other : m_dataProcesses)
         {
-            m_routings.insert(Routing{other, proc.id(), 1.0});
+            m_routings.insert(Routing{other.process, proc.id(), 1.0});
         }
     }
     else
     {
         for(const auto& fx : m_fxProcesses)
         {
-            m_routings.insert(Routing{proc.id(), fx, 1.0});
+            m_routings.insert(Routing{proc.id(), fx.process, 1.0});
         }
     }
 

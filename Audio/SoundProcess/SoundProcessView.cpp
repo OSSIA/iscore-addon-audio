@@ -40,7 +40,7 @@ void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
         m_path.lineTo(w, c * h);
     }
 
-    const int density = 10;
+    const int density = 1;
 
     // Compute 1 point every <density> pixels
 

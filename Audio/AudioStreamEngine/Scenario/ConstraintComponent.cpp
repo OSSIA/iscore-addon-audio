@@ -37,6 +37,13 @@ ConstraintComponent::ConstraintComponent(
     Component{id, "ConstraintComponent", parent_comp},
     m_baseComponent{*this, constraint, doc, ctx, this}
 {
+    con(constraint.duration, &Scenario::ConstraintDurations::executionSpeedChanged,
+        this, [=] (double d) {
+        if(d > 0.01)
+            m_stretch = d;
+    });
+    if(constraint.duration.executionSpeed() > 0.01)
+        m_stretch = constraint.duration.executionSpeed();
 }
 
 ConstraintComponent::~ConstraintComponent()
@@ -119,7 +126,10 @@ AudioStream ConstraintComponent::makeStream(const Context& player)
                 soundStreams.push_back(stream);
             }
         }
-        return MixNStreams(soundStreams);
+
+        auto stream = MixNStreams(soundStreams);
+        auto timestretch = MakePitchSchiftTimeStretchSound(stream, &m_shift, &m_stretch);
+        return timestretch;
     }
 
     // Look for all the "contents" process :
