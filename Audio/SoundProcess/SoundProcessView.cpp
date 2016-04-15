@@ -1,6 +1,5 @@
 #include "SoundProcessView.hpp"
 #include <QPainter>
-#include <iostream>
 
 namespace Audio
 {
@@ -20,8 +19,6 @@ void LayerView::setData(const MediaFileHandle& data)
 
 void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
 {
-    std::cout << "ratio is " << ratio << std::endl;
-
     m_path = QPainterPath{};
     m_path.setFillRule(Qt::WindingFill);
 
