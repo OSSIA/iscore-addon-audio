@@ -48,6 +48,8 @@ class ConstraintComponent final :
 
     private:
         parent_t m_baseComponent;
+        double m_shift{1.0};
+        double m_stretch{1.0};
 };
 
 

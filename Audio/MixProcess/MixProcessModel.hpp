@@ -20,6 +20,29 @@ class ProcessModel;
 
 namespace Mix
 {
+struct DirectMix
+{
+        friend bool operator==(const DirectMix& mix, const Id<Process::ProcessModel>& proc)
+        {
+            return mix.process == proc;
+        }
+        friend bool operator!=(const DirectMix& mix, const Id<Process::ProcessModel>& proc)
+        {
+            return mix.process != proc;
+        }
+        friend bool operator==(const Id<Process::ProcessModel>& proc, const DirectMix& mix)
+        {
+            return mix.process == proc;
+        }
+        friend bool operator!=(const Id<Process::ProcessModel>& proc, const DirectMix& mix)
+        {
+            return mix.process != proc;
+        }
+
+        Id<Process::ProcessModel> process;
+        double mix{};
+};
+
 struct Routing
 {
         friend bool operator==(const Routing& lhs, const Routing& rhs)
@@ -118,6 +141,7 @@ class ProcessModel final :
         }
 
         void updateRouting(const Routing&);
+        void updateDirectMix(const DirectMix&);
 
         // Process interface
         ProcessModel* clone(
@@ -165,8 +189,8 @@ class ProcessModel final :
         void on_processAdded(const Process::ProcessModel&);
         void on_processRemoved(const Process::ProcessModel&);
         RoutingMap m_routings;
-        std::list<Id<Process::ProcessModel>> m_dataProcesses;
-        std::list<Id<Process::ProcessModel>> m_fxProcesses;
+        std::list<DirectMix> m_dataProcesses;
+        std::list<DirectMix> m_fxProcesses;
 
 };
 }
