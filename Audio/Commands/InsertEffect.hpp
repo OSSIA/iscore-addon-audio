@@ -1,8 +1,8 @@
 #pragma once
 #include <iscore/command/SerializableCommand.hpp>
 #include <Audio/Commands/AudioCommandFactory.hpp>
-#include <Audio/MediaFileHandle.hpp>
 #include <iscore/tools/ModelPath.hpp>
+
 namespace Audio
 {
 namespace Effect {

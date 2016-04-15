@@ -63,6 +63,7 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/InsertEffect.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/MoveEffect.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/RemoveEffect.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/UpdateMix.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.hpp"
@@ -89,6 +90,7 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/FaustEffectFactory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/MissingEffectModel.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/Mix.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessFactory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessMetadata.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessModel.hpp"
@@ -142,6 +144,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/InsertEffect.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/MoveEffect.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/RemoveEffect.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/UpdateMix.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.cpp"
