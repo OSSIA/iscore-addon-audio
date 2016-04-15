@@ -46,30 +46,27 @@ void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
     // ratio is milliseconds / pixels
     // dur is milliseconds corresponding to width()
 
-    // The duration of n pixels is n * ratio
-
     for (int c = 0; c < nchannels; ++c) {
 
         const auto& chan = m_data[c];
         const auto chan_n = chan.size();
 
-        //const int density = (chan_n > w && w > 0) ? chan_n / w : 1;
-        const int density = 1;
+        const double length = (1000 * chan_n) / m_sampleRate;
+        const double size = ratio > 0 ? length / ratio : 0;
+        const int density = std::max((int)(ratio * m_sampleRate / 1000), 1);
 
-        const double interval_duration = density * ratio;
-        const int samples_in_interval = interval_duration * m_sampleRate / 1000.;
-
-        const int n_samples = std::max(int(w / density), int(chan_n / density));
-
+        const int npoints = std::min(w, (int)size);
         const int current_height = c * h;
 
         std::vector<double> rmsv;
         double maxrms = 0;
 
-        for (int i = 0; i < n_samples && i * samples_in_interval < chan_n - density; ++i) {
+        for (int i = 0; i < npoints; ++i) {
             double rms = 0;
-            for (int j = 0; j < density; ++j) {
-                auto s = chan[i * samples_in_interval + j];
+            bool reachedEnd = false;
+            for (int j = 0; j < density && !reachedEnd; ++j) {
+                reachedEnd = i * density + j >= chan.size();
+                auto s = chan[i * density + j];
                 rms += s * s;
             }
             rmsv.push_back(std::sqrt(rms / density));
@@ -79,21 +76,20 @@ void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
         }
 
         double hcoeff = 1.;
-        if (maxrms >= 1.) {
+        if (maxrms != 0.) {
             hcoeff = 1. / maxrms;
         }
 
         m_path.moveTo(0, chan[0] + current_height + h / 2.);
         for (int i = 0; i < rmsv.size(); ++i) {
-            m_path.lineTo(i * density, rmsv[i] * hcoeff * h / 2. + current_height + h / 2.);
+            m_path.lineTo(i, rmsv[i] * hcoeff * h / 2. + current_height + h / 2.);
         }
-        m_path.lineTo(rmsv.size() * density, current_height + h / 2.);
+        m_path.lineTo(rmsv.size(), current_height + h / 2.);
         m_path.moveTo(0, chan[0] + current_height + h / 2.);
         for (int i = 0; i < rmsv.size(); ++i) {
-            m_path.lineTo(i * density, -rmsv[i] * hcoeff * h / 2. + current_height + h / 2.);
+            m_path.lineTo(i, -rmsv[i] * hcoeff * h / 2. + current_height + h / 2.);
         }
-        m_path.lineTo(rmsv.size() * density, current_height + h / 2.);
-
+        m_path.lineTo(rmsv.size(), current_height + h / 2.);
     }
 
     update();
