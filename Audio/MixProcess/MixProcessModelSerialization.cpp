@@ -34,6 +34,37 @@ void Visitor<Writer<JSONObject>>::writeTo(Audio::Mix::Routing& proc)
     proc.mix = m_obj["Mix"].toDouble();
 }
 
+template<>
+void Visitor<Reader<DataStream>>::readFrom_impl(const Audio::Mix::DirectMix& proc)
+{
+    m_stream << proc.process << proc.mix;
+
+    insertDelimiter();
+}
+
+template<>
+void Visitor<Writer<DataStream>>::writeTo(Audio::Mix::DirectMix& proc)
+{
+    m_stream >> proc.process >> proc.mix;
+
+    checkDelimiter();
+}
+
+template<>
+void Visitor<Reader<JSONObject>>::readFrom_impl(const Audio::Mix::DirectMix& proc)
+{
+    m_obj["Process"] = toJsonValue(proc.process);
+    m_obj["Mix"] = proc.mix;
+}
+
+template<>
+void Visitor<Writer<JSONObject>>::writeTo(Audio::Mix::DirectMix& proc)
+{
+    proc.process = fromJsonValue<Id<Process::ProcessModel>>(m_obj["Process"]);
+    proc.mix = m_obj["Mix"].toDouble();
+}
+
+
 
 template<>
 void Visitor<Reader<DataStream>>::readFrom_impl(const Audio::Mix::ProcessModel& proc)
