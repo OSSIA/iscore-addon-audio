@@ -3,6 +3,7 @@
 #include <3rdparty/libaudiostream/src/TAudioStream.h>
 #include <3rdparty/libaudiostream/src/renderer/TAudioRenderer.h>
 
+#include <memory>
 class TGroupRenderer : public TAudioRenderer
 {
     private:
@@ -98,3 +99,82 @@ class TPlayerAudioStream final : public TAudioStream
         TAudioStreamPtr Copy() override;
 };
 
+class TBusAudioStream final :
+        public TAudioStream
+{
+        struct impl {
+                int64_t fReadCount = 0; // Number of buffer reads for the current callback
+                TGroupRenderer fRenderer;
+                TAudioStream* fStream{};
+                TBusAudioStream* fRootBus{};
+        };
+        std::shared_ptr<impl> fImpl;
+
+    public:
+        TBusAudioStream(TAudioStreamPtr as)
+        {
+
+        }
+
+        TBusAudioStream(const TBusAudioStream& as) = default;
+
+        ~TBusAudioStream()
+        {
+
+        }
+
+        long Read(FLOAT_BUFFER buffer, long framesNum, long framePos) override
+        {
+            impl& shared = *fImpl;
+            auto use_count = fImpl.use_count();
+
+            // Process the next buffer if all the users
+            // have read once.
+            if(shared.fReadCount >= use_count)
+            {
+                shared.fReadCount = 0;
+                shared.fRenderer.Process();
+            }
+
+            // Write the current buffer to the output.
+            float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
+
+            auto out_buffer = shared.fRenderer.GetOutputBuffer();
+
+            UAudioTools::MixFrameToFrameBlk1(buffer->GetFrame(framePos, temp1),
+                                             out_buffer,
+                                             framesNum, TAudioGlobals::fInput);
+
+            // Go to the next frame.
+            shared.fReadCount++;
+
+            return framesNum;
+        }
+
+        void Reset() override
+        {
+
+        }
+
+        // Cut the beginning of the stream
+        TAudioStreamPtr CutBegin(long frames) override
+        {
+            return {};
+        }
+
+        // Length in frames
+        long Length() override
+        {
+            return 0;
+        }
+
+        long Channels() override
+        {
+            return 0;
+        }
+
+        TAudioStreamPtr Copy() override
+        {
+            return {};
+        }
+};

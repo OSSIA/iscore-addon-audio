@@ -297,6 +297,9 @@ extern "C"
 ISCORE_PLUGIN_AUDIO_EXPORT AudioRendererPtr MakeGroupPlayer();
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeGroupStream(AudioRendererPtr p);
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSinusStream(long length, float freq);
+
+ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSharedBus(AudioStream s);
+ISCORE_PLUGIN_AUDIO_EXPORT AudioStream JoinSharedBus(AudioStream bus_stream);
 void CloseAudioPlayer(AudioPlayerPtr ext_player); // In libaudiostreammc
 
 ISCORE_PLUGIN_AUDIO_EXPORT AudioPlayerPtr MakeGroupPlayer()
@@ -345,4 +348,18 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSinusStream(long length, float freq)
 {
     return new TSinusAudioStream{length, freq};
 }
+
+
+ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSharedBus(AudioStream s)
+{
+    return new TBusAudioStream{static_cast<TAudioStreamPtr>(s)};
+}
+
+ISCORE_PLUGIN_AUDIO_EXPORT AudioStream JoinSharedBus(AudioStream bus_stream)
+{
+    if(auto bus = dynamic_cast<TBusAudioStream*>(bus_stream.getPointer()))
+        return new TBusAudioStream{*bus};
+    return nullptr;
+}
+
 }
