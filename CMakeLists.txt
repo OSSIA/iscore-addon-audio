@@ -95,6 +95,10 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessMetadata.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessModel.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessFactory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessMetadata.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessModel.hpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.hpp"
@@ -112,6 +116,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessModelSerialization.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessModelSerialization.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessModelSerialization.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioApplicationPlugin.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioDocumentPlugin.cpp"
@@ -171,6 +176,9 @@ set(SRCS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessModel.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessFactory.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessModel.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.cpp"
 
