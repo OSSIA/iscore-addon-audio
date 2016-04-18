@@ -1,6 +1,6 @@
 #include "SoundComponent.hpp"
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
-#include <3rdparty/libaudiostream/src/LibAudioStreamMC++.h>
+#include <LibAudioStreamMC++.h>
 namespace Audio
 {
 namespace AudioStreamEngine

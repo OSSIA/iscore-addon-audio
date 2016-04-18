@@ -2,7 +2,7 @@
 #include <QSettings>
 #include <QFile>
 #include <QJsonDocument>
-#include <3rdparty/libaudiostream/src/LibAudioStreamMC++.h>
+#include <LibAudioStreamMC++.h>
 #include <Process/Style/Skin.hpp>
 
 namespace Audio

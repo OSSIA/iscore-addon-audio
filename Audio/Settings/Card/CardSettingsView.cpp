@@ -3,7 +3,7 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QFormLayout>
-#include <3rdparty/libaudiostream/src/LibAudioStreamMC++.h>
+#include <LibAudioStreamMC++.h>
 #include <iscore/application/ApplicationContext.hpp>
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
 

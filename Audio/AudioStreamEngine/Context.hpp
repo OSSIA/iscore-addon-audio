@@ -1,5 +1,5 @@
 #pragma once
-#include <3rdparty/libaudiostream/src/LibAudioStreamMC++.h>
+#include <LibAudioStreamMC++.h>
 #include <Process/TimeValue.hpp>
 
 namespace iscore
