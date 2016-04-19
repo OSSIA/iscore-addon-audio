@@ -18,3 +18,4 @@ endFunction()
 
 # Commands
 addAudioTest(Test1 "${CMAKE_CURRENT_SOURCE_DIR}/test1.cpp")
+addAudioTest(Test2 "${CMAKE_CURRENT_SOURCE_DIR}/test2.cpp")

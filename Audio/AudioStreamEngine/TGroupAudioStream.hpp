@@ -99,6 +99,9 @@ class TPlayerAudioStream final : public TAudioStream
         TAudioStreamPtr Copy() override;
 };
 
+// We need both Bus Send and Bus Return
+// Bus send will pull the data from the underlying process
+// Bus return will copy this data and use it..
 class TBusAudioStream final :
         public TAudioStream
 {
