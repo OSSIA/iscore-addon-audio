@@ -65,31 +65,33 @@ class test1: public QObject
                 // Make a stream on the sound
                 return MakeGroupStream(player);
             }();
-            /*
+
             // Build a first effect stream
             {
                 auto fx_send_1 = MakeSend(stream1);
-                auto fx_1 = MakeFaustAudioEffect("/tmp/examples/freeverb.dsp", "/tmp/examples", "");
+                auto fx_1 = MakeFaustAudioEffect("/tmp/examples/freeverb.dsp", "/usr/local/lib/faust/architecture", "");
                 auto fx_return_1 = MakeReturn(fx_send_1);
                 auto fx_chain_1 = MakeEffectSound(fx_return_1, fx_1, 0, 0);
+
                 StartSound(m_ctx.player, fx_chain_1, GenRealDate(m_ctx.player, 0));
             }
 
             // Build a second effect stream
             {
                 auto fx_send_2 = MakeSend(stream1);
-                auto fx_2 = MakeFaustAudioEffect("/tmp/examples/freeverb.dsp", "/tmp/examples", "");
+                auto fx_2 = MakeFaustAudioEffect("/tmp/examples/freeverb.dsp", "/usr/local/lib/faust/architecture", "");
                 auto fx_return_2 = MakeReturn(fx_send_2);
                 auto fx_chain_2 = MakeEffectSound(fx_return_2, fx_2, 0, 0);
+
                 StartSound(m_ctx.player, fx_chain_2, GenRealDate(m_ctx.player, 0));
             }
-            */
+
             // Mix the streams
             StartAudioPlayer(m_ctx.player);
 
-
             for(int i = 10; i --> 0;)
                 std::this_thread::sleep_for(1s);
+
             StopAudioPlayer(m_ctx.player);
             CloseAudioClient(m_ctx.player);
             CloseAudioRenderer(m_ctx.renderer);
