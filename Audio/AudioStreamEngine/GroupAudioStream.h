@@ -7,6 +7,9 @@ AudioRendererPtr MakeGroupPlayer();
 AudioStream MakeGroupStream(AudioRendererPtr p);
 
 AudioStream MakeSinusStream(long length, float freq);
+
+AudioStream MakeSend(AudioStream s);
+AudioStream MakeReturn(AudioStream s);
 }
 
 #endif

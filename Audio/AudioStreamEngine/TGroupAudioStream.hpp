@@ -4,12 +4,67 @@
 #include <3rdparty/libaudiostream/src/renderer/TAudioRenderer.h>
 
 #include <memory>
-class TGroupRenderer : public TAudioRenderer
+
+struct TBufferManager
 {
-    private:
         float** fInputBuffer{};
         float** fOutputBuffer{};
 
+        long fInput{};
+        long fOutput{};
+        long fBufferSize{};
+        long fSampleRate{};
+
+        TBufferManager() = default;
+
+        TBufferManager(
+                long inChan,
+                long outChan,
+                long bufferSize,
+                long sampleRate):
+            fInput{inChan},
+            fOutput{outChan},
+            fBufferSize{bufferSize},
+            fSampleRate{sampleRate},
+            fInputBuffer{new float*[inChan]},
+            fOutputBuffer{new float*[outChan]}
+        {
+            for (int i = 0; i < inChan; i++) {
+                fInputBuffer[i] = new float[bufferSize];
+            }
+            for (int i = 0; i < outChan; i++) {
+                fOutputBuffer[i] = new float[bufferSize];
+            }
+
+            UAudioTools::ZeroFloatBlk(fOutputBuffer, fBufferSize, fOutput);
+        }
+
+        ~TBufferManager()
+        {
+            if(fInputBuffer)
+            {
+                for (int i = 0; i < fInput; i++) {
+                    delete [] fInputBuffer[i];
+                }
+            }
+
+            if(fOutputBuffer)
+            {
+                for (int i = 0; i < fOutput; i++) {
+                    delete [] fOutputBuffer[i];
+                }
+            }
+
+            delete [] fInputBuffer;
+            delete [] fOutputBuffer;
+        }
+};
+
+class TGroupRenderer :
+        public TAudioRenderer
+{
+    private:
+        TBufferManager fBuffers;
         RendererInfo fInfo;
 
         long OpenImp(
@@ -181,3 +236,152 @@ class TBusAudioStream final :
             return {};
         }
 };
+
+
+
+
+/**
+ * @brief The TSendAudioStream class
+ *
+ * Calls Process on the watched stream and make an inner copy.
+ */
+class TSendAudioStream final :
+        public TAudioStream,
+        public TUnaryAudioStream
+{
+        TBufferManager fBuffers;
+        TSharedNonInterleavedAudioBuffer<float> fTempBuffer;
+    public:
+        TSendAudioStream(TAudioStreamPtr as):
+            fBuffers{0, as->Channels(), TAudioGlobals::fBufferSize, TAudioGlobals::fSampleRate},
+            fTempBuffer{fBuffers.fOutputBuffer, fBuffers.fBufferSize, fBuffers.fSampleRate}
+        {
+            fStream = as;
+        }
+
+        ~TSendAudioStream()
+        {
+
+        }
+
+        long Read(FLOAT_BUFFER buffer, long framesNum, long framePos) override
+        {
+            // The process of the send should be transparent.
+            // This way, the "send" can be re-used as a stream.
+            // If there is nothing more to pull, the result is filled with silence.
+
+            // Clear the local buffer
+            UAudioTools::ZeroFloatBlk(fBuffers.fOutputBuffer, fBuffers.fBufferSize, fBuffers.fOutput);
+
+            // Write the new data into the local buffer
+            fStream->Read(&fTempBuffer, framesNum, framePos);
+
+            // Mix the local buffer into the output buffer
+            float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
+            UAudioTools::MixFrameToFrameBlk1(buffer->GetFrame(framePos, temp1),
+                                             fBuffers.fOutputBuffer,
+                                             framesNum,
+                                             fBuffers.fOutput);
+
+            return framesNum;
+        }
+
+        float ** GetOutputBuffer() const
+        {
+            return fBuffers.fOutputBuffer;
+        }
+
+        void Reset() override
+        {
+
+        }
+
+        // Cut the beginning of the stream
+        TAudioStreamPtr CutBegin(long frames) override
+        {
+            return {};
+        }
+
+        // Length in frames
+        long Length() override
+        {
+            return LONG_MAX;
+        }
+
+        long Channels() override
+        {
+            return fBuffers.fOutput;
+        }
+
+        TAudioStreamPtr Copy() override
+        {
+            return new TSendAudioStream{fStream->Copy()};
+        }
+};
+using TSendAudioStreamPtr = LA_SMARTP<TSendAudioStream>;
+
+#include <iostream>
+/**
+ * @brief The TReturnAudioStream class
+ *
+ * Make a copy of the watched stream, and apply a copy on it
+ */
+class TReturnAudioStream final :
+        public TAudioStream
+{
+        TSendAudioStreamPtr fSend;
+    public:
+        TReturnAudioStream(TSendAudioStreamPtr as):
+            fSend{as}
+        {
+            assert(fSend.getPointer());
+        }
+
+        ~TReturnAudioStream()
+        {
+
+        }
+
+        long Read(FLOAT_BUFFER buffer, long framesNum, long framePos) override
+        {
+            // Write the current buffer to the output.
+            float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
+
+            if(fSend->Channels() == buffer->GetChannels())
+            {
+                UAudioTools::MixFrameToFrameBlk1(buffer->GetFrame(framePos, temp1),
+                                                 fSend->GetOutputBuffer(),
+                                                 framesNum, fSend->Channels());
+            }
+
+            return framesNum;
+        }
+
+        void Reset() override
+        {
+
+        }
+
+        // Cut the beginning of the stream
+        TAudioStreamPtr CutBegin(long frames) override
+        {
+            return {};
+        }
+
+        // Length in frames
+        long Length() override
+        {
+            return LONG_MAX;
+        }
+
+        long Channels() override
+        {
+            return fSend->Channels();
+        }
+
+        TAudioStreamPtr Copy() override
+        {
+            return new TReturnAudioStream{fSend};
+        }
+};
+
