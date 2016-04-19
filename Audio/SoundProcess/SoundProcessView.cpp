@@ -39,10 +39,8 @@ void LayerView::printAction(long action) {
     }
 }
 
-std::vector<std::vector<double> > LayerView::computeDataSet(ZoomRatio ratio, double* densityptr) {
-
-    qDebug() << "computing data set for ratio " << ratio;
-
+std::vector<std::vector<double> > LayerView::computeDataSet(ZoomRatio ratio, double* densityptr)
+{
     const int nchannels = m_data.size();
 
     const double density = std::max((m_sampleRate * ratio) / 1000., 1.);
@@ -53,6 +51,7 @@ std::vector<std::vector<double> > LayerView::computeDataSet(ZoomRatio ratio, dou
         *densityptr = density;
 
     std::vector<std::vector<double> > dataset;
+    dataset.resize(nchannels);
     for (int c = 0; c < nchannels; ++c) {
 
         const auto& chan = m_data[c];
@@ -63,19 +62,21 @@ std::vector<std::vector<double> > LayerView::computeDataSet(ZoomRatio ratio, dou
 
         const int npoints = std::max((int)w, (int)size); // number of points to draw on the screen
 
-        std::vector<double> rmsv;
+        std::vector<double>& rmsv = dataset[c];
+        rmsv.reserve(npoints);
 
-        for (int i = 0; i < npoints; ++i) {
+        for (int i = 0; i < npoints; ++i)
+        {
             double rms = 0;
-            bool reachedEnd = false;
-            for (int j = 0; j < density_i && !reachedEnd; ++j) {
-                reachedEnd = i * density_i + j >= chan.size();
+            for (int j = 0;
+                 (j < density_i) && ((i * density_i + j) < chan.size());
+                 ++j)
+            {
                 auto s = chan[i * density_i + j];
                 rms += s * s;
             }
             rmsv.push_back(std::sqrt(rms / density));
         }
-        dataset.push_back(rmsv);
     }
     return dataset;
 }
@@ -117,33 +118,31 @@ void LayerView::drawWaveForms(ZoomRatio ratio) {
         const int current_height = c * h;
         std::vector<double> dataset = m_curdata[c];
 
-        qDebug() << "current channel has " << dataset.size() << " data points";
-
         QPainterPath path{};
         path.setFillRule(Qt::WindingFill);
 
         // Draw path for current channel
 
+        auto n = dataset.size();
+        auto height_adjustemnt = current_height + h / 2.;
         if (dataset.size() > 0) {
-            path.moveTo(0, dataset[0] + current_height + h / 2.);
-            for (int i = 0; i < dataset.size(); ++i) {
-                path.lineTo(i * densityratio, dataset[i] * h / 2. + current_height + h / 2.);
+            path.moveTo(0, dataset[0] + height_adjustemnt);
+            for (int i = 0; i < n; ++i) {
+                path.lineTo(i * densityratio, dataset[i] * h / 2. + height_adjustemnt);
             }
-            path.lineTo(dataset.size() * densityratio, current_height + h / 2.);
-            path.moveTo(0, dataset[0] + current_height + h / 2.);
-            for (int i = 0; i < dataset.size(); ++i) {
-                path.lineTo(i * densityratio, -dataset[i] * h / 2. + current_height + h / 2.);
+            path.lineTo(n * densityratio, height_adjustemnt);
+            path.moveTo(0, dataset[0] + height_adjustemnt);
+            for (int i = 0; i < n; ++i) {
+                path.lineTo(i * densityratio, -dataset[i] * h / 2. + height_adjustemnt);
             }
-            path.lineTo(dataset.size() * densityratio, current_height + h / 2.);
+            path.lineTo(n * densityratio, height_adjustemnt);
         }
         m_paths.push_back(path);
     }
 }
 
-void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio) {
-
-    qDebug() << "recomputing: ratio = " << ratio;
-
+void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
+{
     m_paths = QList<QPainterPath> ();
     m_channels = QPainterPath{};
 
@@ -152,9 +151,6 @@ void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio) {
 
     const int density = std::max((int)(ratio * m_sampleRate / 1000), 1);
     long action = compareDensity(density);
-
-    qDebug() << "compare previous density " << m_density << " and current density " << density;
-    printAction(action);
 
     switch (action) {
     case KEEP_CUR:
