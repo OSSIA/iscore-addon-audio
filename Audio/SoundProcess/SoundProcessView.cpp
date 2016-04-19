@@ -1,6 +1,5 @@
 #include "SoundProcessView.hpp"
 #include <QPainter>
-#include <iostream>
 
 namespace Audio
 {
@@ -24,25 +23,25 @@ long LayerView::compareDensity(const double density) {
 void LayerView::printAction(long action) {
     switch (action) {
     case KEEP_CUR:
-        std::cout << "keep current" << std::endl;
+        qDebug() << "keep current";
         break;
     case USE_NEXT :
-        std::cout << "use next" << std::endl;
+        qDebug() << "use next";
         break;
     case USE_PREV :
-        std::cout << "use prev" << std::endl;
+        qDebug() << "use prev";
         break;
     case RECOMPUTE_ALL :
-        std::cout << "recompute all" << std::endl;
+        qDebug() << "recompute all";
         break;
     default :
-        std::cout << "unknown action" << std::endl;
+        qDebug() << "unknown action";
     }
 }
 
 std::vector<std::vector<double> > LayerView::computeDataSet(ZoomRatio ratio, double* densityptr) {
 
-    std::cout << "computing data set for ratio " << ratio << std::endl;
+    qDebug() << "computing data set for ratio " << ratio;
 
     const int nchannels = m_data.size();
 
@@ -62,7 +61,7 @@ std::vector<std::vector<double> > LayerView::computeDataSet(ZoomRatio ratio, dou
         const double length = (1000 * chan_n) / m_sampleRate; // duration of the track
         const double size = ratio > 0 ? length / ratio : 0; // number of pixels the track will occupy in its entirety
 
-        const int npoints = std::min((int)w, (int)size); // number of points to draw on the screen
+        const int npoints = std::max((int)w, (int)size); // number of points to draw on the screen
 
         std::vector<double> rmsv;
 
@@ -118,7 +117,7 @@ void LayerView::drawWaveForms(ZoomRatio ratio) {
         const int current_height = c * h;
         std::vector<double> dataset = m_curdata[c];
 
-        std::cout << "current channel has " << dataset.size() << " data points" << std::endl;
+        qDebug() << "current channel has " << dataset.size() << " data points";
 
         QPainterPath path{};
         path.setFillRule(Qt::WindingFill);
@@ -143,7 +142,7 @@ void LayerView::drawWaveForms(ZoomRatio ratio) {
 
 void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio) {
 
-    std::cout << "recomputing: ratio = " << ratio << std::endl;
+    qDebug() << "recomputing: ratio = " << ratio;
 
     m_paths = QList<QPainterPath> ();
     m_channels = QPainterPath{};
@@ -154,7 +153,7 @@ void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio) {
     const int density = std::max((int)(ratio * m_sampleRate / 1000), 1);
     long action = compareDensity(density);
 
-    std::cout << "compare previous density " << m_density << " and current density " << density << ": ";
+    qDebug() << "compare previous density " << m_density << " and current density " << density;
     printAction(action);
 
     switch (action) {
