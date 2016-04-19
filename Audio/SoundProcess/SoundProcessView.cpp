@@ -1,5 +1,6 @@
 #include "SoundProcessView.hpp"
 #include <QPainter>
+#include <QMatrix>
 
 namespace Audio
 {
@@ -131,11 +132,11 @@ void LayerView::drawWaveForms(ZoomRatio ratio) {
                 path.lineTo(i * densityratio, dataset[i] * h / 2. + height_adjustemnt);
             }
             path.lineTo(n * densityratio, height_adjustemnt);
-            path.moveTo(0, dataset[0] + height_adjustemnt);
-            for (int i = 0; i < n; ++i) {
-                path.lineTo(i * densityratio, -dataset[i] * h / 2. + height_adjustemnt);
-            }
-            path.lineTo(n * densityratio, height_adjustemnt);
+//            path.moveTo(0, dataset[0] + height_adjustemnt);
+//            for (int i = 0; i < n; ++i) {
+//                path.lineTo(i * densityratio, -dataset[i] * h / 2. + height_adjustemnt);
+//            }
+//            path.lineTo(n * densityratio, height_adjustemnt);
         }
         m_paths.push_back(path);
     }
@@ -186,11 +187,30 @@ void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
 
 void LayerView::paint_impl(QPainter* painter) const
 {
+    const int nchannels = m_data.size();
+    if (nchannels == 0)
+        return;
+
     painter->setBrush(Qt::darkCyan);
     painter->setPen(Qt::darkBlue);
 
     for (auto path : m_paths)
         painter->drawPath(path);
+
+    painter->save();
+
+    const auto h = -height() / nchannels;
+    const auto dblh = 2 * h;
+
+    painter->scale(1, -1);
+    painter->translate(0, h);
+
+    for (auto path : m_paths) {
+        painter->drawPath(path);
+        painter->translate(0, dblh);
+    }
+
+    painter->restore();
 
     painter->setPen(Qt::lightGray);
 
