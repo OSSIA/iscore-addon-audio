@@ -69,7 +69,7 @@ std::vector<std::vector<double> > LayerView::computeDataSet(ZoomRatio ratio, dou
         {
             double rms = 0;
             for (int j = 0;
-                 (j < density_i) && ((i * density_i + j) < chan.size());
+                 (j < density_i) && ((i * density_i + j) < chan_n);
                  ++j)
             {
                 auto s = chan[i * density_i + j];
