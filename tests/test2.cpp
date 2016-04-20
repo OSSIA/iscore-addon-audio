@@ -28,7 +28,7 @@ class test1: public QObject
         {
             using namespace Audio;
             using namespace Audio::AudioStreamEngine;
-            auto renderer = kPortAudioRenderer;
+            auto renderer = kJackRenderer;
             AudioContext m_ctx;
             GetDeviceInfo(renderer, 0, &m_ctx.device_info);
             auto& dev = m_ctx.device_info;
@@ -76,18 +76,18 @@ class test1: public QObject
 
             // Build a first effect stream
             {
-                /*
-                auto fx_1 = MakeFaustAudioEffect("/tmp/examples/freeverb.dsp", "/usr/local/lib/faust/architecture", "");
+
+                auto fx_1 = MakeFaustAudioEffect("/tmp/examples/guitarix.dsp", "/usr/local/lib/faust/architecture", "");
                 auto fx_return_1 = MakeReturn(fx_send);
                 auto fx_chain_1 = MakeEffectSound(fx_return_1, fx_1, 0, 0);
 
                 StartSound(m_ctx.player, fx_chain_1, GenRealDate(m_ctx.player, 0));
-                */
+
             }
 
             // Build a second effect stream
             {
-                auto fx_2 = MakeFaustAudioEffect("/tmp/examples/noise.dsp", "/usr/local/lib/faust/architecture/", "");
+                auto fx_2 = MakeFaustAudioEffect("/tmp/examples/freeverb.dsp", "/usr/local/lib/faust/architecture/", "");
                 auto fx_return_2 = MakeReturn(fx_send);
                 auto fx_chain_2 = MakeEffectSound(fx_return_2, fx_2, 0, 0);
 
@@ -100,7 +100,7 @@ class test1: public QObject
             // Mix the streams
             StartAudioPlayer(m_ctx.player);
 
-            for(int i = 10; i --> 0;)
+            for(int i = 5; i --> 0;)
                 std::this_thread::sleep_for(1s);
 
             StopAudioPlayer(m_ctx.player);
