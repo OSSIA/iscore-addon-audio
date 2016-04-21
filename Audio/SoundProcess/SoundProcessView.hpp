@@ -31,6 +31,7 @@ class LayerView final : public Process::LayerView
         std::vector<std::vector<double> > computeDataSet(ZoomRatio, double* ptr = nullptr);
 
         void drawWaveForms(ZoomRatio);
+        void scrollValueChanged(int);
 
         AudioArray m_data{};
         QList<QPainterPath> m_paths;
@@ -40,6 +41,8 @@ class LayerView final : public Process::LayerView
         double m_prevdensity = -1;
         double m_density = -1;
         double m_nextdensity = -1;
+
+        ZoomRatio m_zoom;
 
         std::vector<std::vector<double> > m_prevdata;
         std::vector<std::vector<double> > m_curdata;

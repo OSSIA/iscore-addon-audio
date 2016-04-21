@@ -1,11 +1,19 @@
 #include "SoundProcessView.hpp"
 #include <QPainter>
-#include <QMatrix>
+#include <QGraphicsView>
+#include <QScrollBar>
 
 namespace Audio
 {
 namespace Sound
 {
+
+LayerView::LayerView(QGraphicsItem* parent):
+    Process::LayerView{parent}
+{
+    auto view = scene()->views().first();
+    connect(view->horizontalScrollBar(), &QScrollBar::valueChanged, this, &Audio::Sound::LayerView::scrollValueChanged);
+}
 
 long LayerView::compareDensity(const double density) {
 
@@ -61,7 +69,7 @@ std::vector<std::vector<double> > LayerView::computeDataSet(ZoomRatio ratio, dou
         const double length = (1000 * chan_n) / m_sampleRate; // duration of the track
         const double size = ratio > 0 ? length / ratio : 0; // number of pixels the track will occupy in its entirety
 
-        const int npoints = std::max((int)w, (int)size); // number of points to draw on the screen
+        const int npoints = size;
 
         std::vector<double>& rmsv = dataset[c];
         rmsv.reserve(npoints);
@@ -80,11 +88,6 @@ std::vector<std::vector<double> > LayerView::computeDataSet(ZoomRatio ratio, dou
         }
     }
     return dataset;
-}
-
-LayerView::LayerView(QGraphicsItem* parent):
-    Process::LayerView{parent}
-{
 }
 
 void LayerView::setData(const MediaFileHandle& data)
@@ -115,7 +118,17 @@ void LayerView::drawWaveForms(ZoomRatio ratio) {
         m_channels.lineTo(w, c * h);
     }
 
-    for (int c = 0; c < nchannels ; ++c) {
+    // Get horizontal offset
+
+    auto view = scene()->views().first();
+    auto x0 = std::max(mapFromScene(view->mapToScene(0, 0)).x(), qreal(0));
+
+    int i0 = x0 / densityratio;
+    const int n = m_curdata[0].size();
+
+    auto xf = mapFromScene(view->mapToScene(view->width(), 0)).x();
+
+   for (int c = 0; c < nchannels ; ++c) {
         const int current_height = c * h;
         std::vector<double> dataset = m_curdata[c];
 
@@ -124,26 +137,23 @@ void LayerView::drawWaveForms(ZoomRatio ratio) {
 
         // Draw path for current channel
 
-        auto n = dataset.size();
         auto height_adjustemnt = current_height + h / 2.;
-        if (dataset.size() > 0) {
-            path.moveTo(0, dataset[0] + height_adjustemnt);
-            for (int i = 0; i < n; ++i) {
-                path.lineTo(i * densityratio, dataset[i] * h / 2. + height_adjustemnt);
+        if (n > i0) {
+            path.moveTo(x0, dataset[i0] + height_adjustemnt);
+            double x = x0;
+            for (int i = i0; (i < n) && (x <= xf); ++i) {
+                x = i * densityratio;
+                path.lineTo(x, dataset[i] * h / 2. + height_adjustemnt);
             }
-            path.lineTo(n * densityratio, height_adjustemnt);
-//            path.moveTo(0, dataset[0] + height_adjustemnt);
-//            for (int i = 0; i < n; ++i) {
-//                path.lineTo(i * densityratio, -dataset[i] * h / 2. + height_adjustemnt);
-//            }
-//            path.lineTo(n * densityratio, height_adjustemnt);
+            path.lineTo(x, height_adjustemnt);
         }
         m_paths.push_back(path);
-    }
+   }
 }
 
 void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
 {
+    m_zoom = ratio;
     m_paths = QList<QPainterPath> ();
     m_channels = QPainterPath{};
 
@@ -172,8 +182,8 @@ void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
         m_prevdata = computeDataSet(2 * ratio, &m_prevdensity);
         break;
     case RECOMPUTE_ALL:
-        m_prevdata = computeDataSet(2 * ratio, &m_prevdensity);
         m_curdata = computeDataSet(ratio, &m_density);
+        m_prevdata = computeDataSet(2 * ratio, &m_prevdensity);
         m_nextdata = computeDataSet(ratio / 2, &m_nextdensity);
         break;
     default:
@@ -213,8 +223,11 @@ void LayerView::paint_impl(QPainter* painter) const
     painter->restore();
 
     painter->setPen(Qt::lightGray);
-
     painter->drawPath(m_channels);
+}
+
+void LayerView::scrollValueChanged(int sbvalue) {
+    recompute(TimeValue(), m_zoom);
 }
 
 void LayerView::mousePressEvent(QGraphicsSceneMouseEvent*)
