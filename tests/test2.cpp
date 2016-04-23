@@ -44,8 +44,8 @@ class test1: public QObject
             std::cout << std::flush;
             std::cerr << std::flush;
             // Build the first stream
-            auto stream1 = MakeReadSound("/tmp/1.wav");
-            /*
+//            auto stream1 = MakeReadSound("/tmp/1.wav");
+
             auto stream1 = [] {
                 auto player = MakeGroupPlayer();
                 auto date1 = GenRealDate(player, 44100);
@@ -64,14 +64,24 @@ class test1: public QObject
                            date2);
 
                 // Third sound
-                auto file = MakeReadSound("/tmp/1.wav");
-                StartSound(player, file, date2);
+                //auto file = MakeReadSound("/tmp/1.wav");
+               // StartSound(player, file, date2);
 
                 // Make a stream on the sound
                 return MakeGroupStream(player);
             }();
-            */
 
+
+
+            StartAudioPlayer(m_ctx.player);
+
+            StartSound(m_ctx.player, stream1, GenRealDate(m_ctx.player, 0));
+            for(int i = 5; i --> 0;)
+            {
+                std::this_thread::sleep_for(1s);
+            }
+
+/*
             auto fx_send = MakeSend(stream1);
 
             // Build a first effect stream
@@ -96,13 +106,16 @@ class test1: public QObject
 
             std::cout << std::flush;
             std::cerr << std::flush;
+
             StartSound(m_ctx.player, fx_send, GenRealDate(m_ctx.player, 0));
+
+
             // Mix the streams
             StartAudioPlayer(m_ctx.player);
 
             for(int i = 5; i --> 0;)
                 std::this_thread::sleep_for(1s);
-
+*/
             StopAudioPlayer(m_ctx.player);
             CloseAudioClient(m_ctx.player);
             CloseAudioRenderer(m_ctx.renderer);

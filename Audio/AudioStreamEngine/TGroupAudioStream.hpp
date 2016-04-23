@@ -349,9 +349,18 @@ class TReturnAudioStream final :
 
             if(fSend->Channels() == buffer->GetChannels())
             {
+                std::cerr << framePos << std::endl;
                 UAudioTools::MixFrameToFrameBlk1(buffer->GetFrame(framePos, temp1),
                                                  fSend->GetOutputBuffer(),
                                                  framesNum, fSend->Channels());
+            }
+            else if(fSend->Channels() < buffer->GetChannels())
+            {
+                // TODO
+            }
+            else if(fSend->Channels() > buffer->GetChannels())
+            {
+                // TODO
             }
 
             return framesNum;

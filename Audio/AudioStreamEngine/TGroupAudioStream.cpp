@@ -152,6 +152,8 @@ long TSinusAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos)
     float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
     auto out = buffer->GetFrame(framePos, temp1);
 
+    std::cerr << framePos << std::endl;
+
     auto cst = 2.*M_PI*fFreq / 44100.;
     for(int i = 0; i < framesNum; i++)
     {
@@ -215,6 +217,8 @@ long TPlayerAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos
 
     float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
 
+
+    std::cerr << framePos << std::endl;
     fRenderer.Process();
     auto out_buffer = fRenderer.GetOutputBuffer();
 
