@@ -215,12 +215,6 @@ class TBusAudioStream final :
 
         }
 
-        // Cut the beginning of the stream
-        TAudioStreamPtr CutBegin(long frames) override
-        {
-            return {};
-        }
-
         // Length in frames
         long Length() override
         {
@@ -252,6 +246,7 @@ class TSendAudioStream final :
 {
         TBufferManager fBuffers;
         TSharedNonInterleavedAudioBuffer<float> fTempBuffer;
+        int fCount = 0;
     public:
         TSendAudioStream(TAudioStreamPtr as):
             fBuffers{0, as->Channels(), TAudioGlobals::fBufferSize, TAudioGlobals::fSampleRate},
@@ -284,6 +279,7 @@ class TSendAudioStream final :
                                              framesNum,
                                              fBuffers.fOutput);
 
+            fCount++;
             return framesNum;
         }
 
@@ -292,15 +288,14 @@ class TSendAudioStream final :
             return fBuffers.fOutputBuffer;
         }
 
-        void Reset() override
+        int GetReadBufferCount() const
         {
-
+            return fCount;
         }
 
-        // Cut the beginning of the stream
-        TAudioStreamPtr CutBegin(long frames) override
+        void Reset() override
         {
-            return {};
+            fCount = 0;
         }
 
         // Length in frames
@@ -330,6 +325,7 @@ class TReturnAudioStream final :
         public TAudioStream
 {
         TSendAudioStreamPtr fSend;
+        int fLastSendCount = -1;
         bool fStarted = false;
     public:
         TReturnAudioStream(TSendAudioStreamPtr as):
@@ -348,6 +344,20 @@ class TReturnAudioStream final :
             if(framesNum == 0)
                 return 0;
 
+            auto sc = fSend->GetReadBufferCount();
+            if(sc <= fLastSendCount)
+            {
+                // The return has already read its last buffer and was stopped;
+                // hence we don't have anything to mix in.
+                // Note : if we have some effects generating sound
+                // we should instead play a silent buffer. But this applies everywhere.
+                return 0;
+            }
+            else
+            {
+                fLastSendCount = sc;
+            }
+
             // Write the current buffer to the output.
             const auto channels = buffer->GetChannels();
             const auto channel_bytes = channels * sizeof(float*);
@@ -359,7 +369,6 @@ class TReturnAudioStream final :
             {
                 if(!fStarted)
                 {
-
                     std::cerr << (void*)this << " ==> 0: ";
                     // We haven't started streaming, hence we're mid-buffer.
                     fStarted = true;
@@ -414,12 +423,6 @@ class TReturnAudioStream final :
         void Reset() override
         {
 
-        }
-
-        // Cut the beginning of the stream
-        TAudioStreamPtr CutBegin(long frames) override
-        {
-            return {};
         }
 
         // Length in frames

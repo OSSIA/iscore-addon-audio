@@ -81,12 +81,16 @@ class test1: public QObject
             }
 */
            auto stream1 = MakeReadSound("/tmp/1-stereo.wav");
+           auto stream2 = MakeReadSound("/tmp/1-stereo.wav");
+
+           StartSound(m_ctx.player, stream2, GenRealDate(m_ctx.player, 0));
 
             auto fx_send = MakeSend(stream1);
 
             // TODO for now the sound has to be played first; it could be
             // nice if this was a real graph
-            StartSound(m_ctx.player, fx_send, GenRealDate(m_ctx.player, 0));
+            StartSound(m_ctx.player, fx_send, GenRealDate(m_ctx.player, 44100 * 1.5));
+            StopSound(m_ctx.player, fx_send, GenRealDate(m_ctx.player, 44100 * 3));
 
             // Build a first effect stream
             {
@@ -99,6 +103,7 @@ class test1: public QObject
                 auto fx_chain_1 = MakeEffectSound(fx_return_1, fx_1, 0, 0);
 
                 StartSound(m_ctx.player, fx_chain_1, GenRealDate(m_ctx.player, 44100));
+                StopSound(m_ctx.player, fx_chain_1, GenRealDate(m_ctx.player, 44100 *2));
 
             }
 
@@ -108,7 +113,7 @@ class test1: public QObject
                 auto fx_return_2 = MakeReturn(fx_send);
                 auto fx_chain_2 = MakeEffectSound(fx_return_2, fx_2, 0, 0);
 
-                StartSound(m_ctx.player, fx_chain_2, GenRealDate(m_ctx.player, 88200));
+                StartSound(m_ctx.player, fx_chain_2, GenRealDate(m_ctx.player, 44100 * 2));
             }
 
             std::cout << std::flush;
@@ -119,7 +124,7 @@ class test1: public QObject
             // Mix the streams
             StartAudioPlayer(m_ctx.player);
 
-            for(int i = 5; i --> 0;)
+            for(int i = 15; i --> 0;)
                 std::this_thread::sleep_for(1s);
 
             StopAudioPlayer(m_ctx.player);
