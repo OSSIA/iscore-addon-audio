@@ -1,20 +1,18 @@
-#include <Audio/MixProcess/MixProcessModel.hpp>
+#include <Audio/ReturnProcess/ReturnProcessModel.hpp>
 #include <DummyProcess/DummyLayerModel.hpp>
 #include <Explorer/DocumentPlugin/DeviceDocumentPlugin.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 #include <iscore/plugins/documentdelegate/plugin/ElementPluginModelList.hpp>
 #include <Scenario/Document/Constraint/ConstraintModel.hpp>
 #include <Scenario/Process/ScenarioModel.hpp>
-#include <Loop/LoopProcessModel.hpp>
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
-#include <Audio/SendProcess/SendProcessModel.hpp>
-#include <Audio/ReturnProcess/ReturnProcessModel.hpp>
+#include <Loop/LoopProcessModel.hpp>
 #include <QFile>
 
 namespace Audio
 {
-namespace Mix
+namespace Return
 {
 
 ProcessModel::ProcessModel(
@@ -36,7 +34,8 @@ ProcessModel::ProcessModel(
         source.duration(),
         id,
         Metadata<ObjectKey_k, ProcessModel>::get(),
-        parent}
+        parent},
+    m_sendPath{source.m_sendPath}
 {
     pluginModelList = new iscore::ElementPluginModelList{
                       *source.pluginModelList,
@@ -48,37 +47,6 @@ ProcessModel::~ProcessModel()
 
 }
 
-void ProcessModel::updateRouting(const Routing & r)
-{
-    auto it = m_routings.find(r);
-    if(it != m_routings.end())
-    {
-        m_routings.modify(it, [&] (auto& obj) { obj.mix = r.mix; });
-
-    }
-    emit routingChanged();
-}
-
-void ProcessModel::updateDirectMix(const DirectMix & dmx)
-{
-    // TODO multi_index to the rescue...
-    auto it = find(m_dataProcesses, dmx.process);
-    if(it != m_dataProcesses.end())
-    {
-        it->mix = dmx.mix;
-        emit routingChanged();
-    }
-    else
-    {
-        auto it_2 = find(m_fxProcesses, dmx.process);
-        if(it_2 != m_fxProcesses.end())
-        {
-            it_2->mix = dmx.mix;
-            emit routingChanged();
-        }
-    }
-}
-
 ProcessModel* ProcessModel::clone(
         const Id<Process::ProcessModel>& newId,
         QObject* newParent) const
@@ -88,7 +56,7 @@ ProcessModel* ProcessModel::clone(
 
 QString ProcessModel::prettyName() const
 {
-    return "Mix Process";
+    return "Return Process";
 }
 
 QByteArray ProcessModel::makeLayerConstructionData() const
@@ -185,95 +153,6 @@ Process::LayerModel* ProcessModel::cloneLayer_impl(
                 parent};
 }
 
-void ProcessModel::init()
-{
-    if(auto ptr_cst = dynamic_cast<Scenario::ConstraintModel*>(parent()))
-    {
-        auto& cst = *ptr_cst;
-        for(auto& proc : cst.processes)
-        {
-            on_processAdded(proc);
-        }
-
-        cst.processes.added.connect<ProcessModel, &ProcessModel::on_processAdded>(this);
-        cst.processes.removed.connect<ProcessModel, &ProcessModel::on_processRemoved>(this);
-    }
-
-}
-
-void ProcessModel::on_processAdded(const Process::ProcessModel & proc)
-{
-    if(dynamic_cast<const Scenario::ScenarioModel*>(&proc) ||
-       dynamic_cast<const Loop::ProcessModel*>(&proc) ||
-       dynamic_cast<const Sound::ProcessModel*>(&proc) ||
-       dynamic_cast<const Return::ProcessModel*>(&proc))
-    {
-        m_dataProcesses.push_back({proc.id(), 1.0});
-
-        for(const auto& fx : m_fxProcesses)
-        {
-            m_routings.insert(Routing{proc.id(), fx.process, 1.0});
-        }
-    }
-    else if(auto sfx = dynamic_cast<const Effect::ProcessModel*>(&proc))
-    {
-        m_fxProcesses.push_back({sfx->id(), 1.0});
-
-        for(const auto& other : m_dataProcesses)
-        {
-            m_routings.insert(Routing{other.process, proc.id(), 1.0});
-        }
-    }
-    else
-    {
-        // send, mix
-        return;
-    }
-
-    emit routingChanged();
-}
-
-void ProcessModel::on_processRemoved(const Process::ProcessModel & proc)
-{
-    bool isFx = false;
-    if(dynamic_cast<const Scenario::ScenarioModel*>(&proc) ||
-       dynamic_cast<const Loop::ProcessModel*>(&proc) ||
-       dynamic_cast<const Return::ProcessModel*>(&proc) ||
-       dynamic_cast<const Sound::ProcessModel*>(&proc))
-    {
-        auto it = find(m_dataProcesses, proc.id());
-        if(it != m_dataProcesses.end())
-            m_dataProcesses.erase(it);
-    }
-    else if(auto sfx = dynamic_cast<const Effect::ProcessModel*>(&proc))
-    {
-        auto it = find(m_fxProcesses, sfx->id());
-        if(it != m_fxProcesses.end())
-            m_fxProcesses.erase(it);
-        isFx = true;
-    }
-    else
-    {
-        // send, mix
-        return;
-    }
-
-    auto routing_member = isFx ? &Routing::out : &Routing::in;
-
-    for (auto it = m_routings.begin(); it != m_routings.end(); )
-    {
-        if ((*it).*routing_member == proc.id())
-        {
-            it = m_routings.erase(it);
-        }
-        else
-        {
-            ++ it;
-        }
-    }
-
-    emit routingChanged();
-}
 }
 
 }

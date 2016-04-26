@@ -99,6 +99,14 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessMetadata.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessModel.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SendProcess/SendProcessFactory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SendProcess/SendProcessMetadata.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SendProcess/SendProcessModel.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessFactory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessMetadata.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessModel.hpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.hpp"
@@ -179,6 +187,12 @@ set(SRCS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessModel.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SendProcess/SendProcessFactory.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SendProcess/SendProcessModel.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessFactory.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessModel.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.cpp"
 
