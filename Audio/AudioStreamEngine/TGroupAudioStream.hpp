@@ -3,6 +3,7 @@
 #include <3rdparty/libaudiostream/src/TAudioStream.h>
 #include <3rdparty/libaudiostream/src/renderer/TAudioRenderer.h>
 
+#include <iostream>
 #include <memory>
 
 struct TBufferManager
@@ -214,12 +215,6 @@ class TBusAudioStream final :
 
         }
 
-        // Cut the beginning of the stream
-        TAudioStreamPtr CutBegin(long frames) override
-        {
-            return {};
-        }
-
         // Length in frames
         long Length() override
         {
@@ -251,10 +246,11 @@ class TSendAudioStream final :
 {
         TBufferManager fBuffers;
         TSharedNonInterleavedAudioBuffer<float> fTempBuffer;
+        int fCount = 0;
     public:
         TSendAudioStream(TAudioStreamPtr as):
             fBuffers{0, as->Channels(), TAudioGlobals::fBufferSize, TAudioGlobals::fSampleRate},
-            fTempBuffer{fBuffers.fOutputBuffer, fBuffers.fBufferSize, fBuffers.fSampleRate}
+            fTempBuffer{fBuffers.fOutputBuffer, fBuffers.fBufferSize, fBuffers.fOutput}
         {
             fStream = as;
         }
@@ -283,6 +279,7 @@ class TSendAudioStream final :
                                              framesNum,
                                              fBuffers.fOutput);
 
+            fCount++;
             return framesNum;
         }
 
@@ -291,21 +288,20 @@ class TSendAudioStream final :
             return fBuffers.fOutputBuffer;
         }
 
-        void Reset() override
+        int GetReadBufferCount() const
         {
-
+            return fCount;
         }
 
-        // Cut the beginning of the stream
-        TAudioStreamPtr CutBegin(long frames) override
+        void Reset() override
         {
-            return {};
+            fCount = 0;
         }
 
         // Length in frames
         long Length() override
         {
-            return LONG_MAX;
+            return fStream->Length();
         }
 
         long Channels() override
@@ -320,7 +316,6 @@ class TSendAudioStream final :
 };
 using TSendAudioStreamPtr = LA_SMARTP<TSendAudioStream>;
 
-#include <iostream>
 /**
  * @brief The TReturnAudioStream class
  *
@@ -330,6 +325,8 @@ class TReturnAudioStream final :
         public TAudioStream
 {
         TSendAudioStreamPtr fSend;
+        int fLastSendCount = -1;
+        bool fStarted = false;
     public:
         TReturnAudioStream(TSendAudioStreamPtr as):
             fSend{as}
@@ -344,15 +341,81 @@ class TReturnAudioStream final :
 
         long Read(FLOAT_BUFFER buffer, long framesNum, long framePos) override
         {
+            if(framesNum == 0)
+                return 0;
+
+            auto sc = fSend->GetReadBufferCount();
+            if(sc <= fLastSendCount)
+            {
+                // The return has already read its last buffer and was stopped;
+                // hence we don't have anything to mix in.
+                // Note : if we have some effects generating sound
+                // we should instead play a silent buffer. But this applies everywhere.
+                return 0;
+            }
+            else
+            {
+                fLastSendCount = sc;
+            }
+
             // Write the current buffer to the output.
-            float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
+            const auto channels = buffer->GetChannels();
+            const auto channel_bytes = channels * sizeof(float*);
+
+            float** temp1 = (float**) alloca(channel_bytes);
+
+            float ** in_buffer;
+            if(framesNum < TAudioGlobals::fBufferSize)
+            {
+                if(!fStarted)
+                {
+                    std::cerr << (void*)this << " ==> 0: ";
+                    // We haven't started streaming, hence we're mid-buffer.
+                    fStarted = true;
+
+                    in_buffer = (float**) alloca(channel_bytes);
+                    for(int chan = 0; chan < buffer->GetChannels(); chan++)
+                    {
+                        in_buffer[chan] = fSend->GetOutputBuffer()[chan] + TAudioGlobals::fBufferSize - framesNum;
+                    }
+                }
+                else
+                {
+                    std::cerr << (void*)this << " ==> 1: ";
+                    // We already started streaming so this is the last buffer
+                    // which begins at the frame 0.
+                    in_buffer = fSend->GetOutputBuffer();
+                }
+            }
+            else
+            {
+                std::cerr << (void*)this << " ==> 2: ";
+                in_buffer = fSend->GetOutputBuffer();
+            }
 
             if(fSend->Channels() == buffer->GetChannels())
             {
+                std::cerr << framePos <<  " " << framesNum << std::endl;
                 UAudioTools::MixFrameToFrameBlk1(buffer->GetFrame(framePos, temp1),
-                                                 fSend->GetOutputBuffer(),
+                                                 in_buffer,
                                                  framesNum, fSend->Channels());
             }
+            else if(fSend->Channels() < buffer->GetChannels())
+            {
+                std::cerr << "Not enough channels\n";
+                // TODO
+                // Two possibilities for channel management :
+                // - ableton-like : everything is stereo
+                // - S1-like : can create any kind of channels
+                // Here we could duplicate, or fill with silence.
+            }
+            else if(fSend->Channels() > buffer->GetChannels())
+            {
+                std::cerr << "Too much channels\n";
+                // TODO
+                // here we should cut the other channels ?
+            }
+            // Everything should be adapted to work correctly on the "end channels".
 
             return framesNum;
         }
@@ -360,12 +423,6 @@ class TReturnAudioStream final :
         void Reset() override
         {
 
-        }
-
-        // Cut the beginning of the stream
-        TAudioStreamPtr CutBegin(long frames) override
-        {
-            return {};
         }
 
         // Length in frames
