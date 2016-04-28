@@ -35,17 +35,17 @@ Rectangle {
                 Slider {
                     id: panSlider
                     orientation: Qt.Horizontal
-                    value: pan
+                    value: trackModel.getPan(index)
                     minimumValue: -1
                     maximumValue: 1
                     width: width
                     stepSize: 0.001
-                    onValueChanged: pan = value;
+                    onValueChanged: trackModel.setPan(index, value);
                 }
 
                 Label {
                     anchors.horizontalCenter: columnWrap.horizontalCenter
-                    text: "Pan %1".arg(pan)
+                    text: "Pan %1".arg(panSlider.value)
                 }
 
                 Slider {
@@ -53,15 +53,14 @@ Rectangle {
                     id: volSlider
                     tickmarksEnabled: true
                     orientation: Qt.Vertical
-                    value: vol
+                    value: trackModel.getVol(index)
                     stepSize: 1
                     minimumValue: 0
                     maximumValue: 100
-                    onValueChanged: vol = value
+                    onValueChanged: trackModel.setVol(index, value)
                 }
-
                 Label {
-                    text: "Volume " + vol
+                    text: "Volume " + volSlider.value
                     anchors.horizontalCenter: columnWrap.horizontalCenter
                     anchors.top: volSlider.bottom
                 }
@@ -69,10 +68,10 @@ Rectangle {
                 SpinBox {
                     anchors.horizontalCenter: columnWrap.horizontalCenter
                     id: outBox
-                    value: out
+                    value: trackModel.getPan(index)
                     stepSize: 1
                     minimumValue: 0
-                    onValueChanged: out = value
+                    onValueChanged: trackModel.setPan(index, value)
                 }
                 Label {
                     anchors.horizontalCenter: columnWrap.horizontalCenter
@@ -81,15 +80,13 @@ Rectangle {
             }
         }
 
-        model: tracks
+        model: trackModel
     }
 
 
     Button {
         id: addTrackButton
         text: "Add a track"
-        onClicked: tracks.append({vol: 100, pan: 0, out: 0})
+        onClicked: trackModel.addTrackSignal()
     }
-
-    property ListModel tracks
 }

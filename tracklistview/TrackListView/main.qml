@@ -28,7 +28,6 @@ ApplicationWindow {
     TrackList {
         id: tracklist
         anchors.fill: parent
-        tracks: ListModel {}
     }
 }
 
