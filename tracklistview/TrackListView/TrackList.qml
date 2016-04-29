@@ -40,7 +40,7 @@ Rectangle {
                     maximumValue: 1
                     width: width
                     stepSize: 0.001
-                    onValueChanged: trackModel.setPan(index, value);
+                    onValueChanged: trackModel.setPan(index, value)
                 }
 
                 Label {
@@ -68,14 +68,19 @@ Rectangle {
                 SpinBox {
                     anchors.horizontalCenter: columnWrap.horizontalCenter
                     id: outBox
-                    value: trackModel.getPan(index)
+                    value: out
                     stepSize: 1
                     minimumValue: 0
-                    onValueChanged: trackModel.setPan(index, value)
+                    onValueChanged: trackModel.setOut(index, value)
                 }
                 Label {
                     anchors.horizontalCenter: columnWrap.horizontalCenter
                     text: "Output channel"
+                }
+
+                Button {
+                    text: "Remove"
+                    onClicked: trackModel.removeTrack(index)
                 }
             }
         }

@@ -2,10 +2,8 @@
 #include "DeviceInfo.hpp"
 #include <QDebug>
 
+Track::Track(double volval, double panval, long outval) : m_vol(volval), m_pan(panval), m_output(outval) {}
 Track::Track() : Track(100, 0, 0) {}
-Track::Track(double volval, double panval, long outval) : m_vol(volval), m_pan(panval), m_output(outval) {
-    qDebug() << "Created track: vol =" << vol() << "pan =" << pan() << "out =" << out();
-}
 
 double Track::vol() const {
     return m_vol;
@@ -18,7 +16,7 @@ long Track::out() const {
 }
 
 void Track::setVol(double v) {
-    if (v >= 0 && v <= 1)
+    if (v >= 0 && v <= 100)
         m_vol = v;
 }
 
@@ -47,7 +45,7 @@ QHash<int, QByteArray> TrackModel::roleNames() const {
 }
 
 bool TrackModel::insertRows(int row, int count, const QModelIndex& parent) {
-    beginInsertRows(parent, row - count, row - 1);
+    beginInsertRows(parent, row, row + count - 1);
     m_data.insert(m_data.begin() + row, count, Track());
     endInsertRows();
     return true;
@@ -56,13 +54,12 @@ bool TrackModel::insertRows(int row, int count, const QModelIndex& parent) {
 bool TrackModel::removeRows(int row, int count, const QModelIndex &parent) {
     beginRemoveRows(parent, row, row + count - 1);
     auto it = m_data.begin();
-    m_data.erase(it + row, it + (row + count - 1));
+    m_data.erase(it + row, it + row + count);
     endRemoveRows();
     return true;
 }
 
 QVariant TrackModel::data(const QModelIndex &index, int role) const {
-    qDebug() << "getting data" << roleNames()[role] << "at index" << index.row();
     int i = index.row();
     if (i >= m_data.size() || i < 0)
         return QVariant(-10);
@@ -70,14 +67,11 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const {
         Track t = m_data[i];
         switch (role) {
         case VolRole:
-            qDebug() << t.vol();
             return t.vol();
         case PanRole:
-            qDebug() << t.pan();
             return t.pan();
         case OutRole:
-            qDebug() << t.out();
-            return qlonglong(t.out());
+            return (int)t.out();
         }
     }
 }
@@ -91,7 +85,6 @@ Qt::ItemFlags TrackModel::flags(int index) {
 }
 
 bool TrackModel::setData(const QModelIndex &index, const QVariant &value, int role) {
-    qDebug() << "setting data" << roleNames()[role] << "at index" << index.row() << "to" << value;
     int i = index.row();
     switch (role) {
     case VolRole:
@@ -107,8 +100,7 @@ bool TrackModel::setData(const QModelIndex &index, const QVariant &value, int ro
         return false;
     }
 
-    QVector<int> roles = QVector<int> ();
-    roles.append(role);
+    QVector<int> roles = QVector<int> (1, role);
     emit(QAbstractListModel::dataChanged(index, index, roles));
     return true;
 }
@@ -116,11 +108,9 @@ bool TrackModel::setData(const QModelIndex &index, const QVariant &value, int ro
 void TrackModel::addTrack(const Track& t) {
     if (insertRows(rowCount(), 1)) {
         QModelIndex index = TrackModel::index(rowCount() - 1);
-        qDebug() << "adding track at index" << index.row();
-        setData(index, t.vol(), VolRole);
         setData(index, t.pan(), PanRole);
-        setData(index, qlonglong(t.out()), OutRole);
-        qDebug() << "added track";
+        setData(index, (int)(t.out()), OutRole);
+        setData(index, QVariant(t.vol()), VolRole);
     }
 }
 
@@ -129,15 +119,17 @@ void TrackModel::removeTrack(int index) {
 }
 
 double TrackModel::getVol(int i) const {
-    return data(index(i), VolRole).toDouble();
+    int val = data(index(i), VolRole).toInt();
+    return (double)val;
 }
 
 double TrackModel::getPan(int i) const {
     return data(index(i), PanRole).toDouble();
 }
 
-double TrackModel::getOut(int i) const {
-    return data(index(i), OutRole).toDouble();
+long TrackModel::getOut(int i) const {
+    int o = data(index(i), OutRole).toDouble();
+    return (long)o;
 }
 
 void TrackModel::setVol(int i, double volval) {
@@ -149,5 +141,12 @@ void TrackModel::setPan(int i, double panval) {
 }
 
 void TrackModel::setOut(int i, long outval) {
-    setData(index(i), qlonglong(outval), OutRole);
+    setData(index(i), (int)outval, OutRole);
+}
+
+void TrackModel::print() {
+    int s = m_data.size();
+    for (int i = 0; i < s; ++i) {
+        Track t = m_data[i];
+    }
 }

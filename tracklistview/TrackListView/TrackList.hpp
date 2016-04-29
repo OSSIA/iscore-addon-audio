@@ -5,8 +5,8 @@
 
 class Track {
 public:
-    Track();
     Track(double, double, long);
+    Track();
 
     double vol() const;
     double pan() const;
@@ -17,9 +17,9 @@ public:
     void setOut(long);
 
 private:
-    double m_vol;
-    double m_pan;
-    long m_output;
+    double m_vol = 100;
+    double m_pan = 0;
+    long m_output = 0;
 };
 
 class TrackModel : public QAbstractListModel {
@@ -45,11 +45,13 @@ public:
 
     Q_INVOKABLE double getVol(int index) const;
     Q_INVOKABLE double getPan(int index) const;
-    Q_INVOKABLE double getOut(int index) const;
+    Q_INVOKABLE long getOut(int index) const;
 
     Q_INVOKABLE void setVol(int index, double volval);
     Q_INVOKABLE void setPan(int index, double panval);
     Q_INVOKABLE void setOut(int index, long outval);
+
+    Q_INVOKABLE void print();
 
 public slots:
     void addTrack(const Track&);
