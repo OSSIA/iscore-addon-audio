@@ -301,6 +301,8 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioPlayerPtr MakeGroupPlayer()
         goto error;
     }
 
+    // TODO make a wrapper that saves the stream commands
+    // and sets them to an unknown symbolic date upon deletion.
     player->fMixer = new TExpAudioMixer;
     if (!player->fMixer) {
         goto error;
