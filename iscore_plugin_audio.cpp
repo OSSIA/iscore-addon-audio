@@ -12,6 +12,8 @@
 #include <Audio/SoundProcess/SoundProcessFactory.hpp>
 #include <Audio/EffectProcess/EffectProcessFactory.hpp>
 #include <Audio/MixProcess/MixProcessFactory.hpp>
+#include <Audio/SendProcess/SendProcessFactory.hpp>
+#include <Audio/ReturnProcess/ReturnProcessFactory.hpp>
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
 #include <Audio/Settings/Card/CardSettingsFactory.hpp>
 
@@ -44,7 +46,9 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
         FW<Process::ProcessFactory,
             Audio::Sound::ProcessFactory,
             Audio::Effect::ProcessFactory,
-            Audio::Mix::ProcessFactory
+            Audio::Mix::ProcessFactory,
+            Audio::Send::ProcessFactory,
+            Audio::Return::ProcessFactory
             >,
         FW<Audio::AudioStreamEngine::ProcessComponentFactory,
             Audio::AudioStreamEngine::EffectComponentFactory,

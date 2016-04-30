@@ -125,6 +125,8 @@ set(SRCS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessModelSerialization.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessModelSerialization.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SendProcess/SendProcessModelSerialization.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessModelSerialization.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioApplicationPlugin.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioDocumentPlugin.cpp"
