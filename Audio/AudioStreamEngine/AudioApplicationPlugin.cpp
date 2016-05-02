@@ -30,6 +30,11 @@ void ApplicationPlugin::on_newDocument(iscore::Document* doc)
             plug, [=] { plug->stop(); });
 }
 
+void ApplicationPlugin::on_loadedDocument(iscore::Document* doc)
+{
+    on_newDocument(doc);
+}
+
 static int CardIdFromString(int api, const QString& str);
 static int CardIdFromString(int api, const QString& str)
 {

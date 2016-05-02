@@ -93,6 +93,8 @@ AudioStream ConstraintComponent::makeStream(const Context& player)
             }
             else if(auto sfx = dynamic_cast<Effect::ProcessModel*>(&proc))
             {
+                // TODO if there is only an effect and no input,
+                // we should feed it at least some silence.
                 sfxs.push_back(
                             make_pair(
                                 sfx,

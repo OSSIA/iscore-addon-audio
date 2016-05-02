@@ -31,6 +31,7 @@ AudioStream ScenarioComponent::makeStream(const Context& ctx) const
     m_group = MakeGroupStream(m_renderer);
 
     auto& scenario = process();
+    // TODO FIXME we have to generate a symbolic date for each *condition*.
     // First generate a symbolic date for each of the timenode (fixed if there is no trigger ?)
     for(Scenario::TimeNodeModel& tn : scenario.timeNodes)
     {
