@@ -11,6 +11,7 @@ namespace Sound
 LayerView::LayerView(QGraphicsItem* parent):
     Process::LayerView{parent}
 {
+    this->setFlag(QGraphicsItem::ItemClipsToShape, true);
     auto view = scene()->views().first();
     connect(view->horizontalScrollBar(), &QScrollBar::valueChanged, this, &Audio::Sound::LayerView::scrollValueChanged);
 }
@@ -172,19 +173,19 @@ void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
         m_curdata = std::vector<std::vector<double> > (m_nextdata);
         m_density = m_nextdensity;
         if (density > 1)
-            m_nextdata = computeDataSet(ratio / 2, &m_nextdensity);
+            m_nextdata = computeDataSet(ratio / 2., &m_nextdensity);
         break;
     case USE_PREV:
         m_nextdata = std::vector<std::vector<double> > (m_curdata);
         m_nextdensity = m_density;
         m_curdata = std::vector<std::vector<double> > (m_prevdata);
         m_density = m_prevdensity;
-        m_prevdata = computeDataSet(2 * ratio, &m_prevdensity);
+        m_prevdata = computeDataSet(2. * ratio, &m_prevdensity);
         break;
     case RECOMPUTE_ALL:
         m_curdata = computeDataSet(ratio, &m_density);
-        m_prevdata = computeDataSet(2 * ratio, &m_prevdensity);
-        m_nextdata = computeDataSet(ratio / 2, &m_nextdensity);
+        m_prevdata = computeDataSet(2. * ratio, &m_prevdensity);
+        m_nextdata = computeDataSet(ratio / 2., &m_nextdensity);
         break;
     default:
         break;
@@ -204,20 +205,20 @@ void LayerView::paint_impl(QPainter* painter) const
     painter->setBrush(Qt::darkCyan);
     painter->setPen(Qt::darkBlue);
 
-    for (auto path : m_paths)
+    for (const auto& path : m_paths)
         painter->drawPath(path);
 
     painter->save();
 
     const auto h = -height() / nchannels;
-    const auto dblh = 2 * h;
+    const auto dblh = 2. * h;
 
     painter->scale(1, -1);
     painter->translate(0, h + 1);
 
-    for (auto path : m_paths) {
+    for (const auto& path : m_paths) {
         painter->drawPath(path);
-        painter->translate(0, dblh);
+        painter->translate(0., dblh);
     }
 
     painter->restore();
