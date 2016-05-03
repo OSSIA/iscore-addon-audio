@@ -1,13 +1,7 @@
 #include <Audio/ReturnProcess/ReturnProcessModel.hpp>
 #include <DummyProcess/DummyLayerModel.hpp>
-#include <Explorer/DocumentPlugin/DeviceDocumentPlugin.hpp>
-#include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 #include <iscore/plugins/documentdelegate/plugin/ElementPluginModelList.hpp>
-#include <Scenario/Document/Constraint/ConstraintModel.hpp>
-#include <Scenario/Process/ScenarioModel.hpp>
-#include <Audio/SoundProcess/SoundProcessModel.hpp>
-#include <Audio/EffectProcess/EffectProcessModel.hpp>
-#include <Loop/LoopProcessModel.hpp>
+#include <Audio/SendProcess/SendProcessModel.hpp>
 #include <QFile>
 
 namespace Audio
@@ -45,6 +39,15 @@ ProcessModel::ProcessModel(
 ProcessModel::~ProcessModel()
 {
 
+}
+
+const Send::ProcessModel* ProcessModel::send_ptr() const
+{
+    auto maybe_send = m_sendPath.try_find();
+    if(!maybe_send)
+        return nullptr;
+
+    return dynamic_cast<Send::ProcessModel*>(maybe_send);
 }
 
 ProcessModel* ProcessModel::clone(

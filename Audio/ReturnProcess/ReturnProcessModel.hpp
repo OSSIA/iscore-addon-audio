@@ -13,6 +13,10 @@
 
 namespace Audio
 {
+namespace Send
+{
+class ProcessModel;
+}
 namespace Return
 {
 class ProcessModel final :
@@ -47,6 +51,8 @@ class ProcessModel final :
 
         const Path<Process::ProcessModel>& send() const
         { return m_sendPath; }
+
+        const Send::ProcessModel* send_ptr() const;
 
         void setSend(const Path<Process::ProcessModel>& send)
         {
