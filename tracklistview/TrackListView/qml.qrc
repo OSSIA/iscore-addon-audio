@@ -1,7 +1,11 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>Track.qml</file>
         <file>TrackList.qml</file>
+        <file>CircularButton.qml</file>
+    </qresource>
+    <qresource prefix="/img">
+        <file>button.png</file>
+        <file>hand.png</file>
     </qresource>
 </RCC>

@@ -18,7 +18,7 @@ Rectangle {
             Rectangle {
             id: wrapper
             height: columnWrap.height + 20
-            width: panSlider.width
+            width: removeButton.width + 20
             color: "lightgrey"
             border.color: "black"
             anchors.margins: 5
@@ -32,20 +32,27 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 
-                Slider {
-                    id: panSlider
-                    orientation: Qt.Horizontal
+                CircularButton {
+                    id: panButton
                     value: trackModel.getPan(index)
-                    minimumValue: -1
-                    maximumValue: 1
-                    width: width
-                    stepSize: 0.001
                     onValueChanged: trackModel.setPan(index, value)
+                    anchors.horizontalCenter: parent.horizontalCenter
                 }
+
+//                Slider {
+//                    id: panSlider
+//                    orientation: Qt.Horizontal
+//                    value: trackModel.getPan(index)
+//                    minimumValue: -1
+//                    maximumValue: 1
+//                    width: width
+//                    stepSize: 0.001
+//                    onValueChanged: {trackModel.setPan(index, value); panButton.value = value}
+//                }
 
                 Label {
                     anchors.horizontalCenter: columnWrap.horizontalCenter
-                    text: "Pan %1".arg(panSlider.value)
+                    text: "Pan %1".arg(panButton.value)
                 }
 
                 Slider {
@@ -75,11 +82,13 @@ Rectangle {
                 }
                 Label {
                     anchors.horizontalCenter: columnWrap.horizontalCenter
-                    text: "Output channel"
+                    text: "Output"
                 }
 
                 Button {
+                    id: removeButton
                     text: "Remove"
+                    anchors.horizontalCenter: columnWrap.horizontalCenter
                     onClicked: trackModel.removeTrack(index)
                 }
             }

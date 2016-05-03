@@ -45,6 +45,9 @@ QHash<int, QByteArray> TrackModel::roleNames() const {
 }
 
 bool TrackModel::insertRows(int row, int count, const QModelIndex& parent) {
+    if (row > m_data.size() || count <= 0)
+        return false;
+
     beginInsertRows(parent, row, row + count - 1);
     m_data.insert(m_data.begin() + row, count, Track());
     endInsertRows();
@@ -52,6 +55,9 @@ bool TrackModel::insertRows(int row, int count, const QModelIndex& parent) {
 }
 
 bool TrackModel::removeRows(int row, int count, const QModelIndex &parent) {
+    if (row >= m_data.size() || row + count - 1 >= m_data.size())
+        return false;
+
     beginRemoveRows(parent, row, row + count - 1);
     auto it = m_data.begin();
     m_data.erase(it + row, it + row + count);
