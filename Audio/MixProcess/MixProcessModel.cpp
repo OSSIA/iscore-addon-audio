@@ -50,35 +50,35 @@ ProcessModel::~ProcessModel()
 
 }
 
+double ProcessModel::mix(const Routing & r) const
+{
+    auto it = m_routings.find(r);
+    ISCORE_ASSERT(it != m_routings.end());
+
+    return it->mix;
+}
+
+double ProcessModel::mix(const DirectMix & dmx) const
+{
+    return findDirectMix(dmx)->mix;
+}
+
 void ProcessModel::updateRouting(const Routing & r)
 {
     auto it = m_routings.find(r);
-    if(it != m_routings.end())
-    {
-        m_routings.modify(it, [&] (auto& obj) { obj.mix = r.mix; });
+    ISCORE_ASSERT(it != m_routings.end());
 
-    }
+    m_routings.modify(it, [&] (auto& obj) { obj.mix = r.mix; });
+
     emit routingChanged();
 }
 
 void ProcessModel::updateDirectMix(const DirectMix & dmx)
 {
     // TODO multi_index to the rescue...
-    auto it = find(m_dataProcesses, dmx.process);
-    if(it != m_dataProcesses.end())
-    {
-        it->mix = dmx.mix;
-        emit routingChanged();
-    }
-    else
-    {
-        auto it_2 = find(m_fxProcesses, dmx.process);
-        if(it_2 != m_fxProcesses.end())
-        {
-            it_2->mix = dmx.mix;
-            emit routingChanged();
-        }
-    }
+    auto in_dmx = findDirectMix(dmx);
+    in_dmx->mix = dmx.mix;
+    emit routingChanged();
 }
 
 ProcessModel* ProcessModel::clone(

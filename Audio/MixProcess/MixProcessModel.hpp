@@ -67,6 +67,16 @@ class ProcessModel final :
         const std::list<Id<Process::ProcessModel>>& sends() const
         { return m_sendProcesses; }
 
+        double mix(const Routing&) const;
+        double mix(
+                const Id<Process::ProcessModel>& p1,
+                const Id<Process::ProcessModel>& p2) const
+        { return mix(Routing{p1, p2, {}}); }
+
+        double mix(const DirectMix&) const;
+        double mix(const Id<Process::ProcessModel>& p1) const
+        { return mix(DirectMix{p1, {}}); }
+
         void updateRouting(const Routing&);
         void updateDirectMix(const DirectMix&);
 
@@ -115,6 +125,40 @@ class ProcessModel final :
         void init();
         void on_processAdded(const Process::ProcessModel&);
         void on_processRemoved(const Process::ProcessModel&);
+
+        template<typename This_T>
+        static auto findDirectMix_impl(This_T& self, const DirectMix& dmx)
+        {
+            auto it = find(self.m_dataProcesses, dmx.process);
+            if(it != self.m_dataProcesses.end())
+            {
+                return it;
+            }
+            else
+            {
+                auto it_2 = find(self.m_fxProcesses, dmx.process);
+                if(it_2 != self.m_fxProcesses.end())
+                {
+                    return it_2;
+                }
+                else
+                {
+                    ISCORE_ABORT;
+                }
+            }
+
+        }
+
+        auto findDirectMix(const DirectMix& dmx)
+        {
+            return findDirectMix_impl(*this, dmx);
+        }
+        auto findDirectMix(const DirectMix& dmx) const
+        {
+            return findDirectMix_impl(*this, dmx);
+        }
+
+
         RoutingMap m_routings;
         std::list<DirectMix> m_dataProcesses;
         std::list<DirectMix> m_fxProcesses;

@@ -1,6 +1,7 @@
 #pragma once
 #include <Process/Inspector/ProcessInspectorWidgetDelegate.hpp>
 #include <iscore/command/Dispatchers/CommandDispatcher.hpp>
+#include <iscore/command/Dispatchers/OngoingCommandDispatcher.hpp>
 #include <Audio/SoundProcess/SoundProcessMetadata.hpp>
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
 #include <Audio/MixProcess/MixProcessModel.hpp>
@@ -50,7 +51,7 @@ class InspectorWidget final :
         void recreate();
 
         QTableWidget* m_table{};
-        CommandDispatcher<> m_dispatcher;
+        OngoingCommandDispatcher m_dispatcher;
 };
 }
 

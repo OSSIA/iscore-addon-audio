@@ -79,7 +79,6 @@ struct AudioDependencyGraph
         {
             // Do a topological sort
             try {
-
                 std::deque<int> topo_order;
                 boost::topological_sort(m_graph, std::front_inserter(topo_order));
 
@@ -96,6 +95,9 @@ struct AudioDependencyGraph
                     } s;
                     eggs::variants::apply(s, m_graph[elt]);
                 }
+
+                // For each element in the queue, create the stream.
+                // It has the insurance that the required streams already exist.
 
                 return true;
             }

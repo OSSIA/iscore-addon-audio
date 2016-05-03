@@ -29,6 +29,13 @@ class UpdateRouting final : public iscore::SerializableCommand
         void undo() const override;
         void redo() const override;
 
+        void update(
+                const Mix::ProcessModel&,
+                Mix::Routing newmix)
+        {
+            m_new = newmix;
+        }
+
     protected:
         void serializeImpl(DataStreamInput & s) const override;
         void deserializeImpl(DataStreamOutput & s) override;
@@ -49,6 +56,13 @@ class UpdateDirect final : public iscore::SerializableCommand
 
         void undo() const override;
         void redo() const override;
+
+        void update(
+                const Mix::ProcessModel&,
+                Mix::DirectMix newmix)
+        {
+            m_new = newmix;
+        }
 
     protected:
         void serializeImpl(DataStreamInput & s) const override;

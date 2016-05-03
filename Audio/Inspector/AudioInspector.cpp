@@ -161,21 +161,18 @@ void InspectorWidget::recreate()
         for(int row = 0; row < n_fx; row++)
         {
             auto sb = new MixSpinBox{m_table};
+            sb->setValue(mix.mix(col_it->process, fx_it->process));
             m_table->setCellWidget(row, col, sb);
 
             connect(sb, SignalUtils::QSpinBox_valueChanged_int,
                     this, [=,&mix] (int val) {
-                m_dispatcher.submitCommand(
-                            new Audio::Commands::UpdateRouting{
+                m_dispatcher.submitCommand<Audio::Commands::UpdateRouting>(
                                 mix,
-                                Routing{col_it->process, fx_it->process, val / 100.} });
+                                Routing{col_it->process, fx_it->process, val / 100.});
             });
-            /*
-            auto item = new QTableWidgetItem;
-            item->setText("D->FX");
-            item->setBackgroundColor(Qt::darkRed);
-            m_table->setItem(row, col, item);
-            */
+            connect(sb, &QSpinBox::editingFinished,
+                    this, [=] () { m_dispatcher.commit(); });
+
             row_labels.push_back(pretty_name(fx_it->process));
             fx_it++;
         }
@@ -184,19 +181,39 @@ void InspectorWidget::recreate()
         auto send_it = mix.sends().begin();
         for(int row = n_fx; row < n_fx + n_sends; row++)
         {
-            auto item = new QTableWidgetItem;
-            item->setText("D->Send");
-            item->setBackgroundColor(Qt::darkGreen);
-            m_table->setItem(row, col, item);
+            auto sb = new MixSpinBox{m_table};
+            sb->setValue(mix.mix(col_it->process, *send_it));
+            m_table->setCellWidget(row, col, sb);
+
+            connect(sb, SignalUtils::QSpinBox_valueChanged_int,
+                    this, [=,&mix] (int val) {
+                m_dispatcher.submitCommand<Audio::Commands::UpdateRouting>(
+                                mix,
+                                Routing{col_it->process, *send_it, val / 100.});
+            });
+            connect(sb, &QSpinBox::editingFinished,
+                    this, [=] () { m_dispatcher.commit(); });
+
+
             row_labels.push_back(pretty_name(*send_it));
             send_it++;
         }
 
         // Data -> Direct
-        auto item = new QTableWidgetItem;
-        item->setText("D->Direct");
-        item->setBackgroundColor(Qt::darkBlue);
-        m_table->setItem(n_fx + n_sends, col, item);
+        auto sb = new MixSpinBox{m_table};
+        sb->setValue(mix.mix(col_it->process));
+        m_table->setCellWidget(n_fx + n_sends, col, sb);
+
+        connect(sb, SignalUtils::QSpinBox_valueChanged_int,
+                this, [=,&mix] (int val) {
+            m_dispatcher.submitCommand<Audio::Commands::UpdateDirect>(
+                            mix,
+                            DirectMix{col_it->process, val / 100.});
+        });
+        connect(sb, &QSpinBox::editingFinished,
+                this, [=] () { m_dispatcher.commit(); });
+
+
         row_labels.push_back(tr("Direct"));
         col_it++;
     }
@@ -208,19 +225,38 @@ void InspectorWidget::recreate()
         col_labels.push_back(pretty_name(col_it->process));
 
         // Fx -> Send
+        auto send_it = mix.sends().begin();
         for(int row = n_fx; row < n_fx + n_sends; row++)
         {
-            auto item = new QTableWidgetItem;
-            item->setText("Fx->Send");
-            item->setBackgroundColor(Qt::darkYellow);
-            m_table->setItem(row, col, item);
+            auto sb = new MixSpinBox{m_table};
+            sb->setValue(mix.mix(col_it->process, *send_it));
+            m_table->setCellWidget(row, col, sb);
+
+            connect(sb, SignalUtils::QSpinBox_valueChanged_int,
+                    this, [=,&mix] (int val) {
+                m_dispatcher.submitCommand<Audio::Commands::UpdateRouting>(
+                                mix,
+                                Routing{col_it->process, *send_it, val / 100.});
+            });
+            connect(sb, &QSpinBox::editingFinished,
+                    this, [=] () { m_dispatcher.commit(); });
+
+            send_it++;
         }
 
         // Fx -> Direct
-        auto item = new QTableWidgetItem;
-        item->setText("D->Direct");
-        item->setBackgroundColor(Qt::darkMagenta);
-        m_table->setItem(n_fx + n_sends, col, item);
+        auto sb = new MixSpinBox{m_table};
+        sb->setValue(mix.mix(col_it->process));
+        m_table->setCellWidget(n_fx + n_sends, col, sb);
+
+        connect(sb, SignalUtils::QSpinBox_valueChanged_int,
+                this, [=,&mix] (int val) {
+            m_dispatcher.submitCommand<Audio::Commands::UpdateDirect>(
+                            mix,
+                            DirectMix{col_it->process, val / 100.});
+        });
+        connect(sb, &QSpinBox::editingFinished,
+                this, [=] () { m_dispatcher.commit(); });
 
         col_it++;
     }
