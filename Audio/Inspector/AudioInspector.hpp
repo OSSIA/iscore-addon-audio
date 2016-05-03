@@ -45,7 +45,6 @@ class InspectorWidget final :
                 QWidget* parent);
 
     private:
-        QLineEdit* m_edit{};
         CommandDispatcher<> m_dispatcher;
 };
 }

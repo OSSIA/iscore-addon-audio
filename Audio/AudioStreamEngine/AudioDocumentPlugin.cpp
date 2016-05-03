@@ -46,7 +46,8 @@ struct AudioDependencyGraph
             // 1. Create vertices
             visit(root);
 
-            // 2. For all "Return" vertices, add edge from "Send"
+            // 2. For all "Return" vertices, add edge to "Send"
+            // since the return depends on the send
             auto vertices = boost::vertices(m_graph);
             for(auto it = vertices.first; it != vertices.second; ++it)
             {
@@ -62,8 +63,8 @@ struct AudioDependencyGraph
                     {
                         if(m_graph[*it_k] == send)
                         {
-                            // Add an edge from send to return
-                            boost::add_edge(*it_k, *it, m_graph);
+                            // Add an edge from return to send
+                            boost::add_edge(*it, *it_k, m_graph);
                             break;
                         }
                     }
