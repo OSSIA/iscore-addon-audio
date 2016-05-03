@@ -1,6 +1,6 @@
 #include "Factory.hpp"
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
-#include <Audio/SendProcess/SendProcessModel.hpp>
+#include <Audio/MixProcess/MixProcessModel.hpp>
 #include <Audio/ReturnProcess/ReturnProcessModel.hpp>
 #include <Audio/Inspector/AudioInspector.hpp>
 namespace Audio
@@ -35,7 +35,7 @@ bool InspectorFactory::matches(const Process::ProcessModel& process) const
 }
 
 }
-namespace Send
+namespace Mix
 {
 
 InspectorFactory::InspectorFactory()
@@ -54,14 +54,14 @@ Process::InspectorWidgetDelegate* InspectorFactory::make(
         QWidget* parent) const
 {
     return new InspectorWidget{
-        static_cast<const Audio::Send::ProcessModel&>(process),
+        static_cast<const Audio::Mix::ProcessModel&>(process),
                 doc,
                 parent};
 }
 
 bool InspectorFactory::matches(const Process::ProcessModel& process) const
 {
-    return dynamic_cast<const Audio::Send::ProcessModel*>(&process);
+    return dynamic_cast<const Audio::Mix::ProcessModel*>(&process);
 }
 
 }

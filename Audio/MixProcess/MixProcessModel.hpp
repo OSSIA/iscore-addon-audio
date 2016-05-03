@@ -60,6 +60,13 @@ class ProcessModel final :
 
         const RoutingMap& routings() const
         { return m_routings; }
+        const std::list<DirectMix>& directData() const
+        { return m_dataProcesses; }
+        const std::list<DirectMix>& directFx() const
+        { return m_fxProcesses; }
+        const std::list<Id<Process::ProcessModel>>& sends() const
+        { return m_sendProcesses; }
+
         void updateRouting(const Routing&);
         void updateDirectMix(const DirectMix&);
 
@@ -111,6 +118,7 @@ class ProcessModel final :
         RoutingMap m_routings;
         std::list<DirectMix> m_dataProcesses;
         std::list<DirectMix> m_fxProcesses;
+        std::list<Id<Process::ProcessModel>> m_sendProcesses;
 
 };
 }

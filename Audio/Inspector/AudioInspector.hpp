@@ -3,8 +3,9 @@
 #include <iscore/command/Dispatchers/CommandDispatcher.hpp>
 #include <Audio/SoundProcess/SoundProcessMetadata.hpp>
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
-#include <Audio/SendProcess/SendProcessModel.hpp>
+#include <Audio/MixProcess/MixProcessModel.hpp>
 #include <Audio/ReturnProcess/ReturnProcessModel.hpp>
+class QTableWidget;
 class QLineEdit;
 namespace iscore {
 class Document;
@@ -32,7 +33,7 @@ class InspectorWidget final :
 
 
 // MOVEME
-namespace Send
+namespace Mix
 {
 class ProcessModel;
 class InspectorWidget final :
@@ -44,7 +45,11 @@ class InspectorWidget final :
                 const iscore::DocumentContext& doc,
                 QWidget* parent);
 
+
     private:
+        void recreate();
+
+        QTableWidget* m_table{};
         CommandDispatcher<> m_dispatcher;
 };
 }

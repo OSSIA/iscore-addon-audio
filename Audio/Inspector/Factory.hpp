@@ -23,7 +23,7 @@ class InspectorFactory final :
 }
 
 // MOVEME
-namespace Send
+namespace Mix
 {
 class InspectorFactory final :
         public Process::InspectorWidgetDelegateFactory

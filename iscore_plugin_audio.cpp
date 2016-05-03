@@ -60,7 +60,7 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
             RecreateOnPlay::Audio::ComponentFactory>,*/
         FW<Process::InspectorWidgetDelegateFactory,
             Audio::Sound::InspectorFactory,
-            Audio::Send::InspectorFactory,
+            Audio::Mix::InspectorFactory,
             Audio::Return::InspectorFactory
             >,
         FW<iscore::SettingsDelegateFactory,
