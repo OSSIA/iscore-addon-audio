@@ -26,6 +26,8 @@ ProcessModel::ProcessModel(
     pluginModelList = new iscore::ElementPluginModelList{
                       iscore::IDocument::documentContext(*parent),
                       this};
+
+    init();
 }
 
 ProcessModel::ProcessModel(
@@ -48,35 +50,35 @@ ProcessModel::~ProcessModel()
 
 }
 
+double ProcessModel::mix(const Routing & r) const
+{
+    auto it = m_routings.find(r);
+    ISCORE_ASSERT(it != m_routings.end());
+
+    return it->mix;
+}
+
+double ProcessModel::mix(const DirectMix & dmx) const
+{
+    return findDirectMix(dmx)->mix;
+}
+
 void ProcessModel::updateRouting(const Routing & r)
 {
     auto it = m_routings.find(r);
-    if(it != m_routings.end())
-    {
-        m_routings.modify(it, [&] (auto& obj) { obj.mix = r.mix; });
+    ISCORE_ASSERT(it != m_routings.end());
 
-    }
+    m_routings.modify(it, [&] (auto& obj) { obj.mix = r.mix; });
+
     emit routingChanged();
 }
 
 void ProcessModel::updateDirectMix(const DirectMix & dmx)
 {
     // TODO multi_index to the rescue...
-    auto it = find(m_dataProcesses, dmx.process);
-    if(it != m_dataProcesses.end())
-    {
-        it->mix = dmx.mix;
-        emit routingChanged();
-    }
-    else
-    {
-        auto it_2 = find(m_fxProcesses, dmx.process);
-        if(it_2 != m_fxProcesses.end())
-        {
-            it_2->mix = dmx.mix;
-            emit routingChanged();
-        }
-    }
+    auto in_dmx = findDirectMix(dmx);
+    in_dmx->mix = dmx.mix;
+    emit routingChanged();
 }
 
 ProcessModel* ProcessModel::clone(
@@ -203,30 +205,53 @@ void ProcessModel::init()
 
 void ProcessModel::on_processAdded(const Process::ProcessModel & proc)
 {
+    auto proc_id = proc.id();
     if(dynamic_cast<const Scenario::ScenarioModel*>(&proc) ||
        dynamic_cast<const Loop::ProcessModel*>(&proc) ||
        dynamic_cast<const Sound::ProcessModel*>(&proc) ||
        dynamic_cast<const Return::ProcessModel*>(&proc))
     {
-        m_dataProcesses.push_back({proc.id(), 1.0});
+        m_dataProcesses.push_back({proc_id, 1.0});
 
         for(const auto& fx : m_fxProcesses)
         {
-            m_routings.insert(Routing{proc.id(), fx.process, 1.0});
+            m_routings.insert(Routing{proc_id, fx.process, 1.0});
+        }
+        for(const auto& send : m_sendProcesses)
+        {
+            m_routings.insert(Routing{proc_id, send, 1.0});
         }
     }
     else if(auto sfx = dynamic_cast<const Effect::ProcessModel*>(&proc))
     {
+        // For now we forbid mixing FX each into another.
         m_fxProcesses.push_back({sfx->id(), 1.0});
 
         for(const auto& other : m_dataProcesses)
         {
-            m_routings.insert(Routing{other.process, proc.id(), 1.0});
+            m_routings.insert(Routing{other.process, proc_id, 1.0});
+        }
+        for(const auto& send : m_sendProcesses)
+        {
+            m_routings.insert(Routing{proc_id, send, 1.0});
+        }
+    }
+    else if(auto send = dynamic_cast<const Send::ProcessModel*>(&proc))
+    {
+        m_sendProcesses.push_back(send->id());
+
+        for(const auto& other : m_dataProcesses)
+        {
+            m_routings.insert(Routing{other.process, proc_id, 1.0});
+        }
+        for(const auto& other : m_fxProcesses)
+        {
+            m_routings.insert(Routing{other.process, proc_id, 1.0});
         }
     }
     else
     {
-        // send, mix
+        //  mix
         return;
     }
 
@@ -235,22 +260,27 @@ void ProcessModel::on_processAdded(const Process::ProcessModel & proc)
 
 void ProcessModel::on_processRemoved(const Process::ProcessModel & proc)
 {
-    bool isFx = false;
+    auto proc_id = proc.id();
     if(dynamic_cast<const Scenario::ScenarioModel*>(&proc) ||
        dynamic_cast<const Loop::ProcessModel*>(&proc) ||
        dynamic_cast<const Return::ProcessModel*>(&proc) ||
        dynamic_cast<const Sound::ProcessModel*>(&proc))
     {
-        auto it = find(m_dataProcesses, proc.id());
+        auto it = find(m_dataProcesses, proc_id);
         if(it != m_dataProcesses.end())
             m_dataProcesses.erase(it);
     }
     else if(auto sfx = dynamic_cast<const Effect::ProcessModel*>(&proc))
     {
-        auto it = find(m_fxProcesses, sfx->id());
+        auto it = find(m_fxProcesses, proc_id);
         if(it != m_fxProcesses.end())
             m_fxProcesses.erase(it);
-        isFx = true;
+    }
+    else if(auto send = dynamic_cast<const Send::ProcessModel*>(&proc))
+    {
+        auto it = find(m_sendProcesses, proc_id);
+        if(it != m_sendProcesses.end())
+            m_sendProcesses.erase(it);
     }
     else
     {
@@ -258,11 +288,10 @@ void ProcessModel::on_processRemoved(const Process::ProcessModel & proc)
         return;
     }
 
-    auto routing_member = isFx ? &Routing::out : &Routing::in;
-
     for (auto it = m_routings.begin(); it != m_routings.end(); )
     {
-        if ((*it).*routing_member == proc.id())
+        if ((*it).in == proc.id() ||
+            (*it).out == proc.id())
         {
             it = m_routings.erase(it);
         }

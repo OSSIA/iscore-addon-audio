@@ -6,6 +6,7 @@
 #include <LibAudioStreamMC++.h>
 #include <iscore/application/ApplicationContext.hpp>
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
+#include <iscore/widgets/SignalUtils.hpp>
 
 namespace Audio {
 namespace Settings {
@@ -14,7 +15,17 @@ View::View() : View(nullptr) {}
 
 View::View(AudioStreamEngine::ApplicationPlugin & p) : View(&p) {}
 
-View::View(AudioStreamEngine::ApplicationPlugin * p) : m_aseplug{p}, m_widg{new QWidget}, m_driverb(new QComboBox), m_cardb{new QComboBox}, m_bsb{new QComboBox}, m_srb{new QComboBox}, m_ll{new QLabel}, m_infol{new QLabel}, driversMapping(std::map<long, int> ()) {
+View::View(AudioStreamEngine::ApplicationPlugin * p) :
+    m_widg{new QWidget},
+    m_driverb(new QComboBox),
+    m_cardb{new QComboBox},
+    m_bsb{new QComboBox},
+    m_srb{new QComboBox},
+    m_ll{new QLabel},
+    m_infol{new QLabel},
+    m_aseplug{p},
+    driversMapping(std::map<long, int> ())
+{
     auto lay = new QFormLayout;
     m_widg->setLayout(lay);
 
@@ -30,17 +41,17 @@ View::View(AudioStreamEngine::ApplicationPlugin * p) : m_aseplug{p}, m_widg{new 
     lay->addRow(tr("Audio device"), m_cardb);
     lay->addRow(tr("Device info"), m_infol);
 
-    connect(m_bsb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+    connect(m_bsb, SignalUtils::QComboBox_currentIndexChanged_int,
             this, &View::setBufferSizeFromIndex);
-    connect(m_srb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+    connect(m_srb, SignalUtils::QComboBox_currentIndexChanged_int,
             this, &View::setSampleRateFromIndex);
 
-    connect(m_driverb, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged),
+    connect(m_driverb, &QComboBox::currentTextChanged,
             this, &View::driverChanged);
 
-    connect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+    connect(m_cardb, SignalUtils::QComboBox_currentIndexChanged_int,
             this, &View::displayInfos);
-    connect(m_cardb, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged),
+    connect(m_cardb, &QComboBox::currentTextChanged,
             this, &View::cardChanged);
 
     driversMapping.insert(std::pair<long, int> (kPortAudioRenderer, -1));
@@ -184,22 +195,22 @@ void View::populateDrivers() {
         populateCards();
     }
 
-    connect(m_driverb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+    connect(m_driverb, SignalUtils::QComboBox_currentIndexChanged_int,
             this, &View::populateCards);
 }
 
 void View::populateCards() {
 
-    disconnect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+    disconnect(m_cardb, SignalUtils::QComboBox_currentIndexChanged_int,
                this, &View::displayInfos);
-    disconnect(m_cardb, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged),
+    disconnect(m_cardb, &QComboBox::currentTextChanged,
                this, &View::cardChanged);
 
     m_cardb->clear();
 
-    connect(m_cardb, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+    connect(m_cardb, SignalUtils::QComboBox_currentIndexChanged_int,
                this, &View::displayInfos);
-    connect(m_cardb, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged),
+    connect(m_cardb, &QComboBox::currentTextChanged,
                this, &View::cardChanged);
 
     long ren = getDriver();

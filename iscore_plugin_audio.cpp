@@ -59,7 +59,10 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
         FW<RecreateOnPlay::ProcessComponentFactory,
             RecreateOnPlay::Audio::ComponentFactory>,*/
         FW<Process::InspectorWidgetDelegateFactory,
-            Audio::InspectorFactory>,
+            Audio::Sound::InspectorFactory,
+            Audio::Mix::InspectorFactory,
+            Audio::Return::InspectorFactory
+            >,
         FW<iscore::SettingsDelegateFactory,
             Audio::Settings::Factory>
     >>(ctx, key);

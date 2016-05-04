@@ -25,6 +25,14 @@ struct DirectMix
         {
             return mix.process != proc;
         }
+        friend bool operator==(const DirectMix& mix, const DirectMix& proc)
+        {
+            return mix.process == proc.process;
+        }
+        friend bool operator!=(const DirectMix& mix, const DirectMix& proc)
+        {
+            return mix.process != proc.process;
+        }
 
         Id<Process::ProcessModel> process;
         double mix{};
