@@ -41,15 +41,15 @@ View::View(AudioStreamEngine::ApplicationPlugin * p) :
     lay->addRow(tr("Audio device"), m_cardb);
     lay->addRow(tr("Device info"), m_infol);
 
-    connect(m_bsb, SignalUtils::QComboBox_currentIndexChanged_int,
+    connect(m_bsb, SignalUtils::QComboBox_currentIndexChanged_int(),
             this, &View::setBufferSizeFromIndex);
-    connect(m_srb, SignalUtils::QComboBox_currentIndexChanged_int,
+    connect(m_srb, SignalUtils::QComboBox_currentIndexChanged_int(),
             this, &View::setSampleRateFromIndex);
 
     connect(m_driverb, &QComboBox::currentTextChanged,
             this, &View::driverChanged);
 
-    connect(m_cardb, SignalUtils::QComboBox_currentIndexChanged_int,
+    connect(m_cardb, SignalUtils::QComboBox_currentIndexChanged_int(),
             this, &View::displayInfos);
     connect(m_cardb, &QComboBox::currentTextChanged,
             this, &View::cardChanged);
@@ -195,20 +195,20 @@ void View::populateDrivers() {
         populateCards();
     }
 
-    connect(m_driverb, SignalUtils::QComboBox_currentIndexChanged_int,
+    connect(m_driverb, SignalUtils::QComboBox_currentIndexChanged_int(),
             this, &View::populateCards);
 }
 
 void View::populateCards() {
 
-    disconnect(m_cardb, SignalUtils::QComboBox_currentIndexChanged_int,
+    disconnect(m_cardb, SignalUtils::QComboBox_currentIndexChanged_int(),
                this, &View::displayInfos);
     disconnect(m_cardb, &QComboBox::currentTextChanged,
                this, &View::cardChanged);
 
     m_cardb->clear();
 
-    connect(m_cardb, SignalUtils::QComboBox_currentIndexChanged_int,
+    connect(m_cardb, SignalUtils::QComboBox_currentIndexChanged_int(),
                this, &View::displayInfos);
     connect(m_cardb, &QComboBox::currentTextChanged,
                this, &View::cardChanged);
