@@ -14,6 +14,14 @@
 #include <Audio/SendProcess/SendProcessModel.hpp>
 #include <Audio/ReturnProcess/ReturnProcessModel.hpp>
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
+
+#include <Audio/AudioStreamEngine/Audio/EffectComponent.hpp>
+#include <Audio/AudioStreamEngine/Audio/MixComponent.hpp>
+#include <Audio/AudioStreamEngine/Audio/SoundComponent.hpp>
+
+#include <Audio/AudioStreamEngine/Scenario/ConstraintComponent.hpp>
+#include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
+
 #include <boost/graph/adjacency_list.hpp>
 
 #include <boost/graph/breadth_first_search.hpp>

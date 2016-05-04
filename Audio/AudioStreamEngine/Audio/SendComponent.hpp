@@ -3,31 +3,27 @@
 
 namespace Audio
 {
-namespace Sound
+namespace Send
 {
 class ProcessModel;
 }
 namespace AudioStreamEngine
 {
-class SoundComponent final : public ProcessComponent_T<Sound::ProcessModel>
+class SendComponent final : public ProcessComponent_T<Send::ProcessModel>
 {
-       COMPONENT_METADATA(Audio::AudioStreamEngine::SoundComponent)
+       COMPONENT_METADATA(Audio::AudioStreamEngine::SendComponent)
 
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
     public:
-       SoundComponent(
+       SendComponent(
                const Id<Component>& id,
-               Sound::ProcessModel& sound,
+               Send::ProcessModel& sound,
                const system_t& doc,
                const iscore::DocumentContext& ctx,
                QObject* parent_obj);
 
 
        AudioStream makeStream(const Context& ctx) const override;
-
-    private:
 };
-
-
 }
 }
