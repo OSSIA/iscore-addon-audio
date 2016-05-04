@@ -17,9 +17,8 @@ SendComponent::SendComponent(
 
 }
 
-AudioStream SendComponent::makeStream(const Context& ctx) const
+void SendComponent::makeStream(const Context& ctx)
 {
-    return {};
 }
 
 }

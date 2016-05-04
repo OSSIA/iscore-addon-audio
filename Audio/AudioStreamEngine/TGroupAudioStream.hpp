@@ -25,39 +25,84 @@ struct TBufferManager
                 long sampleRate):
             fInput{inChan},
             fOutput{outChan},
-            fBufferSize{bufferSize},
-            fSampleRate{sampleRate},
             fInputBuffer{new float*[inChan]},
-            fOutputBuffer{new float*[outChan]}
+            fOutputBuffer{new float*[outChan]},
+            fBufferSize{bufferSize},
+            fSampleRate{sampleRate}
         {
-            for (int i = 0; i < inChan; i++) {
-                fInputBuffer[i] = new float[bufferSize];
-            }
-            for (int i = 0; i < outChan; i++) {
-                fOutputBuffer[i] = new float[bufferSize];
-            }
+            alloc_all();
+        }
 
-            UAudioTools::ZeroFloatBlk(fOutputBuffer, fBufferSize, fOutput);
+        TBufferManager& operator=(const TBufferManager& other) = delete;
+
+        TBufferManager& operator=(TBufferManager&& other)
+        {
+            free_all();
+
+            // Set input
+            fInputBuffer = other.fInputBuffer;
+            fOutputBuffer = other.fOutputBuffer;
+
+            fInput = other.fInput;
+            fOutput = other.fOutput;
+
+            fBufferSize = other.fBufferSize;
+            fSampleRate = other.fSampleRate;
+
+            // Clear output
+            other.fInputBuffer = nullptr;
+            other.fOutputBuffer = nullptr;
+
+            other.fInput = 0;
+            other.fOutput = 0;
+
+            other.fBufferSize = 0;
+            other.fSampleRate = 0;
+
+            return *this;
         }
 
         ~TBufferManager()
         {
+        }
+
+    private:
+        void alloc(float** ptr, int n_chan)
+        {
+            if(n_chan > 0)
+            {
+                ptr[0] = new float[n_chan * fBufferSize];
+                for(int i = 1; i < n_chan; i++)
+                {
+                    ptr[i] = ptr[0] + i * fBufferSize;
+                }
+            }
+        }
+
+        void alloc_all()
+        {
+            alloc(fInputBuffer, fInput);
+            alloc(fOutputBuffer, fOutput);
+
+            UAudioTools::ZeroFloatBlk(fOutputBuffer, fBufferSize, fOutput);
+        }
+
+        void free_all()
+        {
             if(fInputBuffer)
             {
-                for (int i = 0; i < fInput; i++) {
-                    delete [] fInputBuffer[i];
-                }
+                delete [] fInputBuffer[0];
             }
 
             if(fOutputBuffer)
             {
-                for (int i = 0; i < fOutput; i++) {
-                    delete [] fOutputBuffer[i];
-                }
+                delete [] fOutputBuffer[0];
             }
 
             delete [] fInputBuffer;
             delete [] fOutputBuffer;
+            fInputBuffer = nullptr;
+            fOutputBuffer = nullptr;
         }
 };
 
@@ -97,7 +142,7 @@ class TGroupRenderer :
 
         long Cont() override;
 
-        void Process();
+        void Process(int64_t frames);
 
         float ** GetOutputBuffer() const;
 
@@ -154,86 +199,6 @@ class TPlayerAudioStream final : public TAudioStream
 
         TAudioStreamPtr Copy() override;
 };
-
-// We need both Bus Send and Bus Return
-// Bus send will pull the data from the underlying process
-// Bus return will copy this data and use it..
-class TBusAudioStream final :
-        public TAudioStream
-{
-        struct impl {
-                int64_t fReadCount = 0; // Number of buffer reads for the current callback
-                TGroupRenderer fRenderer;
-                TAudioStream* fStream{};
-                TBusAudioStream* fRootBus{};
-        };
-        std::shared_ptr<impl> fImpl;
-
-    public:
-        TBusAudioStream(TAudioStreamPtr as)
-        {
-
-        }
-
-        TBusAudioStream(const TBusAudioStream& as) = default;
-
-        ~TBusAudioStream()
-        {
-
-        }
-
-        long Read(FLOAT_BUFFER buffer, long framesNum, long framePos) override
-        {
-            impl& shared = *fImpl;
-            auto use_count = fImpl.use_count();
-
-            // Process the next buffer if all the users
-            // have read once.
-            if(shared.fReadCount >= use_count)
-            {
-                shared.fReadCount = 0;
-                shared.fRenderer.Process();
-            }
-
-            // Write the current buffer to the output.
-            float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
-
-            auto out_buffer = shared.fRenderer.GetOutputBuffer();
-
-            UAudioTools::MixFrameToFrameBlk1(buffer->GetFrame(framePos, temp1),
-                                             out_buffer,
-                                             framesNum, TAudioGlobals::fInput);
-
-            // Go to the next frame.
-            shared.fReadCount++;
-
-            return framesNum;
-        }
-
-        void Reset() override
-        {
-
-        }
-
-        // Length in frames
-        long Length() override
-        {
-            return 0;
-        }
-
-        long Channels() override
-        {
-            return 0;
-        }
-
-        TAudioStreamPtr Copy() override
-        {
-            return {};
-        }
-};
-
-
-
 
 /**
  * @brief The TSendAudioStream class

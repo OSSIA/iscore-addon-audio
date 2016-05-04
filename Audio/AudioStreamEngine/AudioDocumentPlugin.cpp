@@ -18,9 +18,12 @@
 #include <Audio/AudioStreamEngine/Audio/EffectComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/MixComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/SoundComponent.hpp>
+#include <Audio/AudioStreamEngine/Audio/SendComponent.hpp>
+#include <Audio/AudioStreamEngine/Audio/ReturnComponent.hpp>
 
 #include <Audio/AudioStreamEngine/Scenario/ConstraintComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
+#include <Audio/AudioStreamEngine/Scenario/LoopComponent.hpp>
 
 #include <boost/graph/adjacency_list.hpp>
 
@@ -36,20 +39,34 @@ namespace AudioStreamEngine
 struct AudioDependencyGraph
 {
         using node_t = eggs::variant<
-            const Scenario::ConstraintModel*,
-            const Scenario::ScenarioModel*,
-            const Effect::ProcessModel*,
-            const Loop::ProcessModel*,
-            const Send::ProcessModel*,
-            const Return::ProcessModel*,
-            const Sound::ProcessModel*
+            ConstraintComponent*,
+            ScenarioComponent*,
+            EffectComponent*,
+            LoopComponent*,
+            SendComponent*,
+            ReturnComponent*,
+            SoundComponent*
         >;
         boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS, node_t> m_graph;
 
         using vtx_t = decltype(boost::add_vertex(node_t{}, m_graph));
 
     public:
-        AudioDependencyGraph(const Scenario::ConstraintModel& root)
+        SendComponent* getComponent(const Send::ProcessModel& proc)
+        {
+            // TODO add an UUID index ?
+            for(auto& comp : proc.components)
+            {
+                if(auto res = dynamic_cast<SendComponent*>(&comp))
+                {
+                    return res;
+                }
+            }
+
+            return nullptr;
+        }
+
+        AudioDependencyGraph(ConstraintComponent& root)
         {
             // 1. Create vertices
             visit(root);
@@ -60,16 +77,19 @@ struct AudioDependencyGraph
             for(auto it = vertices.first; it != vertices.second; ++it)
             {
                 // For all the returns
-                if(auto return_vertice = m_graph[*it].target<const Return::ProcessModel*>())
+                if(auto return_vertice = m_graph[*it].target<const ReturnComponent*>())
                 {
-                    auto send = (*return_vertice)->send_ptr();
+                    auto send = (*return_vertice)->process().send_ptr();
                     if(!send)
                         continue;
+
+                    auto send_comp = getComponent(*send);
+                    ISCORE_ASSERT(send_comp);
 
                     // Then find the corresponding send
                     for(auto it_k = vertices.first; it_k != vertices.second; ++it_k)
                     {
-                        if(m_graph[*it_k] == send)
+                        if(m_graph[*it_k] == send_comp)
                         {
                             // Add an edge from return to send
                             boost::add_edge(*it, *it_k, m_graph);
@@ -80,15 +100,16 @@ struct AudioDependencyGraph
             }
 
             // 3. Generate image of the graph.
-            boost::write_graphviz(std::cout, m_graph);
+            //boost::write_graphviz(std::cout, m_graph);
         }
 
-        bool check() const
+        boost::optional<std::deque<int>> check() const
         {
             // Do a topological sort
             try {
                 std::deque<int> topo_order;
                 boost::topological_sort(m_graph, std::front_inserter(topo_order));
+
 
                 qDebug() << "SIZE/" << topo_order.size();
                 // Print the results.
@@ -104,66 +125,65 @@ struct AudioDependencyGraph
                     eggs::variants::apply(s, m_graph[elt]);
                 }
 
+
                 // For each element in the queue, create the stream.
                 // It has the insurance that the required streams already exist.
 
-                return true;
+                return topo_order;
             }
             catch(const boost::not_a_dag& e)
             {
                 qDebug() << e.what();
-                return false;
+                return boost::none;
             }
 
-        }
-
-        auto createStreams()
-        {
-
+            return boost::none;
         }
 
     private:
-        vtx_t visit(const Scenario::ConstraintModel& cst)
+        vtx_t visit(ConstraintComponent& cst)
         {
             auto res = boost::add_vertex(&cst, m_graph);
 
+            int n_proc = cst.processes().size();
             std::vector<vtx_t> processes;
-            processes.reserve(cst.processes.size());
+            processes.reserve(n_proc);
             std::vector<vtx_t> generators; // Everything that output a mixable stream
-            generators.reserve(cst.processes.size());
+            generators.reserve(n_proc);
             std::vector<vtx_t> inputs; // FX, Send
-            inputs.reserve(cst.processes.size() / 2);
+            inputs.reserve(n_proc / 2);
 
-            for(auto& proc : cst.processes)
+            for(auto& proc_pair : cst.processes())
             {
-                if(auto scenar = dynamic_cast<const Scenario::ScenarioModel*>(&proc))
+                auto& proc = proc_pair.component;
+                if(auto scenar = dynamic_cast<ScenarioComponent*>(&proc))
                 {
                     auto sub_res = visit(*scenar);
                     generators.push_back(sub_res);
                     processes.push_back(sub_res);
                 }
-                else if(auto loop = dynamic_cast<const Loop::ProcessModel*>(&proc))
+                else if(auto loop = dynamic_cast<LoopComponent*>(&proc))
                 {
                     auto sub_res = visit(*loop);
                     generators.push_back(sub_res);
                     processes.push_back(sub_res);
                 }
-                else if(auto fx = dynamic_cast<const Effect::ProcessModel*>(&proc))
+                else if(auto fx = dynamic_cast<EffectComponent*>(&proc))
                 {
                     auto sub_res = visit(*fx);
                     generators.push_back(sub_res);
                     inputs.push_back(sub_res);
                     processes.push_back(sub_res);
                 }
-                else if(auto send = dynamic_cast<const Send::ProcessModel*>(&proc))
+                else if(auto send = dynamic_cast<SendComponent*>(&proc))
                 {
                     auto sub_res = visit(*send);
                     inputs.push_back(sub_res);
                     processes.push_back(sub_res);
                 }
-                else if(auto ret = dynamic_cast<const Return::ProcessModel*>(&proc))
+                else if(auto ret = dynamic_cast<ReturnComponent*>(&proc))
                 {
-                    auto send = ret->send_ptr();
+                    auto send = ret->process().send_ptr();
                     if(send)
                     {
                         auto sub_res = visit(*ret);
@@ -171,13 +191,13 @@ struct AudioDependencyGraph
                         processes.push_back(sub_res);
                     }
                 }
-                else if(auto sound = dynamic_cast<const Sound::ProcessModel*>(&proc))
+                else if(auto sound = dynamic_cast<SoundComponent*>(&proc))
                 {
                     auto sub_res = visit(*sound);
                     generators.push_back(sub_res);
                     processes.push_back(sub_res);
                 }
-                else if(auto mix = dynamic_cast<const Mix::ProcessModel*>(&proc))
+                else if(auto mix = dynamic_cast<MixComponent*>(&proc))
                 {
                     //visit(*mix);
 
@@ -205,15 +225,15 @@ struct AudioDependencyGraph
             return res;
         }
 
-        vtx_t visit(const Scenario::ScenarioModel& proc)
+        vtx_t visit(ScenarioComponent& proc)
         {
             // Create a node for the group and nodes for
             // all the constraints
             auto res = boost::add_vertex(&proc, m_graph);
 
-            for(auto& constraint : proc.constraints)
+            for(auto& constraint : proc.constraints())
             {
-                auto cst_vtx = visit(constraint);
+                auto cst_vtx = visit(constraint.component);
 
                 boost::add_edge(cst_vtx, res, m_graph);
             }
@@ -221,14 +241,14 @@ struct AudioDependencyGraph
             return res;
         }
 
-        vtx_t visit(const Effect::ProcessModel& proc)
+        vtx_t visit(EffectComponent& proc)
         {
             // Create a return and a send
             return boost::add_vertex(&proc, m_graph);
 
         }
 
-        vtx_t visit(const Loop::ProcessModel& proc)
+        vtx_t visit(LoopComponent& proc)
         {
             auto res = boost::add_vertex(&proc, m_graph);
 
@@ -237,19 +257,19 @@ struct AudioDependencyGraph
             return res;
         }
 
-        vtx_t visit(const Send::ProcessModel& proc)
+        vtx_t visit(SendComponent& proc)
         {
             // Create an input and an output node
             return boost::add_vertex(&proc, m_graph);
         }
 
-        vtx_t visit(const Return::ProcessModel& proc)
+        vtx_t visit(ReturnComponent& proc)
         {
             // Create an output node
             return boost::add_vertex(&proc, m_graph);
         }
 
-        vtx_t visit(const Sound::ProcessModel& proc)
+        vtx_t visit(SoundComponent& proc)
         {
             // Only create a send
             return boost::add_vertex(&proc, m_graph);
@@ -259,29 +279,16 @@ struct AudioDependencyGraph
     private:
 };
 
-AudioStream CreateAudioStream(const Loop::ProcessModel& loop);
-AudioStream CreateAudioStream(const Loop::ProcessModel& loop)
+struct AudioGraphVisitor
 {
-    // Apply to the constraint
-    // If trigger at the end, see:
-    /*
-    date = GetCurDate();
-    symb1 = GenSymbolicDate(gAudioPlayer);
+        Context& ctx;
 
-    s1 = MakeLoopSound(MakeRegionSound(FILENAME1, 5*SR, 100*SR), INFINI);
-    s2 = MakeRegionSound(FILENAME2, 5*SR, 10*SR);
-
-    StartSound(gAudioPlayer, s1, GenRealDate(gAudioPlayer, date));
-    StopSound(gAudioPlayer, s1, symb1);
-    StartSound(gAudioPlayer, s2, symb1);
-
-    // Instancie la date symbolique à la date courante "capturée"
-    set_symbolic_date(symb1);
-    */
-
-
-    return {};
-}
+        template<typename T>
+        void operator()(T* component)
+        {
+            component->makeStream(ctx);
+        }
+};
 
 void DocumentPlugin::play()
 {
@@ -289,9 +296,6 @@ void DocumentPlugin::play()
     auto doc = dynamic_cast<Scenario::ScenarioDocumentModel*>(&m_ctx.doc.document.model().modelDelegate());
     if(!doc)
         return;
-    AudioDependencyGraph graph{doc->baseConstraint()};
-    qDebug() << graph.check();
-    return;
 
     qDebug() << (void*)m_ctx.audio.renderer ;
     if(!m_ctx.audio.renderer)
@@ -304,9 +308,8 @@ void DocumentPlugin::play()
 
     // Reset the player
     stop();
+    openPlayer();
 
-    // TODO make id from components !!!!
-    startPlayer();
 
     // Create our tree
     auto comp = new ConstraintComponent(
@@ -316,6 +319,21 @@ void DocumentPlugin::play()
                 m_ctx.doc,
                 this);
     doc->baseConstraint().components.add(comp);
+    AudioDependencyGraph graph{*comp};
+    if(auto sorted_vertices = graph.check())
+    {
+        AudioGraphVisitor v{m_ctx};
+        for(auto vertice : *sorted_vertices)
+        {
+            eggs::variants::apply(v, graph.m_graph[vertice]);
+        }
+
+    }
+    else
+    {
+        stop();
+        return;
+    }
 
     con(m_ctx.doc.document, &iscore::Document::aboutToClose,
         this, [=] () {
@@ -335,11 +353,10 @@ void DocumentPlugin::play()
 
     // Play
 
-    StartAudioPlayer(m_ctx.audio.player);
+    // TODO make id from components !!!!
     if(comp)
     {
-        m_stream = comp->makeStream(
-                    m_ctx);
+        m_stream = comp->getStream();
     }
     else
     {
@@ -354,6 +371,8 @@ void DocumentPlugin::play()
     {
         qDebug("No stream!");
     }
+
+    StartAudioPlayer(m_ctx.audio.player);
 }
 
 void DocumentPlugin::stop()
@@ -378,7 +397,7 @@ void DocumentPlugin::stop()
     m_stream = {};
 }
 
-void DocumentPlugin::startPlayer()
+void DocumentPlugin::openPlayer()
 {
     if(!m_ctx.audio.player)
     {

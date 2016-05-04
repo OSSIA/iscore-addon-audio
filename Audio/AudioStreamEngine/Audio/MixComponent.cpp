@@ -17,9 +17,8 @@ MixComponent::MixComponent(
 
 }
 
-AudioStream MixComponent::makeStream(const Context& ctx) const
+void MixComponent::makeStream(const Context& ctx)
 {
-    return {};
 }
 
 }

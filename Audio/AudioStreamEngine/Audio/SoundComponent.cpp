@@ -17,7 +17,7 @@ SoundComponent::SoundComponent(
 
 }
 
-AudioStream SoundComponent::makeStream(const Context& ctx) const
+void SoundComponent::makeStream(const Context& ctx)
 {
     auto& sound = process().file();
     /*
@@ -25,7 +25,7 @@ AudioStream SoundComponent::makeStream(const Context& ctx) const
     m_buffers.push_back(());
     MakeBufferSound(float** buffer, long length, long channels, bool clear);;
     */
-    return MakeReadSound(sound.name().toLocal8Bit().constData());
+    m_stream = MakeReadSound(sound.name().toLocal8Bit().constData());
 }
 
 }

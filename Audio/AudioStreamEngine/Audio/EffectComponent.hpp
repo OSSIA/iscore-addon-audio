@@ -23,7 +23,7 @@ class EffectComponent final : public ProcessComponent_T<Effect::ProcessModel>
                QObject* parent_obj);
 
 
-       AudioStream makeStream(const Context& ctx) const override;
+       void makeStream(const Context& ctx) override;
 };
 }
 }

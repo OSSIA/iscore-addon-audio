@@ -17,9 +17,8 @@ ReturnComponent::ReturnComponent(
 
 }
 
-AudioStream ReturnComponent::makeStream(const Context& ctx) const
+void ReturnComponent::makeStream(const Context& ctx)
 {
-    return {};
 }
 
 }

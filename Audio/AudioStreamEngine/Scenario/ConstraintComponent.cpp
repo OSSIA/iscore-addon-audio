@@ -51,14 +51,16 @@ ConstraintComponent::~ConstraintComponent()
 }
 
 
-AudioStream ConstraintComponent::makeStream(const Context& player)
+void ConstraintComponent::makeStream(const Context& player)
 {
     auto& cst = m_baseComponent.constraint;
     if(cst.processes.empty())
     {
         // Silence
+        /*
         auto sound = MakeNullSound(cst.duration.maxDuration().msec());
-        return sound;
+        m_stream = sound;
+        */
     }
     else
     {
@@ -112,7 +114,7 @@ AudioStream ConstraintComponent::makeStream(const Context& player)
         std::vector<AudioStream> soundStreams;
         for(auto sound : sounds)
         {
-            auto stream = sound.second->makeStream(player);
+            auto stream = sound.second->getStream();
             if(stream)
             {
                 qDebug() << "adding a sound";
@@ -121,7 +123,7 @@ AudioStream ConstraintComponent::makeStream(const Context& player)
         }
         for(auto scenario : scenarios)
         {
-            auto stream = scenario.second->makeStream(player);
+            auto stream = scenario.second->getStream();
             if(stream)
             {
                 qDebug() << "adding a scenario";
@@ -129,10 +131,10 @@ AudioStream ConstraintComponent::makeStream(const Context& player)
             }
         }
 
-
-        auto stream = MixNStreams(soundStreams);
-        auto timestretch = MakePitchSchiftTimeStretchSound(stream, &m_shift, &m_stretch);
-        return timestretch;
+        m_stream = MakePitchSchiftTimeStretchSound(
+                    MixNStreams(soundStreams),
+                    &m_shift,
+                    &m_stretch);
     }
 
     // Look for all the "contents" process :
@@ -141,8 +143,6 @@ AudioStream ConstraintComponent::makeStream(const Context& player)
     // Look for all the "effects" process and apply them
 
     // Then look for the "Mix" process and do the mix
-
-    return {};
 }
 
 

@@ -21,9 +21,13 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent : public iscore::Component
 
         virtual ~ProcessComponent();
 
-        virtual AudioStream makeStream(const Context& ctx) const = 0;
+        virtual void makeStream(const Context& ctx) = 0;
+        AudioStream getStream() const
+        { return m_stream; }
 
     protected:
+        AudioStream m_stream;
+
         const Process::ProcessModel& m_process;
 };
 

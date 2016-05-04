@@ -17,9 +17,8 @@ EffectComponent::EffectComponent(
 
 }
 
-AudioStream EffectComponent::makeStream(const Context& ctx) const
+void EffectComponent::makeStream(const Context& ctx)
 {
-    return {};
 }
 
 }

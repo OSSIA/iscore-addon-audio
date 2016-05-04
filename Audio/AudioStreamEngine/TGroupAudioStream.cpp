@@ -94,10 +94,9 @@ class TSharedBufferLocker
         }
 };
 
-void TGroupRenderer::Process()
+void TGroupRenderer::Process(int64_t frames)
 {
     TSharedBufferLocker shared_buffers{fBuffers.fInputBuffer, fBuffers.fOutputBuffer};
-    auto frames = fBufferSize;
 
     // Clear output buffers
     UAudioTools::ZeroFloatBlk(fBuffers.fOutputBuffer, frames, fOutput); // TODO set correct channel count
@@ -151,8 +150,6 @@ long TSinusAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos)
 
     float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
     auto out = buffer->GetFrame(framePos, temp1);
-
-    std::cerr << framePos << std::endl;
 
     auto cst = 2.*M_PI*fFreq / 44100.;
     for(int i = 0; i < framesNum; i++)
@@ -217,9 +214,7 @@ long TPlayerAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos
 
     float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
 
-
-    std::cerr << framePos << std::endl;
-    fRenderer.Process();
+    fRenderer.Process(framesNum);
     auto out_buffer = fRenderer.GetOutputBuffer();
 
     UAudioTools::MixFrameToFrameBlk1(buffer->GetFrame(framePos, temp1),
@@ -331,20 +326,6 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSinusStream(long length, float freq)
 {
     return new TSinusAudioStream{length, freq};
 }
-
-
-ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSharedBus(AudioStream s)
-{
-    return new TBusAudioStream{static_cast<TAudioStreamPtr>(s)};
-}
-
-ISCORE_PLUGIN_AUDIO_EXPORT AudioStream JoinSharedBus(AudioStream bus_stream)
-{
-    if(auto bus = dynamic_cast<TBusAudioStream*>(bus_stream.getPointer()))
-        return new TBusAudioStream{*bus};
-    return nullptr;
-}
-
 
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSend(AudioStream s)
 {
