@@ -164,7 +164,7 @@ void InspectorWidget::recreate()
             sb->setValue(mix.mix(col_it->process, fx_it->process));
             m_table->setCellWidget(row, col, sb);
 
-            connect(sb, SignalUtils::QSpinBox_valueChanged_int,
+            connect(sb, SignalUtils::QSpinBox_valueChanged_int(),
                     this, [=,&mix] (int val) {
                 m_dispatcher.submitCommand<Audio::Commands::UpdateRouting>(
                                 mix,
@@ -185,7 +185,7 @@ void InspectorWidget::recreate()
             sb->setValue(mix.mix(col_it->process, *send_it));
             m_table->setCellWidget(row, col, sb);
 
-            connect(sb, SignalUtils::QSpinBox_valueChanged_int,
+            connect(sb, SignalUtils::QSpinBox_valueChanged_int(),
                     this, [=,&mix] (int val) {
                 m_dispatcher.submitCommand<Audio::Commands::UpdateRouting>(
                                 mix,
@@ -204,7 +204,7 @@ void InspectorWidget::recreate()
         sb->setValue(mix.mix(col_it->process));
         m_table->setCellWidget(n_fx + n_sends, col, sb);
 
-        connect(sb, SignalUtils::QSpinBox_valueChanged_int,
+        connect(sb, SignalUtils::QSpinBox_valueChanged_int(),
                 this, [=,&mix] (int val) {
             m_dispatcher.submitCommand<Audio::Commands::UpdateDirect>(
                             mix,
@@ -232,7 +232,7 @@ void InspectorWidget::recreate()
             sb->setValue(mix.mix(col_it->process, *send_it));
             m_table->setCellWidget(row, col, sb);
 
-            connect(sb, SignalUtils::QSpinBox_valueChanged_int,
+            connect(sb, SignalUtils::QSpinBox_valueChanged_int(),
                     this, [=,&mix] (int val) {
                 m_dispatcher.submitCommand<Audio::Commands::UpdateRouting>(
                                 mix,
@@ -249,7 +249,7 @@ void InspectorWidget::recreate()
         sb->setValue(mix.mix(col_it->process));
         m_table->setCellWidget(n_fx + n_sends, col, sb);
 
-        connect(sb, SignalUtils::QSpinBox_valueChanged_int,
+        connect(sb, SignalUtils::QSpinBox_valueChanged_int(),
                 this, [=,&mix] (int val) {
             m_dispatcher.submitCommand<Audio::Commands::UpdateDirect>(
                             mix,
