@@ -1,5 +1,6 @@
 #include "Utility.hpp"
 #include <algorithm>
+#include <numeric>
 
 namespace Audio
 {

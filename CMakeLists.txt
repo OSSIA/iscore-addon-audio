@@ -11,6 +11,7 @@ if(NOT SNDFILE_LIBRARY)
 message("audio plugin requires libsndfile, portaudio")
 return()
 endif()
+
 # add_subdirectory(3rdparty/llvm)
 set(FAUST_NO_EXECUTABLE True)
 # add_subdirectory(3rdparty/faudiostream-code)

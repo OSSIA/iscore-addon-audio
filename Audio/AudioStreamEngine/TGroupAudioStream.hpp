@@ -25,8 +25,8 @@ struct TBufferManager
                 long sampleRate):
             fInput{inChan},
             fOutput{outChan},
-            fInputBuffer{new float*[inChan]},
-            fOutputBuffer{new float*[outChan]},
+            fInputBuffer{inChan > 0 ? new float*[inChan] : nullptr},
+            fOutputBuffer{outChan > 0 ? new float*[outChan] : nullptr},
             fBufferSize{bufferSize},
             fSampleRate{sampleRate}
         {

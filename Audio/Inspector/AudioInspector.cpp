@@ -13,6 +13,7 @@
 #include <QLabel>
 #include <core/document/Document.hpp>
 #include <QDialogButtonBox>
+#include <QPushButton>
 #include <Audio/SendProcess/SendProcessModel.hpp>
 #include <QHeaderView>
 #include <iscore/widgets/SpinBoxes.hpp>
