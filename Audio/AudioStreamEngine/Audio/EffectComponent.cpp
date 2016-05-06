@@ -48,15 +48,18 @@ void EffectComponent::makeStream(const Context& ctx)
         {
             if(auto scenar = dynamic_cast<ScenarioComponent*>(&proc.component))
             {
+                ISCORE_ASSERT(scenar->getStream());
                 inputStreams.push_back(scenar->getStream());
             }
             else if(auto sound = dynamic_cast<SoundComponent*>(&proc.component))
             {
+                ISCORE_ASSERT(sound->getStream());
                 inputStreams.push_back(sound->getStream());
             }
-            else if(auto sound = dynamic_cast<ReturnComponent*>(&proc.component))
+            else if(auto ret = dynamic_cast<ReturnComponent*>(&proc.component))
             {
-                inputStreams.push_back(sound->getStream());
+                ISCORE_ASSERT(ret->getStream());
+                inputStreams.push_back(ret->getStream());
             }
             // TODO loop...
         }
@@ -69,7 +72,7 @@ void EffectComponent::makeStream(const Context& ctx)
 
     auto mixed = MixNStreams(returns);
     //m_stream = mixed;
-    auto fx = MakeFaustAudioEffect("/tmp/examples/freeverb.dsp", "", "");
+    auto fx = MakeFaustAudioEffect("process =4 *_;", "", "");
     auto snd_fx = MakeEffectSound(mixed, fx, 0, 0);
     m_stream = MakeSend(snd_fx);
 }

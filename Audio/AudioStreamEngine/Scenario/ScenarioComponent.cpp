@@ -64,6 +64,7 @@ void ScenarioComponent::makeStream(const Context& ctx)
                         sound
                         )
                     );
+        qDebug() << "Starting" << cst.element.metadata.name();
 
         StartSound(m_renderer, sound, t_start);
         StopSound(m_renderer, sound, t_end);

@@ -5,6 +5,7 @@
 #include <boost/multi_index_container.hpp>
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
 #include <Audio/ReturnProcess/ReturnProcessModel.hpp>
+#include <Audio/SendProcess/SendProcessModel.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
 #include <Audio/MixProcess/MixProcessModel.hpp>
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
@@ -15,6 +16,7 @@
 #include <Audio/AudioStreamEngine/Audio/MixComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Audio/EffectComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/ReturnComponent.hpp>
+#include <Audio/AudioStreamEngine/Audio/SendComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/SoundComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/MixComponent.hpp>
 #include <Audio/AudioStreamEngine/Utility.hpp>
@@ -122,6 +124,17 @@ void ConstraintComponent::makeStream(const Context& player)
                 {
                     qDebug() << "adding a return";
                     soundStreams.push_back(stream);
+                }
+            }
+            else if(auto send = dynamic_cast<Send::ProcessModel*>(&proc))
+            {
+                AudioStream stream = safe_cast<SendComponent*>(&comp)->getStream();
+                if(stream)
+                {
+                    qDebug() << "adding a send";
+                    auto faust_fx = MakeFaustAudioEffect("process = 0 * _;", "", "");
+                    auto fx_sound = MakeEffectSound(stream, faust_fx, 0, 0);
+                    soundStreams.push_back(fx_sound);
                 }
             }
             else if(auto mix = dynamic_cast<Mix::ProcessModel*>(&proc))

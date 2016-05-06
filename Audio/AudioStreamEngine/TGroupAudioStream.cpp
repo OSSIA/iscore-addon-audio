@@ -286,6 +286,7 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioStream JoinSharedBus(AudioStream bus_stream);
 
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSend(AudioStream s);
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeReturn(AudioStream s);
+ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeChannelSound(AudioStream s, double const * volume);
 void CloseAudioPlayer(AudioPlayerPtr ext_player); // In libaudiostreammc
 
 ISCORE_PLUGIN_AUDIO_EXPORT AudioPlayerPtr MakeGroupPlayer()
@@ -349,4 +350,8 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeReturn(AudioStream send_stream)
     return nullptr;
 }
 
+ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeChannelSound(AudioStream s, double const * volume)
+{
+    return new TChannelAudioStream{static_cast<TAudioStreamPtr>(s), volume};
+}
 }

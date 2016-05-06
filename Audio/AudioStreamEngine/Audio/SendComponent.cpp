@@ -4,6 +4,7 @@
 #include <Audio/AudioStreamEngine/Scenario/ConstraintComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/LoopComponent.hpp>
+#include <Audio/AudioStreamEngine/Audio/EffectComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/SoundComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/ReturnComponent.hpp>
 #include <Audio/AudioStreamEngine/GroupAudioStream.h>
@@ -56,9 +57,13 @@ void SendComponent::makeStream(const Context& ctx)
         {
             inputStreams.push_back(sound->getStream());
         }
-        else if(auto sound = dynamic_cast<ReturnComponent*>(&proc.component))
+        else if(auto ret = dynamic_cast<ReturnComponent*>(&proc.component))
         {
-            inputStreams.push_back(sound->getStream());
+            inputStreams.push_back(ret->getStream());
+        }
+        else if(auto fx = dynamic_cast<EffectComponent*>(&proc.component))
+        {
+            inputStreams.push_back(fx->getStream());
         }
         // TODO loop...
     }
@@ -69,6 +74,7 @@ void SendComponent::makeStream(const Context& ctx)
     });
 
     m_stream = MakeSend(MixNStreams(returns));
+
 }
 
 }

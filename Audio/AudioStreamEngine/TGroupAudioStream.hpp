@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <memory>
+#include <cmath>
 
 struct TBufferManager
 {
@@ -354,7 +355,7 @@ class TReturnAudioStream final :
             }
             else
             {
-                std::cerr << (void*)this << " ==> 2: ";
+                //std::cerr << (void*)this << " ==> 2: ";
                 in_buffer = fSend->GetOutputBuffer();
             }
 
@@ -407,3 +408,74 @@ class TReturnAudioStream final :
         }
 };
 
+
+/**
+ * @brief The TChannelAudioStream class
+ *
+ * Mixer channel as an audiostream ; for now only volume
+ */
+class TChannelAudioStream final :
+        public TAudioStream,
+        public TUnaryAudioStream
+{
+        double const * const fVolume{};
+        TLocalNonInterleavedAudioBuffer<float> fBuffer;
+    public:
+        TChannelAudioStream(
+                TAudioStreamPtr as,
+                double const * volume):
+            fVolume{volume},
+            fBuffer{TAudioGlobals::fBufferSize, as->Channels()}
+        {
+            fStream = as;
+        }
+
+        ~TChannelAudioStream()
+        {
+
+        }
+
+        long Read(FLOAT_BUFFER buffer, long framesNum, long framePos) override
+        {
+            float** in = (float**)alloca(fBuffer.GetChannels()*sizeof(float*));
+            float** out = (float**)alloca(buffer->GetChannels()*sizeof(float*));
+            fBuffer.GetFrame(0, in);
+            buffer->GetFrame(framePos, out);
+
+            UAudioTools::ZeroFloatBlk(in, fBuffer.GetSize(), fBuffer.GetChannels());
+
+            long res = fStream->Read(&fBuffer, framesNum, 0);
+
+            auto& vol = *fVolume;
+            for(int chan = 0; chan < fBuffer.GetChannels(); chan++)
+            {
+                for(int j = 0; j < res; j++)
+                {
+                    out[chan][j] = in[chan][j] * vol;
+                }
+            }
+
+            return res;
+        }
+
+        void Reset() override
+        {
+        }
+
+        // Length in frames
+        long Length() override
+        {
+            return fStream->Length();
+        }
+
+        long Channels() override
+        {
+            return fStream->Channels();
+        }
+
+        TAudioStreamPtr Copy() override
+        {
+            return new TChannelAudioStream{fStream->Copy(), fVolume};
+        }
+};
+using TChannelAudioStreamPtr = LA_SMARTP<TChannelAudioStream>;
