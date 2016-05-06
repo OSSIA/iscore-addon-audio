@@ -77,7 +77,7 @@ struct AudioDependencyGraph
             for(auto it = vertices.first; it != vertices.second; ++it)
             {
                 // For all the returns
-                if(auto return_vertice = m_graph[*it].target<const ReturnComponent*>())
+                if(auto return_vertice = m_graph[*it].target<ReturnComponent*>())
                 {
                     auto send = (*return_vertice)->process().send_ptr();
                     if(!send)
@@ -92,7 +92,7 @@ struct AudioDependencyGraph
                         if(m_graph[*it_k] == send_comp)
                         {
                             // Add an edge from return to send
-                            boost::add_edge(*it, *it_k, m_graph);
+                            boost::add_edge(*it_k, *it, m_graph);
                             break;
                         }
                     }
@@ -117,9 +117,9 @@ struct AudioDependencyGraph
                 {
                     struct
                     {
-                            void operator()(const QObject* ptr)
+                            void operator()(const IdentifiedObjectAbstract* ptr)
                             {
-                                qDebug() << ptr->objectName();
+                                qDebug() << ptr->objectName() << " " << ptr->id_val();
                             }
                     } s;
                     eggs::variants::apply(s, m_graph[elt]);

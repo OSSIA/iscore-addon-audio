@@ -4,6 +4,7 @@
 #include <Loop/LoopProcessModel.hpp>
 #include <boost/multi_index_container.hpp>
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
+#include <Audio/ReturnProcess/ReturnProcessModel.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
 #include <Audio/MixProcess/MixProcessModel.hpp>
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
@@ -13,6 +14,7 @@
 #include <Audio/AudioStreamEngine/Audio/SoundComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Audio/MixComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Audio/EffectComponent.hpp>
+#include <Audio/AudioStreamEngine/Audio/ReturnComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/SoundComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/MixComponent.hpp>
 #include <Audio/AudioStreamEngine/Utility.hpp>
@@ -72,16 +74,21 @@ void ConstraintComponent::makeStream(const Context& player)
         vector<pair<Effect::ProcessModel*, EffectComponent*>> sfxs;
         vector<pair<Mix::ProcessModel*, MixComponent*>> mixs;
 
+        // For now we just put all the sound streams in parallel...
+        // We have to take the mix volume into account.
+        std::vector<AudioStream> soundStreams;
         for(auto& proc_pair :  m_baseComponent.processes())
         {
             auto& proc = proc_pair.process;
             auto& comp = proc_pair.component;
             if(auto scenar = dynamic_cast<Scenario::ScenarioModel*>(&proc))
             {
-                scenarios.push_back(
-                            make_pair(
-                                scenar,
-                                safe_cast<ScenarioComponent*>(&comp)));
+                auto stream = safe_cast<ScenarioComponent*>(&comp)->getStream();
+                if(stream)
+                {
+                    qDebug() << "adding a scenario";
+                    soundStreams.push_back(stream);
+                }
             }
             else if(auto loop = dynamic_cast<Loop::ProcessModel*>(&proc))
             {
@@ -89,52 +96,49 @@ void ConstraintComponent::makeStream(const Context& player)
             }
             else if(auto sound = dynamic_cast<Sound::ProcessModel*>(&proc))
             {
-                sounds.push_back(make_pair(
-                                  sound,
-                                  safe_cast<SoundComponent*>(&comp)));
+                auto stream = safe_cast<SoundComponent*>(&comp)->getStream();
+                if(stream)
+                {
+                    qDebug() << "adding a sound";
+                    soundStreams.push_back(stream);
+                }
             }
             else if(auto sfx = dynamic_cast<Effect::ProcessModel*>(&proc))
             {
                 // TODO if there is only an effect and no input,
                 // we should feed it at least some silence.
-                sfxs.push_back(
-                            make_pair(
-                                sfx,
-                                safe_cast<EffectComponent*>(&comp)));
+
+                auto stream = safe_cast<EffectComponent*>(&comp)->getStream();
+                if(stream)
+                {
+                    qDebug() << "adding a sfx";
+                    soundStreams.push_back(stream);
+                }
+            }
+            else if(auto ret = dynamic_cast<Return::ProcessModel*>(&proc))
+            {
+                auto stream = safe_cast<ReturnComponent*>(&comp)->getStream();
+                if(stream)
+                {
+                    qDebug() << "adding a return";
+                    soundStreams.push_back(stream);
+                }
             }
             else if(auto mix = dynamic_cast<Mix::ProcessModel*>(&proc))
             {
-                mixs.push_back(
-                            make_pair(
-                                mix,
-                                safe_cast<MixComponent*>(&comp)));
-            }
-        }
-        // For now we just put all the sound streams in parallel...
-        std::vector<AudioStream> soundStreams;
-        for(auto sound : sounds)
-        {
-            auto stream = sound.second->getStream();
-            if(stream)
-            {
-                qDebug() << "adding a sound";
-                soundStreams.push_back(stream);
-            }
-        }
-        for(auto scenario : scenarios)
-        {
-            auto stream = scenario.second->getStream();
-            if(stream)
-            {
-                qDebug() << "adding a scenario";
-                soundStreams.push_back(stream);
             }
         }
 
+        m_stream = MixNStreams(soundStreams);
+        return;
+
+        // TODO this does not work :
+        /*
         m_stream = MakePitchSchiftTimeStretchSound(
                     MixNStreams(soundStreams),
                     &m_shift,
                     &m_stretch);
+        */
     }
 
     // Look for all the "contents" process :

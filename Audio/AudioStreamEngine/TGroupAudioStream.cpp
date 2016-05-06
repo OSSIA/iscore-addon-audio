@@ -19,7 +19,9 @@ long TGroupRenderer::OpenImp(
     return 0;
 }
 
-TGroupRenderer::TGroupRenderer(): TAudioRenderer()
+TGroupRenderer::TGroupRenderer():
+    TAudioRenderer{},
+    fInfo{{}, {}, {}, {}, {}, {}, {}, {}, {}, {}}
 {
 }
 

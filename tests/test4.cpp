@@ -12,7 +12,6 @@ class test1: public QObject
         Q_OBJECT
     public:
 
-
         struct AudioContext
         {
                 AudioPlayerPtr player{};
@@ -44,44 +43,37 @@ class test1: public QObject
             auto symdate2 = GenSymbolicDate(player);
 
             // First sound
-            StartSound(player,
-                       MakeFadeSound(
-                           MakeSinusStream(44100 * 10, 330), 44100, 2048),
-                       symdate1);
+            StartSound(player, MakeReadSound("/tmp/1.wav"), symdate1);
 
             // Second sound
-            StartSound(player,
-                       MakeFadeSound(
-                           MakeSinusStream(44100 * 10, 220), 44100, 2048),
-                       symdate2);
-
-            // Third sound
-            auto file = MakeReadSound("/tmp/1.wav");
-            StartSound(player, file, symdate2);
+            StartSound(player, MakeReadSound("/tmp/2.wav"), symdate2);
 
             // Make a stream on the sound
             auto stream = MakeGroupStream(player);
 
-            // Add an effec on the stream
-            auto fx = MakeFaustAudioEffect("/tmp/examples/freeverb.dsp", "", "");
             qDebug() << GetLastLibError();
-
-            auto effect = MakeEffectSound(stream, fx, 0, 0);
-            StartSound(m_ctx.player, effect, GenRealDate(m_ctx.player, 0));
+            StartSound(m_ctx.player, stream, GenRealDate(m_ctx.player, 0));
             StartAudioPlayer(m_ctx.player);
 
-            for(int i = 10; i --> 0;)
+            std::thread t([&] () {
+                for(int i = 10; i --> 0;)
+                {
+                    std::this_thread::sleep_for(1s);
+                    switch(i)
+                    {
+                        case 8:
+                            SetSymbolicDate(player, symdate1, GetAudioPlayerDateInFrame(player));
+                            break;
+                        case 6:
+                            SetSymbolicDate(player, symdate2, GetAudioPlayerDateInFrame(player));
+                            break;
+                    }
+                }
+            });
+
+            while(true)
             {
                 std::this_thread::sleep_for(1s);
-                switch(i)
-                {
-                    case 3:
-                        SetSymbolicDate(player, symdate1, GetAudioPlayerDateInFrame(player));
-                        break;
-                    case 5:
-                        SetSymbolicDate(player, symdate2, GetAudioPlayerDateInFrame(player));
-                        break;
-                }
             }
 
             StopAudioPlayer(m_ctx.player);
@@ -92,4 +84,4 @@ class test1: public QObject
 };
 
 QTEST_APPLESS_MAIN(test1)
-#include "test1.moc"
+#include "test4.moc"

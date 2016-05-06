@@ -28,7 +28,6 @@ void ScenarioComponent::makeStream(const Context& ctx)
     m_csts.clear();
 
     m_renderer = MakeGroupPlayer();
-    m_stream = MakeGroupStream(m_renderer);
 
     auto& scenario = process();
 
@@ -43,7 +42,7 @@ void ScenarioComponent::makeStream(const Context& ctx)
         auto con = connect(&tn, &Scenario::TimeNodeModel::triggeredByEngine,
                            this, [=] () {
             qDebug() << SetSymbolicDate(m_renderer, date, GetAudioPlayerDateInFrame(m_renderer));
-        });
+        }, Qt::QueuedConnection);
         m_synchros.insert(std::make_pair(tn.id(), std::make_pair(date, con)));
     }
 
@@ -69,6 +68,8 @@ void ScenarioComponent::makeStream(const Context& ctx)
         StartSound(m_renderer, sound, t_start);
         StopSound(m_renderer, sound, t_end);
     }
+
+    m_stream = MakeSend(MakeGroupStream(m_renderer));
 }
 
 template<>

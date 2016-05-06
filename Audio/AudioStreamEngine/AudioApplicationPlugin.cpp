@@ -6,6 +6,8 @@
 #include <OSSIA/OSSIAApplicationPlugin.hpp>
 #include <QAction>
 #include <Audio/Settings/Card/CardSettingsModel.hpp>
+#include <LibAudioStreamMC++.h>
+#include <faust/dsp/llvm-dsp.h>
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -15,7 +17,12 @@ ApplicationPlugin::ApplicationPlugin(const iscore::ApplicationContext& app):
     iscore::GUIApplicationContextPlugin{app, "AudioApplicationPlugin", nullptr},
     m_ctx{*this}
 {
+    startMTDSPFactories();
+}
 
+ApplicationPlugin::~ApplicationPlugin()
+{
+    stopMTDSPFactories();
 }
 
 void ApplicationPlugin::on_newDocument(iscore::Document* doc)
@@ -79,6 +86,7 @@ void ApplicationPlugin::startEngine()
     m_ctx.renderer = MakeAudioRenderer(api);
     GetAudioRendererInfo(m_ctx.renderer, &m_ctx.renderer_info);
     OpenAudioRenderer(m_ctx.renderer, 0, card, 2, 2, stngs.getBufferSize(), stngs.getRate());
+
 }
 
 void ApplicationPlugin::stopEngine()

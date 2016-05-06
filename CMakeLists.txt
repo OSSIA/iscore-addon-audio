@@ -5,6 +5,7 @@ if(NOT TARGET iscore_plugin_ossia)
     return()
 endif()
 find_package(Sndfile)
+find_package(Faust REQUIRED)
 # find_package(RtAudio)
 
 if(NOT SNDFILE_LIBRARY)
@@ -224,6 +225,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
                      ${SNDFILE_LIBRARIES}
                      libaudiostream)
 
+target_link_libraries(${PROJECT_NAME}  PUBLIC ${FAUST_LIBRARIES})
+target_include_directories(${PROJECT_NAME}  PRIVATE ${FAUST_INCLUDE_DIR})
 setup_iscore_plugin(${PROJECT_NAME})
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-error=return-type-c-linkage")
