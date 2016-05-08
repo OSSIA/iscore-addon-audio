@@ -57,6 +57,9 @@ class ProcessModel final : public Process::ProcessModel
 
         const auto& effects() const
         { return m_effects; }
+        const auto& effectsOrder() const
+        { return m_effectOrder; }
+
         void insertEffect(EffectModel* eff, int pos);
         void removeEffect(const EffectModel&);
 
@@ -91,7 +94,7 @@ class ProcessModel final : public Process::ProcessModel
         void serialize_impl(const VisitorVariant& vis) const override;
 
     signals:
-        void fileChanged();
+        void effectsChanged();
 
     protected:
         Process::LayerModel* makeLayer_impl(

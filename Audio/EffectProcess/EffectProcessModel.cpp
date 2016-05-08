@@ -4,6 +4,7 @@
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 #include <iscore/plugins/documentdelegate/plugin/ElementPluginModelList.hpp>
 
+#include <iscore/tools/Clamp.hpp>
 #include <QFile>
 
 namespace Audio
@@ -35,6 +36,8 @@ ProcessModel::ProcessModel(
     pluginModelList = new iscore::ElementPluginModelList{
                       *source.pluginModelList,
             this};
+
+    ISCORE_TODO;
 }
 
 ProcessModel::~ProcessModel()
@@ -46,12 +49,21 @@ void ProcessModel::insertEffect(
         EffectModel* eff,
         int pos)
 {
-    ISCORE_TODO;
+    clamp(pos, 0, m_effectOrder.size());
+
+    m_effects.add(eff);
+    auto it = m_effectOrder.begin();
+    std::advance(it, pos);
+    m_effectOrder.insert(it, eff->id());
+
+    emit effectsChanged();
 }
 
 void ProcessModel::removeEffect(const EffectModel& e)
 {
     ISCORE_TODO;
+
+    emit effectsChanged();
 }
 
 ProcessModel* ProcessModel::clone(
@@ -63,7 +75,7 @@ ProcessModel* ProcessModel::clone(
 
 QString ProcessModel::prettyName() const
 {
-    return "Effect Process";
+    return tr("Effect Process");
 }
 
 QByteArray ProcessModel::makeLayerConstructionData() const

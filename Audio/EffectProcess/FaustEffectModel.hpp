@@ -40,6 +40,19 @@ class FaustEffectModel :
         FaustEffectModel* clone(
                 const Id<EffectModel>& newId,
                 QObject* parent) const override;
+
+
+        QString title() const override {
+            return "Faust";
+        }
+
+        const QString& text() const
+        {
+            return m_text;
+        }
+
+    private:
+        QString m_text;
 };
 }
 }

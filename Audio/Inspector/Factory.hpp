@@ -61,4 +61,25 @@ class InspectorFactory final :
         bool matches(const Process::ProcessModel&) const override;
 };
 }
+
+
+// MOVEME
+namespace Effect
+{
+class InspectorFactory final :
+        public Process::InspectorWidgetDelegateFactory
+{
+        ISCORE_CONCRETE_FACTORY_DECL("cc8ceff3-ef93-4b73-865a-a9f870d6e898")
+    public:
+        InspectorFactory();
+        virtual ~InspectorFactory();
+
+    private:
+        Process::InspectorWidgetDelegate* make(
+                const Process::ProcessModel&,
+                const iscore::DocumentContext&,
+                QWidget* parent) const override;
+        bool matches(const Process::ProcessModel&) const override;
+};
+}
 }

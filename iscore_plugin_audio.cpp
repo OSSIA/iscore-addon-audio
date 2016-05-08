@@ -68,7 +68,8 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
         FW<Process::InspectorWidgetDelegateFactory,
             Audio::Sound::InspectorFactory,
             Audio::Mix::InspectorFactory,
-            Audio::Return::InspectorFactory
+            Audio::Return::InspectorFactory,
+            Audio::Effect::InspectorFactory
             >,
         FW<iscore::SettingsDelegateFactory,
             Audio::Settings::Factory>

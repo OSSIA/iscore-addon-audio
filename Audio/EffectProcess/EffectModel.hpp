@@ -48,6 +48,10 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
         virtual EffectModel* clone(
                 const Id<EffectModel>& newId,
                 QObject* parent) const = 0;
+
+        virtual QString title() const = 0;
 };
 }
 }
+
+Q_DECLARE_METATYPE(Id<Audio::Effect::EffectModel>)
