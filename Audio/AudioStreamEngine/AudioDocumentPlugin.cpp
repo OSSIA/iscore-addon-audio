@@ -253,6 +253,12 @@ struct AudioDependencyGraph
             auto res = boost::add_vertex(&proc, m_graph);
 
             // Create a node for the group player
+            for(auto& constraint : proc.constraints())
+            {
+                auto cst_vtx = visit(constraint.component);
+
+                boost::add_edge(cst_vtx, res, m_graph);
+            }
 
             return res;
         }

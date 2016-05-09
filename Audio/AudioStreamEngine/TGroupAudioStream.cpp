@@ -4,7 +4,6 @@
 #include <iostream>
 #include <cmath>
 #include <QDebug>
-#include "TExpAudioMixer.h"
 #include <3rdparty/libaudiostream/src/UAudioTools.h>
 long TGroupRenderer::OpenImp(
         long inputDevice,
@@ -48,13 +47,6 @@ long TGroupRenderer::Start()
 
 long TGroupRenderer::Stop()
 {
-    for(const auto& clt : fClientList)
-    {
-        if(auto mixer = dynamic_cast<TExpAudioMixer*>(clt.fRTClient))
-        {
-            mixer->SetPos(0);
-        }
-    }
     fInfo.fCurFrame = 0;
     fInfo.fCurUsec = 0;
     return 0;
@@ -136,7 +128,6 @@ void TGroupRenderer::GetInfo(RendererInfoPtr info)
     (*info) = fInfo;
 }
 
-
 //////////////////////////
 //////////////////////////
 
@@ -207,9 +198,13 @@ TAudioStreamPtr TSinusAudioStream::Copy()
 //////////////////////////
 //////////////////////////
 
-TPlayerAudioStream::TPlayerAudioStream(TGroupRenderer &renderer):
-    fRenderer{renderer}
+TPlayerAudioStream::TPlayerAudioStream(
+        TGroupRenderer& renderer,
+        TGroupAudioMixer& mixer):
+    fRenderer{renderer},
+    fMixer{mixer}
 {
+
 
 }
 
@@ -237,6 +232,7 @@ long TPlayerAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos
 void TPlayerAudioStream::Reset()
 {
     fRenderer.Stop();
+    fMixer.Reset();
 }
 
 TAudioStreamPtr TPlayerAudioStream::CutBegin(long frames)
@@ -307,15 +303,12 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioPlayerPtr MakeGroupPlayer()
         goto error;
     }
 
-    // TODO make a wrapper that saves the stream commands
-    // and sets them to an unknown symbolic date upon deletion.
-    player->fMixer = new TExpAudioMixer{TAudioGlobals::fBufferSize, 2};
+    player->fMixer = new TGroupAudioMixer{TAudioGlobals::fBufferSize, 2};
     if (!player->fMixer) {
         goto error;
     }
 
     player->fRenderer->AddClient(player->fMixer);
-
     if (res == NO_ERR) {
         return player;
     }
@@ -327,10 +320,17 @@ error:
 
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeGroupStream(AudioPlayerPtr p)
 {
-    auto renderer = static_cast<IntAudioPlayerPtr>(p)->fRenderer;
-    if(auto grp = dynamic_cast<TGroupRenderer*>(renderer))
-        return new TPlayerAudioStream{*grp};
-    return nullptr;
+    auto player = static_cast<IntAudioPlayerPtr>(p);
+
+    auto grp = dynamic_cast<TGroupRenderer*>(player->fRenderer);
+    if(!grp)
+        return nullptr;
+
+    auto mix = dynamic_cast<TGroupAudioMixer*>(player->fMixer);
+    if(!mix)
+        return nullptr;
+
+    return new TPlayerAudioStream{*grp, *mix};
 }
 
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSinusStream(long length, float freq)

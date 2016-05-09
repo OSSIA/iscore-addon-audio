@@ -4,20 +4,22 @@
 #include <Audio/AudioStreamEngine/Scenario/TimeNodeComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/StateComponent.hpp>
 #include <Scenario/Document/Components/ScenarioComponent.hpp>
+#include <Loop/LoopProcessModel.hpp>
 #include <QMetaObject>
 namespace Audio
 {
 namespace AudioStreamEngine
 {
-class LoopComponent final : public ProcessComponent_T<Scenario::ScenarioModel>
+class LoopComponent final : public ProcessComponent_T<Loop::ProcessModel>
 {
        COMPONENT_METADATA(Audio::AudioStreamEngine::ScenarioComponent)
 
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
         using hierarchy_t =
-           ScenarioComponentHierarchyManager<
+           BaseScenarioComponentHierarchyManager<
                LoopComponent,
                system_t,
+               Loop::ProcessModel,
                ConstraintComponent,
                EventComponent,
                TimeNodeComponent,
@@ -27,11 +29,13 @@ class LoopComponent final : public ProcessComponent_T<Scenario::ScenarioModel>
     public:
        LoopComponent(
                const Id<Component>& id,
-               Scenario::ScenarioModel& scenario,
+               Loop::ProcessModel& scenario,
                const system_t& doc,
                const iscore::DocumentContext& ctx,
                QObject* parent_obj);
 
+       const auto& constraints() const
+       { return m_hm.constraints(); }
 
        void makeStream(const Context& ctx) override;
 
@@ -64,12 +68,12 @@ class LoopComponent final : public ProcessComponent_T<Scenario::ScenarioModel>
     private:
         hierarchy_t m_hm;
 
-        std::map<Id<Scenario::TimeNodeModel>, std::pair<SymbolicDate, QMetaObject::Connection>> m_synchros;
+
+        std::map<Id<Scenario::ConstraintModel>, std::pair<SymbolicDate, QMetaObject::Connection>> m_synchros;
         std::map<Id<Scenario::ConstraintModel>, AudioStream> m_csts;
 
         AudioRendererPtr m_renderer;
-        AudioStream m_group;
-
+        AudioStream m_player;
 };
 
 }
