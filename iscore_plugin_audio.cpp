@@ -17,6 +17,11 @@
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
 #include <Audio/Settings/Card/CardSettingsFactory.hpp>
 
+#include <Audio/EffectProcess/EffectFactory.hpp>
+#include <Audio/EffectProcess/FaustEffectFactory.hpp>
+
+#include <Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.hpp>
+
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Scenario/LoopComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Audio/EffectComponentFactory.hpp>
@@ -72,7 +77,13 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
             Audio::Effect::InspectorFactory
             >,
         FW<iscore::SettingsDelegateFactory,
-            Audio::Settings::Factory>
+            Audio::Settings::Factory>,
+        FW<Audio::Effect::EffectFactory,
+            Audio::Effect::FaustEffectFactory>,
+        FW<Ossia::LocalTree::ProcessComponentFactory,
+            Audio::Effect::LocalTree::EffectProcessComponentFactory>,
+        FW<Audio::Effect::LocalTree::EffectComponentFactory,
+            Audio::Effect::LocalTree::FaustComponentFactory>
     >>(ctx, key);
 }
 
@@ -94,7 +105,9 @@ iscore::GUIApplicationContextPlugin*iscore_plugin_audio::make_applicationPlugin(
 std::vector<std::unique_ptr<iscore::FactoryListInterface> > iscore_plugin_audio::factoryFamilies()
 {
     return make_ptr_vector<iscore::FactoryListInterface,
-            Audio::AudioStreamEngine::ProcessComponentFactoryList>();
+            Audio::AudioStreamEngine::ProcessComponentFactoryList,
+            Audio::Effect::EffectFactoryList,
+            Audio::Effect::LocalTree::EffectComponentFactoryList>();
 }
 
 iscore::Version iscore_plugin_audio::version() const

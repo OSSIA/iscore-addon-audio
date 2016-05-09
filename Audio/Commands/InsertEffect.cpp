@@ -39,16 +39,21 @@ void InsertEffect::redo() const
         auto model = fact->makeModel(m_effect, m_id, &process);
         process.insertEffect(model, m_pos);
     }
+    else
+    {
+        ISCORE_TODO;
+        // Insert a fake effect ?
+    }
 }
 
 void InsertEffect::serializeImpl(DataStreamInput& s) const
 {
-    s << m_model << m_effectKind << m_effect << m_pos;
+    s << m_model << m_id << m_effectKind << m_effect << m_pos;
 }
 
 void InsertEffect::deserializeImpl(DataStreamOutput& s)
 {
-    s >> m_model >> m_effectKind >> m_effect >> m_pos;
+    s >> m_model >> m_id >> m_effectKind >> m_effect >> m_pos;
 }
 
 }

@@ -9,15 +9,19 @@
 #include <Audio/AudioStreamEngine/GroupAudioStream.h>
 #include <Audio/AudioStreamEngine/Utility.hpp>
 
+#include <Audio/EffectProcess/FaustEffectModel.hpp>
+#include <Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.hpp>
+#include <Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp>
+
 namespace Audio
 {
 namespace AudioStreamEngine
 {
 
-EffectComponent::EffectComponent(
+EffectProcessComponent::EffectProcessComponent(
         const Id<iscore::Component>& id,
         Effect::ProcessModel& sound,
-        const EffectComponent::system_t& doc,
+        const EffectProcessComponent::system_t& doc,
         const iscore::DocumentContext& ctx,
         QObject* parent_obj):
     ProcessComponent_T{sound, id, "EffectComponent", parent_obj}
@@ -25,8 +29,10 @@ EffectComponent::EffectComponent(
 
 }
 
-void EffectComponent::makeStream(const Context& ctx)
+void EffectProcessComponent::makeStream(const Context& ctx)
 {
+    m_effects.clear();
+
     // For all "generative" streams in the parent constraint,
     // take their "send" streams, create returns, mix the returns,
     // put it on input of the effect, create a send, return the output
@@ -71,10 +77,35 @@ void EffectComponent::makeStream(const Context& ctx)
     });
 
     auto mixed = MixNStreams(returns);
-    //m_stream = mixed;
-    auto fx = MakeFaustAudioEffect("process =4 *_;", "", "");
-    auto snd_fx = MakeEffectSound(mixed, fx, 0, 0);
-    m_stream = MakeSend(snd_fx);
+
+    AudioStream sound = mixed;
+    for(auto& fx : process().effects())
+    {
+        if(auto faust_fx = dynamic_cast<Effect::FaustEffectModel*>(&fx))
+        {
+            if(faust_fx->text().isEmpty())
+                continue;
+
+            auto compiled_fx = MakeFaustAudioEffect(faust_fx->text().toLocal8Bit(), "", "");
+            if(!compiled_fx)
+                continue;
+
+            sound = MakeEffectSound(sound, compiled_fx, 0, 0);
+            m_effects.insert(std::make_pair(fx.id(), compiled_fx));
+
+
+            // Find local tree component.
+            auto it = find_if(faust_fx->components, [] (const auto& comp) {
+                return dynamic_cast<const Audio::Effect::LocalTree::FaustComponent*>(&comp);
+            });
+            if(it != faust_fx->components.end())
+            {
+                static_cast<Audio::Effect::LocalTree::FaustComponent&>(*it).m_audio_effect = compiled_fx;
+            }
+        }
+    }
+
+    m_stream = MakeSend(sound);
 }
 
 }

@@ -61,7 +61,7 @@ void SendComponent::makeStream(const Context& ctx)
         {
             inputStreams.push_back(ret->getStream());
         }
-        else if(auto fx = dynamic_cast<EffectComponent*>(&proc.component))
+        else if(auto fx = dynamic_cast<EffectProcessComponent*>(&proc.component))
         {
             inputStreams.push_back(fx->getStream());
         }

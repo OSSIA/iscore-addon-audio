@@ -73,7 +73,7 @@ void ConstraintComponent::makeStream(const Context& player)
         vector<pair<Scenario::ScenarioModel*, ScenarioComponent*>> scenarios;
         //map<Id<Scenario::ScenarioModel>, Loop::ProcessModel*> loops;
         vector<pair<Sound::ProcessModel*, SoundComponent*>> sounds;
-        vector<pair<Effect::ProcessModel*, EffectComponent*>> sfxs;
+        vector<pair<Effect::ProcessModel*, EffectProcessComponent*>> sfxs;
         vector<pair<Mix::ProcessModel*, MixComponent*>> mixs;
 
         // For now we just put all the sound streams in parallel...
@@ -110,7 +110,7 @@ void ConstraintComponent::makeStream(const Context& player)
                 // TODO if there is only an effect and no input,
                 // we should feed it at least some silence.
 
-                auto stream = safe_cast<EffectComponent*>(&comp)->getStream();
+                auto stream = safe_cast<EffectProcessComponent*>(&comp)->getStream();
                 if(stream)
                 {
                     qDebug() << "adding a sfx";

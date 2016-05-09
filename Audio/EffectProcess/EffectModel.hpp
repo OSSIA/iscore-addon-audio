@@ -1,5 +1,7 @@
 #pragma once
 #include <Audio/EffectProcess/EffectFactory.hpp>
+
+#include <iscore/component/Component.hpp>
 #include <iscore/tools/IdentifiedObject.hpp>
 #include <iscore/plugins/customfactory/SerializableInterface.hpp>
 #include <iscore_plugin_audio_export.h>
@@ -25,6 +27,8 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
         ISCORE_SERIALIZE_FRIENDS(Audio::Effect::EffectModel, DataStream)
         ISCORE_SERIALIZE_FRIENDS(Audio::Effect::EffectModel, JSONObject)
     public:
+        iscore::Components components;
+
         EffectModel(
                 const Id<EffectModel>&,
                 QObject* parent);

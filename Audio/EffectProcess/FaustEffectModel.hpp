@@ -51,6 +51,19 @@ class FaustEffectModel :
             return m_text;
         }
 
+        void setText(const QString& txt)
+        {
+            m_text = txt;
+            emit textChanged();
+        }
+
+        UuidKey<EffectFactory> concreteFactoryKey() const override
+        {
+            return "3db761db-dcc4-4036-ac10-18dc786239c0";
+        }
+    signals:
+        void textChanged();
+
     private:
         QString m_text;
 };
