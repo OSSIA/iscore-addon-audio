@@ -18,7 +18,7 @@ ScenarioComponent::ScenarioComponent(
 {
 }
 
-AudioStream ScenarioComponent::makeStream(const Context& ctx) const
+void ScenarioComponent::makeStream(const Context& ctx)
 {
     for(auto& elt : m_synchros)
     {
@@ -28,18 +28,21 @@ AudioStream ScenarioComponent::makeStream(const Context& ctx) const
     m_csts.clear();
 
     m_renderer = MakeGroupPlayer();
-    m_group = MakeGroupStream(m_renderer);
 
     auto& scenario = process();
+
     // TODO FIXME we have to generate a symbolic date for each *condition*.
     // First generate a symbolic date for each of the timenode (fixed if there is no trigger ?)
+    // TODO we should use directly the OSSIA execution components instead.
+    // But for this we have to ensure that they exist
+    // Hence we have to introduce a dependency graph for the construction of components trees.
     for(Scenario::TimeNodeModel& tn : scenario.timeNodes)
     {
         auto date = GenSymbolicDate(m_renderer);
         auto con = connect(&tn, &Scenario::TimeNodeModel::triggeredByEngine,
                            this, [=] () {
             qDebug() << SetSymbolicDate(m_renderer, date, GetAudioPlayerDateInFrame(m_renderer));
-        });
+        }, Qt::QueuedConnection);
         m_synchros.insert(std::make_pair(tn.id(), std::make_pair(date, con)));
     }
 
@@ -48,23 +51,26 @@ AudioStream ScenarioComponent::makeStream(const Context& ctx) const
     // to the symbolic date of the trigger
     for(const hierarchy_t::ConstraintPair& cst : m_hm.constraints())
     {
-        // Optimize me by storing the time node ids beforehand.
+        auto sound = cst.component.getStream();
+        if(!sound)
+            continue;
 
+        // Optimize me by storing the time node ids beforehand.
         auto t_start = m_synchros.at(Scenario::startEvent(cst.element, scenario).timeNode()).first;
         auto t_end = m_synchros.at(Scenario::endEvent(cst.element, scenario).timeNode()).first;
-        auto sound =  cst.component.makeStream(ctx);
         m_csts.insert(
                     std::make_pair(
                         cst.element.id(),
                         sound
                         )
                     );
+        qDebug() << "Starting" << cst.element.metadata.name();
 
         StartSound(m_renderer, sound, t_start);
         StopSound(m_renderer, sound, t_end);
     }
 
-    return m_group;
+    m_stream = MakeSend(MakeGroupStream(m_renderer));
 }
 
 template<>

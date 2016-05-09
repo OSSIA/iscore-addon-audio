@@ -3,21 +3,21 @@
 
 namespace Audio
 {
-namespace Effect
+namespace Return
 {
 class ProcessModel;
 }
 namespace AudioStreamEngine
 {
-class EffectComponent final : public ProcessComponent_T<Effect::ProcessModel>
+class ReturnComponent final : public ProcessComponent_T<Return::ProcessModel>
 {
-       COMPONENT_METADATA(Audio::AudioStreamEngine::EffectComponent)
+       COMPONENT_METADATA(Audio::AudioStreamEngine::ReturnComponent)
 
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
     public:
-       EffectComponent(
+       ReturnComponent(
                const Id<Component>& id,
-               Effect::ProcessModel& sound,
+               Return::ProcessModel& sound,
                const system_t& doc,
                const iscore::DocumentContext& ctx,
                QObject* parent_obj);

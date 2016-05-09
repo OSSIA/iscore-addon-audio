@@ -2,6 +2,7 @@
 
 #include "TSharedBuffers.h"
 #include <iostream>
+#include <cmath>
 #include <QDebug>
 #include "TExpAudioMixer.h"
 #include <3rdparty/libaudiostream/src/UAudioTools.h>
@@ -18,7 +19,9 @@ long TGroupRenderer::OpenImp(
     return 0;
 }
 
-TGroupRenderer::TGroupRenderer(): TAudioRenderer()
+TGroupRenderer::TGroupRenderer():
+    TAudioRenderer{},
+    fInfo{{}, {}, {}, {}, {}, {}, {}, {}, {}, {}}
 {
 }
 
@@ -28,8 +31,8 @@ TGroupRenderer::~TGroupRenderer()
 
 long TGroupRenderer::Open(long inChan, long outChan, long bufferSize, long sampleRate)
 {
-    TAudioRenderer::Open(inChan, outChan, bufferSize, sampleRate);
-    fBuffers = TBufferManager(inChan, outChan, bufferSize, sampleRate);
+    TAudioRenderer::Open(0, outChan, bufferSize, sampleRate);
+    fBuffers = TBufferManager(0, outChan, bufferSize, sampleRate);
     return 0;
 }
 
@@ -78,6 +81,7 @@ class TSharedBufferLocker
 {
         float** fPrevInBuffer{TSharedBuffers::GetInBuffer()};
         float** fPrevOutBuffer{TSharedBuffers::GetOutBuffer()};
+        TBufferedAudioStream* fSharedInput = TAudioGlobals::fSharedInput;
 
     public:
         TSharedBufferLocker(float** in, float** out)
@@ -85,19 +89,20 @@ class TSharedBufferLocker
             // TODO maybe we should also save the number of channels ... ?
             TSharedBuffers::SetInBuffer(in);
             TSharedBuffers::SetOutBuffer(out);
+            TAudioGlobals::fSharedInput = nullptr;
         }
 
         ~TSharedBufferLocker()
         {
             TSharedBuffers::SetInBuffer(fPrevInBuffer);
             TSharedBuffers::SetOutBuffer(fPrevOutBuffer);
+            TAudioGlobals::fSharedInput = fSharedInput;
         }
 };
 
-void TGroupRenderer::Process()
+void TGroupRenderer::Process(int64_t frames)
 {
     TSharedBufferLocker shared_buffers{fBuffers.fInputBuffer, fBuffers.fOutputBuffer};
-    auto frames = fBufferSize;
 
     // Clear output buffers
     UAudioTools::ZeroFloatBlk(fBuffers.fOutputBuffer, frames, fOutput); // TODO set correct channel count
@@ -116,7 +121,11 @@ void TGroupRenderer::Process()
         }
     }
     fInfo.fCurFrame += frames;
-    fInfo.fCurUsec = ConvertSample2Usec(fInfo.fCurFrame);
+    auto cur_usec_double = ConvertSample2Usec(fInfo.fCurFrame);
+    if(cur_usec_double <= (double) LONG_MAX)
+        fInfo.fCurUsec = cur_usec_double;
+    else
+        fInfo.fCurUsec = LONG_MAX;
 }
 
 float** TGroupRenderer::GetOutputBuffer() const
@@ -152,8 +161,6 @@ long TSinusAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos)
     float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
     auto out = buffer->GetFrame(framePos, temp1);
 
-    std::cerr << framePos << std::endl;
-
     auto cst = 2.*M_PI*fFreq / 44100.;
     for(int i = 0; i < framesNum; i++)
     {
@@ -184,7 +191,7 @@ long TSinusAudioStream::Length()
 
 long TSinusAudioStream::Channels()
 {
-    return TAudioGlobals::fInput;
+    return TAudioGlobals::fOutput;
 }
 
 TAudioStreamPtr TSinusAudioStream::Copy()
@@ -217,14 +224,12 @@ long TPlayerAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos
 
     float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
 
-
-    std::cerr << framePos << std::endl;
-    fRenderer.Process();
+    fRenderer.Process(framesNum);
     auto out_buffer = fRenderer.GetOutputBuffer();
 
     UAudioTools::MixFrameToFrameBlk1(buffer->GetFrame(framePos, temp1),
                                      out_buffer,
-                                     framesNum, TAudioGlobals::fInput);
+                                     framesNum, TAudioGlobals::fOutput);
 
     return framesNum;
 }
@@ -248,7 +253,7 @@ long TPlayerAudioStream::Length()
 
 long TPlayerAudioStream::Channels()
 {
-    return TAudioGlobals::fInput;
+    return TAudioGlobals::fOutput;
 }
 
 TAudioStreamPtr TPlayerAudioStream::Copy()
@@ -281,6 +286,7 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioStream JoinSharedBus(AudioStream bus_stream);
 
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSend(AudioStream s);
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeReturn(AudioStream s);
+ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeChannelSound(AudioStream s, double const * volume);
 void CloseAudioPlayer(AudioPlayerPtr ext_player); // In libaudiostreammc
 
 ISCORE_PLUGIN_AUDIO_EXPORT AudioPlayerPtr MakeGroupPlayer()
@@ -295,7 +301,7 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioPlayerPtr MakeGroupPlayer()
     }
 
     player->fRenderer = new TGroupRenderer;
-    res = player->fRenderer->Open(TAudioGlobals::fInput, TAudioGlobals::fOutput,
+    res = player->fRenderer->Open(0, 2,
                                   TAudioGlobals::fBufferSize, TAudioGlobals::fSampleRate);
     if (!player->fRenderer) {
         goto error;
@@ -303,7 +309,7 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioPlayerPtr MakeGroupPlayer()
 
     // TODO make a wrapper that saves the stream commands
     // and sets them to an unknown symbolic date upon deletion.
-    player->fMixer = new TExpAudioMixer;
+    player->fMixer = new TExpAudioMixer{TAudioGlobals::fBufferSize, 2};
     if (!player->fMixer) {
         goto error;
     }
@@ -332,20 +338,6 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSinusStream(long length, float freq)
     return new TSinusAudioStream{length, freq};
 }
 
-
-ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSharedBus(AudioStream s)
-{
-    return new TBusAudioStream{static_cast<TAudioStreamPtr>(s)};
-}
-
-ISCORE_PLUGIN_AUDIO_EXPORT AudioStream JoinSharedBus(AudioStream bus_stream)
-{
-    if(auto bus = dynamic_cast<TBusAudioStream*>(bus_stream.getPointer()))
-        return new TBusAudioStream{*bus};
-    return nullptr;
-}
-
-
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSend(AudioStream s)
 {
     return new TSendAudioStream{static_cast<TAudioStreamPtr>(s)};
@@ -358,4 +350,8 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeReturn(AudioStream send_stream)
     return nullptr;
 }
 
+ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeChannelSound(AudioStream s, double const * volume)
+{
+    return new TChannelAudioStream{static_cast<TAudioStreamPtr>(s), volume};
+}
 }

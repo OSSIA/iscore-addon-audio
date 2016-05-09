@@ -23,10 +23,9 @@ class SoundComponent final : public ProcessComponent_T<Sound::ProcessModel>
                QObject* parent_obj);
 
 
-       AudioStream makeStream(const Context& ctx) const override;
+       void makeStream(const Context& ctx) override;
 
     private:
-       std::vector<float*> m_buffers{};
 };
 
 

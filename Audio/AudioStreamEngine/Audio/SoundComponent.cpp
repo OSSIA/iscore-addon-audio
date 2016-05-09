@@ -1,6 +1,7 @@
 #include "SoundComponent.hpp"
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
 #include <LibAudioStreamMC++.h>
+#include <Audio/AudioStreamEngine/GroupAudioStream.h>
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -17,15 +18,11 @@ SoundComponent::SoundComponent(
 
 }
 
-AudioStream SoundComponent::makeStream(const Context& ctx) const
+void SoundComponent::makeStream(const Context& ctx)
 {
     auto& sound = process().file();
-    /*
-    m_buffers.clear();
-    m_buffers.push_back(());
-    MakeBufferSound(float** buffer, long length, long channels, bool clear);;
-    */
-    return MakeReadSound(sound.name().toLocal8Bit().constData());
+    m_stream = MakeSend(MakeReadSound(sound.name().toLocal8Bit().constData()));
+    // TODO optimize me by instead getting the already loaded data.
 }
 
 }

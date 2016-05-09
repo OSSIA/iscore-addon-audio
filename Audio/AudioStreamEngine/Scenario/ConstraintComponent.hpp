@@ -34,7 +34,8 @@ class ConstraintComponent final :
                 QObject* parent_comp);
         ~ConstraintComponent();
 
-        AudioStream makeStream(const Context& player);
+        void makeStream(const Context& player);
+        AudioStream getStream() const { return m_stream; }
 
         ProcessComponent* make_processComponent(
                 const Id<Component> & id,
@@ -46,10 +47,15 @@ class ConstraintComponent final :
 
         void removing(const Process::ProcessModel& cst, const ProcessComponent& comp);
 
+        const auto& processes() const
+        { return m_baseComponent.processes(); }
+
     private:
         parent_t m_baseComponent;
         double m_shift{1.0};
         double m_stretch{1.0};
+
+        AudioStream m_stream{};
 };
 
 

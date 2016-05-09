@@ -10,6 +10,7 @@ class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPl
 {
     public:
         ApplicationPlugin(const iscore::ApplicationContext& app);
+        ~ApplicationPlugin();
 
         void on_newDocument(iscore::Document* doc) override;
         void on_loadedDocument(iscore::Document* doc) override;

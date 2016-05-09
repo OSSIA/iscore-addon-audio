@@ -10,6 +10,8 @@ AudioStream MakeSinusStream(long length, float freq);
 
 AudioStream MakeSend(AudioStream s);
 AudioStream MakeReturn(AudioStream s);
+
+AudioStream MakeChannelSound(AudioStream s, double const * volume);
 }
 
 #endif

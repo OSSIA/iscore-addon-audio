@@ -23,7 +23,7 @@ class MixComponent final : public ProcessComponent_T<Mix::ProcessModel>
                QObject* parent_obj);
 
 
-       AudioStream makeStream(const Context& ctx) const override;
+       void makeStream(const Context& ctx) override;
 };
 }
 }

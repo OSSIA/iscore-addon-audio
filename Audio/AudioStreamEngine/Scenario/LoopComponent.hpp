@@ -9,14 +9,14 @@ namespace Audio
 {
 namespace AudioStreamEngine
 {
-class ScenarioComponent final : public ProcessComponent_T<Scenario::ScenarioModel>
+class LoopComponent final : public ProcessComponent_T<Scenario::ScenarioModel>
 {
        COMPONENT_METADATA(Audio::AudioStreamEngine::ScenarioComponent)
 
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
         using hierarchy_t =
            ScenarioComponentHierarchyManager<
-               ScenarioComponent,
+               LoopComponent,
                system_t,
                ConstraintComponent,
                EventComponent,
@@ -25,17 +25,13 @@ class ScenarioComponent final : public ProcessComponent_T<Scenario::ScenarioMode
         >;
 
     public:
-       ScenarioComponent(
+       LoopComponent(
                const Id<Component>& id,
                Scenario::ScenarioModel& scenario,
                const system_t& doc,
                const iscore::DocumentContext& ctx,
                QObject* parent_obj);
 
-
-
-       const auto& constraints() const
-       { return m_hm.constraints(); }
 
        void makeStream(const Context& ctx) override;
 
@@ -72,6 +68,7 @@ class ScenarioComponent final : public ProcessComponent_T<Scenario::ScenarioMode
         std::map<Id<Scenario::ConstraintModel>, AudioStream> m_csts;
 
         AudioRendererPtr m_renderer;
+        AudioStream m_group;
 
 };
 

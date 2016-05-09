@@ -6,8 +6,12 @@
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
 #include <Audio/MixProcess/MixProcessModel.hpp>
 #include <Audio/ReturnProcess/ReturnProcessModel.hpp>
+#include <Audio/EffectProcess/EffectProcessModel.hpp>
 class QTableWidget;
+class QListWidget;
 class QLineEdit;
+class QPushButton;
+
 namespace iscore {
 class Document;
 }  // namespace iscore
@@ -70,6 +74,27 @@ class InspectorWidget final :
                 QWidget* parent);
 
     private:
+        CommandDispatcher<> m_dispatcher;
+};
+}
+
+
+namespace Effect
+{
+class ProcessModel;
+class InspectorWidget final :
+        public Process::InspectorWidgetDelegate_T<ProcessModel>
+{
+    public:
+        explicit InspectorWidget(
+                const ProcessModel& object,
+                const iscore::DocumentContext& doc,
+                QWidget* parent);
+
+    private:
+        void recreate();
+        QListWidget* m_list{};
+        QPushButton* m_add{};
         CommandDispatcher<> m_dispatcher;
 };
 }

@@ -18,9 +18,12 @@
 #include <Audio/Settings/Card/CardSettingsFactory.hpp>
 
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponentFactory.hpp>
+#include <Audio/AudioStreamEngine/Scenario/LoopComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Audio/EffectComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Audio/SoundComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Audio/MixComponentFactory.hpp>
+#include <Audio/AudioStreamEngine/Audio/SendComponentFactory.hpp>
+#include <Audio/AudioStreamEngine/Audio/ReturnComponentFactory.hpp>
 #include <iscore_plugin_audio_commands_files.hpp>
 
 std::pair<const CommandParentFactoryKey, CommandGeneratorMap> iscore_plugin_audio::make_commands()
@@ -54,14 +57,19 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
             Audio::AudioStreamEngine::EffectComponentFactory,
             Audio::AudioStreamEngine::SoundComponentFactory,
             Audio::AudioStreamEngine::MixComponentFactory,
-            Audio::AudioStreamEngine::ScenarioComponentFactory>,
+            Audio::AudioStreamEngine::SendComponentFactory,
+            Audio::AudioStreamEngine::ReturnComponentFactory,
+            Audio::AudioStreamEngine::ScenarioComponentFactory,
+            Audio::AudioStreamEngine::LoopComponentFactory
+            >,
             /*
         FW<RecreateOnPlay::ProcessComponentFactory,
             RecreateOnPlay::Audio::ComponentFactory>,*/
         FW<Process::InspectorWidgetDelegateFactory,
             Audio::Sound::InspectorFactory,
             Audio::Mix::InspectorFactory,
-            Audio::Return::InspectorFactory
+            Audio::Return::InspectorFactory,
+            Audio::Effect::InspectorFactory
             >,
         FW<iscore::SettingsDelegateFactory,
             Audio::Settings::Factory>

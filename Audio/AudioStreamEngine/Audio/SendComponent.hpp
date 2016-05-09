@@ -3,21 +3,21 @@
 
 namespace Audio
 {
-namespace Effect
+namespace Send
 {
 class ProcessModel;
 }
 namespace AudioStreamEngine
 {
-class EffectComponent final : public ProcessComponent_T<Effect::ProcessModel>
+class SendComponent final : public ProcessComponent_T<Send::ProcessModel>
 {
-       COMPONENT_METADATA(Audio::AudioStreamEngine::EffectComponent)
+       COMPONENT_METADATA(Audio::AudioStreamEngine::SendComponent)
 
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
     public:
-       EffectComponent(
+       SendComponent(
                const Id<Component>& id,
-               Effect::ProcessModel& sound,
+               Send::ProcessModel& sound,
                const system_t& doc,
                const iscore::DocumentContext& ctx,
                QObject* parent_obj);

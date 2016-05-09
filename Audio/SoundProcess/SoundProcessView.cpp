@@ -2,6 +2,7 @@
 #include <QPainter>
 #include <QGraphicsView>
 #include <QScrollBar>
+#include <cmath>
 
 namespace Audio
 {
