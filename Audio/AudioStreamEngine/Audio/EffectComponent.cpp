@@ -45,40 +45,13 @@ void EffectProcessComponent::makeStream(const Context& ctx)
         return dynamic_cast<ConstraintComponent*>(&comp);
     });
 
-    std::vector<AudioStream> inputStreams;
-    if(cst_comp_it != parent_cst->components.end())
-    {
-        auto cst_comp = static_cast<ConstraintComponent*>(&(*cst_comp_it));
+    // The constraint has the mix information, hence we request it to create
+    // the mix.
+    if(cst_comp_it == parent_cst->components.end())
+        return;
+    auto cst_comp = static_cast<ConstraintComponent*>(&(*cst_comp_it));
+    AudioStream sound = cst_comp->makeInputMix(this->process().id());
 
-        for(auto proc : cst_comp->processes())
-        {
-            if(auto scenar = dynamic_cast<ScenarioComponent*>(&proc.component))
-            {
-                ISCORE_ASSERT(scenar->getStream());
-                inputStreams.push_back(scenar->getStream());
-            }
-            else if(auto sound = dynamic_cast<SoundComponent*>(&proc.component))
-            {
-                ISCORE_ASSERT(sound->getStream());
-                inputStreams.push_back(sound->getStream());
-            }
-            else if(auto ret = dynamic_cast<ReturnComponent*>(&proc.component))
-            {
-                ISCORE_ASSERT(ret->getStream());
-                inputStreams.push_back(ret->getStream());
-            }
-            // TODO loop...
-        }
-    }
-
-    std::vector<AudioStream> returns;
-    transform(inputStreams, std::back_inserter(returns), [] (auto stream) {
-        return MakeReturn(stream);
-    });
-
-    auto mixed = MixNStreams(returns);
-
-    AudioStream sound = mixed;
     for(auto& fx : process().effects())
     {
         if(auto faust_fx = dynamic_cast<Effect::FaustEffectModel*>(&fx))

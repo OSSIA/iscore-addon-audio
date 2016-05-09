@@ -281,9 +281,6 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioRendererPtr MakeGroupPlayer();
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeGroupStream(AudioRendererPtr p);
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSinusStream(long length, float freq);
 
-ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSharedBus(AudioStream s);
-ISCORE_PLUGIN_AUDIO_EXPORT AudioStream JoinSharedBus(AudioStream bus_stream);
-
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSend(AudioStream s);
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeReturn(AudioStream s);
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeChannelSound(AudioStream s, double const * volume);
