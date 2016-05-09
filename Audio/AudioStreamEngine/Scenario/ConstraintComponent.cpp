@@ -83,14 +83,14 @@ void ConstraintComponent::makeStream(const Context& player)
                     const Id<Process::ProcessModel>&)> getTarget;
         if(mix)
         {
-            getTarget = [] (const auto&...) {
-                return one();
+            getTarget = [=] (const auto& in) {
+                return mix->mix_ptr(in);
             };
         }
         else
         {
-            getTarget = [=] (const auto& in) {
-                return mix->mix_ptr(in);
+            getTarget = [] (const auto&...) {
+                return one();
             };
         }
 
@@ -115,7 +115,7 @@ void ConstraintComponent::makeStream(const Context& player)
             }
             else if(auto loop = dynamic_cast<LoopComponent*>(&comp))
             {
-                //loops.insert(loop->id(), loop);
+                make_stream_impl(loop, proc);
             }
             else if(auto sound = dynamic_cast<SoundComponent*>(&comp))
             {
@@ -180,14 +180,14 @@ AudioStream ConstraintComponent::makeInputMix(
     std::function<const double*(const Id<Process::ProcessModel>&, const Id<Process::ProcessModel>&)> getTarget;
     if(mix)
     {
-        getTarget = [] (const auto&...) {
-            return one();
+        getTarget = [=] (const auto& in, const auto& target) {
+            return mix->mix_ptr(in, target);
         };
     }
     else
     {
-        getTarget = [=] (const auto& in, const auto& target) {
-            return mix->mix_ptr(in, target);
+        getTarget = [] (const auto&...) {
+            return one();
         };
     }
 
@@ -205,6 +205,10 @@ AudioStream ConstraintComponent::makeInputMix(
         if(auto scenar = dynamic_cast<ScenarioComponent*>(&proc.component))
         {
             make_stream_impl(scenar, proc);
+        }
+        else if(auto loop = dynamic_cast<LoopComponent*>(&proc.component))
+        {
+            make_stream_impl(loop, proc);
         }
         else if(auto sound = dynamic_cast<SoundComponent*>(&proc.component))
         {

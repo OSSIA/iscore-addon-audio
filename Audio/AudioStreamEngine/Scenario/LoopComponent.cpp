@@ -40,7 +40,6 @@ void LoopComponent::makeStream(const Context& ctx)
         auto start_con = con(cst.element, &Scenario::ConstraintModel::executionStarted,
                            this, [=] () {
             qDebug() << SetSymbolicDate(m_renderer, start_date, GetAudioPlayerDateInFrame(m_renderer));
-            ResetSound(m_player);
         }, Qt::QueuedConnection);
         m_synchros.insert(std::make_pair(cst.element.id(), std::make_pair(start_date, start_con)));
 
@@ -48,6 +47,7 @@ void LoopComponent::makeStream(const Context& ctx)
         auto stop_con = con(cst.element, &Scenario::ConstraintModel::executionStopped,
                                  this, [=] () {
             qDebug() << SetSymbolicDate(m_renderer, stop_date, GetAudioPlayerDateInFrame(m_renderer));
+            ResetSound(m_player);
         }, Qt::QueuedConnection);
         m_synchros.insert(std::make_pair(cst.element.id(), std::make_pair(stop_date, stop_con)));
 

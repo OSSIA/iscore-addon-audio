@@ -53,6 +53,10 @@ void SendComponent::makeStream(const Context& ctx)
         {
             inputStreams.push_back(scenar->getStream());
         }
+        else if(auto loop = dynamic_cast<LoopComponent*>(&proc.component))
+        {
+            inputStreams.push_back(loop->getStream());
+        }
         else if(auto sound = dynamic_cast<SoundComponent*>(&proc.component))
         {
             inputStreams.push_back(sound->getStream());
