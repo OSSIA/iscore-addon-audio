@@ -18,6 +18,7 @@ class ScenarioComponent final : public ProcessComponent_T<Scenario::ScenarioMode
            ScenarioComponentHierarchyManager<
                ScenarioComponent,
                system_t,
+               Scenario::ScenarioModel,
                ConstraintComponent,
                EventComponent,
                TimeNodeComponent,
@@ -68,7 +69,7 @@ class ScenarioComponent final : public ProcessComponent_T<Scenario::ScenarioMode
     private:
         hierarchy_t m_hm;
 
-        std::map<Id<Scenario::TimeNodeModel>, std::pair<SymbolicDate, QMetaObject::Connection>> m_synchros;
+        std::map<Id<Scenario::ConstraintModel>, std::pair<SymbolicDate, QMetaObject::Connection>> m_synchros;
         std::map<Id<Scenario::ConstraintModel>, AudioStream> m_csts;
 
         AudioRendererPtr m_renderer;

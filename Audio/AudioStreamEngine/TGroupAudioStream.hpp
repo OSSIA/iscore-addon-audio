@@ -2,6 +2,7 @@
 
 #include <3rdparty/libaudiostream/src/TAudioStream.h>
 #include <3rdparty/libaudiostream/src/renderer/TAudioRenderer.h>
+#include "TExpAudioMixer.h"
 
 #include <iostream>
 #include <memory>
@@ -107,6 +108,60 @@ struct TBufferManager
         }
 };
 
+// We save the original commands in order to reset them when in a loop.
+class TGroupAudioMixer : public TExpAudioMixer
+{
+    public:
+        using TExpAudioMixer::TExpAudioMixer;
+        std::map<TCommandPtr, audio_frame_t> fSavedStreamCommands, fSavedControlCommands;
+
+        void Reset()
+        {
+            for(auto pair : fSavedStreamCommands)
+            {
+                RemoveStreamCommand(pair.first);
+                TExpAudioMixer::AddStreamCommand(pair.first);
+
+                pair.first->fStartDate->setDate(pair.second);
+                auto stream_cmd = dynamic_cast<TStreamCommand*>(pair.first.getPointer());
+                if(stream_cmd)
+                    stream_cmd->fStream->Reset();
+            }
+
+            for(auto pair : fSavedControlCommands)
+            {
+                RemoveControlCommand(pair.first);
+                TExpAudioMixer::AddControlCommand(pair.first);
+
+                pair.first->fStartDate->setDate(pair.second);
+            }
+        }
+
+    private:
+        void AddStreamCommand(TCommandPtr command) override
+        {
+            TExpAudioMixer::AddStreamCommand(command);
+            fSavedStreamCommands.insert(std::make_pair(command, command->GetDate()));
+        }
+        void RemoveStreamCommand(TCommandPtr command) override
+        {
+            TExpAudioMixer::RemoveStreamCommand(command);
+            fSavedStreamCommands.erase(command);
+        }
+
+
+        void AddControlCommand(TCommandPtr command) override
+        {
+            TExpAudioMixer::AddControlCommand(command);
+            fSavedControlCommands.insert(std::make_pair(command, command->GetDate()));
+        }
+        void RemoveControlCommand(TCommandPtr command) override
+        {
+            TExpAudioMixer::RemoveControlCommand(command);
+            fSavedControlCommands.erase(command);
+        }
+};
+
 class TGroupRenderer :
         public TAudioRenderer
 {
@@ -177,12 +232,16 @@ class TSinusAudioStream final : public TAudioStream
 };
 
 
+
 class TPlayerAudioStream final : public TAudioStream
 {
         TGroupRenderer& fRenderer;
+        TGroupAudioMixer& fMixer;
 
     public:
-        TPlayerAudioStream(TGroupRenderer& renderer) ;
+        TPlayerAudioStream(
+                TGroupRenderer&,
+                TGroupAudioMixer&) ;
 
         ~TPlayerAudioStream() ;
 
@@ -213,6 +272,7 @@ class TSendAudioStream final :
         TBufferManager fBuffers;
         TSharedNonInterleavedAudioBuffer<float> fTempBuffer;
         int fCount = 0;
+
     public:
         TSendAudioStream(TAudioStreamPtr as):
             fBuffers{0, as->Channels(), TAudioGlobals::fBufferSize, TAudioGlobals::fSampleRate},
@@ -262,6 +322,7 @@ class TSendAudioStream final :
         void Reset() override
         {
             fCount = 0;
+            fStream->Reset();
         }
 
         // Length in frames
@@ -460,6 +521,7 @@ class TChannelAudioStream final :
 
         void Reset() override
         {
+            fStream->Reset();
         }
 
         // Length in frames
