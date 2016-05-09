@@ -4,6 +4,7 @@
 #include <3rdparty/libaudiostream/src/renderer/TAudioRenderer.h>
 #include "TExpAudioMixer.h"
 
+#include <set>
 #include <iostream>
 #include <memory>
 #include <cmath>
@@ -113,52 +114,97 @@ class TGroupAudioMixer : public TExpAudioMixer
 {
     public:
         using TExpAudioMixer::TExpAudioMixer;
-        std::map<TCommandPtr, audio_frame_t> fSavedStreamCommands, fSavedControlCommands;
+        struct CommandPack
+        {
+                TCommandPtr fCommand;
+                audio_frame_t fStart;
+                audio_frame_t fStop;
+
+                friend bool operator==(CommandPack lhs, TCommandPtr rhs)
+                {
+                    return lhs.fCommand == rhs;
+                }
+                friend bool operator!=(CommandPack lhs, TCommandPtr rhs)
+                {
+                    return lhs.fCommand != rhs;
+                }
+                friend bool operator<(CommandPack lhs, TCommandPtr rhs)
+                {
+                    return lhs.fCommand < rhs;
+                }
+                friend bool operator==(TCommandPtr lhs, CommandPack rhs)
+                {
+                    return lhs == rhs.fCommand;
+                }
+                friend bool operator!=(TCommandPtr lhs, CommandPack rhs)
+                {
+                    return lhs != rhs.fCommand;
+                }
+                friend bool operator<(TCommandPtr lhs, CommandPack rhs)
+                {
+                    return lhs < rhs.fCommand;
+                }
+                friend bool operator<(CommandPack lhs, CommandPack rhs)
+                {
+                    return lhs.fCommand < rhs.fCommand;
+                }
+        };
+
+        std::set<CommandPack, std::less<>>
+            fSavedStreamCommands,
+        fSavedControlCommands;
 
         void Reset()
         {
             for(auto pair : fSavedStreamCommands)
             {
-                RemoveStreamCommand(pair.first);
-                TExpAudioMixer::AddStreamCommand(pair.first);
+                RemoveStreamCommand(pair.fCommand);
 
-                pair.first->fStartDate->setDate(pair.second);
-                auto stream_cmd = dynamic_cast<TStreamCommand*>(pair.first.getPointer());
+                pair.fCommand->fStartDate->setDate(pair.fStart);
+                auto stream_cmd = dynamic_cast<TStreamCommand*>(pair.fCommand.getPointer());
                 if(stream_cmd)
+                {
                     stream_cmd->fStream->Reset();
+                    stream_cmd->fStream->SetPos(0);
+                    stream_cmd->fPos = 0;
+                }
+                TExpAudioMixer::AddStreamCommand(pair.fCommand);
             }
 
             for(auto pair : fSavedControlCommands)
             {
-                RemoveControlCommand(pair.first);
-                TExpAudioMixer::AddControlCommand(pair.first);
+                RemoveControlCommand(pair.fCommand);
 
-                pair.first->fStartDate->setDate(pair.second);
+                pair.fCommand->fStartDate->setDate(pair.fStart);
+
+                TExpAudioMixer::AddControlCommand(pair.fCommand);
             }
+
+            SetPos(0);
         }
 
     private:
         void AddStreamCommand(TCommandPtr command) override
         {
             TExpAudioMixer::AddStreamCommand(command);
-            fSavedStreamCommands.insert(std::make_pair(command, command->GetDate()));
+            fSavedStreamCommands.insert({command, command->GetDate(), LONG_MAX});
         }
         void RemoveStreamCommand(TCommandPtr command) override
         {
             TExpAudioMixer::RemoveStreamCommand(command);
-            fSavedStreamCommands.erase(command);
+            fSavedStreamCommands.erase(fSavedStreamCommands.find(command));
         }
 
 
         void AddControlCommand(TCommandPtr command) override
         {
             TExpAudioMixer::AddControlCommand(command);
-            fSavedControlCommands.insert(std::make_pair(command, command->GetDate()));
+            fSavedControlCommands.insert({command, command->GetDate(), LONG_MAX});
         }
         void RemoveControlCommand(TCommandPtr command) override
         {
             TExpAudioMixer::RemoveControlCommand(command);
-            fSavedControlCommands.erase(command);
+            fSavedControlCommands.erase(fSavedStreamCommands.find(command));
         }
 };
 
@@ -237,6 +283,7 @@ class TPlayerAudioStream final : public TAudioStream
 {
         TGroupRenderer& fRenderer;
         TGroupAudioMixer& fMixer;
+        std::atomic_bool fScheduleReset{false};
 
     public:
         TPlayerAudioStream(

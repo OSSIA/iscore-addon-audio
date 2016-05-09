@@ -216,6 +216,12 @@ TPlayerAudioStream::~TPlayerAudioStream()
 long TPlayerAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos)
 {
     assert_stream(framesNum, framePos);
+    if(fScheduleReset)
+    {
+        fRenderer.Stop();
+        fMixer.Reset();
+        fScheduleReset = false;
+    }
 
     float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
 
@@ -231,8 +237,7 @@ long TPlayerAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos
 
 void TPlayerAudioStream::Reset()
 {
-    fRenderer.Stop();
-    fMixer.Reset();
+    fScheduleReset = true;
 }
 
 TAudioStreamPtr TPlayerAudioStream::CutBegin(long frames)
