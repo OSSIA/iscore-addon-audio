@@ -29,35 +29,26 @@ void ScenarioComponent::makeStream(const Context& ctx)
 
     m_renderer = MakeGroupPlayer();
 
-    auto& scenario = process();
-
-    // TODO FIXME we have to generate a symbolic date for each *condition*.
-    // First generate a symbolic date for each of the timenode (fixed if there is no trigger ?)
-    // TODO we should use directly the OSSIA execution components instead.
-    // But for this we have to ensure that they exist
-    // Hence we have to introduce a dependency graph for the construction of components trees.
-    for(Scenario::TimeNodeModel& tn : scenario.timeNodes)
-    {
-        auto date = GenSymbolicDate(m_renderer);
-        auto con = connect(&tn, &Scenario::TimeNodeModel::triggeredByEngine,
-                           this, [=] () {
-            qDebug() << SetSymbolicDate(m_renderer, date, GetAudioPlayerDateInFrame(m_renderer));
-        }, Qt::QueuedConnection);
-        m_synchros.insert(std::make_pair(tn.id(), std::make_pair(date, con)));
-    }
-
-    // Then create a stream for all the constraints
-    // and set the start / end of each parent stream of the constraint
-    // to the symbolic date of the trigger
     for(const hierarchy_t::ConstraintPair& cst : m_hm.constraints())
     {
         auto sound = cst.component.getStream();
         if(!sound)
             continue;
 
-        // Optimize me by storing the time node ids beforehand.
-        auto t_start = m_synchros.at(Scenario::startEvent(cst.element, scenario).timeNode()).first;
-        auto t_end = m_synchros.at(Scenario::endEvent(cst.element, scenario).timeNode()).first;
+        auto start_date = GenSymbolicDate(m_renderer);
+        auto start_con = con(cst.element, &Scenario::ConstraintModel::executionStarted,
+                           this, [=] () {
+            qDebug() << SetSymbolicDate(m_renderer, start_date, GetAudioPlayerDateInFrame(m_renderer));
+        }, Qt::QueuedConnection);
+        m_synchros.insert(std::make_pair(cst.element.id(), std::make_pair(start_date, start_con)));
+
+        auto stop_date = GenSymbolicDate(m_renderer);
+        auto stop_con = con(cst.element, &Scenario::ConstraintModel::executionStopped,
+                                 this, [=] () {
+            qDebug() << SetSymbolicDate(m_renderer, stop_date, GetAudioPlayerDateInFrame(m_renderer));
+        }, Qt::QueuedConnection);
+        m_synchros.insert(std::make_pair(cst.element.id(), std::make_pair(stop_date, stop_con)));
+
         m_csts.insert(
                     std::make_pair(
                         cst.element.id(),
@@ -66,8 +57,8 @@ void ScenarioComponent::makeStream(const Context& ctx)
                     );
         qDebug() << "Starting" << cst.element.metadata.name();
 
-        StartSound(m_renderer, sound, t_start);
-        StopSound(m_renderer, sound, t_end);
+        StartSound(m_renderer, sound, start_date);
+        StopSound(m_renderer, sound, stop_date);
     }
 
     m_stream = MakeSend(MakeGroupStream(m_renderer));

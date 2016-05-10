@@ -11,6 +11,7 @@
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
 #include <Audio/AudioStreamEngine/Context.hpp>
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponentFactory.hpp>
+#include <Audio/AudioStreamEngine/Scenario/LoopComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/EffectComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Audio/SoundComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Audio/MixComponentFactory.hpp>
@@ -20,10 +21,20 @@
 #include <Audio/AudioStreamEngine/Audio/SoundComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/MixComponent.hpp>
 #include <Audio/AudioStreamEngine/Utility.hpp>
+#include <Audio/AudioStreamEngine/GroupAudioStream.h>
 namespace Audio
 {
 namespace AudioStreamEngine
 {
+
+static const double* zero() {
+    static const double val = 0;
+    return &val;
+}
+static const double* one() {
+    static const double val = 1;
+    return &val;
+}
 
 const iscore::Component::Key&ConstraintComponent::key() const
 {
@@ -61,88 +72,80 @@ void ConstraintComponent::makeStream(const Context& player)
     if(cst.processes.empty())
     {
         // Silence
-        /*
-        auto sound = MakeNullSound(cst.duration.maxDuration().msec());
-        m_stream = sound;
-        */
     }
     else
     {
         using namespace std;
-        // Input mix
-        vector<pair<Scenario::ScenarioModel*, ScenarioComponent*>> scenarios;
-        //map<Id<Scenario::ScenarioModel>, Loop::ProcessModel*> loops;
-        vector<pair<Sound::ProcessModel*, SoundComponent*>> sounds;
-        vector<pair<Effect::ProcessModel*, EffectComponent*>> sfxs;
-        vector<pair<Mix::ProcessModel*, MixComponent*>> mixs;
+        std::vector<AudioStream> inputStreams;
 
-        // For now we just put all the sound streams in parallel...
-        // We have to take the mix volume into account.
-        std::vector<AudioStream> soundStreams;
+        auto mix = findMix();
+        std::function<const double*(
+                    const Id<Process::ProcessModel>&)> getTarget;
+        if(mix)
+        {
+            getTarget = [=] (const auto& in) {
+                return mix->mix_ptr(in);
+            };
+        }
+        else
+        {
+            getTarget = [] (const auto&...) {
+                return one();
+            };
+        }
+
+        auto make_stream_impl = [&] (auto component, const auto& proc)
+        {
+            if(component->getStream())
+            {
+                auto channel = MakeChannelSound(
+                                   component->getStream(),
+                                   getTarget(proc.id()));
+                inputStreams.push_back(channel);
+            }
+        };
+
         for(auto& proc_pair :  m_baseComponent.processes())
         {
             auto& proc = proc_pair.process;
             auto& comp = proc_pair.component;
-            if(auto scenar = dynamic_cast<Scenario::ScenarioModel*>(&proc))
+            if(auto scenar = dynamic_cast<ScenarioComponent*>(&comp))
             {
-                auto stream = safe_cast<ScenarioComponent*>(&comp)->getStream();
-                if(stream)
-                {
-                    qDebug() << "adding a scenario";
-                    soundStreams.push_back(stream);
-                }
+                make_stream_impl(scenar, proc);
             }
-            else if(auto loop = dynamic_cast<Loop::ProcessModel*>(&proc))
+            else if(auto loop = dynamic_cast<LoopComponent*>(&comp))
             {
-                //loops.insert(loop->id(), loop);
+                make_stream_impl(loop, proc);
             }
-            else if(auto sound = dynamic_cast<Sound::ProcessModel*>(&proc))
+            else if(auto sound = dynamic_cast<SoundComponent*>(&comp))
             {
-                auto stream = safe_cast<SoundComponent*>(&comp)->getStream();
-                if(stream)
-                {
-                    qDebug() << "adding a sound";
-                    soundStreams.push_back(stream);
-                }
+                make_stream_impl(sound, proc);
             }
-            else if(auto sfx = dynamic_cast<Effect::ProcessModel*>(&proc))
+            else if(auto sfx = dynamic_cast<EffectProcessComponent*>(&comp))
             {
                 // TODO if there is only an effect and no input,
                 // we should feed it at least some silence.
-
-                auto stream = safe_cast<EffectComponent*>(&comp)->getStream();
+                make_stream_impl(sfx, proc);
+            }
+            else if(auto ret = dynamic_cast<ReturnComponent*>(&comp))
+            {
+                make_stream_impl(ret, proc);
+            }
+            else if(auto send = dynamic_cast<SendComponent*>(&comp))
+            {
+                AudioStream stream = send->getStream();
                 if(stream)
                 {
-                    qDebug() << "adding a sfx";
-                    soundStreams.push_back(stream);
+                    auto channel = MakeChannelSound(stream, zero());
+                    //qDebug() << "adding a send";
+                   // auto faust_fx = MakeFaustAudioEffect("process = 0 * _;", "", "");
+                   // auto fx_sound = MakeEffectSound(stream, faust_fx, 0, 0);
+                    inputStreams.push_back(channel);
                 }
-            }
-            else if(auto ret = dynamic_cast<Return::ProcessModel*>(&proc))
-            {
-                auto stream = safe_cast<ReturnComponent*>(&comp)->getStream();
-                if(stream)
-                {
-                    qDebug() << "adding a return";
-                    soundStreams.push_back(stream);
-                }
-            }
-            else if(auto send = dynamic_cast<Send::ProcessModel*>(&proc))
-            {
-                AudioStream stream = safe_cast<SendComponent*>(&comp)->getStream();
-                if(stream)
-                {
-                    qDebug() << "adding a send";
-                    auto faust_fx = MakeFaustAudioEffect("process = 0 * _;", "", "");
-                    auto fx_sound = MakeEffectSound(stream, faust_fx, 0, 0);
-                    soundStreams.push_back(fx_sound);
-                }
-            }
-            else if(auto mix = dynamic_cast<Mix::ProcessModel*>(&proc))
-            {
             }
         }
 
-        m_stream = MixNStreams(soundStreams);
+        m_stream = MixNStreams(inputStreams);
         return;
 
         // TODO this does not work :
@@ -162,6 +165,66 @@ void ConstraintComponent::makeStream(const Context& player)
     // Then look for the "Mix" process and do the mix
 }
 
+AudioStream ConstraintComponent::makeInputMix(
+        const Id<Process::ProcessModel>& target)
+{
+    std::vector<AudioStream> inputStreams;
+
+    // First fetch the type of the target.
+    // If it's an Fx...
+    // If it's a Send...
+
+    // Then : if there is no Mix process, everything has a 1 volume.
+    // Else we use the Mix information.
+    auto mix = findMix();
+    std::function<const double*(const Id<Process::ProcessModel>&, const Id<Process::ProcessModel>&)> getTarget;
+    if(mix)
+    {
+        getTarget = [=] (const auto& in, const auto& target) {
+            return mix->mix_ptr(in, target);
+        };
+    }
+    else
+    {
+        getTarget = [] (const auto&...) {
+            return one();
+        };
+    }
+
+    auto make_stream_impl = [&] (auto component, const auto& proc)
+    {
+        ISCORE_ASSERT(component->getStream());
+        auto channel = MakeChannelSound(
+                           MakeReturn(component->getStream()),
+                           getTarget(proc.process.id(), target));
+        inputStreams.push_back(channel);
+    };
+
+    for(auto proc : processes())
+    {
+        if(auto scenar = dynamic_cast<ScenarioComponent*>(&proc.component))
+        {
+            make_stream_impl(scenar, proc);
+        }
+        else if(auto loop = dynamic_cast<LoopComponent*>(&proc.component))
+        {
+            make_stream_impl(loop, proc);
+        }
+        else if(auto sound = dynamic_cast<SoundComponent*>(&proc.component))
+        {
+            make_stream_impl(sound, proc);
+        }
+        else if(auto ret = dynamic_cast<ReturnComponent*>(&proc.component))
+        {
+            make_stream_impl(ret, proc);
+        }
+        // TODO loop...
+    }
+
+    return MixNStreams(inputStreams);
+
+}
+
 
 ProcessComponent*ConstraintComponent::make_processComponent(
         const Id<iscore::Component>& id,
@@ -179,6 +242,14 @@ void ConstraintComponent::removing(
         const Process::ProcessModel& cst,
         const ProcessComponent& comp)
 {
+}
+
+Mix::ProcessModel* ConstraintComponent::findMix() const
+{
+    auto it = find_if(processes(), [] (auto val) {
+        return dynamic_cast<Mix::ProcessModel*>(&val.process);
+    });
+    return it != processes().end() ? static_cast<Mix::ProcessModel*>(&it->process) : nullptr;
 }
 
 

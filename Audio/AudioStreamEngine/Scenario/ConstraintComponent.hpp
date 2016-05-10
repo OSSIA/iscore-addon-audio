@@ -5,6 +5,10 @@
 
 namespace Audio
 {
+namespace Mix
+{
+class ProcessModel;
+}
 namespace AudioStreamEngine
 {
 class ConstraintComponent final :
@@ -37,6 +41,8 @@ class ConstraintComponent final :
         void makeStream(const Context& player);
         AudioStream getStream() const { return m_stream; }
 
+        AudioStream makeInputMix(const Id<Process::ProcessModel>& target);
+
         ProcessComponent* make_processComponent(
                 const Id<Component> & id,
                 ProcessComponentFactory& factory,
@@ -51,6 +57,8 @@ class ConstraintComponent final :
         { return m_baseComponent.processes(); }
 
     private:
+        Mix::ProcessModel* findMix() const;
+
         parent_t m_baseComponent;
         double m_shift{1.0};
         double m_stretch{1.0};

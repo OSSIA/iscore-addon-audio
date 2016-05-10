@@ -2,7 +2,9 @@
 
 #include <3rdparty/libaudiostream/src/TAudioStream.h>
 #include <3rdparty/libaudiostream/src/renderer/TAudioRenderer.h>
+#include "TExpAudioMixer.h"
 
+#include <set>
 #include <iostream>
 #include <memory>
 #include <cmath>
@@ -107,6 +109,105 @@ struct TBufferManager
         }
 };
 
+// We save the original commands in order to reset them when in a loop.
+class TGroupAudioMixer : public TExpAudioMixer
+{
+    public:
+        using TExpAudioMixer::TExpAudioMixer;
+        struct CommandPack
+        {
+                TCommandPtr fCommand;
+                audio_frame_t fStart;
+                audio_frame_t fStop;
+
+                friend bool operator==(CommandPack lhs, TCommandPtr rhs)
+                {
+                    return lhs.fCommand == rhs;
+                }
+                friend bool operator!=(CommandPack lhs, TCommandPtr rhs)
+                {
+                    return lhs.fCommand != rhs;
+                }
+                friend bool operator<(CommandPack lhs, TCommandPtr rhs)
+                {
+                    return lhs.fCommand < rhs;
+                }
+                friend bool operator==(TCommandPtr lhs, CommandPack rhs)
+                {
+                    return lhs == rhs.fCommand;
+                }
+                friend bool operator!=(TCommandPtr lhs, CommandPack rhs)
+                {
+                    return lhs != rhs.fCommand;
+                }
+                friend bool operator<(TCommandPtr lhs, CommandPack rhs)
+                {
+                    return lhs < rhs.fCommand;
+                }
+                friend bool operator<(CommandPack lhs, CommandPack rhs)
+                {
+                    return lhs.fCommand < rhs.fCommand;
+                }
+        };
+
+        std::set<CommandPack, std::less<>>
+            fSavedStreamCommands,
+        fSavedControlCommands;
+
+        void Reset()
+        {
+            for(auto pair : fSavedStreamCommands)
+            {
+                RemoveStreamCommand(pair.fCommand);
+
+                pair.fCommand->fStartDate->setDate(pair.fStart);
+                auto stream_cmd = dynamic_cast<TStreamCommand*>(pair.fCommand.getPointer());
+                if(stream_cmd)
+                {
+                    stream_cmd->fStream->Reset();
+                    stream_cmd->fStream->SetPos(0);
+                    stream_cmd->fPos = 0;
+                }
+                TExpAudioMixer::AddStreamCommand(pair.fCommand);
+            }
+
+            for(auto pair : fSavedControlCommands)
+            {
+                RemoveControlCommand(pair.fCommand);
+
+                pair.fCommand->fStartDate->setDate(pair.fStart);
+
+                TExpAudioMixer::AddControlCommand(pair.fCommand);
+            }
+
+            SetPos(0);
+        }
+
+    private:
+        void AddStreamCommand(TCommandPtr command) override
+        {
+            TExpAudioMixer::AddStreamCommand(command);
+            fSavedStreamCommands.insert({command, command->GetDate(), LONG_MAX});
+        }
+        void RemoveStreamCommand(TCommandPtr command) override
+        {
+            TExpAudioMixer::RemoveStreamCommand(command);
+            fSavedStreamCommands.erase(fSavedStreamCommands.find(command));
+        }
+
+
+        void AddControlCommand(TCommandPtr command) override
+        {
+            TExpAudioMixer::AddControlCommand(command);
+            fSavedControlCommands.insert({command, command->GetDate(), LONG_MAX});
+        }
+        void RemoveControlCommand(TCommandPtr command) override
+        {
+            TExpAudioMixer::RemoveControlCommand(command);
+            fSavedControlCommands.erase(fSavedStreamCommands.find(command));
+        }
+};
+
 class TGroupRenderer :
         public TAudioRenderer
 {
@@ -177,12 +278,17 @@ class TSinusAudioStream final : public TAudioStream
 };
 
 
+
 class TPlayerAudioStream final : public TAudioStream
 {
         TGroupRenderer& fRenderer;
+        TGroupAudioMixer& fMixer;
+        std::atomic_bool fScheduleReset{false};
 
     public:
-        TPlayerAudioStream(TGroupRenderer& renderer) ;
+        TPlayerAudioStream(
+                TGroupRenderer&,
+                TGroupAudioMixer&) ;
 
         ~TPlayerAudioStream() ;
 
@@ -213,6 +319,7 @@ class TSendAudioStream final :
         TBufferManager fBuffers;
         TSharedNonInterleavedAudioBuffer<float> fTempBuffer;
         int fCount = 0;
+
     public:
         TSendAudioStream(TAudioStreamPtr as):
             fBuffers{0, as->Channels(), TAudioGlobals::fBufferSize, TAudioGlobals::fSampleRate},
@@ -262,6 +369,7 @@ class TSendAudioStream final :
         void Reset() override
         {
             fCount = 0;
+            fStream->Reset();
         }
 
         // Length in frames
@@ -460,6 +568,7 @@ class TChannelAudioStream final :
 
         void Reset() override
         {
+            fStream->Reset();
         }
 
         // Length in frames

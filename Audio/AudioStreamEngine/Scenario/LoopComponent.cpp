@@ -9,17 +9,61 @@ namespace AudioStreamEngine
 
 LoopComponent::LoopComponent(
         const Id<iscore::Component>& id,
-        Scenario::ScenarioModel& scenario,
+        Loop::ProcessModel& scenario,
         const LoopComponent::system_t& doc,
         const iscore::DocumentContext& ctx,
         QObject* parent_obj):
-    ProcessComponent_T{scenario, id, "ScenarioComponent", parent_obj},
+    ProcessComponent_T{scenario, id, "LoopComponent", parent_obj},
     m_hm{*this, scenario, doc, ctx, this}
 {
 }
 
 void LoopComponent::makeStream(const Context& ctx)
 {
+    for(auto& elt : m_synchros)
+    {
+        QObject::disconnect(elt.second.second);
+    }
+    m_synchros.clear();
+    m_csts.clear();
+
+    m_renderer = MakeGroupPlayer();
+    m_player = MakeGroupStream(m_renderer);
+
+    for(const hierarchy_t::ConstraintPair& cst : m_hm.constraints())
+    {
+        auto sound = cst.component.getStream();
+        if(!sound)
+            continue;
+
+        auto start_date = GenSymbolicDate(m_renderer);
+        auto start_con = con(cst.element, &Scenario::ConstraintModel::executionStarted,
+                           this, [=] () {
+            qDebug() << SetSymbolicDate(m_renderer, start_date, GetAudioPlayerDateInFrame(m_renderer));
+        }, Qt::QueuedConnection);
+        m_synchros.insert(std::make_pair(cst.element.id(), std::make_pair(start_date, start_con)));
+
+        auto stop_date = GenSymbolicDate(m_renderer);
+        auto stop_con = con(cst.element, &Scenario::ConstraintModel::executionStopped,
+                                 this, [=] () {
+            qDebug() << SetSymbolicDate(m_renderer, stop_date, GetAudioPlayerDateInFrame(m_renderer));
+            ResetSound(m_player);
+        }, Qt::QueuedConnection);
+        m_synchros.insert(std::make_pair(cst.element.id(), std::make_pair(stop_date, stop_con)));
+
+        m_csts.insert(
+                    std::make_pair(
+                        cst.element.id(),
+                        sound
+                        )
+                    );
+        qDebug() << "Starting" << cst.element.metadata.name();
+
+        StartSound(m_renderer, sound, start_date);
+        StopSound(m_renderer, sound, stop_date);
+    }
+
+    m_stream = MakeSend(m_player);
 }
 
 template<>

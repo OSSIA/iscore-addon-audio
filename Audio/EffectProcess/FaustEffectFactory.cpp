@@ -1,4 +1,5 @@
 #include "FaustEffectFactory.hpp"
+#include "FaustEffectModel.hpp"
 namespace Audio
 {
 namespace Effect
@@ -11,11 +12,10 @@ QString FaustEffectFactory::prettyName() const
 
 EffectModel*FaustEffectFactory::makeModel(
         const QString& info,
-        const Id<EffectModel>&,
+        const Id<EffectModel>& id,
         QObject* parent) const
 {
-    ISCORE_TODO;
-    return nullptr;
+    return new FaustEffectModel{info, id, parent};
 }
 
 EffectModel*FaustEffectFactory::load(

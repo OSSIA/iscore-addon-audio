@@ -22,7 +22,7 @@ EffectComponentFactory::make(
         const iscore::DocumentContext& ctx,
         QObject* paren_objt) const
 {
-    return new EffectComponent(id, static_cast<Effect::ProcessModel&>(proc), doc, ctx, paren_objt);
+    return new EffectProcessComponent(id, static_cast<Effect::ProcessModel&>(proc), doc, ctx, paren_objt);
 }
 
 }

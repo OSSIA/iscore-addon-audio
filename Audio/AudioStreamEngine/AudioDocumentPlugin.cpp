@@ -41,7 +41,7 @@ struct AudioDependencyGraph
         using node_t = eggs::variant<
             ConstraintComponent*,
             ScenarioComponent*,
-            EffectComponent*,
+            EffectProcessComponent*,
             LoopComponent*,
             SendComponent*,
             ReturnComponent*,
@@ -168,7 +168,7 @@ struct AudioDependencyGraph
                     generators.push_back(sub_res);
                     processes.push_back(sub_res);
                 }
-                else if(auto fx = dynamic_cast<EffectComponent*>(&proc))
+                else if(auto fx = dynamic_cast<EffectProcessComponent*>(&proc))
                 {
                     auto sub_res = visit(*fx);
                     generators.push_back(sub_res);
@@ -241,7 +241,7 @@ struct AudioDependencyGraph
             return res;
         }
 
-        vtx_t visit(EffectComponent& proc)
+        vtx_t visit(EffectProcessComponent& proc)
         {
             // Create a return and a send
             return boost::add_vertex(&proc, m_graph);
@@ -253,6 +253,12 @@ struct AudioDependencyGraph
             auto res = boost::add_vertex(&proc, m_graph);
 
             // Create a node for the group player
+            for(auto& constraint : proc.constraints())
+            {
+                auto cst_vtx = visit(constraint.component);
+
+                boost::add_edge(cst_vtx, res, m_graph);
+            }
 
             return res;
         }

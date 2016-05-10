@@ -77,6 +77,16 @@ class ProcessModel final :
         double mix(const Id<Process::ProcessModel>& p1) const
         { return mix(DirectMix{p1, {}}); }
 
+        const double* mix_ptr(const Routing&) const;
+        const double* mix_ptr(
+                const Id<Process::ProcessModel>& p1,
+                const Id<Process::ProcessModel>& p2) const
+        { return mix_ptr(Routing{p1, p2, {}}); }
+
+        const double* mix_ptr(const DirectMix&) const;
+        const double* mix_ptr(const Id<Process::ProcessModel>& p1) const
+        { return mix_ptr(DirectMix{p1, {}}); }
+
         void updateRouting(const Routing&);
         void updateDirectMix(const DirectMix&);
 

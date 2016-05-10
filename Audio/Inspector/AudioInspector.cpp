@@ -2,7 +2,10 @@
 #include <Audio/Commands/ChangeAudioFile.hpp>
 #include <Audio/Commands/ChangeSend.hpp>
 #include <Audio/Commands/UpdateMix.hpp>
+#include <Audio/Commands/InsertEffect.hpp>
+#include <Audio/Commands/EditFaustEffect.hpp>
 #include <Audio/EffectProcess/FaustEffectModel.hpp>
+#include <Audio/EffectProcess/FaustEffectFactory.hpp>
 #include <iscore/document/DocumentContext.hpp>
 #include <iscore/tools/ModelPathSerialization.hpp>
 #include <Scenario/Document/Constraint/ConstraintModel.hpp>
@@ -367,37 +370,6 @@ InspectorWidget::InspectorWidget(
 
 namespace Effect
 {
-InspectorWidget::InspectorWidget(
-        const Effect::ProcessModel &object,
-        const iscore::DocumentContext &doc,
-        QWidget *parent):
-    InspectorWidgetDelegate_T {object, parent},
-    m_dispatcher{doc.commandStack}
-{
-    setObjectName("EffectInspectorWidget");
-
-    auto lay = new QHBoxLayout;
-
-    con(process(), &Effect::ProcessModel::effectsChanged,
-            this, &InspectorWidget::recreate);
-
-    recreate();
-
-    // Add an effect
-    m_add = new QPushButton{tr("Add")};
-    connect(m_add, &QPushButton::pressed,
-            this, [&] () {
-
-    });
-
-    // Remove an effect
-    // Effects changed
-    // Effect list
-    // Double-click : open editor window.
-
-    this->setLayout(lay);
-}
-
 struct FaustEditDialog : public QDialog
 {
         const FaustEffectModel& m_effect;
@@ -428,9 +400,48 @@ struct FaustEditDialog : public QDialog
         }
 };
 
+InspectorWidget::InspectorWidget(
+        const Effect::ProcessModel &object,
+        const iscore::DocumentContext &doc,
+        QWidget *parent):
+    InspectorWidgetDelegate_T {object, parent},
+    m_dispatcher{doc.commandStack}
+{
+    setObjectName("EffectInspectorWidget");
+
+    auto lay = new QHBoxLayout;
+    m_list = new QListWidget;
+    lay->addWidget(m_list);
+    con(process(), &Effect::ProcessModel::effectsChanged,
+        this, &InspectorWidget::recreate);
+
+    recreate();
+
+    // Add an effect
+    m_add = new QPushButton{tr("Add")};
+    connect(m_add, &QPushButton::pressed,
+            this, [=] () {
+
+        m_dispatcher.submitCommand(
+                    new Commands::InsertEffect{
+                        process(),
+                        FaustEffectFactory::static_concreteFactoryKey(),
+                        "",
+                        0});
+    });
+
+    lay->addWidget(m_add);
+    // Remove an effect
+    // Effects changed
+    // Effect list
+    // Double-click : open editor window.
+
+    this->setLayout(lay);
+}
+
 void InspectorWidget::recreate()
 {
-    m_list = new QListWidget;
+    m_list->clear();
 
     for(const auto& fx_id : process().effectsOrder())
     {
@@ -453,16 +464,13 @@ void InspectorWidget::recreate()
             this, [=] (QListWidgetItem* item) {
         // Make a text dialog to edit faust program.
         auto id = item->data(Qt::UserRole).value<Id<EffectModel>>();
-
         auto faust = safe_cast<FaustEffectModel*>(&process().effects().at(id));
 
         FaustEditDialog edit{*faust};
         auto res = edit.exec();
         if(res)
         {
-            edit.text();
-            //m_dispatcher.submitCommand(new Commands::EditFaust{object, dial.selectedSend()});
-
+            m_dispatcher.submitCommand(new Commands::EditFaustEffect{*faust, edit.text()});
         }
     });
 

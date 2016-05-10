@@ -63,6 +63,21 @@ double ProcessModel::mix(const DirectMix & dmx) const
     return findDirectMix(dmx)->mix;
 }
 
+
+const double* ProcessModel::mix_ptr(const Routing & r) const
+{
+    auto it = m_routings.find(r);
+    ISCORE_ASSERT(it != m_routings.end());
+
+    return &(it->mix);
+}
+
+const double* ProcessModel::mix_ptr(const DirectMix & dmx) const
+{
+    return &(findDirectMix(dmx)->mix);
+}
+
+
 void ProcessModel::updateRouting(const Routing & r)
 {
     auto it = m_routings.find(r);
