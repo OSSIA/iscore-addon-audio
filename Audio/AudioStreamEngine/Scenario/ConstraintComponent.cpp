@@ -137,9 +137,6 @@ void ConstraintComponent::makeStream(const Context& player)
                 if(stream)
                 {
                     auto channel = MakeChannelSound(stream, zero());
-                    //qDebug() << "adding a send";
-                   // auto faust_fx = MakeFaustAudioEffect("process = 0 * _;", "", "");
-                   // auto fx_sound = MakeEffectSound(stream, faust_fx, 0, 0);
                     inputStreams.push_back(channel);
                 }
             }

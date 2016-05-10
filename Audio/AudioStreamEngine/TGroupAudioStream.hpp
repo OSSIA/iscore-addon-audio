@@ -117,34 +117,34 @@ class TGroupAudioMixer : public TExpAudioMixer
         struct CommandPack
         {
                 TCommandPtr fCommand;
-                audio_frame_t fStart;
-                audio_frame_t fStop;
+                mutable audio_frame_t fStart;
+                mutable audio_frame_t fStop;
 
-                friend bool operator==(CommandPack lhs, TCommandPtr rhs)
+                friend bool operator==(const CommandPack& lhs, TCommandPtr rhs)
                 {
                     return lhs.fCommand == rhs;
                 }
-                friend bool operator!=(CommandPack lhs, TCommandPtr rhs)
+                friend bool operator!=(const CommandPack& lhs, TCommandPtr rhs)
                 {
                     return lhs.fCommand != rhs;
                 }
-                friend bool operator<(CommandPack lhs, TCommandPtr rhs)
+                friend bool operator<(const CommandPack& lhs, TCommandPtr rhs)
                 {
                     return lhs.fCommand < rhs;
                 }
-                friend bool operator==(TCommandPtr lhs, CommandPack rhs)
+                friend bool operator==(TCommandPtr lhs, const CommandPack& rhs)
                 {
                     return lhs == rhs.fCommand;
                 }
-                friend bool operator!=(TCommandPtr lhs, CommandPack rhs)
+                friend bool operator!=(TCommandPtr lhs, const CommandPack& rhs)
                 {
                     return lhs != rhs.fCommand;
                 }
-                friend bool operator<(TCommandPtr lhs, CommandPack rhs)
+                friend bool operator<(TCommandPtr lhs, const CommandPack& rhs)
                 {
                     return lhs < rhs.fCommand;
                 }
-                friend bool operator<(CommandPack lhs, CommandPack rhs)
+                friend bool operator<(const CommandPack& lhs, const CommandPack& rhs)
                 {
                     return lhs.fCommand < rhs.fCommand;
                 }
@@ -158,22 +158,23 @@ class TGroupAudioMixer : public TExpAudioMixer
         {
             for(auto pair : fSavedStreamCommands)
             {
-                RemoveStreamCommand(pair.fCommand);
+                TExpAudioMixer::RemoveStreamCommand(pair.fCommand);
 
-                pair.fCommand->fStartDate->setDate(pair.fStart);
-                auto stream_cmd = dynamic_cast<TStreamCommand*>(pair.fCommand.getPointer());
-                if(stream_cmd)
+                auto cmd = dynamic_cast<TStreamCommand*>(pair.fCommand.getPointer());
+                if(cmd)
                 {
-                    stream_cmd->fStream->Reset();
-                    stream_cmd->fStream->SetPos(0);
-                    stream_cmd->fPos = 0;
+                    cmd->fStartDate->setDate(pair.fStart);
+                    cmd->fStopDate->setDate(pair.fStop);
+                    //cmd->fStream->Reset();
+                    cmd->fStream->SetPos(0);
+                    cmd->fPos = 0;
                 }
                 TExpAudioMixer::AddStreamCommand(pair.fCommand);
             }
 
             for(auto pair : fSavedControlCommands)
             {
-                RemoveControlCommand(pair.fCommand);
+                TExpAudioMixer::RemoveControlCommand(pair.fCommand);
 
                 pair.fCommand->fStartDate->setDate(pair.fStart);
 
@@ -188,6 +189,14 @@ class TGroupAudioMixer : public TExpAudioMixer
         {
             TExpAudioMixer::AddStreamCommand(command);
             fSavedStreamCommands.insert({command, command->GetDate(), LONG_MAX});
+        }
+        void StopStreamCommand(TStreamCommandPtr command, SymbolicDate date) override
+        {
+            TExpAudioMixer::StopStreamCommand(command, date);
+
+            auto it = fSavedStreamCommands.find(command);
+            assert(it != fSavedStreamCommands.end());
+            it->fStop = date->GetDate();
         }
         void RemoveStreamCommand(TCommandPtr command) override
         {
@@ -313,8 +322,7 @@ class TPlayerAudioStream final : public TAudioStream
  * Calls Process on the watched stream and make an inner copy.
  */
 class TSendAudioStream final :
-        public TAudioStream,
-        public TUnaryAudioStream
+        public TDecoratedAudioStream
 {
         TBufferManager fBuffers;
         TSharedNonInterleavedAudioBuffer<float> fTempBuffer;
@@ -322,10 +330,10 @@ class TSendAudioStream final :
 
     public:
         TSendAudioStream(TAudioStreamPtr as):
+            TDecoratedAudioStream{as},
             fBuffers{0, as->Channels(), TAudioGlobals::fBufferSize, TAudioGlobals::fSampleRate},
             fTempBuffer{fBuffers.fOutputBuffer, fBuffers.fBufferSize, fBuffers.fOutput}
         {
-            fStream = as;
         }
 
         ~TSendAudioStream()
@@ -369,18 +377,7 @@ class TSendAudioStream final :
         void Reset() override
         {
             fCount = 0;
-            fStream->Reset();
-        }
-
-        // Length in frames
-        long Length() override
-        {
-            return fStream->Length();
-        }
-
-        long Channels() override
-        {
-            return fBuffers.fOutput;
+            TDecoratedAudioStream::Reset();
         }
 
         TAudioStreamPtr Copy() override
@@ -469,7 +466,6 @@ class TReturnAudioStream final :
 
             if(fSend->Channels() == buffer->GetChannels())
             {
-                std::cerr << framePos <<  " " << framesNum << std::endl;
                 UAudioTools::MixFrameToFrameBlk1(buffer->GetFrame(framePos, temp1),
                                                  in_buffer,
                                                  framesNum, fSend->Channels());
@@ -493,10 +489,10 @@ class TReturnAudioStream final :
 
             return framesNum;
         }
-
+#include <iscore/tools/Todo.hpp>
         void Reset() override
         {
-
+            ISCORE_TODO;
         }
 
         // Length in frames
@@ -523,8 +519,7 @@ class TReturnAudioStream final :
  * Mixer channel as an audiostream ; for now only volume
  */
 class TChannelAudioStream final :
-        public TAudioStream,
-        public TUnaryAudioStream
+        public TDecoratedAudioStream
 {
         double const * const fVolume{};
         TLocalNonInterleavedAudioBuffer<float> fBuffer;
@@ -532,10 +527,10 @@ class TChannelAudioStream final :
         TChannelAudioStream(
                 TAudioStreamPtr as,
                 double const * volume):
+            TDecoratedAudioStream{as},
             fVolume{volume},
             fBuffer{TAudioGlobals::fBufferSize, as->Channels()}
         {
-            fStream = as;
         }
 
         ~TChannelAudioStream()
@@ -559,27 +554,11 @@ class TChannelAudioStream final :
             {
                 for(int j = 0; j < res; j++)
                 {
-                    out[chan][j] = in[chan][j] * vol;
+                    out[chan][j] += in[chan][j] * vol;
                 }
             }
 
             return res;
-        }
-
-        void Reset() override
-        {
-            fStream->Reset();
-        }
-
-        // Length in frames
-        long Length() override
-        {
-            return fStream->Length();
-        }
-
-        long Channels() override
-        {
-            return fStream->Channels();
         }
 
         TAudioStreamPtr Copy() override
