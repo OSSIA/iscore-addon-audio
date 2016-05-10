@@ -469,7 +469,6 @@ class TReturnAudioStream final :
 
             if(fSend->Channels() == buffer->GetChannels())
             {
-                std::cerr << framePos <<  " " << framesNum << std::endl;
                 UAudioTools::MixFrameToFrameBlk1(buffer->GetFrame(framePos, temp1),
                                                  in_buffer,
                                                  framesNum, fSend->Channels());
@@ -559,7 +558,7 @@ class TChannelAudioStream final :
             {
                 for(int j = 0; j < res; j++)
                 {
-                    out[chan][j] = in[chan][j] * vol;
+                    out[chan][j] += in[chan][j] * vol;
                 }
             }
 

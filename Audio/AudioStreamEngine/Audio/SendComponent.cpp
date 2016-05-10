@@ -69,7 +69,6 @@ void SendComponent::makeStream(const Context& ctx)
         {
             inputStreams.push_back(fx->getStream());
         }
-        // TODO loop...
     }
 
     std::vector<AudioStream> returns;
