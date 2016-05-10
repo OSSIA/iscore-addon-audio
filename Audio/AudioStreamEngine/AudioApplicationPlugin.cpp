@@ -45,12 +45,15 @@ void ApplicationPlugin::on_loadedDocument(iscore::Document* doc)
 static int CardIdFromString(int api, const QString& str);
 static int CardIdFromString(int api, const QString& str)
 {
-    for(int i = 0; i < GetDeviceCount(api); ++i)
+    int n = GetDeviceCount(api);
+    for(int i = 0; i < n; ++i)
     {
         DeviceInfo devinfo;
         GetDeviceInfo(api, i, &devinfo);
         if(str == QString::fromUtf8(devinfo.fName))
+        {
             return i;
+        }
     }
     return -1;
 }

@@ -195,7 +195,7 @@ AudioStream ConstraintComponent::makeInputMix(
     {
         ISCORE_ASSERT(component->getStream());
         auto channel = MakeChannelSound(
-                           component->getStream(),
+                           MakeReturn(component->getStream()),
                            getTarget(proc.process.id(), target));
         inputStreams.push_back(channel);
     };
@@ -221,12 +221,7 @@ AudioStream ConstraintComponent::makeInputMix(
         // TODO loop...
     }
 
-    std::vector<AudioStream> returns;
-    transform(inputStreams, std::back_inserter(returns), [] (auto stream) {
-        return MakeReturn(stream);
-    });
-
-    return MixNStreams(returns);
+    return MixNStreams(inputStreams);
 
 }
 
