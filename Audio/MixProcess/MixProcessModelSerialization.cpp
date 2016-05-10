@@ -3,7 +3,7 @@
 
 
 template<>
-void Visitor<Reader<DataStream>>::readFrom_impl(const Audio::Mix::Routing& proc)
+void Visitor<Reader<DataStream>>::readFrom(const Audio::Mix::Routing& proc)
 {
     m_stream << proc.in << proc.out << proc.mix;
 
@@ -19,7 +19,7 @@ void Visitor<Writer<DataStream>>::writeTo(Audio::Mix::Routing& proc)
 }
 
 template<>
-void Visitor<Reader<JSONObject>>::readFrom_impl(const Audio::Mix::Routing& proc)
+void Visitor<Reader<JSONObject>>::readFrom(const Audio::Mix::Routing& proc)
 {
     m_obj["In"] = toJsonValue(proc.in);
     m_obj["Out"] = toJsonValue(proc.out);
@@ -35,7 +35,7 @@ void Visitor<Writer<JSONObject>>::writeTo(Audio::Mix::Routing& proc)
 }
 
 template<>
-void Visitor<Reader<DataStream>>::readFrom_impl(const Audio::Mix::DirectMix& proc)
+void Visitor<Reader<DataStream>>::readFrom(const Audio::Mix::DirectMix& proc)
 {
     m_stream << proc.process << proc.mix;
 
@@ -51,7 +51,7 @@ void Visitor<Writer<DataStream>>::writeTo(Audio::Mix::DirectMix& proc)
 }
 
 template<>
-void Visitor<Reader<JSONObject>>::readFrom_impl(const Audio::Mix::DirectMix& proc)
+void Visitor<Reader<JSONObject>>::readFrom(const Audio::Mix::DirectMix& proc)
 {
     m_obj["Process"] = toJsonValue(proc.process);
     m_obj["Mix"] = proc.mix;

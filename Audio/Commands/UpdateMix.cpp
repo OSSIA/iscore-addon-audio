@@ -32,12 +32,12 @@ void UpdateRouting::redo() const
 
 void UpdateRouting::serializeImpl(DataStreamInput& s) const
 {
-    ISCORE_TODO;
+    s << m_model << m_old << m_new;
 }
 
 void UpdateRouting::deserializeImpl(DataStreamOutput& s)
 {
-    ISCORE_TODO;
+    s >> m_model >> m_old >> m_new;
 }
 
 
@@ -80,12 +80,12 @@ void UpdateDirect::redo() const
 
 void UpdateDirect::serializeImpl(DataStreamInput& s) const
 {
-    ISCORE_TODO;
+    s << m_model << m_old << m_new;
 }
 
 void UpdateDirect::deserializeImpl(DataStreamOutput& s)
 {
-    ISCORE_TODO;
+    s >> m_model >> m_old >> m_new;
 }
 
 }
