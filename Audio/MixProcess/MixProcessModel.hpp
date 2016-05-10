@@ -174,6 +174,17 @@ class ProcessModel final :
         std::list<DirectMix> m_fxProcesses;
         std::list<Id<Process::ProcessModel>> m_sendProcesses;
 
+        // TODO make :
+        // - an audiograph for the processes.
+        // by default
+        // - by default make an audio rack for verticality & dependencies ?
+        // since the graph is acyclic there is necessarily a correct vertical order...
+        // by default the graph strictly follows the vertical order of the audio rack.
+        // TODO maybe all the "non-temporal" stuff should actually go in here... (effect chains, etc.)
+        // maybe have an "aspect" for time constraints ? (audio aspect, video aspect... )
+        // which would be at an higher level than racks / processes.
+
+
 };
 }
 }
