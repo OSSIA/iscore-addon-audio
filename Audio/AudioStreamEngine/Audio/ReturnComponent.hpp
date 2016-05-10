@@ -9,7 +9,8 @@ class ProcessModel;
 }
 namespace AudioStreamEngine
 {
-class ReturnComponent final : public ProcessComponent_T<Return::ProcessModel>
+class ReturnComponent final :
+        public ProcessComponent_T<Return::ProcessModel, false, true>
 {
        COMPONENT_METADATA(Audio::AudioStreamEngine::ReturnComponent)
 

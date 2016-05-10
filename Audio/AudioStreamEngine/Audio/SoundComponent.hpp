@@ -9,7 +9,8 @@ class ProcessModel;
 }
 namespace AudioStreamEngine
 {
-class SoundComponent final : public ProcessComponent_T<Sound::ProcessModel>
+class SoundComponent final :
+        public ProcessComponent_T<Sound::ProcessModel, false, true>
 {
        COMPONENT_METADATA(Audio::AudioStreamEngine::SoundComponent)
 

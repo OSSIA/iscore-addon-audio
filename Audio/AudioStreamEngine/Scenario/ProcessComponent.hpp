@@ -10,6 +10,8 @@ namespace Audio
 {
 namespace AudioStreamEngine
 {
+
+
 class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent : public iscore::Component
 {
     public:
@@ -24,6 +26,9 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent : public iscore::Component
         virtual void makeStream(const Context& ctx) = 0;
         AudioStream getStream() const
         { return m_stream; }
+
+        virtual bool hasInput() const = 0;
+        virtual bool hasOutput() const = 0;
 
     protected:
         AudioStream m_stream;
@@ -58,7 +63,9 @@ using ProcessComponentFactoryList =
             ProcessComponentFactory>;
 
 /// Utility class
-template<typename Process_T>
+template<typename Process_T,
+         bool Input,
+         bool Output>
 class ProcessComponent_T : public ProcessComponent
 {
     public:
@@ -66,6 +73,11 @@ class ProcessComponent_T : public ProcessComponent
 
         const Process_T& process() const
         { return static_cast<const Process_T&>(m_process); }
+
+        bool hasInput() const override
+        { return Input; }
+        bool hasOutput() const override
+        { return Output; }
 };
 }
 }

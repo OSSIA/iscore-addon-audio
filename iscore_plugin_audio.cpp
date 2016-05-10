@@ -61,7 +61,6 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
         FW<Audio::AudioStreamEngine::ProcessComponentFactory,
             Audio::AudioStreamEngine::EffectComponentFactory,
             Audio::AudioStreamEngine::SoundComponentFactory,
-            Audio::AudioStreamEngine::MixComponentFactory,
             Audio::AudioStreamEngine::SendComponentFactory,
             Audio::AudioStreamEngine::ReturnComponentFactory,
             Audio::AudioStreamEngine::ScenarioComponentFactory,
