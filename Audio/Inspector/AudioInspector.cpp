@@ -114,7 +114,7 @@ class RoutingTableWidget : public QWidget
                     this, [=,&mix,&dispatcher] (int val) {
                 dispatcher.submitCommand<Audio::Commands::UpdateRouting>(
                                 mix,
-                                Routing{column, row, val / 100., checkBox->checkState()});
+                                Routing{column, row, val / 100., bool(checkBox->checkState())});
             });
 
             connect(spinBox, &QSpinBox::editingFinished,
@@ -126,7 +126,7 @@ class RoutingTableWidget : public QWidget
                     this, [=,&mix,&dispatcher] (int check) {
                 dispatcher.submitCommand<Audio::Commands::UpdateRouting>(
                                 mix,
-                                Routing{column, row, spinBox->value() / 100., check});
+                                Routing{column, row, spinBox->value() / 100., bool(check)});
 
             } );
         }
