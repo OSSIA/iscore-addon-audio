@@ -9,7 +9,8 @@ namespace Audio
 {
 namespace AudioStreamEngine
 {
-class ScenarioComponent final : public ProcessComponent_T<Scenario::ScenarioModel>
+class ScenarioComponent final :
+        public ProcessComponent_T<Scenario::ScenarioModel, false, true>
 {
        COMPONENT_METADATA(Audio::AudioStreamEngine::ScenarioComponent)
 

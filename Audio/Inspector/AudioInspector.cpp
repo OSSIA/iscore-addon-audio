@@ -12,6 +12,7 @@
 #include <QFormLayout>
 #include <QLineEdit>
 #include <QListWidget>
+#include <QCheckBox>
 #include <QHBoxLayout>
 #include <QDialog>
 #include <QTableWidget>
@@ -74,6 +75,7 @@ InspectorWidget::InspectorWidget(
     m_table = new QTableWidget{this};
     recreate();
 }
+
 class MixSpinBox : public QSpinBox
 {
     public:
@@ -82,7 +84,57 @@ class MixSpinBox : public QSpinBox
         {
             setMinimum(0);
             setMaximum(100);
+            setSizePolicy(QSizePolicy::Minimum, {});
+            setAlignment(Qt::AlignLeft);
         }
+};
+
+class RoutingTableWidget : public QWidget
+{
+    public:
+        RoutingTableWidget(
+                QWidget* parent,
+                OngoingCommandDispatcher& dispatcher,
+                const Mix::ProcessModel& mix,
+                const Id<Process::ProcessModel>& column,
+                const Id<Process::ProcessModel>& row):
+            QWidget{parent},
+            checkBox{new QCheckBox{this}},
+            spinBox{new MixSpinBox{this}}
+        {
+            auto lay = new QVBoxLayout;
+            this->setLayout(lay);
+
+            lay->addWidget(spinBox);
+            lay->addWidget(checkBox);
+
+            spinBox->setValue(mix.mix(column, row) * 100);
+            checkBox->setChecked(mix.routings().find(Routing{column, row})->enabled);
+            connect(spinBox, SignalUtils::QSpinBox_valueChanged_int(),
+                    this, [=,&mix,&dispatcher] (int val) {
+                dispatcher.submitCommand<Audio::Commands::UpdateRouting>(
+                                mix,
+                                Routing{column, row, val / 100., checkBox->checkState()});
+            });
+
+            connect(spinBox, &QSpinBox::editingFinished,
+                    this, [&dispatcher] () {
+                dispatcher.commit();
+            });
+
+            connect(checkBox, &QCheckBox::stateChanged,
+                    this, [=,&mix,&dispatcher] (int check) {
+                dispatcher.submitCommand<Audio::Commands::UpdateRouting>(
+                                mix,
+                                Routing{column, row, spinBox->value() / 100., check});
+
+            } );
+        }
+
+    private:
+        QCheckBox* const checkBox{};
+        MixSpinBox* const spinBox{};
+
 };
 void InspectorWidget::recreate()
 {
@@ -101,51 +153,6 @@ void InspectorWidget::recreate()
     m_table->setColumnCount(n_col);
 
     auto cst = safe_cast<const Scenario::ConstraintModel*>(process().parent());
-    /*
-    enum class process_type {
-        Data, Send, Fx
-    };
-    auto get_proc_type = [=] (const Id<Process::ProcessModel&> proc) {
-        auto proc = &cst->processes.at(proc);
-        if(dynamic_cast<const Send::ProcessModel*>(proc))
-            return process_type::Send;
-        else if(dynamic_cast<const Effect::ProcessModel*>(proc))
-            return process_type::Fx;
-        else
-            return process_type::Data;
-    };
-    auto get_index = [=] (const DirectMix & dmx) {
-        // It is necessarily on the last row.
-        auto row = n_row - 1;
-        switch(get_proc_type(dmx.process))
-        {
-            case process_type::Data:
-                for(int col = 0; col < n_data; col++)
-                {
-                    if(auto item = m_table->item(row, col))
-                    {
-                        DirectMix data = item->data(Qt::UserRole + 1).value<DirectMix>();
-                        if(data.process == dmx)
-                        {
-                            ret
-                        }
-
-                    }
-                }
-                break;
-            case process_type::Send:
-                ISCORE_ABORT;
-                break;
-            case process_type::Fx:
-                break;
-            default:
-                ISCORE_ABORT;
-        }
-
-    };
-    auto get_routing_index = [] (const Routing& rtng) {
-
-    };*/
 
     // For each direct data, create relevant items.
     auto pretty_name = [&] (const Id<Process::ProcessModel>& dmx) {
@@ -167,18 +174,8 @@ void InspectorWidget::recreate()
         auto fx_it = mix.directFx().begin();
         for(int row = 0; row < n_fx; row++)
         {
-            auto sb = new MixSpinBox{m_table};
-            sb->setValue(mix.mix(col_it->process, fx_it->process));
+            auto sb = new RoutingTableWidget{m_table, m_dispatcher, mix, col_it->process, fx_it->process};
             m_table->setCellWidget(row, col, sb);
-
-            connect(sb, SignalUtils::QSpinBox_valueChanged_int(),
-                    this, [=,&mix] (int val) {
-                m_dispatcher.submitCommand<Audio::Commands::UpdateRouting>(
-                                mix,
-                                Routing{col_it->process, fx_it->process, val / 100.});
-            });
-            connect(sb, &QSpinBox::editingFinished,
-                    this, [=] () { m_dispatcher.commit(); });
 
             row_labels.push_back(pretty_name(fx_it->process));
             fx_it++;
@@ -188,19 +185,8 @@ void InspectorWidget::recreate()
         auto send_it = mix.sends().begin();
         for(int row = n_fx; row < n_fx + n_sends; row++)
         {
-            auto sb = new MixSpinBox{m_table};
-            sb->setValue(mix.mix(col_it->process, *send_it));
+            auto sb = new RoutingTableWidget{m_table, m_dispatcher, mix, col_it->process, *send_it};
             m_table->setCellWidget(row, col, sb);
-
-            connect(sb, SignalUtils::QSpinBox_valueChanged_int(),
-                    this, [=,&mix] (int val) {
-                m_dispatcher.submitCommand<Audio::Commands::UpdateRouting>(
-                                mix,
-                                Routing{col_it->process, *send_it, val / 100.});
-            });
-            connect(sb, &QSpinBox::editingFinished,
-                    this, [=] () { m_dispatcher.commit(); });
-
 
             row_labels.push_back(pretty_name(*send_it));
             send_it++;
@@ -235,18 +221,8 @@ void InspectorWidget::recreate()
         auto send_it = mix.sends().begin();
         for(int row = n_fx; row < n_fx + n_sends; row++)
         {
-            auto sb = new MixSpinBox{m_table};
-            sb->setValue(mix.mix(col_it->process, *send_it));
+            auto sb = new RoutingTableWidget{m_table, m_dispatcher, mix, col_it->process, *send_it};
             m_table->setCellWidget(row, col, sb);
-
-            connect(sb, SignalUtils::QSpinBox_valueChanged_int(),
-                    this, [=,&mix] (int val) {
-                m_dispatcher.submitCommand<Audio::Commands::UpdateRouting>(
-                                mix,
-                                Routing{col_it->process, *send_it, val / 100.});
-            });
-            connect(sb, &QSpinBox::editingFinished,
-                    this, [=] () { m_dispatcher.commit(); });
 
             send_it++;
         }

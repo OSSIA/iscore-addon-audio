@@ -49,6 +49,7 @@ struct Routing
         Id<Process::ProcessModel> out;
 
         double mix{};
+        bool enabled = true;
 };
 
 using RoutingMap = bmi::multi_index_container<

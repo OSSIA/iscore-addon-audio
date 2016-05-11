@@ -29,13 +29,13 @@
 
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/graphviz.hpp>
+#include <boost/graph/labeled_graph.hpp>
 #include <boost/graph/topological_sort.hpp>
 
 namespace Audio
 {
 namespace AudioStreamEngine
 {
-
 struct AudioDependencyGraph
 {
         using node_t = eggs::variant<
@@ -73,9 +73,13 @@ struct AudioDependencyGraph
 
             // 2. For all "Return" vertices, add edge to "Send"
             // since the return depends on the send
+            std::vector<std::string> names;
             auto vertices = boost::vertices(m_graph);
             for(auto it = vertices.first; it != vertices.second; ++it)
             {
+                auto asComp = static_cast<QObject**>(m_graph[*it].target());
+                if(asComp)
+                    names.push_back((*asComp)->objectName().toStdString());
                 // For all the returns
                 if(auto return_vertice = m_graph[*it].target<ReturnComponent*>())
                 {
@@ -100,7 +104,11 @@ struct AudioDependencyGraph
             }
 
             // 3. Generate image of the graph.
-            //boost::write_graphviz(std::cout, m_graph);
+            boost::write_graphviz(std::cerr, m_graph,
+                                  [&] (std::ostream& out, const auto& v) {
+                                      out << "[label=\"" << names[v] << "\"]";
+                                    },
+                                  [] (auto&&...) {});
         }
 
         boost::optional<std::deque<int>> check() const
@@ -111,6 +119,7 @@ struct AudioDependencyGraph
                 boost::topological_sort(m_graph, std::front_inserter(topo_order));
 
 
+                /*
                 qDebug() << "SIZE/" << topo_order.size();
                 // Print the results.
                 for(auto elt : topo_order)
@@ -124,7 +133,7 @@ struct AudioDependencyGraph
                     } s;
                     eggs::variants::apply(s, m_graph[elt]);
                 }
-
+                */
 
                 // For each element in the queue, create the stream.
                 // It has the insurance that the required streams already exist.
@@ -196,11 +205,6 @@ struct AudioDependencyGraph
                     auto sub_res = visit(*sound);
                     generators.push_back(sub_res);
                     processes.push_back(sub_res);
-                }
-                else if(auto mix = dynamic_cast<MixComponent*>(&proc))
-                {
-                    //visit(*mix);
-
                 }
             }
 

@@ -10,7 +10,8 @@ namespace Audio
 {
 namespace AudioStreamEngine
 {
-class LoopComponent final : public ProcessComponent_T<Loop::ProcessModel>
+class LoopComponent final :
+        public ProcessComponent_T<Loop::ProcessModel, false, true>
 {
        COMPONENT_METADATA(Audio::AudioStreamEngine::ScenarioComponent)
 

@@ -10,7 +10,8 @@ class EffectModel;
 }
 namespace AudioStreamEngine
 {
-class EffectProcessComponent final : public ProcessComponent_T<Effect::ProcessModel>
+class EffectProcessComponent final :
+        public ProcessComponent_T<Effect::ProcessModel, true, true>
 {
        COMPONENT_METADATA(Audio::AudioStreamEngine::EffectComponent)
 
