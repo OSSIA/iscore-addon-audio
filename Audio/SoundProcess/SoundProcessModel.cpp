@@ -22,7 +22,7 @@ ProcessModel::ProcessModel(
                       iscore::IDocument::documentContext(*parent),
                       this};
 
-    setFile("test.wav");
+    setFile("/tmp/bass.aif");
 }
 
 ProcessModel::ProcessModel(

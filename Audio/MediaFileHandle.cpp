@@ -48,7 +48,7 @@ MediaFileHandle::MediaFileHandle(const QString &filename):
 
 AudioArray MediaFileHandle::readFile(const QFile &file, int* sRate)
 {
-    if(file.exists() && file.fileName().contains(".wav"))
+    if(file.exists() && file.fileName().contains(QRegExp(".(wav|aif|aiff)")))
     {
         auto myf = SndfileHandle(file.fileName().toStdString());
         if(myf.error() != SF_ERR_NO_ERROR)

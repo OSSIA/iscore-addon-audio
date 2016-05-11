@@ -79,6 +79,7 @@ void ConstraintComponent::makeStream(const Context& player)
         std::vector<AudioStream> inputStreams;
 
         auto mix = findMix();
+
         std::function<const double*(
                     const Id<Process::ProcessModel>&)> getTarget;
         if(mix)
@@ -243,10 +244,10 @@ void ConstraintComponent::removing(
 
 Mix::ProcessModel* ConstraintComponent::findMix() const
 {
-    auto it = find_if(processes(), [] (auto val) {
-        return dynamic_cast<Mix::ProcessModel*>(&val.process);
+    auto it = find_if(m_baseComponent.constraint.processes, [] (auto& val) {
+        return dynamic_cast<Mix::ProcessModel*>(&val);
     });
-    return it != processes().end() ? static_cast<Mix::ProcessModel*>(&it->process) : nullptr;
+    return it != m_baseComponent.constraint.processes.end() ? static_cast<Mix::ProcessModel*>(&(*it)) : nullptr;
 }
 
 

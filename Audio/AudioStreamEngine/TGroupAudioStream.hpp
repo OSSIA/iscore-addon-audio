@@ -26,10 +26,10 @@ struct TBufferManager
                 long outChan,
                 long bufferSize,
                 long sampleRate):
-            fInput{inChan},
-            fOutput{outChan},
             fInputBuffer{inChan > 0 ? new float*[inChan] : nullptr},
             fOutputBuffer{outChan > 0 ? new float*[outChan] : nullptr},
+            fInput{inChan},
+            fOutput{outChan},
             fBufferSize{bufferSize},
             fSampleRate{sampleRate}
         {
@@ -165,7 +165,7 @@ class TGroupAudioMixer : public TExpAudioMixer
                 {
                     cmd->fStartDate->setDate(pair.fStart);
                     cmd->fStopDate->setDate(pair.fStop);
-                    //cmd->fStream->Reset();
+                    cmd->fStream->Reset();
                     cmd->fStream->SetPos(0);
                     cmd->fPos = 0;
                 }

@@ -7,7 +7,7 @@
 #include <QAction>
 #include <Audio/Settings/Card/CardSettingsModel.hpp>
 #include <LibAudioStreamMC++.h>
-#include <faust/dsp/llvm-dsp.h>
+//#include <faust/dsp/llvm-dsp.h>
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -17,12 +17,12 @@ ApplicationPlugin::ApplicationPlugin(const iscore::ApplicationContext& app):
     iscore::GUIApplicationContextPlugin{app, "AudioApplicationPlugin", nullptr},
     m_ctx{*this}
 {
-    startMTDSPFactories();
+   // startMTDSPFactories();
 }
 
 ApplicationPlugin::~ApplicationPlugin()
 {
-    stopMTDSPFactories();
+    //stopMTDSPFactories();
 }
 
 void ApplicationPlugin::on_newDocument(iscore::Document* doc)
