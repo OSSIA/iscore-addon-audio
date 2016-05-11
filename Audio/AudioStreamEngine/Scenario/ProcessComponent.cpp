@@ -7,7 +7,7 @@ Audio::AudioStreamEngine::ProcessComponent::ProcessComponent(
         const QString& name,
         QObject* parent):
     Component{id, name, parent},
-    m_process{process}
+    process{process}
 {
 }
 

@@ -9,7 +9,7 @@
 #include <Audio/AudioStreamEngine/Audio/ReturnComponent.hpp>
 #include <Audio/AudioStreamEngine/GroupAudioStream.h>
 #include <Audio/AudioStreamEngine/Utility.hpp>
-
+#include <Audio/MixProcess/MixProcessModel.hpp>
 
 namespace Audio
 {
@@ -46,9 +46,17 @@ void SendComponent::makeStream(const Context& ctx)
     std::vector<AudioStream> inputStreams;
     ISCORE_ASSERT(cst_comp_it != parent_cst->components.end());
     auto cst_comp = static_cast<ConstraintComponent*>(&(*cst_comp_it));
+    const auto mix = cst_comp->findMix();
 
     for(auto proc : cst_comp->processes())
     {
+        if(mix)
+        {
+            auto routing_it = mix->routings().find(Mix::Routing{proc.process.id(), process().id()});
+            if(!(routing_it != mix->routings().end() && routing_it->enabled))
+                continue;
+        }
+
         if(auto scenar = dynamic_cast<ScenarioComponent*>(&proc.component))
         {
             inputStreams.push_back(scenar->getStream());

@@ -36,6 +36,21 @@ namespace Audio
 {
 namespace AudioStreamEngine
 {
+
+namespace {
+struct get_id {
+        Id<Process::ProcessModel> operator()(ConstraintComponent* comp)
+        {
+            return Id<Process::ProcessModel>{};
+        }
+
+        template<typename T>
+        Id<Process::ProcessModel> operator()(T* component)
+        {
+            return component->process().id();
+        }
+};
+}
 struct AudioDependencyGraph
 {
         using node_t = eggs::variant<
@@ -47,6 +62,7 @@ struct AudioDependencyGraph
             ReturnComponent*,
             SoundComponent*
         >;
+
         boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS, node_t> m_graph;
 
         using vtx_t = decltype(boost::add_vertex(node_t{}, m_graph));
@@ -162,6 +178,10 @@ struct AudioDependencyGraph
             std::vector<vtx_t> inputs; // FX, Send
             inputs.reserve(n_proc / 2);
 
+            // If there is no mix process, we assume that everything is
+            // routed into everything.
+            // Else, we use it to create the correct relations.
+            // TODO think of the policies !!!!
             for(auto& proc_pair : cst.processes())
             {
                 auto& proc = proc_pair.component;
@@ -209,18 +229,40 @@ struct AudioDependencyGraph
             }
 
             // For all inputs, generate edges going from all generators
+
+            const auto mix = cst.findMix();
             for(auto input : inputs)
             {
                 for(auto gen : generators)
                 {
                     if(gen != input)
                     {
-                        boost::add_edge(gen, input, m_graph);
+                        if(mix)
+                        {
+                            auto gen_id = eggs::variants::apply(get_id{}, m_graph[gen]);
+                            ISCORE_ASSERT(bool(gen_id));
+                            auto in_id = eggs::variants::apply(get_id{}, m_graph[input]);
+                            ISCORE_ASSERT(bool(in_id));
+
+                            // TODO transform this into an assert when the FX's can be routed each into
+                            // each other.
+                            auto routing_it = mix->routings().find(Mix::Routing{gen_id, in_id});
+                            if(routing_it != mix->routings().end() && routing_it->enabled)
+                            {
+                                boost::add_edge(gen, input, m_graph);
+                            }
+                        }
+                        else
+                        {
+                            boost::add_edge(gen, input, m_graph);
+                        }
                     }
                 }
             }
 
             // Add edge from all processes to the constraint mix stream
+            // Even for the sends : the constraint "pulls" the send process
+            // to ensure that it is up-to-date.
             for(auto proc : processes)
             {
                 boost::add_edge(proc, res, m_graph);

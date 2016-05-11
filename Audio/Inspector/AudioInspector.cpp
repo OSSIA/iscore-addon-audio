@@ -74,6 +74,9 @@ InspectorWidget::InspectorWidget(
 
     m_table = new QTableWidget{this};
     recreate();
+
+    con(object, &Mix::ProcessModel::routingChanged,
+        this, &InspectorWidget::recreate);
 }
 
 class MixSpinBox : public QSpinBox
@@ -124,9 +127,11 @@ class RoutingTableWidget : public QWidget
 
             connect(checkBox, &QCheckBox::stateChanged,
                     this, [=,&mix,&dispatcher] (int check) {
+                // TODO check if different
                 dispatcher.submitCommand<Audio::Commands::UpdateRouting>(
                                 mix,
                                 Routing{column, row, spinBox->value() / 100., bool(check)});
+                dispatcher.commit();
 
             } );
         }

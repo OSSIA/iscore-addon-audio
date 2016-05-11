@@ -200,6 +200,13 @@ AudioStream ConstraintComponent::makeInputMix(
 
     for(auto proc : processes())
     {
+        if(mix)
+        {
+            auto routing_it = mix->routings().find(Mix::Routing{proc.process.id(), target});
+            if(!(routing_it != mix->routings().end() && routing_it->enabled))
+                continue;
+        }
+
         if(auto scenar = dynamic_cast<ScenarioComponent*>(&proc.component))
         {
             make_stream_impl(scenar, proc);

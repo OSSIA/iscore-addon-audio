@@ -5,7 +5,7 @@
 template<>
 void Visitor<Reader<DataStream>>::readFrom(const Audio::Mix::Routing& proc)
 {
-    m_stream << proc.in << proc.out << proc.mix;
+    m_stream << proc.in << proc.out << proc.mix << proc.enabled;
 
     insertDelimiter();
 }
@@ -13,7 +13,7 @@ void Visitor<Reader<DataStream>>::readFrom(const Audio::Mix::Routing& proc)
 template<>
 void Visitor<Writer<DataStream>>::writeTo(Audio::Mix::Routing& proc)
 {
-    m_stream >> proc.in >> proc.out >> proc.mix;
+    m_stream >> proc.in >> proc.out >> proc.mix >> proc.enabled;
 
     checkDelimiter();
 }
@@ -24,6 +24,7 @@ void Visitor<Reader<JSONObject>>::readFrom(const Audio::Mix::Routing& proc)
     m_obj["In"] = toJsonValue(proc.in);
     m_obj["Out"] = toJsonValue(proc.out);
     m_obj["Mix"] = proc.mix;
+    m_obj["Enabled"] = proc.enabled;
 }
 
 template<>
@@ -32,6 +33,7 @@ void Visitor<Writer<JSONObject>>::writeTo(Audio::Mix::Routing& proc)
     proc.in = fromJsonValue<Id<Process::ProcessModel>>(m_obj["In"]);
     proc.out = fromJsonValue<Id<Process::ProcessModel>>(m_obj["Out"]);
     proc.mix = m_obj["Mix"].toDouble();
+    proc.enabled = m_obj["Enabled"].toBool();
 }
 
 template<>

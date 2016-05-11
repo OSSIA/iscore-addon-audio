@@ -15,6 +15,8 @@ namespace AudioStreamEngine
 class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent : public iscore::Component
 {
     public:
+        const Process::ProcessModel& process;
+
         ProcessComponent(
                 Process::ProcessModel& proc,
                 const Id<iscore::Component>& id,
@@ -32,8 +34,6 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent : public iscore::Component
 
     protected:
         AudioStream m_stream;
-
-        const Process::ProcessModel& m_process;
 };
 
 
@@ -72,7 +72,7 @@ class ProcessComponent_T : public ProcessComponent
         using ProcessComponent::ProcessComponent;
 
         const Process_T& process() const
-        { return static_cast<const Process_T&>(m_process); }
+        { return static_cast<const Process_T&>(ProcessComponent::process); }
 
         bool hasInput() const override
         { return Input; }

@@ -28,6 +28,9 @@ class ConstraintComponent final :
             process_component_factory_list_t
         >;
 
+        const auto& constraint() const
+        { return m_baseComponent.constraint; }
+
         const Key& key() const override;
 
         ConstraintComponent(
@@ -56,8 +59,9 @@ class ConstraintComponent final :
         const auto& processes() const
         { return m_baseComponent.processes(); }
 
-    private:
         Mix::ProcessModel* findMix() const;
+
+    private:
 
         parent_t m_baseComponent;
         double m_shift{1.0};
