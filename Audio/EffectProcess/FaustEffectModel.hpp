@@ -1,6 +1,6 @@
 #pragma once
 #include <Audio/EffectProcess/EffectModel.hpp>
-
+#include <QJsonDocument>
 namespace Audio
 {
 namespace Effect
@@ -54,6 +54,24 @@ class FaustEffectModel :
         void setText(const QString& txt)
         {
             m_text = txt;
+            auto fx_text = m_text.toLocal8Bit();
+            m_effect = MakeFaustAudioEffect(fx_text, "", "");
+
+            if(m_effect)
+            {
+                auto json = GetJsonEffect(m_effect);
+                QJsonParseError err;
+                auto qjs = QJsonDocument::fromJson(json, &err);
+                if(err.error == QJsonParseError::NoError)
+                {
+                    qDebug() << qjs;
+                }
+                else
+                {
+                    qDebug() << err.errorString();
+                }
+            }
+
             emit textChanged();
         }
 

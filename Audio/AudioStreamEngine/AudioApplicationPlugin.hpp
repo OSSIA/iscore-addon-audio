@@ -12,9 +12,6 @@ class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPl
         ApplicationPlugin(const iscore::ApplicationContext& app);
         ~ApplicationPlugin();
 
-        void on_newDocument(iscore::Document* doc) override;
-        void on_loadedDocument(iscore::Document* doc) override;
-
         void startEngine();
         void stopEngine();
         bool engineStatus() const;
@@ -25,6 +22,10 @@ class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPl
     private:
         AudioContext m_ctx;
 
+        void initialize() override;
+
+        void on_newDocument(iscore::Document* doc) override;
+        void on_loadedDocument(iscore::Document* doc) override;
 };
 }
 }

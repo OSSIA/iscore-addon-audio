@@ -17,12 +17,18 @@ ApplicationPlugin::ApplicationPlugin(const iscore::ApplicationContext& app):
     iscore::GUIApplicationContextPlugin{app, "AudioApplicationPlugin", nullptr},
     m_ctx{*this}
 {
-   // startMTDSPFactories();
 }
 
 ApplicationPlugin::~ApplicationPlugin()
 {
+    stopEngine();
     //stopMTDSPFactories();
+}
+
+void ApplicationPlugin::initialize()
+{
+    startEngine();
+   // startMTDSPFactories();
 }
 
 void ApplicationPlugin::on_newDocument(iscore::Document* doc)

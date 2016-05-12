@@ -23,19 +23,12 @@ void DocumentPlugin::play()
     if(!doc)
         return;
 
-    qDebug() << (void*)m_ctx.audio.renderer ;
-    if(!m_ctx.audio.renderer)
-    {
-        iscore::AppContext().components.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().startEngine();
-    }
-
     if(!m_ctx.audio.plugin.engineStatus())
         return;
 
     // Reset the player
     stop();
     openPlayer();
-
 
     // Create our tree
     auto comp = new ConstraintComponent(
