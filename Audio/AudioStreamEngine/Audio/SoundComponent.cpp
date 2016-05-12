@@ -20,8 +20,36 @@ SoundComponent::SoundComponent(
 
 void SoundComponent::makeStream(const Context& ctx)
 {
-    auto& sound = process().file();
-    m_stream = MakeSend(MakeReadSound(sound.name().toLocal8Bit().constData()));
+    auto& path = process().file();
+    auto read_sound = MakeReadSound(path.name().toLocal8Bit().constData());
+
+    // If the file is mono, we duplicate it.
+    auto chan = GetChannelsSound(read_sound);
+    switch(chan)
+    {
+        case 0:
+            return;
+
+        case 1:
+            m_stream = MakeSend(
+                        MakeParSound(
+                            read_sound,
+                            MakeCopySound(read_sound)));
+            break;
+        case 2:
+            m_stream = MakeSend(read_sound);
+            break;
+
+        default:
+        {
+            // We take the first two channels for now
+            std::array<long, 2> arr{0, 1};
+            m_stream = MakeSelectSound(read_sound, arr.data(), 2);
+            break;
+        }
+    }
+
+
     // TODO optimize me by instead getting the already loaded data.
 }
 
