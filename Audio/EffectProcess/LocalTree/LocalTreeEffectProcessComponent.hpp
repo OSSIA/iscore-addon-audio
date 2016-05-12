@@ -73,7 +73,7 @@ class FaustComponent : public EffectComponent
                 Effect::FaustEffectModel& proc,
                 const Id<iscore::Component>& id,
                 QObject* parent):
-            EffectComponent{node, proc, id, "FaustComponent", parent},
+            EffectComponent{node, proc, id, proc.title(), parent},
             m_proc{proc}
         {
             // Create a fake effect on each change,
@@ -96,11 +96,7 @@ class FaustComponent : public EffectComponent
                 m_parametersNode->erase(m_parametersNode->children().begin());
             }
 
-            if(m_proc.text().isEmpty())
-                return;
-
-            auto fx_text = m_proc.text().toLocal8Bit();
-            auto fx = MakeFaustAudioEffect(fx_text, "", "");
+            auto fx = m_proc.effect();
             if(!fx)
                 return;
 

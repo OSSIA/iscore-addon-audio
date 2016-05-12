@@ -1,4 +1,5 @@
 #include "FaustEffectModel.hpp"
+#include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
 namespace Audio
 {
 namespace Effect
@@ -10,7 +11,8 @@ FaustEffectModel::FaustEffectModel(
         QObject* parent):
     EffectModel{id, parent}
 {
-    ISCORE_TODO;
+    setText(faustProgram);
+    init();
 }
 
 FaustEffectModel::FaustEffectModel(
@@ -19,13 +21,64 @@ FaustEffectModel::FaustEffectModel(
         QObject* parent):
     EffectModel{id, parent}
 {
-    ISCORE_TODO;
+    setText(source.text());
+    init();
 }
 
 FaustEffectModel*FaustEffectModel::clone(const Id<EffectModel>& newId, QObject* parent) const
 {
-    ISCORE_TODO;
-    return nullptr;
+    return new FaustEffectModel{*this, newId, parent};
+}
+
+QString FaustEffectModel::title() const
+{
+    if(m_name.isEmpty())
+    {
+        return tr("Faust");
+    }
+    else
+    {
+        return m_name;
+    }
+}
+
+void FaustEffectModel::setText(const QString& txt)
+{
+    m_text = txt;
+    reload();
+    emit textChanged();
+}
+
+void FaustEffectModel::init()
+{
+    // We have to reload the faust FX whenever
+    // some soundcard settings changes
+    auto& ctx = iscore::AppContext().components.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>();
+    con(ctx, &AudioStreamEngine::ApplicationPlugin::audioEngineRestarted,
+            this, [this] () {
+        reload();
+    });
+}
+
+void FaustEffectModel::reload()
+{
+    auto fx_text = m_text.toLocal8Bit();
+    m_effect = MakeFaustAudioEffect(fx_text, "", "");
+
+    if(m_effect)
+    {
+        auto json = GetJsonEffect(m_effect);
+        QJsonParseError err;
+        auto qjs = QJsonDocument::fromJson(json, &err);
+        if(err.error == QJsonParseError::NoError)
+        {
+            m_name = qjs.object()["name"].toString();
+        }
+        else
+        {
+            qDebug() << err.errorString();
+        }
+    }
 }
 
 }

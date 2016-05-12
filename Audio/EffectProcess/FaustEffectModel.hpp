@@ -35,6 +35,7 @@ class FaustEffectModel :
             EffectModel{vis, parent}
         {
             vis.writeTo(*this);
+            init();
         }
 
         FaustEffectModel* clone(
@@ -42,38 +43,14 @@ class FaustEffectModel :
                 QObject* parent) const override;
 
 
-        QString title() const override {
-            return "Faust";
-        }
+        QString title() const override;
 
         const QString& text() const
         {
             return m_text;
         }
 
-        void setText(const QString& txt)
-        {
-            m_text = txt;
-            auto fx_text = m_text.toLocal8Bit();
-            m_effect = MakeFaustAudioEffect(fx_text, "", "");
-
-            if(m_effect)
-            {
-                auto json = GetJsonEffect(m_effect);
-                QJsonParseError err;
-                auto qjs = QJsonDocument::fromJson(json, &err);
-                if(err.error == QJsonParseError::NoError)
-                {
-                    qDebug() << qjs;
-                }
-                else
-                {
-                    qDebug() << err.errorString();
-                }
-            }
-
-            emit textChanged();
-        }
+        void setText(const QString& txt);
 
         UuidKey<EffectFactory> concreteFactoryKey() const override
         {
@@ -83,7 +60,10 @@ class FaustEffectModel :
         void textChanged();
 
     private:
+        void init();
+        void reload();
         QString m_text;
+        QString m_name;
 };
 }
 }

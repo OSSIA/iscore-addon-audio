@@ -4,26 +4,30 @@ template<>
 void Visitor<Reader<DataStream>>::readFrom_impl(
         const Audio::Effect::FaustEffectModel& eff)
 {
-    ISCORE_TODO;
+    m_stream << eff.text();
+    insertDelimiter();
 }
 
 template<>
 void Visitor<Writer<DataStream>>::writeTo(
         Audio::Effect::FaustEffectModel& eff)
 {
-    ISCORE_TODO;
+    QString txt;
+    m_stream >> txt;
+    eff.setText(txt);
+    checkDelimiter();
 }
 
 template<>
 void Visitor<Reader<JSONObject>>::readFrom_impl(
-        const Audio::Effect::FaustEffectModel& area)
+        const Audio::Effect::FaustEffectModel& eff)
 {
-    ISCORE_TODO;
+    m_obj["Effect"] = eff.text();
 }
 
 template<>
 void Visitor<Writer<JSONObject>>::writeTo(
-        Audio::Effect::FaustEffectModel& area)
+        Audio::Effect::FaustEffectModel& eff)
 {
-    ISCORE_TODO;
+    eff.setText(m_obj["Effect"].toString());
 }

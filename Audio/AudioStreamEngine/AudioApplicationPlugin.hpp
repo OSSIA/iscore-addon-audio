@@ -8,6 +8,7 @@ namespace AudioStreamEngine
 {
 class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPlugin
 {
+        Q_OBJECT
     public:
         ApplicationPlugin(const iscore::ApplicationContext& app);
         ~ApplicationPlugin();
@@ -18,6 +19,9 @@ class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPl
 
         const AudioContext& context() const
         { return m_ctx; }
+
+    signals:
+        void audioEngineRestarted();
 
     private:
         AudioContext m_ctx;

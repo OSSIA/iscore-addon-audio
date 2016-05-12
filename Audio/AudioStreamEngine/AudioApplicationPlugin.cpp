@@ -19,16 +19,27 @@ ApplicationPlugin::ApplicationPlugin(const iscore::ApplicationContext& app):
 {
 }
 
+void ApplicationPlugin::initialize()
+{
+    // Restart everything if audio settings change.
+    auto& set = GUIApplicationContextPlugin::context.settings<Settings::Model>();
+    con(set, &Settings::Model::bufferSizeChanged,
+        this, &ApplicationPlugin::startEngine);
+    con(set, &Settings::Model::cardChanged,
+        this, &ApplicationPlugin::startEngine);
+    con(set, &Settings::Model::driverChanged,
+        this, &ApplicationPlugin::startEngine);
+    con(set, &Settings::Model::rateChanged,
+        this, &ApplicationPlugin::startEngine);
+    startEngine();
+
+   // startMTDSPFactories();
+}
+
 ApplicationPlugin::~ApplicationPlugin()
 {
     stopEngine();
     //stopMTDSPFactories();
-}
-
-void ApplicationPlugin::initialize()
-{
-    startEngine();
-   // startMTDSPFactories();
 }
 
 void ApplicationPlugin::on_newDocument(iscore::Document* doc)
@@ -96,6 +107,7 @@ void ApplicationPlugin::startEngine()
     GetAudioRendererInfo(m_ctx.renderer, &m_ctx.renderer_info);
     OpenAudioRenderer(m_ctx.renderer, 0, card, 2, 2, stngs.getBufferSize(), stngs.getRate());
 
+    emit audioEngineRestarted();
 }
 
 void ApplicationPlugin::stopEngine()
