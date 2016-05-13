@@ -1,6 +1,6 @@
 #pragma once
 #include <Audio/EffectProcess/EffectModel.hpp>
-
+#include <QJsonDocument>
 namespace Audio
 {
 namespace Effect
@@ -35,6 +35,7 @@ class FaustEffectModel :
             EffectModel{vis, parent}
         {
             vis.writeTo(*this);
+            init();
         }
 
         FaustEffectModel* clone(
@@ -42,20 +43,14 @@ class FaustEffectModel :
                 QObject* parent) const override;
 
 
-        QString title() const override {
-            return "Faust";
-        }
+        QString title() const override;
 
         const QString& text() const
         {
             return m_text;
         }
 
-        void setText(const QString& txt)
-        {
-            m_text = txt;
-            emit textChanged();
-        }
+        void setText(const QString& txt);
 
         UuidKey<EffectFactory> concreteFactoryKey() const override
         {
@@ -65,7 +60,10 @@ class FaustEffectModel :
         void textChanged();
 
     private:
+        void init();
+        void reload();
         QString m_text;
+        QString m_name;
 };
 }
 }

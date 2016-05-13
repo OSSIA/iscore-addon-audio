@@ -56,10 +56,7 @@ void EffectProcessComponent::makeStream(const Context& ctx)
     {
         if(auto faust_fx = dynamic_cast<Effect::FaustEffectModel*>(&fx))
         {
-            if(faust_fx->text().isEmpty())
-                continue;
-
-            auto compiled_fx = MakeFaustAudioEffect(faust_fx->text().toLocal8Bit(), "", "");
+            auto compiled_fx = faust_fx->effect();
             if(!compiled_fx)
                 continue;
 

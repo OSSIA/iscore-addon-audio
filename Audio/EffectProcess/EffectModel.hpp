@@ -6,6 +6,7 @@
 #include <iscore/plugins/customfactory/SerializableInterface.hpp>
 #include <iscore_plugin_audio_export.h>
 
+#include <LibAudioStreamMC++.h>
 namespace Audio
 {
 namespace Effect
@@ -54,6 +55,12 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
                 QObject* parent) const = 0;
 
         virtual QString title() const = 0;
+
+        AudioEffect effect() const
+        { return m_effect; }
+
+    protected:
+        AudioEffect m_effect;
 };
 }
 }

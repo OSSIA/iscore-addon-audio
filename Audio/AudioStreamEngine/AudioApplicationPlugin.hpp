@@ -8,12 +8,10 @@ namespace AudioStreamEngine
 {
 class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPlugin
 {
+        Q_OBJECT
     public:
         ApplicationPlugin(const iscore::ApplicationContext& app);
         ~ApplicationPlugin();
-
-        void on_newDocument(iscore::Document* doc) override;
-        void on_loadedDocument(iscore::Document* doc) override;
 
         void startEngine();
         void stopEngine();
@@ -22,9 +20,16 @@ class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPl
         const AudioContext& context() const
         { return m_ctx; }
 
+    signals:
+        void audioEngineRestarted();
+
     private:
         AudioContext m_ctx;
 
+        void initialize() override;
+
+        void on_newDocument(iscore::Document* doc) override;
+        void on_loadedDocument(iscore::Document* doc) override;
 };
 }
 }
