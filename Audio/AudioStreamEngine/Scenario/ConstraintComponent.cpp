@@ -97,10 +97,11 @@ void ConstraintComponent::makeStream(const Context& player)
 
         auto make_stream_impl = [&] (auto component, const auto& proc)
         {
-            if(component->getStream())
+            auto stream = component->getStream();
+            if(stream)
             {
                 auto channel = MakeChannelSound(
-                                   component->getStream(),
+                                   stream,
                                    getTarget(proc.id()));
                 inputStreams.push_back(channel);
             }
@@ -143,16 +144,10 @@ void ConstraintComponent::makeStream(const Context& player)
             }
         }
 
-        m_stream = MixNStreams(inputStreams);
-        return;
-
-        // TODO this does not work :
-        /*
         m_stream = MakePitchSchiftTimeStretchSound(
-                    MixNStreams(soundStreams),
+                    MixNStreams(inputStreams),
                     &m_shift,
                     &m_stretch);
-        */
     }
 
     // Look for all the "contents" process :
