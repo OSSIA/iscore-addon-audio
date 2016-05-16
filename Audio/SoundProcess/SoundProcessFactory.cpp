@@ -41,11 +41,13 @@ Process::ProcessModel* ProcessFactory::load(
 Process::LayerPresenter *ProcessFactory::makeLayerPresenter(
         const Process::LayerModel& model,
         Process::LayerView* v,
+        const Process::ProcessPresenterContext& ctx,
         QObject* parent)
 {
     return new LayerPresenter{
         dynamic_cast<const LayerModel&>(model),
                 dynamic_cast<LayerView*>(v),
+                ctx,
                 parent};
 }
 

@@ -64,7 +64,7 @@ void Model::setDriver(const QString& driver)
 
     QSettings s;
     s.setValue(Keys::driver, m_driver);
-    emit driverChanged(driver);
+    emit DriverChanged(driver);
 }
 
 
@@ -82,7 +82,7 @@ void Model::setCard(const QString& card)
 
     QSettings s;
     s.setValue(Keys::card, m_card);
-    emit cardChanged(card);
+    emit CardChanged(card);
 }
 
 int Model::getBufferSize() const
@@ -98,7 +98,7 @@ void Model::setBufferSize(int buf)
     m_bufferSize = buf;
     QSettings s;
     s.setValue(Keys::bufferSize, m_bufferSize);
-    emit bufferSizeChanged(m_bufferSize);
+    emit BufferSizeChanged(m_bufferSize);
 }
 
 int Model::getRate() const
@@ -114,7 +114,7 @@ void Model::setRate(int rate)
     m_rate = rate;
     QSettings s;
     s.setValue(Keys::samplingRate, m_rate);
-    emit rateChanged(m_rate);
+    emit RateChanged(m_rate);
 }
 
 

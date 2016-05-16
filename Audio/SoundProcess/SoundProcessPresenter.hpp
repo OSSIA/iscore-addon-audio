@@ -17,6 +17,7 @@ class LayerPresenter final :
         explicit LayerPresenter(
                 const LayerModel& model,
                 LayerView* view,
+                const Process::ProcessPresenterContext& ctx,
                 QObject* parent);
 
         void setWidth(qreal width) override;

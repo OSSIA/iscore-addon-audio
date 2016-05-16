@@ -23,13 +23,13 @@ void ApplicationPlugin::initialize()
 {
     // Restart everything if audio settings change.
     auto& set = GUIApplicationContextPlugin::context.settings<Settings::Model>();
-    con(set, &Settings::Model::bufferSizeChanged,
+    con(set, &Settings::Model::BufferSizeChanged,
         this, &ApplicationPlugin::startEngine);
-    con(set, &Settings::Model::cardChanged,
+    con(set, &Settings::Model::CardChanged,
         this, &ApplicationPlugin::startEngine);
-    con(set, &Settings::Model::driverChanged,
+    con(set, &Settings::Model::DriverChanged,
         this, &ApplicationPlugin::startEngine);
-    con(set, &Settings::Model::rateChanged,
+    con(set, &Settings::Model::RateChanged,
         this, &ApplicationPlugin::startEngine);
     startEngine();
 

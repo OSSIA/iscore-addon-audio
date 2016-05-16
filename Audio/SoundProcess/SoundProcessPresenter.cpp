@@ -8,15 +8,15 @@ namespace Sound
 LayerPresenter::LayerPresenter(
         const LayerModel& layer,
         LayerView* view,
+        const Process::ProcessPresenterContext& ctx,
         QObject* parent):
-    Process::LayerPresenter{"AudioLayerPresenter", parent},
+    Process::LayerPresenter{ctx, parent},
     m_layer{layer},
-    m_view{view},
-    m_focusDispatcher{iscore::IDocument::documentContext(layer).document}
+    m_view{view}
 {
     connect(view, &LayerView::pressed,
             this, [&] () {
-        m_focusDispatcher.focus(this);
+        m_context.context.focusDispatcher.focus(this);
     });
 
     auto& pm = processModel();

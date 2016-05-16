@@ -39,9 +39,10 @@ Process::ProcessModel* ProcessFactory::load(
 Process::LayerPresenter *ProcessFactory::makeLayerPresenter(
         const Process::LayerModel& model,
         Process::LayerView* v,
+        const Process::ProcessPresenterContext& ctx,
         QObject* parent)
 {
-    return new Dummy::DummyLayerPresenter{model, dynamic_cast<Dummy::DummyLayerView*>(v), parent};
+    return new Dummy::DummyLayerPresenter{model, dynamic_cast<Dummy::DummyLayerView*>(v), ctx, parent};
 }
 
 Process::LayerView* ProcessFactory::makeLayerView(

@@ -34,10 +34,10 @@ class Model : public iscore::SettingsDelegateModelInterface{
         void setRate(int);
 
     signals:
-        void driverChanged(const QString&);
-        void cardChanged(const QString&);
-        void bufferSizeChanged(int);
-        void rateChanged(int);
+        void DriverChanged(const QString&);
+        void CardChanged(const QString&);
+        void BufferSizeChanged(int);
+        void RateChanged(int);
 
     private:
         void setFirstTimeSettings() override;

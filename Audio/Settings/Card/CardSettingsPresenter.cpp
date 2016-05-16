@@ -17,47 +17,47 @@ Presenter::Presenter(
     iscore::SettingsDelegatePresenterInterface{m, v, parent}
 {
     // Buffer size
-    con(m, &Model::bufferSizeChanged, &v, &View::setBufferSize);
+    con(m, &Model::BufferSizeChanged, &v, &View::setBufferSize);
     con(v, &View::bufferSizeChanged,
         this, [&] (auto bufferSize) {
         if(bufferSize != m.getBufferSize())
         {
-            m_disp.submitCommand<SetBufferSize>(this->model(this), bufferSize);
+            m_disp.submitCommand<SetModelBufferSize>(this->model(this), bufferSize);
         }
     });
 
     v.setBufferSize(m.getBufferSize());
 
     // Rate
-    con(m, &Model::rateChanged, &v, &View::setSampleRate);
+    con(m, &Model::RateChanged, &v, &View::setSampleRate);
     con(v, &View::rateChanged,
         this, [&] (auto sampleRate) {
         if(sampleRate != m.getRate())
         {
-            m_disp.submitCommand<SetRate>(this->model(this), sampleRate);
+            m_disp.submitCommand<SetModelRate>(this->model(this), sampleRate);
         }
     });
 
     v.setSampleRate(m.getRate());
 
     // Driver
-    con(m, &Model::driverChanged, &v, &View::setDriver);
+    con(m, &Model::DriverChanged, &v, &View::setDriver);
     con(v, &View::driverChanged,
         this, [&] (auto driver) {
         if(driver != m.getDriver())
         {
-            m_disp.submitCommand<SetDriver>(this->model(this), driver);
+            m_disp.submitCommand<SetModelDriver>(this->model(this), driver);
         }
     });
     v.setDriver(m.getDriver());
 
     // Card
-    con(m, &Model::cardChanged, &v, &View::setCard);
+    con(m, &Model::CardChanged, &v, &View::setCard);
     con(v, &View::cardChanged,
         this, [&] (auto card) {
         if(card != m.getCard())
         {
-            m_disp.submitCommand<SetCard>(this->model(this), card);
+            m_disp.submitCommand<SetModelCard>(this->model(this), card);
         }
     });
 

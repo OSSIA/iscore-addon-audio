@@ -14,7 +14,7 @@ class DocumentPlugin : public iscore::DocumentPlugin
                 AudioContext& ctx,
                 iscore::Document& doc,
                 QObject* parent):
-            iscore::DocumentPlugin{doc, "AudioDocumentPlugin", parent},
+            iscore::DocumentPlugin{doc.context(), "AudioDocumentPlugin", parent},
             m_ctx{doc.context(), ctx}
         {
 
