@@ -22,7 +22,6 @@ class InspectorFactory final :
 };
 }
 
-// MOVEME
 namespace Mix
 {
 class InspectorFactory final :
@@ -42,7 +41,6 @@ class InspectorFactory final :
 };
 }
 
-// MOVEME
 namespace Return
 {
 class InspectorFactory final :
@@ -62,8 +60,6 @@ class InspectorFactory final :
 };
 }
 
-
-// MOVEME
 namespace Effect
 {
 class InspectorFactory final :
