@@ -24,7 +24,7 @@ class ProcessModel;
 }
 namespace AudioStreamEngine
 {
-class Context;
+struct Context;
 class ConstraintComponent;
 class SendComponent;
 class EffectProcessComponent;

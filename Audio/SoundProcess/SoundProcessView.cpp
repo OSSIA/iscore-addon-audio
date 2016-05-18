@@ -56,7 +56,6 @@ std::vector<std::vector<double> > LayerView::computeDataSet(ZoomRatio ratio, dou
 
     const double density = std::max((m_sampleRate * ratio) / 1000., 1.);
     const int density_i = (int) density;
-    const auto w = width();
 
     if (densityptr != nullptr)
         *densityptr = density;
