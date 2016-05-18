@@ -1,10 +1,10 @@
 #pragma once
 #include <QObject>
 #include <iscore/plugins/qt_interfaces/PluginRequirements_QtInterface.hpp>
-#include <iscore/plugins/qt_interfaces/GUIApplicationContextPlugin_QtInterface.hpp>
 #include <iscore/plugins/qt_interfaces/FactoryInterface_QtInterface.hpp>
 #include <iscore/plugins/qt_interfaces/FactoryFamily_QtInterface.hpp>
 #include <iscore/plugins/qt_interfaces/GUIApplicationContextPlugin_QtInterface.hpp>
+#include <iscore/plugins/qt_interfaces/CommandFactory_QtInterface.hpp>
 
 class iscore_plugin_audio final:
         public QObject,

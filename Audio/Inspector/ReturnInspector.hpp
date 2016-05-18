@@ -1,16 +1,15 @@
 #pragma once
 #include <Process/Inspector/ProcessInspectorWidgetDelegate.hpp>
 #include <iscore/command/Dispatchers/CommandDispatcher.hpp>
-#include <Audio/SoundProcess/SoundProcessModel.hpp>
-
-class QLineEdit;
+#include <Audio/ReturnProcess/ReturnProcessModel.hpp>
 
 namespace Audio
 {
-namespace Sound
+namespace Return
 {
+class ProcessModel;
 class InspectorWidget final :
-        public Process::InspectorWidgetDelegate_T<Sound::ProcessModel>
+        public Process::InspectorWidgetDelegate_T<ProcessModel>
 {
     public:
         explicit InspectorWidget(
@@ -19,7 +18,6 @@ class InspectorWidget final :
                 QWidget* parent);
 
     private:
-        QLineEdit* m_edit{};
         CommandDispatcher<> m_dispatcher;
 };
 }

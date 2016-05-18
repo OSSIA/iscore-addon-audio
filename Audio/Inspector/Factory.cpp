@@ -3,7 +3,11 @@
 #include <Audio/MixProcess/MixProcessModel.hpp>
 #include <Audio/ReturnProcess/ReturnProcessModel.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
+
 #include <Audio/Inspector/AudioInspector.hpp>
+#include <Audio/Inspector/MixInspector.hpp>
+#include <Audio/Inspector/ReturnInspector.hpp>
+#include <Audio/Inspector/EffectInspector.hpp>
 namespace Audio
 {
 namespace Sound

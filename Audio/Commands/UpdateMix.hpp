@@ -45,7 +45,6 @@ class UpdateRouting final : public iscore::SerializableCommand
         Mix::Routing m_old, m_new;
 };
 
-// MOVEME
 class UpdateDirect final : public iscore::SerializableCommand
 {
            ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), UpdateDirect, "Update direct")

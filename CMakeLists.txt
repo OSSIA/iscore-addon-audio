@@ -79,6 +79,9 @@ set(HDRS ${HDRS}
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/EffectInspector.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/ReturnInspector.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/MixInspector.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsFactory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsModel.hpp"
@@ -186,6 +189,9 @@ set(SRCS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/EffectInspector.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/ReturnInspector.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/MixInspector.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsModel.cpp"
