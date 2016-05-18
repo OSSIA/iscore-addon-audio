@@ -1,6 +1,8 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.2
+import QtQuick.Extras 1.4
+import QtQuick.Controls.Styles 1.4
 
 Rectangle {
     id: trackRoot
@@ -18,7 +20,7 @@ Rectangle {
             Rectangle {
             id: wrapper
             height: columnWrap.height + 20
-            width: removeButton.width + 20
+            width: removeButton.width + 50
             color: "lightgrey"
             border.color: "black"
             anchors.margins: 5
@@ -32,24 +34,60 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 
-                CircularButton {
-                    id: panButton
-                    value: trackModel.getPan(index)
-                    onValueChanged: trackModel.setPan(index, value)
+                Rectangle {
+                    color: "transparent"
+
+                    width: panButton.width
+                    height: panButton.height + 50
                     anchors.horizontalCenter: parent.horizontalCenter
+
+                    Component.onCompleted: {
+                        console.log(width, height)
+                    }
+
+                    Dial {
+                        anchors.verticalCenter: parent.verticalCenter
+                        Component.onCompleted: console.log(anchors.horizontalCenter, anchors.verticalCenter, parent.verticalCenter)
+                        id: panButton
+                        maximumValue: 1
+                        minimumValue: -1
+                        tickmarksVisible: true
+                        stepSize: 0.01
+                        style: DialStyle {
+                            background: Image {source: "img/button.png"}
+                            tickmarkStepSize: 0.5
+                            tickmarkInset: 2
+                            tickmark: Rectangle {
+                                color: "#FF0000"
+                                implicitHeight: 7
+                                implicitWidth: 3
+                                radius: width / 2.;
+                            }
+
+                            minorTickmark: Rectangle {
+                                color: "#FFFFFF"
+                                implicitHeight: 3
+                                implicitWidth: 3
+                                radius: width / 2
+                            }
+                            minorTickmarkCount: 4
+                            minorTickmarkInset: 2
+
+                            labelStepSize: 0.5
+                            labelInset: -15
+                            tickmarkLabel: Text {
+                                color: "black"
+                                text: styleData.value
+                                font.pixelSize: 12
+                            }
+                        }
+                        value: trackModel.getPan(index)
+                        onValueChanged: {
+                            trackModel.setPan(index, value)
+                        }
+                        anchors.horizontalCenter: parent.horizontalCenter
+                    }
                 }
-
-//                Slider {
-//                    id: panSlider
-//                    orientation: Qt.Horizontal
-//                    value: trackModel.getPan(index)
-//                    minimumValue: -1
-//                    maximumValue: 1
-//                    width: width
-//                    stepSize: 0.001
-//                    onValueChanged: {trackModel.setPan(index, value); panButton.value = value}
-//                }
-
                 Label {
                     anchors.horizontalCenter: columnWrap.horizontalCenter
                     text: "Pan %1".arg(panButton.value)
