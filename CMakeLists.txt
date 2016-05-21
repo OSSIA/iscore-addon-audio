@@ -13,14 +13,7 @@ message("audio plugin requires libsndfile, portaudio")
 return()
 endif()
 
-# add_subdirectory(3rdparty/llvm)
-set(FAUST_NO_EXECUTABLE True)
-# add_subdirectory(3rdparty/faudiostream-code)
 add_subdirectory(3rdparty/libaudiostream)
-set(CMAKE_AUTOMOC OFF)
-include_directories(3rdparty/libaudiotool/src/)
-
-set(CMAKE_AUTOMOC ON)
 iscore_common_setup()
 
 # Packages
