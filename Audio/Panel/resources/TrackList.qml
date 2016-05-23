@@ -7,6 +7,13 @@ import QtQuick.Controls.Styles 1.4
 Rectangle {
     id: trackRoot
     color: "darkGrey"
+
+    width: parent.width
+    height: trackListView.height + 50
+
+    onWidthChanged: console.log(width, height)
+    onHeightChanged: console.log(width, height)
+
     ListView {
         id: trackListView
         orientation: Qt.Horizontal

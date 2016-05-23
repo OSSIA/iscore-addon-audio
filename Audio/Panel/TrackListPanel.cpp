@@ -25,7 +25,7 @@ TrackListPanel::TrackListPanel(const iscore::ApplicationContext &ctx):
     rootctxt->setContextProperty(QString("trackModel"), m_trackModel);
 
     m_containerpanel->setSource(QString("qrc:/qml/TrackList.qml"));
-    m_containerpanel->setInternalSize(2000, 500);
+    m_containerpanel->setContainerSize(m_containerpanel->size());
     m_containerpanel->setObjectName("TrackList");
     m_containerpanel->setBaseSize(m_widget->size());
 
