@@ -218,7 +218,7 @@ void LayerView::paint_impl(QPainter* painter) const
 
     for (const auto& path : m_paths) {
         painter->drawPath(path);
-        painter->translate(0., dblh);
+        painter->translate(0., dblh + 1);
     }
 
     painter->restore();
