@@ -1,13 +1,16 @@
 #pragma once
 #include <iscore/plugins/panel/PanelDelegate.hpp>
 
-class TrackModel;
+class QWidget;
 class QMLContainerPanel;
+class QVBoxLayout;
 
 namespace Audio {
 namespace Panel {
 
+class TrackModel;
 class Track;
+
 class TrackListPanel final: public iscore::PanelDelegate {
 public:
     TrackListPanel(const iscore::ApplicationContext &ctx);
@@ -21,7 +24,9 @@ private:
             maybe_document_t oldm,
             maybe_document_t newm) override;
 
-        QMLContainerPanel* m_widget{};
+        QMLContainerPanel* m_containerpanel {};
+        QWidget* m_widget{};
+        QVBoxLayout* m_layout{};
         TrackModel* m_trackModel{};
 };
 
