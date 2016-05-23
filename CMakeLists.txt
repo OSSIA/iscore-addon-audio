@@ -27,6 +27,8 @@ iscore_common_setup()
 find_package(Qt5 5.3 REQUIRED COMPONENTS Core Widgets Multimedia)
 
 
+qt5_add_resources(QRCS "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/resources/audiopanel.qrc")
+
 file(GLOB_RECURSE HDRS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libaudiotool/src/libwatermark/*.h")
 # Files & main target
 set(HDRS ${HDRS}
@@ -126,6 +128,11 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessModel.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/Track.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/TrackListPanel.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/TrackListPanelFactory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/TrackModel.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.hpp"
 )
@@ -230,10 +237,15 @@ set(SRCS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.cpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/Track.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/TrackListPanel.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/TrackListPanelFactory.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/TrackModel.cpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.cpp"
 )
 
-add_library(${PROJECT_NAME} ${SRCS} ${HDRS})
+add_library(${PROJECT_NAME} ${SRCS} ${HDRS} ${QRCS})
 iscore_generate_command_list_file(${PROJECT_NAME} "${HDRS}")
 target_link_libraries(${PROJECT_NAME} PUBLIC
                      Qt5::Core Qt5::Widgets Qt5::Multimedia

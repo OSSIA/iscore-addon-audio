@@ -16,6 +16,7 @@
 #include <Audio/ReturnProcess/ReturnProcessFactory.hpp>
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
 #include <Audio/Settings/Card/CardSettingsFactory.hpp>
+#include <Audio/Panel/TrackListPanelFactory.hpp>
 
 #include <Audio/EffectProcess/EffectFactory.hpp>
 #include <Audio/EffectProcess/FaustEffectFactory.hpp>
@@ -77,6 +78,8 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
             >,
         FW<iscore::SettingsDelegateFactory,
             Audio::Settings::Factory>,
+        FW<iscore::PanelDelegateFactory,
+            Audio::Panel::TrackListPanelFactory>,
         FW<Audio::Effect::EffectFactory,
             Audio::Effect::FaustEffectFactory>,
         FW<Ossia::LocalTree::ProcessComponentFactory,
