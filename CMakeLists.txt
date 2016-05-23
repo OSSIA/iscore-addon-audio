@@ -13,14 +13,7 @@ message("audio plugin requires libsndfile, portaudio")
 return()
 endif()
 
-# add_subdirectory(3rdparty/llvm)
-set(FAUST_NO_EXECUTABLE True)
-# add_subdirectory(3rdparty/faudiostream-code)
 add_subdirectory(3rdparty/libaudiostream)
-set(CMAKE_AUTOMOC OFF)
-include_directories(3rdparty/libaudiotool/src/)
-
-set(CMAKE_AUTOMOC ON)
 iscore_common_setup()
 
 # Packages
@@ -246,6 +239,8 @@ set(SRCS
 )
 
 add_library(${PROJECT_NAME} ${SRCS} ${HDRS} ${QRCS})
+set_property(TARGET ${PROJECT_NAME}  PROPERTY COTIRE_ADD_UNITY_BUILD FALSE)
+
 iscore_generate_command_list_file(${PROJECT_NAME} "${HDRS}")
 target_link_libraries(${PROJECT_NAME} PUBLIC
                      Qt5::Core Qt5::Widgets Qt5::Multimedia

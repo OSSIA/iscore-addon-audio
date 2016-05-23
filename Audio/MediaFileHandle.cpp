@@ -2,8 +2,23 @@
 #include <iscore/serialization/DataStreamVisitor.hpp>
 #include <iscore/serialization/JSONVisitor.hpp>
 #include <sndfile.hh>
-#include <libwatermark/mathutils/math_util.h>
 
+// Taken from libwatermark
+template<typename T>
+static std::vector<std::vector<T> > deinterleave(std::vector<T>& in, unsigned int channels, unsigned int frames)
+{
+    std::vector<std::vector<T>> out;
+    out.resize(channels);
+
+    for(auto channel = 0U; channel < channels; ++channel)
+    {
+        out[channel].resize(frames);
+        for(auto frame = 0U; frame < frames; ++frame)
+            out[channel][frame] = in[frame * channels + channel];
+    }
+
+    return out;
+}
 
 template<>
 void Visitor<Reader<DataStream>>::readFrom(
@@ -79,7 +94,7 @@ AudioArray MediaFileHandle::readFile(const QFile &file, int* sRate)
                 for(int i = 0; i < myf.channels(); ++i)
                     myf.read(vec.data() + i * (myf.frames() + parity),  myf.frames() + parity);
 
-                return MathUtil::deinterleave(
+                return deinterleave(
                             vec,
                             (unsigned int) myf.channels(),
                             (unsigned int) myf.frames());
