@@ -20,7 +20,7 @@ namespace Panel {
 class TrackModel : public QAbstractListModel {
     Q_OBJECT
 public:
-    TrackModel(const iscore::DocumentContext& ctx, QObject* parent = 0);
+    TrackModel(const iscore::DocumentContext& ctx, QObject* parent);
     enum TrackRoles {
         VolRole = Qt::UserRole + 1,
         PanRole,

@@ -49,12 +49,20 @@ Rectangle {
                     Dial {
                         anchors.verticalCenter: parent.verticalCenter
                         id: panButton
+                        width: 70
+                        height: 70
+                        anchors.verticalCenterOffset: 25
+                        anchors.horizontalCenterOffset: 0
                         maximumValue: 1
                         minimumValue: -1
                         tickmarksVisible: true
                         stepSize: 0.01
                         style: DialStyle {
-                            background: Image {source: "img/button.png"}
+                            background: Image {
+                                source: "img/button.png"
+                                width: 30
+                                height: 30
+                            }
                             tickmarkStepSize: 0.5
                             tickmarkInset: 2
                             tickmark: Rectangle {
@@ -128,8 +136,8 @@ Rectangle {
                     text: "Remove"
                     anchors.horizontalCenter: columnWrap.horizontalCenter
                     onClicked: {
+                        console.log("removing track " + index)
                         trackModel.removeTrack(index)
-                        console.log (trackListView.width)
                     }
                 }
             }
@@ -145,8 +153,7 @@ Rectangle {
         onClicked: {
             console.log ("adding track at index " + trackListView.count)
             console.log(trackModel)
-            if (trackListView.count == 0)
-                trackModel.addTrackSignal()
+            trackModel.addTrackSignal()
         }
     }
 }

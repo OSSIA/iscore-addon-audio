@@ -5,6 +5,7 @@
 #include <iscore/command/Dispatchers/CommandDispatcher.hpp>
 #include <iscore/document/DocumentContext.hpp>
 #include <Audio/Commands/AddTrack.hpp>
+#include <QQmlEngine>
 
 namespace Audio {
 namespace Panel {
@@ -14,6 +15,7 @@ TrackModel::TrackModel(const iscore::DocumentContext& ctx, QObject *parent) :
     m_commandDispatcher{ctx.commandStack}
 {
     setObjectName("TrackModel");
+    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
 void TrackModel::addTrackSignal() {
@@ -40,13 +42,22 @@ bool TrackModel::insertRows(int row, int count, const QModelIndex& parent) {
 }
 
 bool TrackModel::removeRows(int row, int count, const QModelIndex &parent) {
-    if (row >= m_data.size() || row + count - 1 >= m_data.size())
+    if (row >= m_data.size()
+            || row + count - 1 >= m_data.size()
+            || row < 0
+            || count < 0)
         return false;
 
+    qDebug () << "sending beginRemoveRows" << parent << row << (row + count -1) << "...";
+
     beginRemoveRows(parent, row, row + count - 1);
+    qDebug() << "sent.";
     auto it = m_data.begin();
+    qDebug() << "got beginning iterator";
     m_data.erase(it + row, it + row + count);
+    qDebug() << "erased rows from beginning +" << row << "to beginning +" << (row + count);
     endRemoveRows();
+    qDebug() << "sent endRemoveRows signal";
     return true;
 }
 
@@ -107,6 +118,7 @@ void TrackModel::addTrack(const Track& t) {
 }
 
 void TrackModel::removeTrack(int index) {
+    qDebug() << "submitting command for new RemoveTrack with index" << index;
  //   removeRows(index, 1);
 }
 

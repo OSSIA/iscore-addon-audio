@@ -6,7 +6,7 @@ namespace Panel {
 
 class Track {
 public:
-    Track(double volval, double panval, long outval);
+    Track(double volval, double panval, int32_t outval);
     Track();
 
     double vol() const;

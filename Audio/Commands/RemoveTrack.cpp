@@ -1,28 +1,30 @@
-#include "AddTrack.hpp"
+#include "RemoveTrack.hpp"
 #include <Audio/Panel/TrackModel.hpp>
 
 namespace Audio {
 namespace Commands {
 
-AddTrack::AddTrack(Path<Panel::TrackModel> device_tree, const Panel::Track& t) :
+RemoveTrack::RemoveTrack(Path<Panel::TrackModel> device_tree, int index) :
     m_devicesModel{device_tree},
-    m_index{m_devicesModel.find().rowCount()},
-    m_track{t}
+    m_index{index},
+    m_track{Panel::Track(m_devicesModel.find().getVol(index),
+                         m_devicesModel.find().getPan(index),
+                         m_devicesModel.find().getOut(index))}
 {
     qDebug() << m_devicesModel.find().parent();
-    qDebug() << "created new AddTrack with index" << m_index;
+    qDebug() << "created new RemoveTrack with index" << m_index;
 }
 
-void AddTrack::undo() const {
-    qDebug() << "undoing AddTrack...";
+void RemoveTrack::undo() const {
+    qDebug() << "undoing RemoveTrack...";
     auto& tm = m_devicesModel.find();
     qDebug() << "found model:" << &tm;
     tm.removeRows(createdTrackIndex(), 1);
     qDebug() << "done.";
 }
 
-void AddTrack::redo() const {
-    qDebug() << "redoing AddTrack...";
+void RemoveTrack::redo() const {
+    qDebug() << "redoing RemoveTrack...";
     auto& tm = m_devicesModel.find();
 
     if (tm.insertRows(tm.rowCount(), 1)) {
@@ -36,16 +38,16 @@ void AddTrack::redo() const {
     tm.print();
 }
 
-int AddTrack::createdTrackIndex() const {
+int RemoveTrack::createdTrackIndex() const {
     return m_index;
 }
 
-void AddTrack::serializeImpl(DataStreamInput &s) const {
+void RemoveTrack::serializeImpl(DataStreamInput &s) const {
     s << m_index
       << m_track;
 }
 
-void AddTrack::deserializeImpl(DataStreamOutput &s) {
+void RemoveTrack::deserializeImpl(DataStreamOutput &s) {
     s >> m_index
       >> m_track;
 }

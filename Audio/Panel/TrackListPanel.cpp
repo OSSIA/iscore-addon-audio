@@ -20,8 +20,6 @@ TrackListPanel::TrackListPanel(const iscore::ApplicationContext &ctx):
     m_layout{new QVBoxLayout},
     m_containerpanel{new QMLContainerPanel}
 {
-
-
     m_containerpanel->setSource(QString("qrc:/qml/TrackList.qml"));
     m_containerpanel->setContainerSize(m_containerpanel->size());
     m_containerpanel->setObjectName("TrackList");
@@ -51,6 +49,9 @@ const iscore::PanelStatus& TrackListPanel::defaultPanelStatus() const {
 void TrackListPanel::on_modelChanged(maybe_document_t oldm, maybe_document_t newm) {
     if(!newm) return;
 
+    delete m_layout;
+    m_layout = new QVBoxLayout{};
+
     delete m_containerpanel;
 
     m_containerpanel = new QMLContainerPanel{};
@@ -60,12 +61,14 @@ void TrackListPanel::on_modelChanged(maybe_document_t oldm, maybe_document_t new
     QQmlEngine* engine = container->engine();
     QQmlContext* rootctxt = engine->rootContext();
 
-    rootctxt->setContextProperty(QString("trackModel"), &(audioplug.trackModel()));
-
     m_containerpanel->setSource(QString("qrc:/qml/TrackList.qml"));
     m_containerpanel->setContainerSize(m_containerpanel->size());
     m_containerpanel->setObjectName("TrackList");
     m_containerpanel->setBaseSize(m_widget->size());
+
+    TrackModel* tm = &(audioplug.trackModel());
+    qDebug() << tm->parent();
+    rootctxt->setContextProperty(QString("trackModel"), tm);
 
     m_layout->addWidget(m_containerpanel);
     m_widget->setLayout(m_layout);

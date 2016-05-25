@@ -2,7 +2,7 @@
 namespace Audio {
 namespace Panel {
 
-Track::Track(double volval, double panval, long outval) : m_vol(volval), m_pan(panval), m_output(outval) {}
+Track::Track(double volval, double panval, int32_t outval) : m_vol(volval), m_pan(panval), m_output(outval) {}
 Track::Track() : Track(100, 0, 0) {}
 
 double Track::vol() const {
