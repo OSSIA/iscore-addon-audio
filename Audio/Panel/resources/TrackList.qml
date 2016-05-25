@@ -6,13 +6,9 @@ import QtQuick.Controls.Styles 1.4
 
 Rectangle {
     id: trackRoot
-    color: "darkGrey"
 
-    width: parent.width
+    width: trackListView.width
     height: trackListView.height + 50
-
-    onWidthChanged: console.log(width, height)
-    onHeightChanged: console.log(width, height)
 
     ListView {
         id: trackListView
@@ -22,6 +18,8 @@ Rectangle {
 
         property int itemheight
         onItemheightChanged: { addTrackButton.y = itemheight + 5; }
+        width: 800
+        height: 100
 
         delegate:
             Rectangle {
@@ -129,7 +127,10 @@ Rectangle {
                     id: removeButton
                     text: "Remove"
                     anchors.horizontalCenter: columnWrap.horizontalCenter
-                    onClicked: trackModel.removeTrack(index)
+                    onClicked: {
+                        trackModel.removeTrack(index)
+                        console.log (trackListView.width)
+                    }
                 }
             }
         }
@@ -141,6 +142,11 @@ Rectangle {
     Button {
         id: addTrackButton
         text: "Add a track"
-        onClicked: trackModel.addTrackSignal()
+        onClicked: {
+            console.log ("adding track at index " + trackListView.count)
+            console.log(trackModel)
+            if (trackListView.count == 0)
+                trackModel.addTrackSignal()
+        }
     }
 }

@@ -71,6 +71,7 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/RemoveEffect.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/UpdateMix.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/AddTrack.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.hpp"
@@ -186,6 +187,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/RemoveEffect.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/UpdateMix.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/AddTrack.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.cpp"
@@ -231,6 +233,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/Track.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/TrackSerialization.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/TrackListPanel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/TrackListPanelFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/TrackModel.cpp"

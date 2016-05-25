@@ -119,5 +119,9 @@ void DocumentPlugin::openPlayer()
     }
 }
 
+Panel::TrackModel& DocumentPlugin::trackModel() {
+    return m_trackModel;
+}
+
 }
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 
 namespace Audio {
 namespace Panel {
@@ -10,11 +11,11 @@ public:
 
     double vol() const;
     double pan() const;
-    long out() const;
+    int32_t out() const;
 
     void setVol(double);
     void setPan(double);
-    void setOut(long);
+    void setOut(int32_t);
 
     static const int MAX_OUTPUT = 100;
 

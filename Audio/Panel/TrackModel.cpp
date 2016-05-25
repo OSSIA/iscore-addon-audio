@@ -2,13 +2,22 @@
 #include "Track.hpp"
 #include <QVariant>
 #include <QDebug>
+#include <iscore/command/Dispatchers/CommandDispatcher.hpp>
+#include <iscore/document/DocumentContext.hpp>
+#include <Audio/Commands/AddTrack.hpp>
 
 namespace Audio {
 namespace Panel {
 
-TrackModel::TrackModel(QObject *parent) : QAbstractListModel(parent) {}
+TrackModel::TrackModel(const iscore::DocumentContext& ctx, QObject *parent) :
+    QAbstractListModel(parent),
+    m_commandDispatcher{ctx.commandStack}
+{
+    setObjectName("TrackModel");
+}
 
 void TrackModel::addTrackSignal() {
+    qDebug() << "got addTrackSignal";
     addTrack(Track());
 }
 
@@ -87,16 +96,18 @@ bool TrackModel::setData(const QModelIndex &index, const QVariant &value, int ro
 }
 
 void TrackModel::addTrack(const Track& t) {
-    if (insertRows(rowCount(), 1)) {
-        QModelIndex index = TrackModel::index(rowCount() - 1);
-        setData(index, t.pan(), PanRole);
-        setData(index, (int)(t.out()), OutRole);
-        setData(index, QVariant(t.vol()), VolRole);
-    }
+//    if (insertRows(rowCount(), 1)) {
+//        QModelIndex index = TrackModel::index(rowCount() - 1);
+//        setData(index, t.pan(), PanRole);
+//        setData(index, (int)(t.out()), OutRole);
+//        setData(index, QVariant(t.vol()), VolRole);
+//    }
+    qDebug() << "submitting command for new AddTrack with index" << rowCount();
+    m_commandDispatcher.submitCommand(new Commands::AddTrack{*this, t});
 }
 
 void TrackModel::removeTrack(int index) {
-    removeRows(index, 1);
+ //   removeRows(index, 1);
 }
 
 double TrackModel::getVol(int i) const {

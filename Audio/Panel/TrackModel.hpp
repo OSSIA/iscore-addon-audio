@@ -1,9 +1,18 @@
 #pragma once
+
+#include <iscore/command/Dispatchers/CommandDispatcher.hpp>
+#include <iscore/tools/IdentifiedObject.hpp>
+
 #include <QAbstractListModel>
-#include <vector>
 #include <QObject>
 #include <QVariant>
-#include "Track.hpp"
+
+#include <Audio/Panel/Track.hpp>
+#include <vector>
+
+namespace iscore {
+    class DocumentContext;
+}
 
 namespace Audio {
 namespace Panel {
@@ -11,7 +20,7 @@ namespace Panel {
 class TrackModel : public QAbstractListModel {
     Q_OBJECT
 public:
-    TrackModel(QObject* parent = 0);
+    TrackModel(const iscore::DocumentContext& ctx, QObject* parent = 0);
     enum TrackRoles {
         VolRole = Qt::UserRole + 1,
         PanRole,
@@ -45,6 +54,7 @@ public slots:
 
 private:
     std::vector<Track> m_data;
+    CommandDispatcher<> m_commandDispatcher;
 };
 
 }}

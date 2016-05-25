@@ -11,7 +11,8 @@ double Track::vol() const {
 double Track::pan() const {
     return m_pan;
 }
-long Track::out() const {
+
+int32_t Track::out() const {
     return m_output;
 }
 
@@ -25,7 +26,7 @@ void Track::setPan(double p) {
         m_pan = p;
 }
 
-void Track::setOut(long o) {
+void Track::setOut(int32_t o) {
     if (o >= 0 && o < MAX_OUTPUT)
         m_output = o;
 }
