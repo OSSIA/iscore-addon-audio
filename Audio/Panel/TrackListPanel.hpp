@@ -1,5 +1,6 @@
 #pragma once
 #include <iscore/plugins/panel/PanelDelegate.hpp>
+#include <QPushButton>
 
 class QWidget;
 class QMLContainerPanel;

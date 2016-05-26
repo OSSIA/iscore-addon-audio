@@ -146,7 +146,6 @@ Rectangle {
         model: trackModel
     }
 
-
     Button {
         id: addTrackButton
         text: "Add a track"

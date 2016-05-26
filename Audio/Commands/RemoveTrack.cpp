@@ -16,30 +16,19 @@ RemoveTrack::RemoveTrack(Path<Panel::TrackModel> device_tree, int index) :
 }
 
 void RemoveTrack::undo() const {
-    qDebug() << "undoing RemoveTrack...";
     auto& tm = m_devicesModel.find();
-    qDebug() << "found model:" << &tm;
-    tm.removeRows(createdTrackIndex(), 1);
-    qDebug() << "done.";
+    if (tm.insertRows(m_index, 1)) {
+        QModelIndex index = tm.index(m_index);
+        tm.setData(index, m_track.pan(), Panel::TrackModel::PanRole);
+        tm.setData(index, (int)(m_track.out()), Panel::TrackModel::OutRole);
+        tm.setData(index, QVariant(m_track.vol()), Panel::TrackModel::VolRole);
+    }
 }
 
 void RemoveTrack::redo() const {
     qDebug() << "redoing RemoveTrack...";
     auto& tm = m_devicesModel.find();
-
-    if (tm.insertRows(tm.rowCount(), 1)) {
-        QModelIndex index = tm.index(createdTrackIndex());
-        tm.setData(index, m_track.pan(), Panel::TrackModel::PanRole);
-        tm.setData(index, (int)(m_track.out()), Panel::TrackModel::OutRole);
-        tm.setData(index, QVariant(m_track.vol()), Panel::TrackModel::VolRole);
-    }
-    qDebug() << "done.";
-    qDebug() << &tm;
-    tm.print();
-}
-
-int RemoveTrack::createdTrackIndex() const {
-    return m_index;
+    tm.removeRows(m_index, 1);
 }
 
 void RemoveTrack::serializeImpl(DataStreamInput &s) const {

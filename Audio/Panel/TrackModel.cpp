@@ -5,6 +5,8 @@
 #include <iscore/command/Dispatchers/CommandDispatcher.hpp>
 #include <iscore/document/DocumentContext.hpp>
 #include <Audio/Commands/AddTrack.hpp>
+#include <Audio/Commands/RemoveTrack.hpp>
+#include <Audio/Commands/SetData.hpp>
 #include <QQmlEngine>
 
 namespace Audio {
@@ -86,7 +88,11 @@ Qt::ItemFlags TrackModel::flags(int index) {
 }
 
 bool TrackModel::setData(const QModelIndex &index, const QVariant &value, int role) {
+    qDebug() << "setting value" << roleNames()[role] << "of index" << index.row() << "to" << value;
     int i = index.row();
+    if (i < 0)
+        return false;
+
     switch (role) {
     case VolRole:
         m_data[i].setVol(value.toDouble());
@@ -95,31 +101,30 @@ bool TrackModel::setData(const QModelIndex &index, const QVariant &value, int ro
         m_data[i].setPan(value.toDouble());
         break;
     case OutRole:
-        m_data[i].setOut((long)value.toLongLong());
+        m_data[i].setOut(value.toInt());
         break;
      default:
         return false;
     }
 
+    qDebug() << "set value done.";
+
     QVector<int> roles = QVector<int> (1, role);
     emit(QAbstractListModel::dataChanged(index, index, roles));
+
+    qDebug() << "sent 'data changed' signal";
+
     return true;
 }
 
 void TrackModel::addTrack(const Track& t) {
-//    if (insertRows(rowCount(), 1)) {
-//        QModelIndex index = TrackModel::index(rowCount() - 1);
-//        setData(index, t.pan(), PanRole);
-//        setData(index, (int)(t.out()), OutRole);
-//        setData(index, QVariant(t.vol()), VolRole);
-//    }
     qDebug() << "submitting command for new AddTrack with index" << rowCount();
     m_commandDispatcher.submitCommand(new Commands::AddTrack{*this, t});
 }
 
 void TrackModel::removeTrack(int index) {
     qDebug() << "submitting command for new RemoveTrack with index" << index;
- //   removeRows(index, 1);
+    m_commandDispatcher.submitCommand(new Commands::RemoveTrack{*this, index});
 }
 
 double TrackModel::getVol(int i) const {
@@ -137,15 +142,19 @@ long TrackModel::getOut(int i) const {
 }
 
 void TrackModel::setVol(int i, double volval) {
-    setData(index(i), volval, VolRole);
+    m_commandDispatcher.submitCommand(new Commands::SetData{*this, i, volval, VolRole});
 }
 
 void TrackModel::setPan(int i, double panval) {
-    setData(index(i), panval, PanRole);
+    m_commandDispatcher.submitCommand(new Commands::SetData{
+                                          *this, i, panval, PanRole
+                                      });
 }
 
-void TrackModel::setOut(int i, long outval) {
-    setData(index(i), (int)outval, OutRole);
+void TrackModel::setOut(int i, int32_t outval) {
+    m_commandDispatcher.submitCommand(new Commands::SetData{
+                                          *this, i, outval, OutRole
+                                      });
 }
 
 void TrackModel::print() {

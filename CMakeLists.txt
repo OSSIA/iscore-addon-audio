@@ -72,6 +72,8 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/UpdateMix.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/AddTrack.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/RemoveTrack.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/SetData.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.hpp"
@@ -188,6 +190,8 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/UpdateMix.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/AddTrack.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/RemoveTrack.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/SetData.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.cpp"

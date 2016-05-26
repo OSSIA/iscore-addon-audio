@@ -2,22 +2,21 @@
 #include <Audio/Commands/AudioCommandFactory.hpp>
 #include <iscore/command/SerializableCommand.hpp>
 #include <Audio/Panel/Track.hpp>
+#include <Audio/Panel/TrackModel.hpp>
 #include <iscore/tools/TreePath.hpp>
 
 namespace Audio {
-namespace Panel {
-    class TrackModel;
-}
-
 namespace Commands {
 
-class RemoveTrack : public iscore::SerializableCommand {
-    ISCORE_COMMAND_DECL(CommandFactoryName(), RemoveTrack, "Remove this track")
+class SetData : public iscore::SerializableCommand {
+    ISCORE_COMMAND_DECL(CommandFactoryName(), SetData, "Set data")
 public:
-    RemoveTrack(Path<Panel::TrackModel> device_tree, int index);
+    SetData(Path<Panel::TrackModel> device_tree,
+            int index,
+            QVariant value,
+            Panel::TrackModel::TrackRoles role);
     void undo() const override;
     void redo() const override;
-    int m_index;
 
 protected:
     void serializeImpl(DataStreamInput&) const override;
@@ -25,7 +24,10 @@ protected:
 
 private:
     Path<Panel::TrackModel> m_devicesModel;
-    Panel::Track m_track;
+    int m_index;
+    QVariant m_oldval;
+    QVariant m_newval;
+    Panel::TrackModel::TrackRoles m_role;
 };
 
 }

@@ -6,6 +6,7 @@
 #include <QQmlContext>
 #include <QWidget>
 #include <QVBoxLayout>
+#include <QPushButton>
 #include <iscore/document/DocumentContext.hpp>
 #include <core/presenter/DocumentManager.hpp>
 #include <core/document/Document.hpp>
