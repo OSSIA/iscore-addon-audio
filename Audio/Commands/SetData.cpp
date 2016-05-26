@@ -1,5 +1,5 @@
 #include "SetData.hpp"
-
+#include <iscore/tools/ModelPathSerialization.hpp>
 namespace Audio {
 namespace Commands {
 
@@ -10,10 +10,10 @@ SetData::SetData(Path<Panel::TrackModel> device_tree,
     m_devicesModel{device_tree},
     m_index(index),
     m_newval(value),
-    m_oldval{m_devicesModel.find().data(m_devicesModel.find().index(index), role)},
     m_role(role)
 {
-
+    auto& model = device_tree.find();
+    m_oldval = model.data(model.index(index), role);
 }
 
 void SetData::undo() const {
@@ -27,14 +27,16 @@ void SetData::redo() const {
 }
 
 void SetData::serializeImpl(DataStreamInput &s) const {
-    s << m_index
+    s << m_devicesModel
+      << m_index
       << m_oldval
       << m_newval
       << m_role;
 }
 
 void SetData::deserializeImpl(DataStreamOutput &s) {
-    s >> m_index
+    s >> m_devicesModel
+      >> m_index
       >> m_oldval
       >> m_newval
       >> m_role;

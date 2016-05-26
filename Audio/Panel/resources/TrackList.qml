@@ -162,7 +162,7 @@ Rectangle {
         onClicked: {
             console.log ("adding track at index " + trackListView.count)
             console.log(trackModel)
-            trackModel.addTrackSignal()
+            trackModel.sig_addTrack()
         }
     }
 }

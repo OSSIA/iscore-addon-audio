@@ -8,7 +8,8 @@
 #include <Audio/Commands/RemoveTrack.hpp>
 #include <Audio/Commands/SetData.hpp>
 #include <QQmlEngine>
-
+#include <QQmlContext>
+#include <QQuickWidget>
 namespace Audio {
 namespace Panel {
 
@@ -18,11 +19,23 @@ TrackModel::TrackModel(const iscore::DocumentContext& ctx, QObject *parent) :
 {
     setObjectName("TrackModel");
     QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
-}
 
-void TrackModel::addTrackSignal() {
-    qDebug() << "got addTrackSignal";
-    addTrack(Track());
+    connect(this, &TrackModel::sig_addTrack,
+            this, &TrackModel::addTrack, Qt::QueuedConnection);
+
+
+
+    m_containerpanel = new QMLContainerPanel{};
+
+    QQuickWidget* container = m_containerpanel->container();
+    QQmlEngine* engine = container->engine();
+    QQmlContext* rootctxt = engine->rootContext();
+    rootctxt->setContextProperty(QString("trackModel"), this);
+
+    m_containerpanel->setSource(QString("qrc:/qml/TrackList.qml"));
+    m_containerpanel->setContainerSize(m_containerpanel->size());
+    m_containerpanel->setObjectName("TrackList");
+
 }
 
 QHash<int, QByteArray> TrackModel::roleNames() const {
@@ -83,11 +96,12 @@ int TrackModel::rowCount(const QModelIndex& m) const {
     return m_data.size();
 }
 
-Qt::ItemFlags TrackModel::flags(int index) {
+Qt::ItemFlags TrackModel::flags(const QModelIndex&) const {
     return Qt::ItemIsEditable | Qt::ItemIsEnabled;
 }
 
 bool TrackModel::setData(const QModelIndex &index, const QVariant &value, int role) {
+
     qDebug() << "setting value" << roleNames()[role] << "of index" << index.row() << "to" << value;
     int i = index.row();
     if (i < 0)
@@ -117,9 +131,9 @@ bool TrackModel::setData(const QModelIndex &index, const QVariant &value, int ro
     return true;
 }
 
-void TrackModel::addTrack(const Track& t) {
+void TrackModel::addTrack() {
     qDebug() << "submitting command for new AddTrack with index" << rowCount();
-    m_commandDispatcher.submitCommand(new Commands::AddTrack{*this, t});
+    m_commandDispatcher.submitCommand(new Commands::AddTrack{*this, Track{}});
 }
 
 void TrackModel::removeTrack(int index) {

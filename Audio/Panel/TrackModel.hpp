@@ -9,6 +9,7 @@
 
 #include <Audio/Panel/Track.hpp>
 #include <vector>
+#include <iscore/widgets/QmlContainerPanel.hpp>
 
 namespace iscore {
     class DocumentContext;
@@ -28,11 +29,9 @@ public:
     };
     Q_ENUMS(TrackRoles)
 
-    Q_INVOKABLE void addTrackSignal();
-
     QHash<int, QByteArray> roleNames() const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    Qt::ItemFlags flags(int);
+    Qt::ItemFlags flags(const QModelIndex&) const override;
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
     QVariant data(const QModelIndex &index, int role) const override;
@@ -48,13 +47,18 @@ public:
 
     Q_INVOKABLE void print();
 
+    QMLContainerPanel* m_containerpanel {};
+signals:
+    void sig_addTrack();
+
 public slots:
-    void addTrack(const Track&);
+    void addTrack();
     void removeTrack(int index);
 
 private:
     std::vector<Track> m_data;
     CommandDispatcher<> m_commandDispatcher;
+
 };
 
 }}

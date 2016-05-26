@@ -70,9 +70,10 @@ struct hash<Audio::Mix::Routing> {
 public:
     auto operator()(const Audio::Mix::Routing &s) const
     {
-        auto h1 = id_hash<Process::ProcessModel>()(s.in);
-        auto h2 = id_hash<Process::ProcessModel>()(s.out);
-        return h1 ^ ( h2 << 1 );
+        std::size_t seed = 0;
+        boost::hash_combine(seed, s.in);
+        boost::hash_combine(seed, s.out);
+        return seed;
     }
 };
 }
@@ -84,9 +85,10 @@ struct hash<Audio::Mix::Routing> {
 public:
     auto operator()(const Audio::Mix::Routing &s) const
     {
-        auto h1 = id_hash<Process::ProcessModel>()(s.in);
-        auto h2 = id_hash<Process::ProcessModel>()(s.out);
-        return h1 ^ ( h2 << 1 );
+        std::size_t seed = 0;
+        boost::hash_combine(seed, s.in);
+        boost::hash_combine(seed, s.out);
+        return seed;
     }
 };
 }

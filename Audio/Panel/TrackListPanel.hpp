@@ -5,9 +5,9 @@
 class QWidget;
 class QMLContainerPanel;
 class QVBoxLayout;
-
 namespace Audio {
 namespace Panel {
+using maybe_document_t = iscore::MaybeDocument;
 
 class TrackModel;
 class Track;
