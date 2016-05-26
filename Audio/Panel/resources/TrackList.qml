@@ -18,8 +18,18 @@ Rectangle {
 
         property int itemheight
         onItemheightChanged: { addTrackButton.y = itemheight + 5; }
+        onCountChanged: {
+            console.log(currentIndex, count)
+            if (currentIndex == -1 && count > 0) {
+                console.log("FUCK YOU FUCK YOU FUCK YOU")
+                currentIndex = count -1;
+            }
+            console.log(currentIndex)
+        }
+
         width: 800
         height: 100
+
 
         delegate:
             Rectangle {
