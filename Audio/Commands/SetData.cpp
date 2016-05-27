@@ -17,11 +17,13 @@ SetData::SetData(Path<Panel::TrackModel> device_tree,
 }
 
 void SetData::undo() const {
+    qDebug() << "undoing SetData";
     auto& tm = m_devicesModel.find();
     tm.setData(tm.index(m_index), m_oldval, m_role);
 }
 
 void SetData::redo() const {
+    qDebug() << "redoing SetData for index" << m_index << "role" << m_role << "new value" << m_newval << "old value" << m_oldval;
     auto& tm = m_devicesModel.find();
     tm.setData(tm.index(m_index), m_newval, m_role);
 }

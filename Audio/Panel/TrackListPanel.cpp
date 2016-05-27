@@ -44,7 +44,6 @@ const iscore::PanelStatus& TrackListPanel::defaultPanelStatus() const {
 void TrackListPanel::on_modelChanged(maybe_document_t oldm, maybe_document_t newm)
 {
     if(!newm) return;
-
     auto& audioplug = newm->plugin<AudioStreamEngine::DocumentPlugin>();
     TrackModel& tm = audioplug.trackModel();
 

@@ -16,6 +16,7 @@ RemoveTrack::RemoveTrack(Path<Panel::TrackModel> device_tree, int index) :
 }
 
 void RemoveTrack::undo() const {
+    qDebug() << "undoing RemoveTrack";
     auto& tm = m_devicesModel.find();
     if (tm.insertRows(m_index, 1)) {
         QModelIndex index = tm.index(m_index);

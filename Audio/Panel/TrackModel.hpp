@@ -43,7 +43,7 @@ public:
 
     Q_INVOKABLE void setVol(int index, double volval);
     Q_INVOKABLE void setPan(int index, double panval);
-    Q_INVOKABLE void setOut(int index, int32_t outval);
+    Q_INVOKABLE void setOut(int index, int outval);
 
     Q_INVOKABLE void print();
 

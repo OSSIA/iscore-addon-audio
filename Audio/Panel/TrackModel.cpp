@@ -27,6 +27,9 @@ TrackModel::TrackModel(const iscore::DocumentContext& ctx, QObject *parent) :
 
     m_containerpanel = new QMLContainerPanel{};
 
+    m_containerpanel->rootWidget()->setStyleSheet(tr("QWidget {background-color: #1A2024;}"));
+    m_containerpanel->container()->setStyleSheet(tr("QWidget {background-color: #1A2024;}"));
+
     QQuickWidget* container = m_containerpanel->container();
     QQmlEngine* engine = container->engine();
     QQmlContext* rootctxt = engine->rootContext();
@@ -63,16 +66,10 @@ bool TrackModel::removeRows(int row, int count, const QModelIndex &parent) {
             || count < 0)
         return false;
 
-    qDebug () << "sending beginRemoveRows" << parent << row << (row + count -1) << "...";
-
     beginRemoveRows(parent, row, row + count - 1);
-    qDebug() << "sent.";
     auto it = m_data.begin();
-    qDebug() << "got beginning iterator";
     m_data.erase(it + row, it + row + count);
-    qDebug() << "erased rows from beginning +" << row << "to beginning +" << (row + count);
     endRemoveRows();
-    qDebug() << "sent endRemoveRows signal";
     return true;
 }
 
@@ -101,8 +98,6 @@ Qt::ItemFlags TrackModel::flags(const QModelIndex&) const {
 }
 
 bool TrackModel::setData(const QModelIndex &index, const QVariant &value, int role) {
-
-    qDebug() << "setting value" << roleNames()[role] << "of index" << index.row() << "to" << value;
     int i = index.row();
     if (i < 0)
         return false;
@@ -121,23 +116,18 @@ bool TrackModel::setData(const QModelIndex &index, const QVariant &value, int ro
         return false;
     }
 
-    qDebug() << "set value done.";
-
     QVector<int> roles = QVector<int> (1, role);
     emit(QAbstractListModel::dataChanged(index, index, roles));
-
-    qDebug() << "sent 'data changed' signal";
 
     return true;
 }
 
 void TrackModel::addTrack() {
-    qDebug() << "submitting command for new AddTrack with index" << rowCount();
-    m_commandDispatcher.submitCommand(new Commands::AddTrack{*this, Track{}});
+    Track t;
+    m_commandDispatcher.submitCommand(new Commands::AddTrack{*this, t});
 }
 
 void TrackModel::removeTrack(int index) {
-    qDebug() << "submitting command for new RemoveTrack with index" << index;
     m_commandDispatcher.submitCommand(new Commands::RemoveTrack{*this, index});
 }
 
@@ -155,20 +145,22 @@ long TrackModel::getOut(int i) const {
     return (long)o;
 }
 
-void TrackModel::setVol(int i, double volval) {
-    m_commandDispatcher.submitCommand(new Commands::SetData{*this, i, volval, VolRole});
+void TrackModel::setVol(int i, double val) {
+    if (getVol(i) == val)
+        return;
+    m_commandDispatcher.submitCommand(new Commands::SetData{*this, i, val, VolRole});
 }
 
-void TrackModel::setPan(int i, double panval) {
-    m_commandDispatcher.submitCommand(new Commands::SetData{
-                                          *this, i, panval, PanRole
-                                      });
+void TrackModel::setPan(int i, double val) {
+    if (getPan(i) == val)
+        return;
+    m_commandDispatcher.submitCommand(new Commands::SetData{*this, i, val, PanRole});
 }
 
-void TrackModel::setOut(int i, int32_t outval) {
-    m_commandDispatcher.submitCommand(new Commands::SetData{
-                                          *this, i, outval, OutRole
-                                      });
+void TrackModel::setOut(int i, int val) {
+    if (getOut(i) == val)
+        return;
+    m_commandDispatcher.submitCommand(new Commands::SetData{*this, i, val, OutRole});
 }
 
 void TrackModel::print() {

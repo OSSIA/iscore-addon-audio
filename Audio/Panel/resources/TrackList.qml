@@ -7,8 +7,9 @@ import QtQuick.Controls.Styles 1.4
 Rectangle {
     id: trackRoot
 
-    width: trackListView.width
-    height: trackListView.height + 50
+    width: 0
+    height: 0
+    color: "#12171A"
 
     ListView {
         id: trackListView
@@ -18,26 +19,24 @@ Rectangle {
 
         property int itemheight
         onItemheightChanged: { addTrackButton.y = itemheight + 5; }
-        onCountChanged: {
-            console.log(currentIndex, count)
-            if (currentIndex == -1 && count > 0) {
-                console.log("FUCK YOU FUCK YOU FUCK YOU")
-                currentIndex = count -1;
-            }
-            console.log(currentIndex)
-        }
 
         width: 800
         height: 100
 
+        onCountChanged: {
+            if (count > 0) {
+                trackRoot.width = contentWidth + 500
+                trackRoot.height = contentHeight + 1000
+            }
+        }
 
         delegate:
             Rectangle {
             id: wrapper
             height: columnWrap.height + 20
-            width: removeButton.width + 50
-            color: "lightgrey"
-            border.color: "black"
+            width: removeButton.width + 30
+            color: "#1A2024"
+            border.color: "#666666"
             anchors.margins: 5
 
             Component.onCompleted: {
@@ -53,16 +52,16 @@ Rectangle {
                     color: "transparent"
 
                     width: panButton.width
-                    height: panButton.height + 50
+                    height: panButton.height + 10
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     Dial {
                         anchors.verticalCenter: parent.verticalCenter
                         id: panButton
-                        width: 70
-                        height: 70
-                        anchors.verticalCenterOffset: 25
+                        anchors.verticalCenterOffset: 0
                         anchors.horizontalCenterOffset: 0
+                        width: 50
+                        height: 50
                         maximumValue: 1
                         minimumValue: -1
                         tickmarksVisible: true
@@ -70,20 +69,18 @@ Rectangle {
                         style: DialStyle {
                             background: Image {
                                 source: "img/button.png"
-                                width: 30
-                                height: 30
                             }
                             tickmarkStepSize: 0.5
                             tickmarkInset: 2
                             tickmark: Rectangle {
-                                color: "#FF0000"
-                                implicitHeight: 7
-                                implicitWidth: 3
+                                color: "#FFA200"
+                                implicitHeight: 4
+                                implicitWidth: 4
                                 radius: width / 2.;
                             }
 
                             minorTickmark: Rectangle {
-                                color: "#FFFFFF"
+                                color: "silver"
                                 implicitHeight: 3
                                 implicitWidth: 3
                                 radius: width / 2
@@ -91,13 +88,13 @@ Rectangle {
                             minorTickmarkCount: 4
                             minorTickmarkInset: 2
 
-                            labelStepSize: 0.5
-                            labelInset: -15
-                            tickmarkLabel: Text {
-                                color: "black"
-                                text: styleData.value
-                                font.pixelSize: 12
-                            }
+//                            labelStepSize: 0.5
+//                            labelInset: -10
+//                            tickmarkLabel: Text {
+//                                color: "black"
+//                                text: styleData.value
+//                                font.pixelSize: 8
+//                            }
                         }
                         value: trackModel.getPan(index)
                         onValueChanged: {
@@ -109,6 +106,8 @@ Rectangle {
                 Label {
                     anchors.horizontalCenter: columnWrap.horizontalCenter
                     text: "Pan %1".arg(panButton.value)
+                    color: "silver"
+                    horizontalAlignment: Text.AlignHCenter
                 }
 
                 Slider {
@@ -126,6 +125,8 @@ Rectangle {
                     text: "Volume " + volSlider.value
                     anchors.horizontalCenter: columnWrap.horizontalCenter
                     anchors.top: volSlider.bottom
+                    horizontalAlignment: Text.horizontalAlignment
+                    color: "silver"
                 }
 
                 SpinBox {
@@ -135,10 +136,22 @@ Rectangle {
                     stepSize: 1
                     minimumValue: 0
                     onValueChanged: trackModel.setOut(index, value)
+                    style: SpinBoxStyle {
+                        background: Rectangle {
+                            border.color: outBox.hovered ? "white" : "transparent"
+                            border.width: 1
+                            color: "#12171A"
+                            radius: 2
+                            implicitHeight: 20
+                            implicitWidth: wrapper.width - 10
+                        }
+                        textColor: outBox.hovered ? "white" : "silver"
+                    }
                 }
                 Label {
                     anchors.horizontalCenter: columnWrap.horizontalCenter
                     text: "Output"
+                    color: "white"
                 }
 
                 Button {
@@ -148,6 +161,21 @@ Rectangle {
                     onClicked: {
                         console.log("removing track " + index)
                         trackModel.removeTrack(index)
+                    }
+                    style: ButtonStyle {
+                        background: Rectangle {
+                            color: "#1A2024"
+                            radius: 2
+                            border.color: removeButton.hovered ? "white" : "silver"
+                        }
+                        label: Text {
+                            color: removeButton.hovered ? "white" : "silver"
+                            anchors.centerIn: parent.Center
+                            text: control.text
+                            renderType: Text.NativeRendering
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignHCenter
+                        }
                     }
                 }
             }
@@ -159,10 +187,24 @@ Rectangle {
     Button {
         id: addTrackButton
         text: "Add a track"
+        style: ButtonStyle {
+            background: Rectangle {
+                color: "#1A2024"
+                radius: 2
+                border.color: addTrackButton.hovered ? "white" : "silver"
+            }
+            label: Text {
+                color: addTrackButton.hovered ? "white" : "silver"
+                anchors.centerIn: parent.Center
+                text: control.text
+                renderType: Text.NativeRendering
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+            }
+        }
         onClicked: {
-            console.log ("adding track at index " + trackListView.count)
-            console.log(trackModel)
             trackModel.sig_addTrack()
+            trackListView.positionViewAtEnd()
         }
     }
 }
