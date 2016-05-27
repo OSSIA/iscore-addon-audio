@@ -10,13 +10,9 @@ RemoveTrack::RemoveTrack(Path<Panel::TrackModel> device_tree, int index) :
     m_track{Panel::Track(m_devicesModel.find().getVol(index),
                          m_devicesModel.find().getPan(index),
                          m_devicesModel.find().getOut(index))}
-{
-    qDebug() << m_devicesModel.find().parent();
-    qDebug() << "created new RemoveTrack with index" << m_index;
-}
+{}
 
 void RemoveTrack::undo() const {
-    qDebug() << "undoing RemoveTrack";
     auto& tm = m_devicesModel.find();
     if (tm.insertRows(m_index, 1)) {
         QModelIndex index = tm.index(m_index);
@@ -27,7 +23,6 @@ void RemoveTrack::undo() const {
 }
 
 void RemoveTrack::redo() const {
-    qDebug() << "redoing RemoveTrack...";
     auto& tm = m_devicesModel.find();
     tm.removeRows(m_index, 1);
 }

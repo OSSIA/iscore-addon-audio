@@ -7,9 +7,18 @@ import QtQuick.Controls.Styles 1.4
 Rectangle {
     id: trackRoot
 
-    width: 0
-    height: 0
+    width: 1000
+    height: 1000
     color: "#12171A"
+
+    property int contentWidth: trackListView.contentWidth
+    onContentWidthChanged: {
+        if (contentWidth > width) {
+            width = contentWidth + 200
+            visible = false;
+            visible = true;
+        }
+    }
 
     ListView {
         id: trackListView
@@ -17,17 +26,12 @@ Rectangle {
         anchors.fill: parent
         spacing: 5
 
+        highlightRangeMode: ListView.StrictlyEnforceRange
+
         property int itemheight
         onItemheightChanged: { addTrackButton.y = itemheight + 5; }
-
-        width: 800
-        height: 100
-
-        onCountChanged: {
-            if (count > 0) {
-                trackRoot.width = contentWidth + 500
-                trackRoot.height = contentHeight + 1000
-            }
+        onCurrentIndexChanged: {
+            console.log(currentIndex)
         }
 
         delegate:
@@ -35,7 +39,7 @@ Rectangle {
             id: wrapper
             height: columnWrap.height + 20
             width: removeButton.width + 30
-            color: "#1A2024"
+            color: trackListView.isCurrentItem ? "#FFA200" : "#1A2024"
             border.color: "#666666"
             anchors.margins: 5
 
@@ -81,8 +85,8 @@ Rectangle {
 
                             minorTickmark: Rectangle {
                                 color: "silver"
-                                implicitHeight: 3
-                                implicitWidth: 3
+                                implicitHeight: 2
+                                implicitWidth: 2
                                 radius: width / 2
                             }
                             minorTickmarkCount: 4
@@ -146,12 +150,24 @@ Rectangle {
                             implicitWidth: wrapper.width - 10
                         }
                         textColor: outBox.hovered ? "white" : "silver"
+                        decrementControl: Image {
+                            source: outBox.hovered ? "qrc:/qml/img/down_arrow_on.png" : "qrc:/qml/img/down_arrow.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 5
+                            height: 5
+                        }
+                        incrementControl: Image {
+                            source: outBox.hovered ? "qrc:/qml/img/up_arrow_on.png" : "qrc:/qml/img/up_arrow.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 5
+                            height: 5
+                        }
                     }
                 }
                 Label {
                     anchors.horizontalCenter: columnWrap.horizontalCenter
                     text: "Output"
-                    color: "white"
+                    color: "silver"
                 }
 
                 Button {
