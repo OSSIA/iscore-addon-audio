@@ -50,7 +50,9 @@ const iscore::PanelStatus& TrackListPanel::defaultPanelStatus() const {
     return status;
 }
 
-void TrackListPanel::on_modelChanged(maybe_document_t oldm, maybe_document_t newm) {
+void TrackListPanel::on_modelChanged(
+        iscore::MaybeDocument oldm,
+        iscore::MaybeDocument newm) {
 
 }
 

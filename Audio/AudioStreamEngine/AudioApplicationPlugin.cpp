@@ -13,8 +13,8 @@ namespace Audio
 namespace AudioStreamEngine
 {
 
-ApplicationPlugin::ApplicationPlugin(const iscore::ApplicationContext& app):
-    iscore::GUIApplicationContextPlugin{app, "AudioApplicationPlugin", nullptr},
+ApplicationPlugin::ApplicationPlugin(const iscore::GUIApplicationContext& app):
+    iscore::GUIApplicationContextPlugin{app},
     m_ctx{*this}
 {
 }

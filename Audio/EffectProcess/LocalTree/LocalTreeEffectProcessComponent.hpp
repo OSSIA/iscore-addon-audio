@@ -253,7 +253,7 @@ class EffectProcessComponentFactory final :
                 const Id<iscore::Component>& id,
                 OSSIA::Node& parent,
                 Process::ProcessModel& proc,
-                const Ossia::LocalTree::DocumentPlugin& doc,
+                Ossia::LocalTree::DocumentPlugin& doc,
                 const iscore::DocumentContext& ctx,
                 QObject* paren_objt) const override;
 };

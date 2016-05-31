@@ -10,7 +10,7 @@ namespace AudioStreamEngine
 LoopComponent::LoopComponent(
         const Id<iscore::Component>& id,
         Loop::ProcessModel& scenario,
-        const LoopComponent::system_t& doc,
+        LoopComponent::system_t& doc,
         const iscore::DocumentContext& ctx,
         QObject* parent_obj):
     ProcessComponent_T{scenario, id, "LoopComponent", parent_obj},
@@ -70,7 +70,7 @@ template<>
 ConstraintComponent* LoopComponent::make<ConstraintComponent, Scenario::ConstraintModel>(
         const Id<iscore::Component>& id,
         Scenario::ConstraintModel& elt,
-        const LoopComponent::system_t& doc,
+        LoopComponent::system_t& doc,
         const iscore::DocumentContext& ctx,
         QObject* parent)
 {
@@ -81,7 +81,7 @@ template<>
 EventComponent* LoopComponent::make<EventComponent, Scenario::EventModel>(
         const Id<iscore::Component>& id,
         Scenario::EventModel& elt,
-        const LoopComponent::system_t& doc,
+        LoopComponent::system_t& doc,
         const iscore::DocumentContext& ctx,
         QObject* parent)
 {
@@ -92,7 +92,7 @@ template<>
 TimeNodeComponent* LoopComponent::make<TimeNodeComponent, Scenario::TimeNodeModel>(
         const Id<iscore::Component>& id,
         Scenario::TimeNodeModel& elt,
-        const LoopComponent::system_t& doc,
+        LoopComponent::system_t& doc,
         const iscore::DocumentContext& ctx,
         QObject* parent)
 {
@@ -103,7 +103,7 @@ template<>
 StateComponent* LoopComponent::make<StateComponent, Scenario::StateModel>(
         const Id<iscore::Component>& id,
         Scenario::StateModel& elt,
-        const LoopComponent::system_t& doc,
+        LoopComponent::system_t& doc,
         const iscore::DocumentContext& ctx,
         QObject* parent)
 {

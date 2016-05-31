@@ -10,7 +10,7 @@ class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPl
 {
         Q_OBJECT
     public:
-        ApplicationPlugin(const iscore::ApplicationContext& app);
+        ApplicationPlugin(const iscore::GUIApplicationContext& app);
         ~ApplicationPlugin();
 
         void startEngine();

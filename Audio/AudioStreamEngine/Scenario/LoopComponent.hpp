@@ -31,7 +31,7 @@ class LoopComponent final :
        LoopComponent(
                const Id<Component>& id,
                Loop::ProcessModel& scenario,
-               const system_t& doc,
+               system_t& doc,
                const iscore::DocumentContext& ctx,
                QObject* parent_obj);
 
@@ -46,7 +46,7 @@ class LoopComponent final :
        Component_T* make(
                const Id<Component>& id,
                Element& elt,
-               const system_t& doc,
+               system_t& doc,
                const iscore::DocumentContext& ctx,
                QObject* parent);
 

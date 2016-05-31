@@ -30,7 +30,7 @@ class ScenarioComponent final :
        ScenarioComponent(
                const Id<Component>& id,
                Scenario::ScenarioModel& scenario,
-               const system_t& doc,
+               system_t& doc,
                const iscore::DocumentContext& ctx,
                QObject* parent_obj);
 
@@ -47,7 +47,7 @@ class ScenarioComponent final :
        Component_T* make(
                const Id<Component>& id,
                Element& elt,
-               const system_t& doc,
+               system_t& doc,
                const iscore::DocumentContext& ctx,
                QObject* parent);
 

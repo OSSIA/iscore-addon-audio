@@ -11,23 +11,24 @@ namespace Panel {
 class TrackModel;
 class Track;
 
-class TrackListPanel final: public iscore::PanelDelegate {
-public:
-    TrackListPanel(const iscore::ApplicationContext &ctx);
+class TrackListPanel final: public iscore::PanelDelegate
+{
+    public:
+        TrackListPanel(const iscore::ApplicationContext &ctx);
 
-private:
-    QWidget* widget() override;
+    private:
+        QWidget* widget() override;
 
-    const iscore::PanelStatus& defaultPanelStatus() const override;
+        const iscore::PanelStatus& defaultPanelStatus() const override;
 
-    void on_modelChanged(
-            maybe_document_t oldm,
-            maybe_document_t newm) override;
+        void on_modelChanged(
+                iscore::MaybeDocument oldm,
+                iscore::MaybeDocument newm) override;
 
-        QMLContainerPanel* m_containerpanel {};
         QWidget* m_widget{};
-        QVBoxLayout* m_layout{};
         TrackModel* m_trackModel{};
+        QVBoxLayout* m_layout{};
+        QMLContainerPanel* m_containerpanel {};
 };
 
 }

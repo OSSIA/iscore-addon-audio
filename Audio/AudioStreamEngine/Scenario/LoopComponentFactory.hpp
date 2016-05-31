@@ -18,7 +18,7 @@ class LoopComponentFactory final :
         ProcessComponent* make(
                 const Id<iscore::Component>& id,
                 Process::ProcessModel& proc,
-                const DocumentPlugin& doc,
+                DocumentPlugin& doc,
                 const iscore::DocumentContext& ctx,
                 QObject* paren_objt) const override;
 };

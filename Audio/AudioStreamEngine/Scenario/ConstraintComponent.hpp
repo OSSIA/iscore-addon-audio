@@ -36,7 +36,7 @@ class ConstraintComponent final :
         ConstraintComponent(
                 const Id<Component>& id,
                 Scenario::ConstraintModel& constraint,
-                const system_t& doc,
+                system_t& doc,
                 const iscore::DocumentContext& ctx,
                 QObject* parent_comp);
         ~ConstraintComponent();
@@ -50,7 +50,7 @@ class ConstraintComponent final :
                 const Id<Component> & id,
                 ProcessComponentFactory& factory,
                 Process::ProcessModel &process,
-                const DocumentPlugin &system,
+                DocumentPlugin &system,
                 const iscore::DocumentContext &ctx,
                 QObject *parent_component);
 

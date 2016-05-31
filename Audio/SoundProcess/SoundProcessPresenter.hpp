@@ -35,11 +35,6 @@ class LayerPresenter final :
         { return static_cast<ProcessModel&>(m_layer.processModel()); }
         const Id<Process::ProcessModel>& modelId() const override;
 
-        void fillContextMenu(
-                QMenu*,
-                const QPoint& pos,
-                const QPointF& scenepos) const override;
-
     private:
         const LayerModel& m_layer;
         LayerView* m_view{};
