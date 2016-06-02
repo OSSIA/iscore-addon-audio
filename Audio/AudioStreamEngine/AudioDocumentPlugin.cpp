@@ -31,14 +31,14 @@ void DocumentPlugin::play()
     openPlayer();
 
     // Create our tree
-    auto comp = new ConstraintComponent(
-                Id<iscore::Component>{1},
+    m_comp = new ConstraintComponent(
+                getStrongId(doc->baseConstraint().components),
                 doc->baseConstraint(),
                 *this,
                 m_ctx.doc,
                 this);
-    doc->baseConstraint().components.add(comp);
-    AudioDependencyGraph graph{*comp};
+    doc->baseConstraint().components.add(m_comp);
+    AudioDependencyGraph graph{*m_comp};
     if(auto sorted_vertices = graph.check())
     {
         graph.apply(*sorted_vertices, m_ctx);
@@ -55,7 +55,7 @@ void DocumentPlugin::play()
         stop();
 
         // Delete
-        doc->baseConstraint().components.remove(Id<iscore::Component>{1});
+        doc->baseConstraint().components.remove(m_comp->id());
     });
 
 
@@ -68,9 +68,9 @@ void DocumentPlugin::play()
     // Play
 
     // TODO make id from components !!!!
-    if(comp)
+    if(m_comp)
     {
-        m_stream = comp->getStream();
+        m_stream = m_comp->getStream();
     }
     else
     {
@@ -101,10 +101,10 @@ void DocumentPlugin::stop()
     auto doc = dynamic_cast<Scenario::ScenarioDocumentModel*>(&m_ctx.doc.document.model().modelDelegate());
     if(doc)
     {
-        auto it = doc->baseConstraint().components.find(Id<iscore::Component>{1});
-        if(it != doc->baseConstraint().components.end())
+        if(m_comp)
         {
-            doc->baseConstraint().components.remove(Id<iscore::Component>{1});
+            doc->baseConstraint().components.remove(m_comp->id());
+            m_comp = nullptr;
         }
     }
 

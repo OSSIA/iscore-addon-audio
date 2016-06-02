@@ -7,6 +7,7 @@ namespace Audio
 {
 namespace AudioStreamEngine
 {
+class ConstraintComponent;
 class DocumentPlugin : public iscore::DocumentPlugin
 {
     public:
@@ -28,6 +29,7 @@ class DocumentPlugin : public iscore::DocumentPlugin
 
         Context m_ctx;
         AudioStream m_stream;
+        ConstraintComponent* m_comp{};
 };
 }
 }
