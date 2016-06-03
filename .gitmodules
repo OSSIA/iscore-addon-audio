@@ -1,6 +1,3 @@
 [submodule "libaudiostream"]
 	path = 3rdparty/libaudiostream
 	url = https://github.com/jcelerier/libaudiostream
-[submodule "3rdparty/faudiostream-code"]
-	path = 3rdparty/faudiostream-code
-	url = git://git.code.sf.net/u/jcelerier/faudiostream
