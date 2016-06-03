@@ -1,5 +1,5 @@
 #pragma once
-#include <iscore/plugins/settingsdelegate/SettingsDelegateModelInterface.hpp>
+#include <iscore/plugins/settingsdelegate/SettingsDelegateModel.hpp>
 
 namespace Audio
 {
@@ -14,11 +14,11 @@ struct Keys
         static const QString samplingRate;
 };
 
-class Model : public iscore::SettingsDelegateModelInterface{
+class Model : public iscore::SettingsDelegateModel{
         Q_OBJECT
 
     public:
-        Model();
+        Model(const iscore::ApplicationContext&);
 
         int getDriverId() const;
         QString getDriver() const;

@@ -16,7 +16,7 @@ const QString Keys::bufferSize = QStringLiteral("Audio/BufferSize");
 const QString Keys::samplingRate = QStringLiteral("Audio/SamplingRate");
 
 
-Model::Model()
+Model::Model(const iscore::ApplicationContext&)
 {
     QSettings s;
 

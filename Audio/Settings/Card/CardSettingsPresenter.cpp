@@ -14,7 +14,7 @@ Presenter::Presenter(
         Model& m,
         View& v,
         QObject *parent):
-    iscore::SettingsDelegatePresenterInterface{m, v, parent}
+    iscore::SettingsDelegatePresenter{m, v, parent}
 {
     // Buffer size
     con(m, &Model::BufferSizeChanged, &v, &View::setBufferSize);
