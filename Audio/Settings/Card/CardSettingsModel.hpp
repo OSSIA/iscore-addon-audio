@@ -6,45 +6,23 @@ namespace Audio
 namespace Settings
 {
 
-struct Keys
-{
-        static const QString driver;
-        static const QString card;
-        static const QString bufferSize;
-        static const QString samplingRate;
-};
-
 class Model : public iscore::SettingsDelegateModel{
         Q_OBJECT
 
     public:
-        Model(const iscore::ApplicationContext&);
+        Model(QSettings& set, const iscore::ApplicationContext&);
 
         int getDriverId() const;
-        QString getDriver() const;
-        void setDriver(const QString&);
 
-        QString getCard() const;
-        void setCard(const QString&);
-
-        int  getBufferSize() const;
-        void setBufferSize(int);
-
-        int  getRate() const;
-        void setRate(int);
-
-    signals:
-        void DriverChanged(const QString&);
-        void CardChanged(const QString&);
-        void BufferSizeChanged(int);
-        void RateChanged(int);
-
+        ISCORE_SETTINGS_PARAMETER_HPP(QString, Driver)
+        ISCORE_SETTINGS_PARAMETER_HPP(QString, Card)
+        ISCORE_SETTINGS_PARAMETER_HPP(int, BufferSize)
+        ISCORE_SETTINGS_PARAMETER_HPP(int, Rate)
     private:
-        void setFirstTimeSettings() override;
-        QString m_driver{};
-        QString m_card{};
-        int m_bufferSize{};
-        int m_rate{};
+        QString m_Driver{};
+        QString m_Card{};
+        int m_BufferSize{};
+        int m_Rate{};
 };
 
 ISCORE_SETTINGS_PARAMETER(Model, Driver)
