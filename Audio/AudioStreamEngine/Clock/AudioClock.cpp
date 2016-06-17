@@ -56,5 +56,9 @@ std::unique_ptr<RecreateOnPlay::ClockManager> AudioClockFactory::make(
     return std::make_unique<AudioClock>(ctx);
 }
 
+QString AudioClockFactory::prettyName() const
+{
+    return QObject::tr("Audio");
+}
 }
 }
