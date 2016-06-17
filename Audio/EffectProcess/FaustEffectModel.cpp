@@ -63,7 +63,8 @@ void FaustEffectModel::init()
 void FaustEffectModel::reload()
 {
     auto fx_text = m_text.toLocal8Bit();
-    m_effect = MakeFaustAudioEffect(fx_text, "", "");
+    if(!fx_text.isEmpty())
+        m_effect = MakeFaustAudioEffect(fx_text, "", "");
 
     if(m_effect)
     {

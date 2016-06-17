@@ -77,9 +77,9 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
             Audio::Effect::InspectorFactory
             >,
         FW<iscore::SettingsDelegateFactory,
-            Audio::Settings::Factory>,
+            Audio::Settings::Factory>,/*
         FW<iscore::PanelDelegateFactory,
-            Audio::Panel::TrackListPanelFactory>,
+            Audio::Panel::TrackListPanelFactory>,*/
         FW<Audio::Effect::EffectFactory,
             Audio::Effect::FaustEffectFactory>,
         FW<Ossia::LocalTree::ProcessComponentFactory,
