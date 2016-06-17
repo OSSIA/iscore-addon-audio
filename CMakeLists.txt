@@ -31,6 +31,8 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioDependencyGraph.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Context.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Clock/AudioClock.hpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/ConstraintComponent.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/EventComponent.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/StateComponent.hpp"
@@ -148,6 +150,8 @@ set(SRCS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioApplicationPlugin.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioDocumentPlugin.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Clock/AudioClock.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/ConstraintComponent.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/EventComponent.cpp"

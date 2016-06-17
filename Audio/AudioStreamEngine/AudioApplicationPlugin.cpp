@@ -46,12 +46,6 @@ void ApplicationPlugin::on_newDocument(iscore::Document* doc)
 {
     auto plug = new DocumentPlugin{m_ctx, *doc, &doc->model()};
     doc->model().addPluginModel(plug);
-
-    auto& ctrl = doc->context().app.components.applicationPlugin<OSSIAApplicationPlugin>();
-    con(ctrl, &OSSIAApplicationPlugin::requestPlay,
-            plug, [=] { plug->play(); });
-    con(ctrl, &OSSIAApplicationPlugin::requestStop,
-            plug, [=] { plug->stop(); });
 }
 
 void ApplicationPlugin::on_loadedDocument(iscore::Document* doc)

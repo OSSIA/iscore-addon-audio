@@ -30,6 +30,8 @@
 #include <Audio/AudioStreamEngine/Audio/MixComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Audio/SendComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Audio/ReturnComponentFactory.hpp>
+
+#include <Audio/AudioStreamEngine/Clock/AudioClock.hpp>
 #include <iscore_plugin_audio_commands_files.hpp>
 
 std::pair<const CommandParentFactoryKey, CommandGeneratorMap> iscore_plugin_audio::make_commands()
@@ -85,7 +87,9 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
         FW<Ossia::LocalTree::ProcessComponentFactory,
             Audio::Effect::LocalTree::EffectProcessComponentFactory>,
         FW<Audio::Effect::LocalTree::EffectComponentFactory,
-            Audio::Effect::LocalTree::FaustComponentFactory>
+            Audio::Effect::LocalTree::FaustComponentFactory>,
+        FW<RecreateOnPlay::ClockManagerFactory,
+            Audio::AudioStreamEngine::AudioClockFactory>
     >>(ctx, key);
 }
 
