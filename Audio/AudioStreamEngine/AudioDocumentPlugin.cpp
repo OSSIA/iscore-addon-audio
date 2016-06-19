@@ -16,15 +16,15 @@ namespace Audio
 namespace AudioStreamEngine
 {
 
-void DocumentPlugin::play()
+AudioStream DocumentPlugin::makeStream()
 {
     // First find the root constraint
-    auto doc = dynamic_cast<Scenario::ScenarioDocumentModel*>(&m_ctx.doc.document.model().modelDelegate());
+    auto doc = dynamic_cast<Scenario::ScenarioDocumentModel*>(&context.doc.document.model().modelDelegate());
     if(!doc)
-        return;
+        return nullptr;
 
-    if(!m_ctx.audio.plugin.engineStatus())
-        return;
+    if(!context.audio.plugin.engineStatus())
+        return nullptr;
 
     // Reset the player
     stop();
@@ -35,70 +35,48 @@ void DocumentPlugin::play()
                 getStrongId(doc->baseConstraint().components),
                 doc->baseConstraint(),
                 *this,
-                m_ctx.doc,
+                context.doc,
                 this);
     doc->baseConstraint().components.add(m_comp);
     AudioDependencyGraph graph{*m_comp};
     if(auto sorted_vertices = graph.check())
     {
-        graph.apply(*sorted_vertices, m_ctx);
+        graph.apply(*sorted_vertices, context);
     }
     else
     {
         stop();
-        return;
+        return nullptr;
     }
 
-    con(m_ctx.doc.document, &iscore::Document::aboutToClose,
+    con(context.doc.document, &iscore::Document::aboutToClose,
         this, [=] () {
-        // Stop
+        // Stop and clean
         stop();
-
-        // Delete
-        doc->baseConstraint().components.remove(m_comp->id());
     });
 
 
-    // First we have to construct our graph
-
-    // If the graph is acyclic, we can walk it and toposort it to
-    // create the streams
-    // finnally, we can associate the streams with their elements.
-
-    // Play
-
-    // TODO make id from components !!!!
     if(m_comp)
     {
-        m_stream = m_comp->getStream();
+        return m_comp->getStream();
     }
     else
     {
         qDebug("No component!");
+        return nullptr;
     }
-
-    if(m_stream)
-    {
-        StartSound(m_ctx.audio.player, m_stream, GenRealDate(m_ctx.audio.player, 0));
-    }
-    else
-    {
-        qDebug("No stream!");
-    }
-
-    StartAudioPlayer(m_ctx.audio.player);
 }
 
 void DocumentPlugin::stop()
 {
-    if(m_ctx.audio.player)
+    if(context.audio.player)
     {
-        StopAudioPlayer(m_ctx.audio.player);
-        CloseAudioClient(m_ctx.audio.player);
-        m_ctx.audio.player = nullptr;
+        StopAudioPlayer(context.audio.player);
+        CloseAudioClient(context.audio.player);
+        context.audio.player = nullptr;
     }
 
-    auto doc = dynamic_cast<Scenario::ScenarioDocumentModel*>(&m_ctx.doc.document.model().modelDelegate());
+    auto doc = dynamic_cast<Scenario::ScenarioDocumentModel*>(&context.doc.document.model().modelDelegate());
     if(doc)
     {
         if(m_comp)
@@ -107,15 +85,13 @@ void DocumentPlugin::stop()
             m_comp = nullptr;
         }
     }
-
-    m_stream = {};
 }
 
 void DocumentPlugin::openPlayer()
 {
-    if(!m_ctx.audio.player)
+    if(!context.audio.player)
     {
-        m_ctx.audio.player = OpenAudioClient(m_ctx.audio.renderer);
+        context.audio.player = OpenAudioClient(context.audio.renderer);
     }
 }
 
