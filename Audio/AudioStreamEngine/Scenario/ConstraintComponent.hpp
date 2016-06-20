@@ -30,7 +30,7 @@ class ConstraintComponent final :
         >;
 
         const Scenario::ConstraintModel& constraint() const
-        { return m_baseComponent.constraint; }
+        { return m_hm.constraint; }
 
         const Key& key() const override;
 
@@ -58,7 +58,7 @@ class ConstraintComponent final :
         void removing(const Process::ProcessModel& cst, const ProcessComponent& comp);
 
         const auto& processes() const
-        { return m_baseComponent.processes(); }
+        { return m_hm.processes(); }
 
         Mix::ProcessModel* findMix() const;
 
@@ -69,7 +69,9 @@ class ConstraintComponent final :
         SymbolicDate stopDate;
     private:
 
-        parent_t m_baseComponent;
+        audio_frame_t toFrame(const TimeValue& t) const;
+
+        parent_t m_hm;
         double m_shift{1.0};
         double m_stretch{1.0};
 

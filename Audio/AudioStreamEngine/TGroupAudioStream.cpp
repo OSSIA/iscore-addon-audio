@@ -288,6 +288,8 @@ ISCORE_PLUGIN_AUDIO_EXPORT void MakeScenarioTimeNodeCommand(AudioPlayer player, 
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSend(AudioStream s);
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeReturn(AudioStream s);
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeChannelSound(AudioStream s, double const * volume);
+ISCORE_PLUGIN_AUDIO_EXPORT void LoopSound(AudioRendererPtr p, AudioStream s, SymbolicDate start, SymbolicDate stop);
+
 void CloseAudioPlayer(AudioPlayerPtr ext_player); // In libaudiostreammc
 
 ISCORE_PLUGIN_AUDIO_EXPORT AudioPlayerPtr MakeGroupPlayer()
@@ -364,6 +366,53 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeIScoreExecutor(AudioStream s, OSSIA::
 {
     return new TEffectAudioStream{s, new ExecutorAudioEffect{t}};
 }
+
+struct TLoopCommand : public TControlCommand
+{
+        AudioStream fStream;
+        SymbolicDate fStopDate;
+
+        TLoopCommand(AudioStream s, SymbolicDate start, SymbolicDate stop):
+            TControlCommand{start},
+            fStream{s},
+            fStopDate{stop}
+        {
+
+        }
+
+        bool Execute(
+                TNonInterleavedAudioBuffer<float>* buffer,
+                map<SymbolicDate, audio_frame_t>& date_map,
+                audio_frame_t cur_frame,
+                long frames)
+        {
+            auto loop_time = fStopDate->getDate();
+            auto loop_dur = fStopDate->getDate() - fStartDate->getDate();
+            qDebug() << loop_time << loop_dur << InBuffer(loop_time, cur_frame, frames);
+            if (InBuffer(loop_time, cur_frame, frames))
+            {
+                fStream->Reset();
+                fStream->SetPos(0);
+
+                fStartDate->setDate(loop_time + 1);
+                fStopDate->setDate(loop_time + 1 + loop_dur);
+            }
+
+            // We always return true to prevent the command from being removed
+            return true;
+        }
+};
+
+ISCORE_PLUGIN_AUDIO_EXPORT void LoopSound(
+        AudioRendererPtr p,
+        AudioStream s,
+        SymbolicDate start,
+        SymbolicDate stop)
+{
+    auto cmd = new TLoopCommand{s, start, stop};
+    ((AudioPlayer*) p)->fMixer->AddControlCommand(cmd);
+}
+
 /*
 ISCORE_PLUGIN_AUDIO_EXPORT void MakeScenarioTimeNodeCommand(
         AudioPlayer player,

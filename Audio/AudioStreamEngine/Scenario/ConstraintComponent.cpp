@@ -50,7 +50,7 @@ ConstraintComponent::ConstraintComponent(
         const iscore::DocumentContext& ctx,
         QObject* parent_comp):
     Component{id, "ConstraintComponent", parent_comp},
-    m_baseComponent{*this, constraint, doc, ctx, this}
+    m_hm{*this, constraint, doc, ctx, this}
 {
     con(constraint.duration, &Scenario::ConstraintDurations::executionSpeedChanged,
         this, [=] (double d) {
@@ -68,7 +68,7 @@ ConstraintComponent::~ConstraintComponent()
 
 void ConstraintComponent::makeStream(const Context& player)
 {
-    auto& cst = m_baseComponent.constraint;
+    auto& cst = m_hm.constraint;
     if(cst.processes.empty())
     {
         // Silence
@@ -100,14 +100,39 @@ void ConstraintComponent::makeStream(const Context& player)
             auto stream = component->getStream();
             if(stream)
             {
+                auto dur = GetLengthSound(stream);
+                auto& cst_dur = constraint().duration;
+
+                AudioStream extended_stream;
+                audio_frame_t parent_max_dur =
+                    cst_dur.isMaxInfinite()
+                        ? INT64_MAX
+                        : toFrame(cst_dur.isRigid()
+                                  ? cst_dur.defaultDuration()
+                                  : cst_dur.maxDuration());
+                if(dur < parent_max_dur)
+                {
+                    extended_stream =
+                            MakeSeqSound(
+                                stream,
+                                MakeMultiNullSound(
+                                    GetChannelsSound(stream),
+                                    parent_max_dur - dur),
+                                0);
+                }
+                else
+                {
+                    extended_stream = stream;
+                }
+
                 auto channel = MakeChannelSound(
-                                   stream,
+                                   extended_stream,
                                    getTarget(proc.id()));
                 inputStreams.push_back(channel);
             }
         };
 
-        for(auto& proc_pair :  m_baseComponent.processes())
+        for(auto& proc_pair :  m_hm.processes())
         {
             auto& proc = proc_pair.process;
             auto& comp = proc_pair.component;
@@ -248,12 +273,17 @@ void ConstraintComponent::removing(
 
 Mix::ProcessModel* ConstraintComponent::findMix() const
 {
-    auto it = find_if(m_baseComponent.constraint.processes, [] (auto& val) {
+    auto it = find_if(m_hm.constraint.processes, [] (auto& val) {
         return dynamic_cast<Mix::ProcessModel*>(&val);
     });
-    return it != m_baseComponent.constraint.processes.end() ? static_cast<Mix::ProcessModel*>(&(*it)) : nullptr;
+    return it != m_hm.constraint.processes.end() ? static_cast<Mix::ProcessModel*>(&(*it)) : nullptr;
 }
 
+
+audio_frame_t ConstraintComponent::toFrame(const TimeValue& t) const
+{
+    return t.msec() * m_hm.system.context.audio.sample_rate / 1000.0;
+}
 
 }
 }

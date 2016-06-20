@@ -67,6 +67,13 @@ class LoopComponent final :
                 const StateComponent& comp);
 
     private:
+        void onDateFixed(const TimeNodeComponent& t, audio_frame_t time);
+        void onDateFixed(const EventComponent& t, audio_frame_t time);
+        void onStartDateFixed(const ConstraintComponent& t, audio_frame_t time);
+        void onStopDateFixed(const ConstraintComponent& t, audio_frame_t time);
+
+        audio_frame_t toFrame(const TimeValue& t) const;
+
         hierarchy_t m_hm;
 
 

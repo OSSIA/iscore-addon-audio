@@ -27,43 +27,75 @@ void LoopComponent::makeStream(const Context& ctx)
     m_synchros.clear();
     m_csts.clear();
 
+    auto& pattern_cst = m_hm.constraints().at(0);
+    auto sound = pattern_cst.component.getStream();
+    if(!sound)
+        return;
+
+/*
+    auto start_date = GenSymbolicDate(nullptr);
+    auto stop_date = GenSymbolicDate(nullptr);
     m_groupPlayer = MakeGroupPlayer();
     m_groupStream = MakeGroupStream(m_groupPlayer);
+    auto& pattern_cst = m_hm.constraints().at(0);
+    auto sound = pattern_cst.component.getStream();
+    if(!sound)
+        return;
 
-    for(const hierarchy_t::ConstraintPair& cst : m_hm.constraints())
+    auto start_date = GenSymbolicDate(m_groupPlayer);
+    auto start_con = con(pattern_cst.element, &Scenario::ConstraintModel::executionStarted,
+                         this, [=] () {
+        onStartDateFixed(pattern_cst.component, GetAudioPlayerDateInFrame(m_groupPlayer));
+    }, Qt::DirectConnection);
+    m_synchros.insert(std::make_pair(pattern_cst.element.id(), std::make_pair(start_date, start_con)));
+
+    auto stop_date = GenSymbolicDate(m_groupPlayer);
+    auto stop_con = con(pattern_cst.element, &Scenario::ConstraintModel::executionStopped,
+                        this, [=] () {
+        onStopDateFixed(pattern_cst.component, GetAudioPlayerDateInFrame(m_groupPlayer));
+    }, Qt::DirectConnection);
+    m_synchros.insert(std::make_pair(pattern_cst.element.id(), std::make_pair(stop_date, stop_con)));
+
+    m_csts.insert(
+                std::make_pair(
+                    pattern_cst.element.id(),
+                    sound
+                    )
+                );
+
+
+    StartSound(m_groupPlayer, sound, start_date);
+
+
+*/
+
+
+    auto& start_node = m_hm.timeNodes().at(0);
+    auto& start_event = m_hm.events().at(0);
+    auto& end_node = m_hm.timeNodes().at(1);
+
+    if(!start_node.element.trigger()->active() &&
+       !end_node.element.trigger()->active() &&
+       !start_event.element.condition().hasChildren())
     {
-        auto sound = cst.component.getStream();
-        if(!sound)
-            continue;
+        qDebug("ok");
 
-        auto start_date = GenSymbolicDate(m_groupPlayer);
-        auto start_con = con(cst.element, &Scenario::ConstraintModel::executionStarted,
-                           this, [=] () {
-            SetSymbolicDate(m_groupPlayer, start_date, GetAudioPlayerDateInFrame(m_groupPlayer));
-        }, Qt::DirectConnection);
-        m_synchros.insert(std::make_pair(cst.element.id(), std::make_pair(start_date, start_con)));
-
-        auto stop_date = GenSymbolicDate(m_groupPlayer);
-        auto stop_con = con(cst.element, &Scenario::ConstraintModel::executionStopped,
-                                 this, [=] () {
-            SetSymbolicDate(m_groupPlayer, stop_date, GetAudioPlayerDateInFrame(m_groupPlayer));
-            ResetSound(m_groupStream);
-        }, Qt::DirectConnection);
-        m_synchros.insert(std::make_pair(cst.element.id(), std::make_pair(stop_date, stop_con)));
-
-        m_csts.insert(
-                    std::make_pair(
-                        cst.element.id(),
-                        sound
-                        )
-                    );
-
-
-        StartSound(m_groupPlayer, sound, start_date);
-        StopSound(m_groupPlayer, sound, stop_date);
+        auto cut = MakeCutSound(sound, 0, toFrame(pattern_cst.element.duration.defaultDuration()));
+        m_stream = MakeSend(MakeLoopSound(cut, 65536));
+        return;
+/*
+        SetSymbolicDate(nullptr, start_date, 0);
+        SetSymbolicDate(nullptr, stop_date, toFrame(pattern_cst.element.duration.defaultDuration()));
+        LoopSound(m_groupPlayer, sound, start_date, stop_date);
+*/
     }
+    else
+    {
+        qDebug() << "FAKU";
+       // StopSound(m_groupPlayer, sound, stop_date);
 
-    m_stream = MakeSend(m_groupStream);
+        m_stream = MakeSend(m_groupStream);
+    }
 }
 
 template<>
@@ -74,7 +106,10 @@ ConstraintComponent* LoopComponent::make<ConstraintComponent, Scenario::Constrai
         const iscore::DocumentContext& ctx,
         QObject* parent)
 {
-    return new ConstraintComponent{id, elt, doc, ctx, parent};
+    auto comp = new ConstraintComponent{id, elt, doc, ctx, parent};
+    comp->onStartDateFixed = [=] (audio_frame_t t) { onStartDateFixed(*comp, t); };
+    comp->onStopDateFixed = [=] (audio_frame_t t) { onStopDateFixed(*comp, t); };
+    return comp;
 }
 
 template<>
@@ -85,7 +120,9 @@ EventComponent* LoopComponent::make<EventComponent, Scenario::EventModel>(
         const iscore::DocumentContext& ctx,
         QObject* parent)
 {
-    return new EventComponent{id, elt, doc, ctx, parent};
+    auto comp = new EventComponent{id, elt, doc, ctx, parent};
+    comp->onDateFixed = [=] (audio_frame_t t) { onDateFixed(*comp, t); };
+    return comp;
 }
 
 template<>
@@ -96,7 +133,9 @@ TimeNodeComponent* LoopComponent::make<TimeNodeComponent, Scenario::TimeNodeMode
         const iscore::DocumentContext& ctx,
         QObject* parent)
 {
-    return new TimeNodeComponent{id, elt, doc, ctx, parent};
+    auto comp = new TimeNodeComponent{id, elt, doc, ctx, parent};
+    comp->onDateFixed = [=] (audio_frame_t t) { onDateFixed(*comp, t); };
+    return comp;
 }
 
 template<>
@@ -126,5 +165,97 @@ void LoopComponent::removing(const Scenario::StateModel& elt, const StateCompone
 {
 }
 
+void LoopComponent::onDateFixed(const EventComponent& c, audio_frame_t time)
+{
+    /*
+    auto& states = c.event.states();
+    for(auto& st_id : states)
+    {
+        auto& st = m_hm.scenario.states.at(st_id);
+        if(auto& prev_cst_id = st.previousConstraint())
+        {
+            auto it = find_if(m_hm.constraints(),
+                              [=] (auto& e) { return e.element.id() == prev_cst_id; });
+            ISCORE_ASSERT(it != m_hm.constraints().end());
+            it->component.onStopDateFixed(time);
+        }
+
+        if(auto& next_cst_id = st.nextConstraint())
+        {
+            auto it = find_if(m_hm.constraints(),
+                              [=] (auto& e) { return e.element.id() == next_cst_id; });
+            ISCORE_ASSERT(it != m_hm.constraints().end());
+            it->component.onStartDateFixed(time + 1); // ** pay attention to the +1 **
+        }
+    }
+    */
+}
+
+void LoopComponent::onStartDateFixed(const ConstraintComponent& c, audio_frame_t time)
+{
+    /*
+    if(!c.startDate)
+        return;
+    if(GetSymbolicDate(m_groupPlayer, c.startDate) != INT64_MAX)
+        return; // this branch is already set.
+
+    SetSymbolicDate(m_groupPlayer, c.startDate, time);
+
+    const Scenario::ConstraintDurations& dur = c.constraint().duration;
+    if(!dur.isRigid())
+        return;
+
+    auto end_date = time + toFrame(dur.defaultDuration());
+    SetSymbolicDate(m_groupPlayer, c.stopDate, end_date);
+
+    const Scenario::TimeNodeModel& end_tn = Scenario::endTimeNode(c.constraint(), m_hm.scenario);
+    if(end_tn.trigger()->active())
+        return;
+
+    auto& end_tn_id = end_tn.id();
+
+    auto it = find_if(m_hm.timeNodes(),
+                      [=] (auto& e) { return e.element.id() == end_tn_id; });
+    ISCORE_ASSERT(it != m_hm.timeNodes().end());
+    it->component.onDateFixed(end_date);
+*/
+}
+
+void LoopComponent::onStopDateFixed(const ConstraintComponent& c, audio_frame_t time)
+{
+    /*
+    if(!c.stopDate)
+        return;
+    if(GetSymbolicDate(m_groupPlayer, c.stopDate) != INT64_MAX)
+        return; // this branch is already set.
+
+    SetSymbolicDate(m_groupPlayer, c.stopDate, time);
+    ResetSound(m_groupStream);
+
+    // We don't have anything more to do (it is only called to end interactive constraints.
+    */
+}
+
+audio_frame_t LoopComponent::toFrame(const TimeValue& t) const
+{
+    return t.msec() * m_hm.system.context.audio.sample_rate / 1000.0;
+}
+
+void LoopComponent::onDateFixed(const TimeNodeComponent& c, audio_frame_t time)
+{
+    /*
+    auto& next_ev = c.timeNode.events();
+    for(auto& ev_id : next_ev)
+    {
+        Scenario::EventModel& ev = m_hm.scenario.events.at(ev_id);
+        if(!ev.condition().hasChildren())
+        {
+            auto it = find_if(m_hm.events(), [=] (auto& e) { return e.element.id() == ev_id; });
+            ISCORE_ASSERT(it != m_hm.events().end());
+            it->component.onDateFixed(time);
+        }
+    }
+    */
+}
 }
 }
