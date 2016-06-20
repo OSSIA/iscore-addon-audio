@@ -25,7 +25,8 @@ class EventComponent final :
 
         ~EventComponent();
 
-    private:
+        std::function<void(audio_frame_t)> onDateFixed;
+        const Scenario::EventModel& event;
 };
 }
 }

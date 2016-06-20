@@ -98,6 +98,7 @@ void ApplicationPlugin::startEngine()
                      1);
 
     m_ctx.renderer = MakeAudioRenderer(api);
+    m_ctx.sample_rate = stngs.getRate();
     GetAudioRendererInfo(m_ctx.renderer, &m_ctx.renderer_info);
     OpenAudioRenderer(m_ctx.renderer, 0, card, 2, 2, stngs.getBufferSize(), stngs.getRate());
 

@@ -20,6 +20,8 @@ struct AudioContext
         AudioRendererPtr renderer{};
         DeviceInfo device_info{};
         RendererInfo renderer_info{};
+
+        int sample_rate = 0;
 };
 
 struct Context

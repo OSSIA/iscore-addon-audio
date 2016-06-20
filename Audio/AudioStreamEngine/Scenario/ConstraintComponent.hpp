@@ -2,6 +2,7 @@
 #include <Audio/AudioStreamEngine/Scenario/ProcessComponent.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 #include <Scenario/Document/Components/ConstraintComponent.hpp>
+#include <functional>
 
 namespace Audio
 {
@@ -28,7 +29,7 @@ class ConstraintComponent final :
             process_component_factory_list_t
         >;
 
-        const auto& constraint() const
+        const Scenario::ConstraintModel& constraint() const
         { return m_baseComponent.constraint; }
 
         const Key& key() const override;
@@ -61,6 +62,11 @@ class ConstraintComponent final :
 
         Mix::ProcessModel* findMix() const;
 
+        std::function<void(audio_frame_t)> onStartDateFixed;
+        std::function<void(audio_frame_t)> onStopDateFixed;
+
+        SymbolicDate startDate;
+        SymbolicDate stopDate;
     private:
 
         parent_t m_baseComponent;

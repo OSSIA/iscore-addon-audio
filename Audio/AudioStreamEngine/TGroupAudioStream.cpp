@@ -283,6 +283,8 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeGroupStream(AudioRendererPtr p);
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSinusStream(long length, float freq);
 
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeIScoreExecutor(AudioStream s, OSSIA::TimeConstraint& t);
+ISCORE_PLUGIN_AUDIO_EXPORT void MakeScenarioTimeNodeCommand(AudioPlayer player, Audio::AudioStreamEngine::TimeNodeComponent& t);
+
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSend(AudioStream s);
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeReturn(AudioStream s);
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeChannelSound(AudioStream s, double const * volume);
@@ -362,4 +364,14 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeIScoreExecutor(AudioStream s, OSSIA::
 {
     return new TEffectAudioStream{s, new ExecutorAudioEffect{t}};
 }
+/*
+ISCORE_PLUGIN_AUDIO_EXPORT void MakeScenarioTimeNodeCommand(
+        AudioPlayer player,
+        Audio::AudioStreamEngine::TimeNodeComponent& t
+        )
+{
+    auto cmd = new TTimeNodeControlCommand{t};
+    player.fMixer->AddControlCommand(cmd);
+}
+*/
 }

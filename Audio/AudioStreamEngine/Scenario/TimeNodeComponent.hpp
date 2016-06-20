@@ -1,16 +1,17 @@
 #pragma once
 #include <Scenario/Document/TimeNode/TimeNodeModel.hpp>
 #include <Network/Node.h>
-#include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
-
-
+#include <functional>
+using audio_frame_t = int64_t;
 namespace Audio
 {
 namespace AudioStreamEngine
 {
+class DocumentPlugin;
 class TimeNodeComponent final :
         public iscore::Component
 {
+        Q_OBJECT
     public:
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
 
@@ -25,7 +26,9 @@ class TimeNodeComponent final :
 
         ~TimeNodeComponent();
 
-    private:
+
+        std::function<void(audio_frame_t)> onDateFixed;
+        const Scenario::TimeNodeModel& timeNode;
 };
 }
 }
