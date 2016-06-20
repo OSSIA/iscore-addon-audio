@@ -73,7 +73,7 @@ class ScenarioComponent final :
         std::map<Id<Scenario::ConstraintModel>, std::pair<SymbolicDate, QMetaObject::Connection>> m_synchros;
         std::map<Id<Scenario::ConstraintModel>, AudioStream> m_csts;
 
-        AudioRendererPtr m_renderer;
+        AudioRendererPtr m_groupPlayer;
 
 };
 

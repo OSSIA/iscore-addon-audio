@@ -27,8 +27,8 @@ void LoopComponent::makeStream(const Context& ctx)
     m_synchros.clear();
     m_csts.clear();
 
-    m_renderer = MakeGroupPlayer();
-    m_player = MakeGroupStream(m_renderer);
+    m_groupPlayer = MakeGroupPlayer();
+    m_groupStream = MakeGroupStream(m_groupPlayer);
 
     for(const hierarchy_t::ConstraintPair& cst : m_hm.constraints())
     {
@@ -36,19 +36,19 @@ void LoopComponent::makeStream(const Context& ctx)
         if(!sound)
             continue;
 
-        auto start_date = GenSymbolicDate(m_renderer);
+        auto start_date = GenSymbolicDate(m_groupPlayer);
         auto start_con = con(cst.element, &Scenario::ConstraintModel::executionStarted,
                            this, [=] () {
-            SetSymbolicDate(m_renderer, start_date, GetAudioPlayerDateInFrame(m_renderer));
-        }, Qt::QueuedConnection);
+            SetSymbolicDate(m_groupPlayer, start_date, GetAudioPlayerDateInFrame(m_groupPlayer));
+        }, Qt::DirectConnection);
         m_synchros.insert(std::make_pair(cst.element.id(), std::make_pair(start_date, start_con)));
 
-        auto stop_date = GenSymbolicDate(m_renderer);
+        auto stop_date = GenSymbolicDate(m_groupPlayer);
         auto stop_con = con(cst.element, &Scenario::ConstraintModel::executionStopped,
                                  this, [=] () {
-            SetSymbolicDate(m_renderer, stop_date, GetAudioPlayerDateInFrame(m_renderer));
-            ResetSound(m_player);
-        }, Qt::QueuedConnection);
+            SetSymbolicDate(m_groupPlayer, stop_date, GetAudioPlayerDateInFrame(m_groupPlayer));
+            ResetSound(m_groupStream);
+        }, Qt::DirectConnection);
         m_synchros.insert(std::make_pair(cst.element.id(), std::make_pair(stop_date, stop_con)));
 
         m_csts.insert(
@@ -57,13 +57,13 @@ void LoopComponent::makeStream(const Context& ctx)
                         sound
                         )
                     );
-        qDebug() << "Starting" << cst.element.metadata.name();
 
-        StartSound(m_renderer, sound, start_date);
-        StopSound(m_renderer, sound, stop_date);
+
+        StartSound(m_groupPlayer, sound, start_date);
+        StopSound(m_groupPlayer, sound, stop_date);
     }
 
-    m_stream = MakeSend(m_player);
+    m_stream = MakeSend(m_groupStream);
 }
 
 template<>

@@ -574,6 +574,7 @@ using TChannelAudioStreamPtr = LA_SMARTP<TChannelAudioStream>;
 
 
 #include <Editor/TimeConstraint.h>
+#include <Editor/TimeNode.h>
 class ExecutorAudioEffect : public TAudioEffectInterface
 {
     public:
@@ -624,3 +625,48 @@ class ExecutorAudioEffect : public TAudioEffectInterface
 
 };
 
+
+struct TTimeNodeControlCommand : public TControlCommand
+{
+        OSSIA::TimeNode& m_node;
+        std::vector<SymbolicDate> m_beforeDates;
+        std::vector<SymbolicDate> m_afterDates;
+
+        bool Execute(
+                TNonInterleavedAudioBuffer<float>* buffer,
+                map<SymbolicDate, audio_frame_t>& date_map,
+                audio_frame_t cur_frame,
+                long frames)
+        {
+            auto timenode_time = fStartDate->getDate();
+            if (InBuffer(timenode_time, cur_frame, frames))
+            {
+                // Set stop date of all previous constraint to the TN frame
+                for(SymbolicDate date : m_beforeDates)
+                    date->setDate(timenode_time);
+
+                // Execute the time node.
+                // If we are here, it has already been triggered.
+                // We only have to check the conditions.
+                m_node.trigger();
+
+                // For all true events, set start date of all next constraints's start, and
+                // trigger their start / their start + offset.
+                for(SymbolicDate date : m_afterDates)
+                    date->setDate(timenode_time + 1);
+
+
+                // TODO after each command, the commands should be re-sorted.
+                // TODO the commands should have a priority for hierarchy ?
+
+                // TODO else find a way to disable' em
+
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+};
