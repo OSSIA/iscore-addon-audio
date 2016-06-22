@@ -1,35 +1,36 @@
 #pragma once
 #include <Audio/EffectProcess/EffectModel.hpp>
+#include <lilv/lilvmm.hpp>
 #include <QJsonDocument>
 namespace Audio
 {
 namespace Effect
 {
 
-/** Faust effect model.
+/** LV2 effect model.
  * Should contain an effect, maybe instantiated with
- * LibAudioStream's MakeFaustAudioEffect
+ * LibAudioStream's MakeLV2AudioEffect
  * Cloning can be done with MakeCopyEffect.
  */
-class FaustEffectModel :
+class LV2EffectModel :
         public EffectModel
 {
         Q_OBJECT
-        ISCORE_SERIALIZE_FRIENDS(FaustEffectModel, DataStream)
-        ISCORE_SERIALIZE_FRIENDS(FaustEffectModel, JSONObject)
+        ISCORE_SERIALIZE_FRIENDS(LV2EffectModel, DataStream)
+        ISCORE_SERIALIZE_FRIENDS(LV2EffectModel, JSONObject)
     public:
-        FaustEffectModel(
+        LV2EffectModel(
                 const QString& faustProgram,
                 const Id<EffectModel>&,
                 QObject* parent);
 
-        FaustEffectModel(
-                const FaustEffectModel& source,
+        LV2EffectModel(
+                const LV2EffectModel& source,
                 const Id<EffectModel>&,
                 QObject* parent);
 
         template<typename Impl>
-        FaustEffectModel(
+        LV2EffectModel(
                 Deserializer<Impl>& vis,
                 QObject* parent) :
             EffectModel{vis, parent}
@@ -38,23 +39,21 @@ class FaustEffectModel :
             init();
         }
 
-        FaustEffectModel* clone(
+        LV2EffectModel* clone(
                 const Id<EffectModel>& newId,
                 QObject* parent) const override;
 
 
         QString title() const override;
 
-        const QString& text() const
-        {
-            return m_text;
-        }
+        const QString& path() const
+        { return m_path; }
 
-        void setText(const QString& txt);
-
+        void setPath(const QString& s)
+        { m_path = s; }
         UuidKey<EffectFactory> concreteFactoryKey() const override
         {
-            return "5354c61a-1649-4f59-b952-5c2f1b79c1bd";
+            return "fd5243ba-70b5-4164-b44a-ecb0dcdc0494";
         }
     signals:
         void textChanged();
@@ -62,8 +61,7 @@ class FaustEffectModel :
     private:
         void init();
         void reload();
-        QString m_text;
-        QString m_name;
+        QString m_path;
 };
 }
 }

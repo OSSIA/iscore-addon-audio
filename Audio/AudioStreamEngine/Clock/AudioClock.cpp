@@ -58,20 +58,21 @@ void AudioClock::play_impl(
 void AudioClock::pause_impl(
         RecreateOnPlay::BaseScenarioElement& bs)
 {
+    m_default.pause();
     PauseAudioPlayer(m_audioPlug.context.audio.player);
 }
 
 void AudioClock::resume_impl(
         RecreateOnPlay::BaseScenarioElement& bs)
 {
+    m_default.resume();
     ContAudioPlayer(m_audioPlug.context.audio.player);
 }
 
 void AudioClock::stop_impl(
         RecreateOnPlay::BaseScenarioElement& bs)
 {
-    auto& plug = context.doc.plugin<AudioStreamEngine::DocumentPlugin>();
-    plug.stop();
+    m_audioPlug.stop();
     m_default.stop();
 }
 
