@@ -1,6 +1,7 @@
 #include "SoundDrop.hpp"
 #include <Audio/MediaFileHandle.hpp>
 #include <Audio/Commands/ChangeAudioFile.hpp>
+#include <Audio/Commands/CreateSoundBox.hpp>
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
 
 #include <Scenario/Process/Temporal/TemporalScenarioPresenter.hpp>
@@ -23,16 +24,6 @@ namespace Audio
 namespace Sound
 {
 
-class CreateSoundBoxMacro final : public iscore::AggregateCommand
-{
-        ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), CreateSoundBoxMacro, "Add sounds in a box")
-};
-
-class CreateSoundBoxesMacro final : public iscore::AggregateCommand
-{
-        ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), CreateSoundBoxesMacro, "Add sounds in sequence")
-};
-
 bool DropHandler::handle(
         const Scenario::TemporalScenarioPresenter& pres,
         QPointF pos,
@@ -52,7 +43,7 @@ bool DropHandler::handle(
     else
     {
         disp m(
-                    new CreateSoundBoxMacro,
+                    new Audio::Commands::CreateSoundBoxMacro,
                     pres.context().context.commandStack);
 
         // Create a box.
