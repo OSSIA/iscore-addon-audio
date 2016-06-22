@@ -24,6 +24,12 @@ struct MediaFileHandle
         int sampleRate() const
         { return m_sampleRate; }
 
+        static bool isAudioFile(const QFile& f);
+
+        // Number of samples in a channel.
+        int64_t samples() const;
+        int64_t channels() const;
+
     private:
         AudioArray readFile(const QFile& filename, int* sRate = nullptr);
         QString m_file;
