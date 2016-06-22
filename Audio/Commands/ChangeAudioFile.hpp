@@ -18,6 +18,9 @@ class ChangeAudioFile final : public iscore::SerializableCommand
         ChangeAudioFile(
                 Path<Sound::ProcessModel>&& model,
                 const QString& text);
+       ChangeAudioFile(
+                Path<Sound::ProcessModel>&& model,
+                MediaFileHandle&& newfile);
 
         void undo() const override;
 

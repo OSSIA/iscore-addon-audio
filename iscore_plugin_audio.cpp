@@ -18,6 +18,7 @@
 #include <Audio/Settings/Card/CardSettingsFactory.hpp>
 #include <Audio/Panel/TrackListPanelFactory.hpp>
 
+#include <Audio/SoundProcess/Drop/SoundDrop.hpp>
 #include <Audio/EffectProcess/EffectFactory.hpp>
 #include <Audio/EffectProcess/FaustEffectFactory.hpp>
 
@@ -89,7 +90,9 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
         FW<Audio::Effect::LocalTree::EffectComponentFactory,
             Audio::Effect::LocalTree::FaustComponentFactory>,
         FW<RecreateOnPlay::ClockManagerFactory,
-            Audio::AudioStreamEngine::AudioClockFactory>
+            Audio::AudioStreamEngine::AudioClockFactory>,
+        FW<Scenario::DropHandler,
+            Audio::Sound::DropHandler>
     >>(ctx, key);
 }
 

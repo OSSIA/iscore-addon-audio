@@ -61,9 +61,24 @@ MediaFileHandle::MediaFileHandle(const QString &filename):
     m_array = readFile(QFile(m_file), &m_sampleRate);
 }
 
+bool MediaFileHandle::isAudioFile(const QFile& file)
+{
+    return file.exists() && file.fileName().contains(QRegExp(".(wav|aif|aiff)"));
+}
+
+int64_t MediaFileHandle::samples() const
+{
+    return channels() > 0 ? m_array[0].size() : 0;
+}
+
+int64_t MediaFileHandle::channels() const
+{
+    return m_array.size();
+}
+
 AudioArray MediaFileHandle::readFile(const QFile &file, int* sRate)
 {
-    if(file.exists() && file.fileName().contains(QRegExp(".(wav|aif|aiff)")))
+    if(isAudioFile(file))
     {
         auto myf = SndfileHandle(file.fileName().toStdString());
         if(myf.error() != SF_ERR_NO_ERROR)
