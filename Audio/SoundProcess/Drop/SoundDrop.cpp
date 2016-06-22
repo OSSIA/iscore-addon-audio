@@ -9,6 +9,11 @@
 #include <Scenario/Commands/Constraint/AddProcessToConstraint.hpp>
 #include <iscore/command/Dispatchers/MacroCommandDispatcher.hpp>
 #include <Scenario/Commands/Scenario/Creations/CreateTimeNode_Event_State.hpp>
+#include <Scenario/Commands/Constraint/AddRackToConstraint.hpp>
+#include <Scenario/Commands/Constraint/Rack/AddSlotToRack.hpp>
+#include <Scenario/Commands/Constraint/AddLayerInNewSlot.hpp>
+#include <Scenario/Commands/Constraint/Rack/Slot/AddLayerModelToSlot.hpp>
+
 
 #include <QMimeData>
 #include <QUrl>
@@ -38,12 +43,11 @@ bool DropHandler::handle(
 
     using disp = GenericMacroCommandDispatcher<RedoStrategy::Redo, SendStrategy::Quiet>;
     // We add the files in sequence, or in the same constraint
-    // if shift is pressed.
+    // if shift isn't pressed.
     if(qApp->keyboardModifiers() & Qt::ShiftModifier)
     {
-        disp m(
-                    new CreateSoundBoxesMacro,
-                    pres.context().context.commandStack);
+        ISCORE_TODO;
+        return false;
     }
     else
     {
@@ -83,22 +87,39 @@ bool DropHandler::handle(
         m.submitCommand(cmd2);
         auto& constraint = scenar.constraint(cmd2->createdConstraint());
 
+        auto cmd3 = new Scenario::Command::AddRackToConstraint{constraint};
+        m.submitCommand(cmd3);
+
+        auto& rack = constraint.racks.at(cmd3->createdRack());
 
         // Add sound processes as fit.
         for(auto&& file : files)
         {
-            auto process_cmd = Scenario::Command::make_AddProcessToConstraint(
+            // Create sound process
+            auto process_cmd = new Scenario::Command::AddOnlyProcessToConstraint{
                         constraint,
-                        Metadata<ConcreteFactoryKey_k, Audio::Sound::ProcessModel>::get());
+                        Metadata<ConcreteFactoryKey_k, Audio::Sound::ProcessModel>::get()};
             m.submitCommand(process_cmd);
 
+            // Set process file
             auto& proc = safe_cast<Sound::ProcessModel&>(constraint.processes.at(process_cmd->processId()));
-
-
             auto file_cmd = new Audio::Commands::ChangeAudioFile{proc, std::move(file)};
             m.submitCommand(file_cmd);
+
+            // Create a new slot
+            auto slot_cmd = new Scenario::Command::AddSlotToRack{rack};
+            m.submitCommand(slot_cmd);
+
+            // Add a new layer in this slot.
+            auto& slot = rack.slotmodels.at(slot_cmd->createdSlot());
+
+            auto layer_cmd = new Scenario::Command::AddLayerModelToSlot{slot, proc};
+            m.submitCommand(layer_cmd);
         }
 
+        // Finally we show the newly created rack
+        auto show_cmd = new Scenario::Command::ShowRackInAllViewModels{constraint, rack.id()};
+        m.submitCommand(show_cmd);
         m.commit();
     }
 
