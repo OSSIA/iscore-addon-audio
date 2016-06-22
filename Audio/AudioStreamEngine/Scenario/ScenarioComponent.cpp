@@ -22,11 +22,9 @@ ScenarioComponent::ScenarioComponent(
 
 void ScenarioComponent::makeStream(const Context& ctx)
 {
-    for(auto& elt : m_synchros)
-    {
-        QObject::disconnect(elt.second.second);
-    }
-    m_synchros.clear();
+    for(auto& con : m_connections)
+        QObject::disconnect(con);
+    m_connections.clear();
     m_csts.clear();
 
     m_groupPlayer = MakeGroupPlayer();
@@ -37,20 +35,32 @@ void ScenarioComponent::makeStream(const Context& ctx)
         if(!sound)
             continue;
 
-        auto start_date = GenSymbolicDate(m_groupPlayer);
-        auto start_con = con(cst.element, &Scenario::ConstraintModel::executionStarted,
-                           this, [&] () {
-            onStartDateFixed(cst.component, GetAudioPlayerDateInFrame(m_groupPlayer));
-        }, Qt::DirectConnection);
-        m_synchros.insert(std::make_pair(cst.element.id(), std::make_pair(start_date, start_con)));
+        {
+            auto start_con = con(cst.element, &Scenario::ConstraintModel::executionStarted,
+                                 this, [&] () {
+                onStartDateFixed(cst.component, GetAudioPlayerDateInFrame(m_groupPlayer), true);
+            }, Qt::DirectConnection);
+            m_connections.push_back(start_con);
+        }
 
-        auto stop_date = GenSymbolicDate(m_groupPlayer);
-        auto stop_con = con(cst.element, &Scenario::ConstraintModel::executionStopped,
-                                 this, [=] () {
-            onStopDateFixed(cst.component, GetAudioPlayerDateInFrame(m_groupPlayer));
-        }, Qt::DirectConnection);
-        m_synchros.insert(std::make_pair(cst.element.id(), std::make_pair(stop_date, stop_con)));
+        {
+            auto stop_con = con(cst.element, &Scenario::ConstraintModel::executionStopped,
+                                this, [=] () {
+                onStopDateFixed(cst.component, GetAudioPlayerDateInFrame(m_groupPlayer));
+            }, Qt::DirectConnection);
 
+            m_connections.push_back(stop_con);
+        }
+
+        {
+            auto speed_con = con(cst.element.duration, &Scenario::ConstraintDurations::executionSpeedChanged,
+                                this, [=] (double s) {
+                // The new end duration is the "base" end multiplied by the speed.
+                onSpeedChanged(cst.component, s);
+            }, Qt::DirectConnection);
+
+            m_connections.push_back(speed_con);
+        }
         m_csts.insert(
                     std::make_pair(
                         cst.element.id(),
@@ -58,11 +68,10 @@ void ScenarioComponent::makeStream(const Context& ctx)
                         )
                     );
 
-        StartSound(m_groupPlayer, sound, start_date);
-        StopSound(m_groupPlayer, sound, stop_date);
-
-        cst.component.startDate = start_date;
-        cst.component.stopDate = stop_date;
+        cst.component.startDate = GenSymbolicDate(m_groupPlayer);
+        cst.component.stopDate = GenSymbolicDate(m_groupPlayer);
+        StartSound(m_groupPlayer, sound, cst.component.startDate);
+        StopSound(m_groupPlayer, sound, cst.component.stopDate);
     }
 
     // We already set stuff starting from the initial events.
@@ -72,7 +81,7 @@ void ScenarioComponent::makeStream(const Context& ctx)
 
         auto it = find_if(m_hm.timeNodes(), [=] (auto& p) { return p.element.id() == start_node_id; });
         ISCORE_ASSERT(it != m_hm.timeNodes().end());
-        onDateFixed(it->component, audio_frame_t{0});
+        onDateFixed(it->component, audio_frame_t{0}, true);
 
     }
 
@@ -88,7 +97,7 @@ ConstraintComponent* ScenarioComponent::make<ConstraintComponent, Scenario::Cons
         QObject* parent)
 {
     auto comp = new ConstraintComponent{id, elt, doc, ctx, parent};
-    comp->onStartDateFixed = [=] (audio_frame_t t) { onStartDateFixed(*comp, t); };
+    comp->onStartDateFixed = [=] (audio_frame_t t, bool force) { onStartDateFixed(*comp, t, force); };
     comp->onStopDateFixed = [=] (audio_frame_t t) { onStopDateFixed(*comp, t); };
     return comp;
 }
@@ -102,7 +111,7 @@ EventComponent* ScenarioComponent::make<EventComponent, Scenario::EventModel>(
         QObject* parent)
 {
     auto comp = new EventComponent{id, elt, doc, ctx, parent};
-    comp->onDateFixed = [=] (audio_frame_t t) { onDateFixed(*comp, t); };
+    comp->onDateFixed = [=] (audio_frame_t t, bool force) { onDateFixed(*comp, t, force); };
     return comp;
 }
 
@@ -115,7 +124,7 @@ TimeNodeComponent* ScenarioComponent::make<TimeNodeComponent, Scenario::TimeNode
         QObject* parent)
 {
     auto comp = new TimeNodeComponent{id, elt, doc, ctx, parent};
-    comp->onDateFixed = [=] (audio_frame_t t) { onDateFixed(*comp, t); };
+    comp->onDateFixed = [=] (audio_frame_t t, bool force) { onDateFixed(*comp, t, force); };
     return comp;
 }
 
@@ -146,7 +155,10 @@ void ScenarioComponent::removing(const Scenario::StateModel& elt, const StateCom
 {
 }
 
-void ScenarioComponent::onDateFixed(const EventComponent& c, audio_frame_t time)
+void ScenarioComponent::onDateFixed(
+        const EventComponent& c,
+        audio_frame_t time,
+        bool force_update)
 {
     auto& states = c.event.states();
     for(auto& st_id : states)
@@ -165,26 +177,31 @@ void ScenarioComponent::onDateFixed(const EventComponent& c, audio_frame_t time)
             auto it = find_if(m_hm.constraints(),
                               [=] (auto& e) { return e.element.id() == next_cst_id; });
             ISCORE_ASSERT(it != m_hm.constraints().end());
-            it->component.onStartDateFixed(time + 1); // ** pay attention to the +1 **
+            it->component.onStartDateFixed(time + 1, force_update); // ** pay attention to the +1 **
         }
     }
 }
 
-void ScenarioComponent::onStartDateFixed(const ConstraintComponent& c, audio_frame_t time)
+void ScenarioComponent::onStartDateFixed(
+        ConstraintComponent& c,
+        audio_frame_t time,
+        bool force_update)
 {
     if(!c.startDate)
         return;
     if(GetSymbolicDate(m_groupPlayer, c.startDate) != INT64_MAX)
-        return; // this branch is already set.
+        if(!force_update)
+            return; // this branch is already set.
 
     SetSymbolicDate(m_groupPlayer, c.startDate, time);
-
+    c.defaultStartDate = time;
     const Scenario::ConstraintDurations& dur = c.constraint().duration;
     if(!dur.isRigid())
         return;
 
-    auto end_date = time + toFrame(dur.defaultDuration());
+    auto end_date = time + toFrame(dur.defaultDuration() * dur.executionSpeed());
     SetSymbolicDate(m_groupPlayer, c.stopDate, end_date);
+    c.defaultStopDate = end_date;
 
     const Scenario::TimeNodeModel& end_tn = Scenario::endTimeNode(c.constraint(), m_hm.scenario);
     if(end_tn.trigger()->active())
@@ -195,7 +212,7 @@ void ScenarioComponent::onStartDateFixed(const ConstraintComponent& c, audio_fra
     auto it = find_if(m_hm.timeNodes(),
                       [=] (auto& e) { return e.element.id() == end_tn_id; });
     ISCORE_ASSERT(it != m_hm.timeNodes().end());
-    it->component.onDateFixed(end_date);
+    it->component.onDateFixed(end_date, force_update);
 }
 
 void ScenarioComponent::onStopDateFixed(const ConstraintComponent& c, audio_frame_t time)
@@ -210,12 +227,38 @@ void ScenarioComponent::onStopDateFixed(const ConstraintComponent& c, audio_fram
     // We don't have anything more to do (it is only called to end interactive constraints.
 }
 
+void ScenarioComponent::onSpeedChanged(const ConstraintComponent& c, double speed)
+{
+    const Scenario::ConstraintDurations& dur = c.constraint().duration;
+    if(!dur.isRigid())
+        return;
+
+    auto end_date = c.defaultStopDate * speed;
+    qDebug() << c.defaultStopDate << end_date;
+    SetSymbolicDate(m_groupPlayer, c.stopDate, end_date);
+
+    const Scenario::TimeNodeModel& end_tn = Scenario::endTimeNode(c.constraint(), m_hm.scenario);
+    if(end_tn.trigger()->active())
+        return;
+
+    auto& end_tn_id = end_tn.id();
+
+    auto it = find_if(m_hm.timeNodes(),
+                      [=] (auto& e) { return e.element.id() == end_tn_id; });
+    ISCORE_ASSERT(it != m_hm.timeNodes().end());
+    it->component.onDateFixed(end_date, true);
+
+}
+
 audio_frame_t ScenarioComponent::toFrame(const TimeValue& t) const
 {
     return t.msec() * m_hm.system.context.audio.sample_rate / 1000.0;
 }
 
-void ScenarioComponent::onDateFixed(const TimeNodeComponent& c, audio_frame_t time)
+void ScenarioComponent::onDateFixed(
+        const TimeNodeComponent& c,
+        audio_frame_t time,
+        bool force_update)
 {
     // When a time node is set, this should ensure that we also recursively set
     // most following constraints / events.
@@ -242,7 +285,7 @@ void ScenarioComponent::onDateFixed(const TimeNodeComponent& c, audio_frame_t ti
         {
             auto it = find_if(m_hm.events(), [=] (auto& e) { return e.element.id() == ev_id; });
             ISCORE_ASSERT(it != m_hm.events().end());
-            it->component.onDateFixed(time);
+            it->component.onDateFixed(time, force_update);
         }
     }
 }

@@ -68,18 +68,19 @@ class ScenarioComponent final :
                 const StateComponent& comp);
 
     private:
-        void onDateFixed(const TimeNodeComponent& t, audio_frame_t time);
-        void onDateFixed(const EventComponent& t, audio_frame_t time);
-        void onStartDateFixed(const ConstraintComponent& t, audio_frame_t time);
+        void onDateFixed(const TimeNodeComponent& t, audio_frame_t time, bool force_update);
+        void onDateFixed(const EventComponent& t, audio_frame_t time, bool force_update);
+        void onStartDateFixed(ConstraintComponent& t, audio_frame_t time, bool force_update);
         void onStopDateFixed(const ConstraintComponent& t, audio_frame_t time);
+        void onSpeedChanged(const ConstraintComponent& t, double speed);
 
         audio_frame_t toFrame(const TimeValue& t) const;
 
         hierarchy_t m_hm;
 
-        std::map<Id<Scenario::ConstraintModel>, std::pair<SymbolicDate, QMetaObject::Connection>> m_synchros;
         std::map<Id<Scenario::ConstraintModel>, AudioStream> m_csts;
 
+        std::vector<QMetaObject::Connection> m_connections;
         AudioRendererPtr m_groupPlayer;
 
 };

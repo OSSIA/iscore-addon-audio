@@ -27,7 +27,7 @@ class TimeNodeComponent final :
         ~TimeNodeComponent();
 
 
-        std::function<void(audio_frame_t)> onDateFixed;
+        std::function<void(audio_frame_t, bool)> onDateFixed;
         const Scenario::TimeNodeModel& timeNode;
 };
 }

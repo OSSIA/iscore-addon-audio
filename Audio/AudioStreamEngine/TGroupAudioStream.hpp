@@ -627,8 +627,8 @@ class ExecutorAudioEffect : public TAudioEffectInterface
 
 #include <Audio/AudioStreamEngine/Scenario/TimeNodeComponent.hpp>
 
-#include <lv2.h>
 
+/*
 class LV2AudioEffect : public TAudioEffectInterface
 {
     public:
@@ -676,7 +676,7 @@ class LV2AudioEffect : public TAudioEffectInterface
         void SetName(const std::string& name) override { }
         std::string GetName() override { return {}; }
 
-};
+};*/
 /**
  * @brief The TTimeNodeControlCommand struct
  * Only useful for interactive time nodes.

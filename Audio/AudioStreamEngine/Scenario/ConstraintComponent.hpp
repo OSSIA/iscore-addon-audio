@@ -62,11 +62,14 @@ class ConstraintComponent final :
 
         Mix::ProcessModel* findMix() const;
 
-        std::function<void(audio_frame_t)> onStartDateFixed;
+        std::function<void(audio_frame_t, bool)> onStartDateFixed;
         std::function<void(audio_frame_t)> onStopDateFixed;
 
         SymbolicDate startDate;
         SymbolicDate stopDate;
+
+        audio_frame_t defaultStartDate = INT64_MAX;
+        audio_frame_t defaultStopDate = INT64_MAX;
     private:
 
         audio_frame_t toFrame(const TimeValue& t) const;

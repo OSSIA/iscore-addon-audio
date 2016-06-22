@@ -45,7 +45,7 @@ void LoopComponent::makeStream(const Context& ctx)
        !start_event.element.condition().hasChildren())
     {
         auto cut = MakeCutSound(sound, 0, toFrame(pattern_cst.element.duration.defaultDuration()));
-        m_stream = MakeSend(MakeLoopSound(cut, 65536));
+        m_stream = MakeSend(MakeLoopSound(cut, INT_MAX));
         return;
     }
     else
@@ -98,7 +98,7 @@ ConstraintComponent* LoopComponent::make<ConstraintComponent, Scenario::Constrai
         QObject* parent)
 {
     auto comp = new ConstraintComponent{id, elt, doc, ctx, parent};
-    comp->onStartDateFixed = [=] (audio_frame_t t) { onStartDateFixed(*comp, t); };
+    comp->onStartDateFixed = [=] (audio_frame_t t, bool) { onStartDateFixed(*comp, t); };
     comp->onStopDateFixed = [=] (audio_frame_t t) { onStopDateFixed(*comp, t); };
     return comp;
 }
@@ -112,7 +112,7 @@ EventComponent* LoopComponent::make<EventComponent, Scenario::EventModel>(
         QObject* parent)
 {
     auto comp = new EventComponent{id, elt, doc, ctx, parent};
-    comp->onDateFixed = [=] (audio_frame_t t) { onDateFixed(*comp, t); };
+    comp->onDateFixed = [=] (audio_frame_t t, bool) { onDateFixed(*comp, t); };
     return comp;
 }
 
@@ -125,7 +125,7 @@ TimeNodeComponent* LoopComponent::make<TimeNodeComponent, Scenario::TimeNodeMode
         QObject* parent)
 {
     auto comp = new TimeNodeComponent{id, elt, doc, ctx, parent};
-    comp->onDateFixed = [=] (audio_frame_t t) { onDateFixed(*comp, t); };
+    comp->onDateFixed = [=] (audio_frame_t t, bool) { onDateFixed(*comp, t); };
     return comp;
 }
 
