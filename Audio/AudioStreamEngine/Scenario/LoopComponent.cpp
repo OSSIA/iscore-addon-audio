@@ -32,44 +32,10 @@ void LoopComponent::makeStream(const Context& ctx)
     if(!sound)
         return;
 
-/*
-    auto start_date = GenSymbolicDate(nullptr);
-    auto stop_date = GenSymbolicDate(nullptr);
-    m_groupPlayer = MakeGroupPlayer();
-    m_groupStream = MakeGroupStream(m_groupPlayer);
-    auto& pattern_cst = m_hm.constraints().at(0);
-    auto sound = pattern_cst.component.getStream();
-    if(!sound)
-        return;
 
-    auto start_date = GenSymbolicDate(m_groupPlayer);
-    auto start_con = con(pattern_cst.element, &Scenario::ConstraintModel::executionStarted,
-                         this, [=] () {
-        onStartDateFixed(pattern_cst.component, GetAudioPlayerDateInFrame(m_groupPlayer));
-    }, Qt::DirectConnection);
-    m_synchros.insert(std::make_pair(pattern_cst.element.id(), std::make_pair(start_date, start_con)));
-
-    auto stop_date = GenSymbolicDate(m_groupPlayer);
-    auto stop_con = con(pattern_cst.element, &Scenario::ConstraintModel::executionStopped,
-                        this, [=] () {
-        onStopDateFixed(pattern_cst.component, GetAudioPlayerDateInFrame(m_groupPlayer));
-    }, Qt::DirectConnection);
-    m_synchros.insert(std::make_pair(pattern_cst.element.id(), std::make_pair(stop_date, stop_con)));
-
-    m_csts.insert(
-                std::make_pair(
-                    pattern_cst.element.id(),
-                    sound
-                    )
-                );
-
-
-    StartSound(m_groupPlayer, sound, start_date);
-
-
-*/
-
-
+    // If we are in the "good" case of a non-interactive loop, we
+    // can have sample-accurate looping : each loop iteration will be exactly one
+    // sample after the following.
     auto& start_node = m_hm.timeNodes().at(0);
     auto& start_event = m_hm.events().at(0);
     auto& end_node = m_hm.timeNodes().at(1);
@@ -78,23 +44,48 @@ void LoopComponent::makeStream(const Context& ctx)
        !end_node.element.trigger()->active() &&
        !start_event.element.condition().hasChildren())
     {
-        qDebug("ok");
-
         auto cut = MakeCutSound(sound, 0, toFrame(pattern_cst.element.duration.defaultDuration()));
         m_stream = MakeSend(MakeLoopSound(cut, 65536));
         return;
-/*
-        SetSymbolicDate(nullptr, start_date, 0);
-        SetSymbolicDate(nullptr, stop_date, toFrame(pattern_cst.element.duration.defaultDuration()));
-        LoopSound(m_groupPlayer, sound, start_date, stop_date);
-*/
     }
     else
     {
-        qDebug() << "FAKU";
-       // StopSound(m_groupPlayer, sound, stop_date);
+        // For now "full interactive mode"
+        // Then we have to handle the :
+        // - interactive at both start and end case
+        // - interactive at only start
+        // - interactive at only end
 
-        m_stream = MakeSend(m_groupStream);
+        m_groupPlayer = MakeGroupPlayer();
+        m_groupStream = MakeGroupStream(m_groupPlayer);
+
+        auto start_date = GenSymbolicDate(m_groupPlayer);
+        auto start_con = con(pattern_cst.element, &Scenario::ConstraintModel::executionStarted,
+                             this, [=] () {
+            SetSymbolicDate(m_groupPlayer, start_date, GetAudioPlayerDateInFrame(m_groupPlayer));
+        }, Qt::QueuedConnection);
+        m_synchros.insert(std::make_pair(pattern_cst.element.id(), std::make_pair(start_date, start_con)));
+
+        auto stop_date = GenSymbolicDate(m_groupPlayer);
+        auto stop_con = con(pattern_cst.element, &Scenario::ConstraintModel::executionStopped,
+                            this, [=] () {
+            SetSymbolicDate(m_groupPlayer, stop_date, GetAudioPlayerDateInFrame(m_groupPlayer));
+            ResetSound(m_groupStream);
+        }, Qt::QueuedConnection);
+        m_synchros.insert(std::make_pair(pattern_cst.element.id(), std::make_pair(stop_date, stop_con)));
+
+        m_csts.insert(
+                    std::make_pair(
+                        pattern_cst.element.id(),
+                        sound
+                        )
+                    );
+        StartSound(m_groupPlayer, sound, start_date);
+        StopSound(m_groupPlayer, sound, stop_date);
+
+
+    m_stream = MakeSend(m_groupStream);
+
     }
 }
 
