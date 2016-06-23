@@ -104,12 +104,13 @@ void ConstraintComponent::makeStream(const Context& player)
                 auto& cst_dur = constraint().duration;
 
                 AudioStream extended_stream;
+                TimeValue def = cst_dur.defaultDuration();
+                TimeValue maxdur = cst_dur.maxDuration();
+
                 audio_frame_t parent_max_dur =
                     cst_dur.isMaxInfinite()
                         ? INT64_MAX
-                        : toFrame(cst_dur.isRigid()
-                                  ? cst_dur.defaultDuration()
-                                  : cst_dur.maxDuration());
+                        : toFrame(cst_dur.isRigid() ? def : maxdur);
                 if(dur < parent_max_dur)
                 {
                     extended_stream =
@@ -168,7 +169,6 @@ void ConstraintComponent::makeStream(const Context& player)
                 }
             }
         }
-        //m_stream = MixNStreams(inputStreams);
 
         m_stream = MakePitchSchiftTimeStretchSound(
                     MixNStreams(inputStreams),
@@ -279,7 +279,7 @@ Mix::ProcessModel* ConstraintComponent::findMix() const
 }
 
 
-audio_frame_t ConstraintComponent::toFrame(const TimeValue& t) const
+audio_frame_t ConstraintComponent::toFrame(TimeValue t) const
 {
     return t.msec() * m_hm.system.context.audio.sample_rate / 1000.0;
 }

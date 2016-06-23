@@ -283,7 +283,7 @@ ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeGroupStream(AudioRendererPtr p);
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSinusStream(long length, float freq);
 
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeIScoreExecutor(AudioStream s, OSSIA::TimeConstraint& t);
-ISCORE_PLUGIN_AUDIO_EXPORT void MakeScenarioTimeNodeCommand(AudioPlayer player, Audio::AudioStreamEngine::TimeNodeComponent& t);
+//ISCORE_PLUGIN_AUDIO_EXPORT void MakeScenarioTimeNodeCommand(AudioPlayer player, Audio::AudioStreamEngine::TimeNodeComponent& t);
 
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeSend(AudioStream s);
 ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeReturn(AudioStream s);
@@ -382,7 +382,7 @@ struct TLoopCommand : public TControlCommand
 
         bool Execute(
                 TNonInterleavedAudioBuffer<float>* buffer,
-                map<SymbolicDate, audio_frame_t>& date_map,
+                std::map<SymbolicDate, audio_frame_t>& date_map,
                 audio_frame_t cur_frame,
                 long frames)
         {

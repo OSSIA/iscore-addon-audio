@@ -72,7 +72,7 @@ class ConstraintComponent final :
         audio_frame_t defaultDuration = INT64_MAX;
     private:
 
-        audio_frame_t toFrame(const TimeValue& t) const;
+        audio_frame_t toFrame(TimeValue t) const;
 
         parent_t m_hm;
         double m_shift{1.0};

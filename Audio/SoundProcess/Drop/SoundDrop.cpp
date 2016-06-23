@@ -80,7 +80,7 @@ DroppedAudioFiles::DroppedAudioFiles(const QMimeData &mime)
 TimeValue DroppedAudioFiles::dropMaxDuration() const
 {
     // TODO what about resampling.
-    return TimeValue::fromMsecs(maxDuration / (maxSampleRate / 1000));
+    return TimeValue::fromMsecs(maxDuration / (maxSampleRate / 1000.0));
 }
 
 
@@ -218,7 +218,7 @@ bool ConstraintDropHandler::handle(
                 auto resize_cmd = new Scenario::Command::MoveEventMeta{
                         *scenar,
                         ev,
-                        drop.dropMaxDuration(),
+                        constraint.startDate() + drop.dropMaxDuration(),
                         constraint.heightPercentage(),
                         ExpandMode::GrowShrink};
                 m.submitCommand(resize_cmd);
