@@ -57,7 +57,7 @@ void ScenarioComponent::makeStream(const Context& ctx)
                                 this, [=] (double s) {
                 // The new end duration is the "base" end multiplied by the speed.
                 onSpeedChanged(cst.component, s);
-            }, Qt::DirectConnection);
+            }, Qt::QueuedConnection);
 
             m_connections.push_back(speed_con);
         }
@@ -233,7 +233,9 @@ void ScenarioComponent::onSpeedChanged(const ConstraintComponent& c, double spee
     if(!dur.isRigid())
         return;
 
-    auto end_date = c.defaultStartDate + c.defaultDuration / speed;
+    auto cur_date = GetAudioPlayerDateInFrame(m_groupPlayer);
+    auto remaining_samples = (c.defaultDuration * (1. - c.constraint().duration.playPercentage())) / speed;
+    auto end_date = cur_date + remaining_samples;
     SetSymbolicDate(m_groupPlayer, c.stopDate, end_date);
 
     const Scenario::TimeNodeModel& end_tn = Scenario::endTimeNode(c.constraint(), m_hm.scenario);

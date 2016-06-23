@@ -156,6 +156,25 @@ bool DropHandler::createInParallel(
     return true;
 }
 
+// TODO put me in some "algorithms" file.
+static bool constraintHasNoFollowers(
+        const Scenario::ScenarioModel& scenar,
+        const Scenario::ConstraintModel& cst)
+{
+    auto& tn = Scenario::endTimeNode(cst, scenar);
+    for(auto& event_id : tn.events())
+    {
+        Scenario::EventModel& event = scenar.events.at(event_id);
+        for(auto& state_id : event.states())
+        {
+            Scenario::StateModel& state = scenar.states.at(state_id);
+            if(state.nextConstraint())
+                return false;
+        }
+    }
+    return true;
+}
+
 
 bool ConstraintDropHandler::handle(
         const Scenario::ConstraintModel& constraint,
@@ -193,8 +212,18 @@ bool ConstraintDropHandler::handle(
         {
             // First check that the end time node has nothing afterwards :
             // all its states must not have next constraints
+            if(constraintHasNoFollowers(*scenar, constraint))
+            {
+                auto& ev = Scenario::endState(constraint, *scenar).eventId();
+                auto resize_cmd = new Scenario::Command::MoveEventMeta{
+                        *scenar,
+                        ev,
+                        drop.dropMaxDuration(),
+                        constraint.heightPercentage(),
+                        ExpandMode::GrowShrink};
+                m.submitCommand(resize_cmd);
 
-            ISCORE_TODO;
+            }
         }
     }
 
