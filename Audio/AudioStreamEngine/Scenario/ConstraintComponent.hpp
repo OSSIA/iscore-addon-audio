@@ -69,7 +69,7 @@ class ConstraintComponent final :
         SymbolicDate stopDate;
 
         audio_frame_t defaultStartDate = INT64_MAX;
-        audio_frame_t defaultStopDate = INT64_MAX;
+        audio_frame_t defaultDuration = INT64_MAX;
     private:
 
         audio_frame_t toFrame(const TimeValue& t) const;

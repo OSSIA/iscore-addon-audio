@@ -199,9 +199,9 @@ void ScenarioComponent::onStartDateFixed(
     if(!dur.isRigid())
         return;
 
-    auto end_date = time + toFrame(dur.defaultDuration() * dur.executionSpeed());
+    auto end_date = time + toFrame(dur.defaultDuration()) / dur.executionSpeed();
     SetSymbolicDate(m_groupPlayer, c.stopDate, end_date);
-    c.defaultStopDate = end_date;
+    c.defaultDuration = toFrame(dur.defaultDuration());
 
     const Scenario::TimeNodeModel& end_tn = Scenario::endTimeNode(c.constraint(), m_hm.scenario);
     if(end_tn.trigger()->active())
@@ -233,8 +233,7 @@ void ScenarioComponent::onSpeedChanged(const ConstraintComponent& c, double spee
     if(!dur.isRigid())
         return;
 
-    auto end_date = c.defaultStopDate * speed;
-    qDebug() << c.defaultStopDate << end_date;
+    auto end_date = c.defaultStartDate + c.defaultDuration / speed;
     SetSymbolicDate(m_groupPlayer, c.stopDate, end_date);
 
     const Scenario::TimeNodeModel& end_tn = Scenario::endTimeNode(c.constraint(), m_hm.scenario);

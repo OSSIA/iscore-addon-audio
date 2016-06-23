@@ -92,7 +92,9 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
         FW<RecreateOnPlay::ClockManagerFactory,
             Audio::AudioStreamEngine::AudioClockFactory>,
         FW<Scenario::DropHandler,
-            Audio::Sound::DropHandler>
+            Audio::Sound::DropHandler>,
+        FW<Scenario::ConstraintDropHandler,
+            Audio::Sound::ConstraintDropHandler>
     >>(ctx, key);
 }
 
