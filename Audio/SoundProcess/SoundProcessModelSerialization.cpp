@@ -34,5 +34,5 @@ void Visitor<Writer<JSONObject>>::writeTo(Audio::Sound::ProcessModel& proc)
     Deserializer<JSONValue> elementPluginDeserializer(m_obj["PluginsMetadata"]);
     proc.pluginModelList = new iscore::ElementPluginModelList{elementPluginDeserializer, &proc};
 
-    proc.m_file = fromJsonObject<Audio::MediaFileHandle>(m_obj["Script"]);
+    proc.m_file = fromJsonObject<Audio::MediaFileHandle>(m_obj["File"]);
 }
