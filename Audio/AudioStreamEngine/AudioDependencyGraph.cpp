@@ -143,6 +143,10 @@ struct AudioGraphVisitor
         void operator()(T* component)
         {
             component->makeStream(ctx);
+            if(!component->getStream())
+            {
+                qDebug() << "Warning: component does not have a stream";
+            }
         }
 };
 

@@ -45,7 +45,7 @@ void LoopComponent::makeStream(const Context& ctx)
        !start_event.element.condition().hasChildren())
     {
         auto cut = MakeCutSound(sound, 0, toFrame(pattern_cst.element.duration.defaultDuration()));
-        m_stream = MakeSend(MakeLoopSound(cut, INT_MAX));
+        m_stream = MakeSend(MakeLoopSound(MakeFadeSound(cut, 512, 512), INT_MAX));
         return;
     }
     else

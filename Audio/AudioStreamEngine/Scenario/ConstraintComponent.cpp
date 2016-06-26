@@ -169,11 +169,12 @@ void ConstraintComponent::makeStream(const Context& player)
                 }
             }
         }
-
+        m_stream =  MixNStreams(inputStreams);
+        return; /*
         m_stream = MakePitchSchiftTimeStretchSound(
                     MixNStreams(inputStreams),
                     &m_shift,
-                    &m_stretch);
+                    &m_stretch);*/
     }
 
     // Look for all the "contents" process :
@@ -216,16 +217,21 @@ AudioStream ConstraintComponent::makeInputMix(
         auto channel = MakeChannelSound(
                            MakeReturn(component->getStream()),
                            getTarget(proc.process.id(), target));
+        ISCORE_ASSERT(channel);
         inputStreams.push_back(channel);
     };
+    ISCORE_ASSERT(processes().size() > 0);
 
     for(auto proc : processes())
     {
         if(mix)
         {
             auto routing_it = mix->routings().find(Mix::Routing{proc.process.id(), target});
-            if(!(routing_it != mix->routings().end() && routing_it->enabled))
+            if(!((routing_it != mix->routings().end()) && routing_it->enabled))
+            {
+                qDebug() << "Mix not found !" << proc.process.id() << target;
                 continue;
+            }
         }
 
         if(auto scenar = dynamic_cast<ScenarioComponent*>(&proc.component))
@@ -247,7 +253,10 @@ AudioStream ConstraintComponent::makeInputMix(
         // TODO loop...
     }
 
-    return MixNStreams(inputStreams);
+    ISCORE_ASSERT(inputStreams.size() > 0);
+    auto res = MixNStreams(inputStreams);
+    ISCORE_ASSERT(res);
+    return res;
 
 }
 

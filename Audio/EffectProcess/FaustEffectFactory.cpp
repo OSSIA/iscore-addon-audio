@@ -19,11 +19,11 @@ EffectModel*FaustEffectFactory::makeModel(
 }
 
 EffectModel*FaustEffectFactory::load(
-        const VisitorVariant& data,
+        const VisitorVariant& vis,
         QObject* parent) const
 {
-    ISCORE_TODO;
-    return nullptr;
+    return deserialize_dyn(vis, [&] (auto&& deserializer)
+    { return new FaustEffectModel{deserializer, parent};});
 }
 
 }

@@ -49,6 +49,11 @@ void FaustEffectModel::setText(const QString& txt)
     emit textChanged();
 }
 
+void FaustEffectModel::serialize_impl(const VisitorVariant& vis) const
+{
+    serialize_dyn(vis, *this);
+}
+
 void FaustEffectModel::init()
 {
     // We have to reload the faust FX whenever
