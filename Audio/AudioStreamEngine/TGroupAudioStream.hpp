@@ -10,6 +10,7 @@
 #include <memory>
 #include <cmath>
 
+#include <iscore/tools/Todo.hpp>
 struct TBufferManager
 {
         float** fInputBuffer{};
@@ -490,7 +491,7 @@ class TReturnAudioStream final :
 
             return framesNum;
         }
-#include <iscore/tools/Todo.hpp>
+
         void Reset() override
         {
             ISCORE_TODO;
