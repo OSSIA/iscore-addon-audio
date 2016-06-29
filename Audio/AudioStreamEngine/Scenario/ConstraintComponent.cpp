@@ -169,12 +169,11 @@ void ConstraintComponent::makeStream(const Context& player)
                 }
             }
         }
-        m_stream =  MixNStreams(inputStreams);
-        return; /*
+        m_stream =
         m_stream = MakePitchSchiftTimeStretchSound(
                     MixNStreams(inputStreams),
                     &m_shift,
-                    &m_stretch);*/
+                    &m_stretch);
     }
 
     // Look for all the "contents" process :

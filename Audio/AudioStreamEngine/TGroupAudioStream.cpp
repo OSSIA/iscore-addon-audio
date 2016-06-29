@@ -413,6 +413,14 @@ ISCORE_PLUGIN_AUDIO_EXPORT void LoopSound(
     ((AudioPlayer*) p)->fMixer->AddControlCommand(cmd);
 }
 
+
+ISCORE_PLUGIN_AUDIO_EXPORT AudioStream MakeLimitedInfiniteLoopSound(
+        AudioStream s,
+        long maxlength)
+{
+    return new TLimitedInfiniteLoopAudioStream{s, maxlength};
+}
+
 /*
 ISCORE_PLUGIN_AUDIO_EXPORT void MakeScenarioTimeNodeCommand(
         AudioPlayer player,
@@ -423,4 +431,61 @@ ISCORE_PLUGIN_AUDIO_EXPORT void MakeScenarioTimeNodeCommand(
     player.fMixer->AddControlCommand(cmd);
 }
 */
+}
+
+long TLimitedInfiniteLoopAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos)
+{
+    assert_stream(framesNum, framePos);
+
+    auto nextPos = fPos + framesNum;
+    if(nextPos < fMaxFrame)
+    {
+        if(fPos >= fStreamLength)
+        {
+            // Only silence
+        }
+        else if(nextPos >= fStreamLength)
+        {
+            // Part read, part silence
+            fStream->Read(buffer, nextPos - fStreamLength, framePos);
+        }
+        else
+        {
+            // Full read. TODO this should be the first if branch
+            // since it ought to be the most common.
+            fStream->Read(buffer, framesNum, framePos);
+        }
+        fPos = nextPos;
+    }
+    else
+    {
+        auto toRead = nextPos - fMaxFrame;
+        // Read what we can
+        fStream->Read(buffer, toRead, framePos);
+
+        // Reset
+        fStream->Reset();
+
+        // Read the remainder
+        auto remainder = framesNum - toRead;
+        fPos = remainder;
+
+        fStream->Read(buffer, remainder, framePos + toRead);
+    }
+
+    return framesNum;
+}
+
+TAudioStreamPtr TLimitedInfiniteLoopAudioStream::CutBegin(long frames)
+{
+    // TODO
+    assert(false);
+    return {};
+}
+
+void TLimitedInfiniteLoopAudioStream::Reset()
+{
+    assert(fStream);
+    fPos = 0;
+    fStream->Reset();
 }

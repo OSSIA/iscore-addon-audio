@@ -17,6 +17,7 @@ AudioStream MakeChannelSound(AudioStream s, double const * volume);
 AudioStream MakeIScoreExecutor(AudioStream s, OSSIA::TimeConstraint& t);
 
 void LoopSound(AudioRendererPtr p, AudioStream s, SymbolicDate start, SymbolicDate stop);
+AudioStream MakeLimitedInfiniteLoopSound(AudioStream s, long maxlength);
 }
 
 #endif

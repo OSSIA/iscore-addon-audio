@@ -44,8 +44,7 @@ void LoopComponent::makeStream(const Context& ctx)
        !end_node.element.trigger()->active() &&
        !start_event.element.condition().hasChildren())
     {
-        auto cut = MakeCutSound(sound, 0, toFrame(pattern_cst.element.duration.defaultDuration()));
-        m_stream = MakeSend(MakeLoopSound(MakeFadeSound(cut, 512, 512), INT_MAX));
+        m_stream = MakeSend(MakeLimitedInfiniteLoopSound(sound, toFrame(pattern_cst.element.duration.defaultDuration())));
         return;
     }
     else

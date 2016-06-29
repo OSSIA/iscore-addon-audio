@@ -736,3 +736,49 @@ class LV2AudioEffect : public TAudioEffectInterface
 //        }
 
 //};
+
+
+/** This loop has no iteration limit , but has a loop length limit
+since the underlying stream may be infinite. */
+class TLimitedInfiniteLoopAudioStream : public TDecoratedAudioStream
+{
+    private:
+        const long fMaxFrame;
+        long fPos{};
+        long fStreamLength{};
+
+    public:
+        TLimitedInfiniteLoopAudioStream(TAudioStreamPtr stream, long length):
+            TDecoratedAudioStream(stream),
+            fMaxFrame{length},
+            fStreamLength{stream->Length()}
+        {
+        }
+
+        virtual ~TLimitedInfiniteLoopAudioStream()
+        {
+
+        }
+
+        long Read(FLOAT_BUFFER buffer, long framesNum, long framePos);
+
+        void Reset();
+
+        TAudioStreamPtr CutBegin(long frames);
+
+        long Length()
+        {
+            return LONG_MAX;
+        }
+
+        TAudioStreamPtr Copy()
+        {
+            return new TLimitedInfiniteLoopAudioStream(fStream->Copy(), fMaxFrame);
+        }
+
+        long SetPos(long frames)
+        {
+            long len = fStream->Length();
+            return fStream->SetPos(frames % len);
+        }
+};
