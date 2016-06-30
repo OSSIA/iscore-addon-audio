@@ -1,7 +1,7 @@
 #include "ScenarioComponent.hpp"
 #include <Scenario/Process/Algorithms/Accessors.hpp>
 #include <Audio/AudioStreamEngine/Utility.hpp>
-#include <Audio/AudioStreamEngine/GroupAudioStream.h>
+#include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
 #include <Scenario/Document/Constraint/ConstraintModel.hpp>
 #include <Scenario/Document/TimeNode/Trigger/TriggerModel.hpp>
 namespace Audio

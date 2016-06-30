@@ -1,7 +1,10 @@
-#ifndef GROUPAUDIOSTREAM_H_2016_04_11
-#define GROUPAUDIOSTREAM_H_2016_04_11
+#ifndef AUDIOSTREAMISCOREEXTENSIONS_H_2016_04_11
+#define AUDIOSTREAMISCOREEXTENSIONS_H_2016_04_11
+
 #include "LibAudioStreamMC++.h"
 
+// This file provides a C-like API to allow use with the other
+// functions in the C API of the LibAudioStream.
 namespace OSSIA { class TimeConstraint; }
 extern "C"
 {
@@ -16,8 +19,7 @@ AudioStream MakeReturn(AudioStream s);
 AudioStream MakeChannelSound(AudioStream s, double const * volume);
 AudioStream MakeIScoreExecutor(AudioStream s, OSSIA::TimeConstraint& t);
 
-void LoopSound(AudioRendererPtr p, AudioStream s, SymbolicDate start, SymbolicDate stop);
-AudioStream MakeLimitedInfiniteLoopSound(AudioStream s, long maxlength);
+AudioStream MakeFixedLoopSound(AudioStream s, long maxlength);
 }
 
 #endif

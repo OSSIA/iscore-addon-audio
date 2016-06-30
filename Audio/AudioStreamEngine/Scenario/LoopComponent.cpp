@@ -1,7 +1,7 @@
 #include "LoopComponent.hpp"
 #include <Scenario/Process/Algorithms/Accessors.hpp>
 #include <Audio/AudioStreamEngine/Utility.hpp>
-#include <Audio/AudioStreamEngine/GroupAudioStream.h>
+#include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -44,7 +44,7 @@ void LoopComponent::makeStream(const Context& ctx)
        !end_node.element.trigger()->active() &&
        !start_event.element.condition().hasChildren())
     {
-        m_stream = MakeSend(MakeLimitedInfiniteLoopSound(sound, toFrame(pattern_cst.element.duration.defaultDuration())));
+        m_stream = MakeSend(MakeFixedLoopSound(sound, toFrame(pattern_cst.element.duration.defaultDuration())));
         return;
     }
     else

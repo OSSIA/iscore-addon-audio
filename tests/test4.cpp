@@ -1,5 +1,5 @@
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
-#include <Audio/AudioStreamEngine/GroupAudioStream.h>
+#include <Audio/AudioStreamEngine/Streams/GroupAudioStream.h>
 #include <QtTest/QtTest>
 #include <QMetaType>
 #include <QObject>

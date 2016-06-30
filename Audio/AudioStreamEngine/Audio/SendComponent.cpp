@@ -7,7 +7,7 @@
 #include <Audio/AudioStreamEngine/Audio/EffectComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/SoundComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/ReturnComponent.hpp>
-#include <Audio/AudioStreamEngine/GroupAudioStream.h>
+#include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
 #include <Audio/AudioStreamEngine/Utility.hpp>
 #include <Audio/MixProcess/MixProcessModel.hpp>
 

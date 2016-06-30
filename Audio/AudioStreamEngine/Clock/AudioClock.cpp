@@ -8,7 +8,7 @@
 #include <Audio/Settings/Card/CardSettingsModel.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 
-#include <Audio/AudioStreamEngine/GroupAudioStream.h>
+#include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
 
 
 namespace Audio

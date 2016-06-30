@@ -1,7 +1,7 @@
 #include "SoundComponent.hpp"
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
 #include <LibAudioStreamMC++.h>
-#include <Audio/AudioStreamEngine/GroupAudioStream.h>
+#include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
 namespace Audio
 {
 namespace AudioStreamEngine

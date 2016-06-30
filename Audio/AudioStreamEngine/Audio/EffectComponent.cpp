@@ -6,7 +6,7 @@
 #include <Audio/AudioStreamEngine/Scenario/LoopComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/SoundComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/ReturnComponent.hpp>
-#include <Audio/AudioStreamEngine/GroupAudioStream.h>
+#include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
 #include <Audio/AudioStreamEngine/Utility.hpp>
 
 #include <Audio/EffectProcess/FaustEffectModel.hpp>

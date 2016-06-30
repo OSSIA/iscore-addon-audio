@@ -2,7 +2,7 @@
 #include <Audio/ReturnProcess/ReturnProcessModel.hpp>
 #include <Audio/SendProcess/SendProcessModel.hpp>
 #include <Audio/AudioStreamEngine/Audio/SendComponent.hpp>
-#include <Audio/AudioStreamEngine/GroupAudioStream.h>
+#include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
 
 namespace Audio
 {
