@@ -44,7 +44,7 @@ void SoundComponent::makeStream(const Context& ctx)
         {
             // We take the first two channels for now
             std::array<long, 2> arr{0, 1};
-            m_stream = MakeSelectSound(read_sound, arr.data(), 2);
+            m_stream = MakeSend(MakeSelectSound(read_sound, arr.data(), 2));
             break;
         }
     }
