@@ -2,6 +2,7 @@
 #include "CardSettingsModel.hpp"
 #include <QLabel>
 #include <QComboBox>
+#include <sstream>
 #include <QFormLayout>
 #include <LibAudioStreamMC++.h>
 #include <iscore/application/ApplicationContext.hpp>

@@ -1,4 +1,12 @@
 #include "TSinusAudioStream.hpp"
+#if defined(_MSC_VER)
+#define _USE_MATH_DEFINES
+#include <math.h>
+#else
+#if !defined(M_PI)
+#define M_PI (3.14159265358979323846)
+#endif
+#endif
 
 TSinusAudioStream::TSinusAudioStream(long duration, float freq):
     fDuration{duration},

@@ -14,6 +14,12 @@ class ApplicationPlugin;
 
 struct AudioContext
 {
+        AudioContext(ApplicationPlugin& p):
+            plugin{p}
+        {
+
+        }
+
         ApplicationPlugin& plugin;
 
         AudioPlayerPtr player{};
@@ -26,6 +32,13 @@ struct AudioContext
 
 struct Context
 {
+	    Context(const iscore::DocumentContext& d, AudioContext& a) :
+		    doc(d),
+	    	audio(a)
+	    {
+
+		}
+
         const iscore::DocumentContext& doc;
         AudioContext& audio;
 

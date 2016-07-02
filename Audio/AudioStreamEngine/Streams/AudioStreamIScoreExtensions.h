@@ -6,8 +6,10 @@
 // This file provides a C-like API to allow use with the other
 // functions in the C API of the LibAudioStream.
 namespace OSSIA { class TimeConstraint; }
+#if defined(__cplusplus) && !defined(_MSC_VER)
 extern "C"
 {
+#endif
 AudioRendererPtr MakeGroupPlayer();
 AudioStream MakeGroupStream(AudioRendererPtr p);
 
@@ -20,6 +22,8 @@ AudioStream MakeChannelSound(AudioStream s, double const * volume);
 AudioStream MakeIScoreExecutor(AudioStream s, OSSIA::TimeConstraint& t);
 
 AudioStream MakeFixedLoopSound(AudioStream s, long maxlength);
+#if defined(__cplusplus) && !defined(_MSC_VER)
 }
+#endif
 
 #endif

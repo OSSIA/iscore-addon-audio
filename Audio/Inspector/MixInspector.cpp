@@ -157,7 +157,7 @@ void InspectorWidget::recreate()
                 this, [=,&mix] (int val) {
             m_dispatcher.submitCommand<Audio::Commands::UpdateDirect>(
                             mix,
-                            DirectMix{col_it->process, val / 100.});
+                            Audio::Mix::DirectMix(col_it->process, val / 100.));
         });
         connect(sb, &QSpinBox::editingFinished,
                 this, [=] () { m_dispatcher.commit(); });

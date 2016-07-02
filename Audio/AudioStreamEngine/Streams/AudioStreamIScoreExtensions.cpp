@@ -10,7 +10,7 @@
 #include <TEffectAudioStream.h>
 
 // TODO refactor this with the part in LibAudioStreamMC++.cpp
-#ifdef WIN32
+#ifdef _WIN32
     #define	AUDIOAPI __declspec(dllexport)
 #else
     #define	AUDIOAPI __attribute__ ((visibility("default")))
@@ -26,8 +26,10 @@ typedef void* AudioRendererPtr;
 typedef AudioPlayer* IntAudioPlayerPtr;
 typedef TAudioStreamPtr AudioStream;
 
+#if defined(__cplusplus) && !defined(_MSC_VER)
 extern "C"
 {
+#endif
 // APIs
 AUDIOAPI AudioRendererPtr MakeGroupPlayer();
 AUDIOAPI AudioStream MakeGroupStream(AudioRendererPtr p);
@@ -41,8 +43,10 @@ AUDIOAPI AudioStream MakeChannelSound(AudioStream s, double const * volume);
 AUDIOAPI AudioStream MakeFixedLoopSound(AudioStream s, long maxlength);
 
 void CloseAudioPlayer(AudioPlayerPtr ext_player); // In libaudiostreammc
-}
 
+#if defined(__cplusplus) && !defined(_MSC_VER)
+}
+#endif
 
 // Implementations
 AUDIOAPI AudioPlayerPtr MakeGroupPlayer()
