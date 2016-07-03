@@ -14,12 +14,10 @@
 #include <Audio/AudioStreamEngine/Scenario/LoopComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/EffectComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Audio/SoundComponentFactory.hpp>
-#include <Audio/AudioStreamEngine/Audio/MixComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Audio/EffectComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/ReturnComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/SendComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/SoundComponent.hpp>
-#include <Audio/AudioStreamEngine/Audio/MixComponent.hpp>
 #include <Audio/AudioStreamEngine/Utility.hpp>
 #include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
 namespace Audio

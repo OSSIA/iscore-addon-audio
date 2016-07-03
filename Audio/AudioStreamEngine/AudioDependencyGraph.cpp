@@ -8,7 +8,6 @@
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
 
 #include <Audio/AudioStreamEngine/Audio/EffectComponent.hpp>
-#include <Audio/AudioStreamEngine/Audio/MixComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/SoundComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/SendComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/ReturnComponent.hpp>
@@ -151,7 +150,7 @@ struct AudioGraphVisitor
 };
 
 void AudioDependencyGraph::apply(const std::deque<int>& sorted_vertices, Context& ctx)
-{    
+{
     AudioGraphVisitor v{ctx};
     for(auto vertice : sorted_vertices)
     {

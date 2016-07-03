@@ -39,7 +39,6 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/TimeNodeComponent.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/ProcessComponent.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/ScenarioWrapper.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/ScenarioComponentFactory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/LoopComponent.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/LoopComponentFactory.hpp"
@@ -48,8 +47,6 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/SoundComponentFactory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/EffectComponent.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/EffectComponentFactory.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/MixComponent.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/MixComponentFactory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/SendComponent.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/SendComponentFactory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/ReturnComponent.hpp"
@@ -84,8 +81,6 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/CreateSoundBox.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/AudioCommandFactory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/InsertEffect.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/MoveEffect.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/RemoveEffect.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/UpdateMix.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.hpp"
 
@@ -121,8 +116,6 @@ set(HDRS ${HDRS}
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/MissingEffectModel.hpp"
 
-
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/Mix.hpp"

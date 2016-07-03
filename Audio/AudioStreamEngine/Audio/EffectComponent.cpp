@@ -11,7 +11,6 @@
 
 #include <Audio/EffectProcess/FaustEffectModel.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.hpp>
-#include <Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp>
 
 namespace Audio
 {

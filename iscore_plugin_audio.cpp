@@ -28,7 +28,6 @@
 #include <Audio/AudioStreamEngine/Scenario/LoopComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Audio/EffectComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Audio/SoundComponentFactory.hpp>
-#include <Audio/AudioStreamEngine/Audio/MixComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Audio/SendComponentFactory.hpp>
 #include <Audio/AudioStreamEngine/Audio/ReturnComponentFactory.hpp>
 
