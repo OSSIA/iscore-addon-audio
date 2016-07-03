@@ -12,7 +12,7 @@ namespace Settings
 
 namespace Parameters
 {
-        const iscore::sp<ModelDriverParameter> Driver{QStringLiteral("Audio/Driver"), ""};
+        const iscore::sp<ModelDriverParameter> Driver{QStringLiteral("Audio/Driver"), "Offline"};
         const iscore::sp<ModelCardParameter> Card{QStringLiteral("Audio/Card"), ""};
         const iscore::sp<ModelBufferSizeParameter> BufferSize{QStringLiteral("Audio/BufferSize"), 512};
         const iscore::sp<ModelRateParameter> Rate{QStringLiteral("Audio/SamplingRate"), 44100};
