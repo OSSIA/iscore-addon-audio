@@ -4,7 +4,7 @@
 #include <iscore/serialization/JSONVisitor.hpp>
 #include <iscore/serialization/VisitorCommon.hpp>
 #include <Audio/EffectProcess/EffectProcessMetadata.hpp>
-#include <DummyProcess/DummyLayerPanelProxy.hpp>
+#include <Process/Dummy/DummyLayerPanelProxy.hpp>
 #include <Process/LayerModel.hpp>
 #include <Audio/MediaFileHandle.hpp>
 #include <iscore/tools/NotifyingMap.hpp>
@@ -74,37 +74,14 @@ class ProcessModel final : public Process::ProcessModel
         }
 
         QString prettyName() const override;
-        QByteArray makeLayerConstructionData() const override;
 
-        void setDurationAndScale(const TimeValue& newDuration) override;
-        void setDurationAndGrow(const TimeValue& newDuration) override;
-        void setDurationAndShrink(const TimeValue& newDuration) override;
-
-        void startExecution() override;
-        void stopExecution() override;
-        void reset() override;
-
-        ProcessStateDataInterface* startStateData() const override;
-        ProcessStateDataInterface* endStateData() const override;
-
-        Selection selectableChildren() const override;
-        Selection selectedChildren() const override;
-        void setSelection(const Selection& s) const override;
-
-        void serialize_impl(const VisitorVariant& vis) const override;
 
     signals:
         void effectsChanged();
 
-    protected:
-        Process::LayerModel* makeLayer_impl(
-                const Id<Process::LayerModel>& viewModelId,
-                const QByteArray& constructionData,
-                QObject* parent) override;
-        Process::LayerModel* loadLayer_impl(const VisitorVariant&, QObject* parent) override;
-        Process::LayerModel* cloneLayer_impl(const Id<Process::LayerModel>& newId, const Process::LayerModel& source, QObject* parent) override;
-
     private:
+        void serialize_impl(const VisitorVariant& vis) const override;
+
         // The actual effect instances
         NotifyingMap<EffectModel> m_effects;
 

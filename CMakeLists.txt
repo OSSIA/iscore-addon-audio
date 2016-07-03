@@ -295,7 +295,7 @@ set_property(TARGET ${PROJECT_NAME}  PROPERTY COTIRE_ADD_UNITY_BUILD FALSE)
 iscore_generate_command_list_file(${PROJECT_NAME} "${HDRS}")
 target_link_libraries(${PROJECT_NAME} PUBLIC
                      Qt5::Core Qt5::Widgets Qt5::Multimedia
-                     iscore_lib_base iscore_plugin_ossia iscore_lib_dummyprocess
+                     iscore_lib_base iscore_plugin_ossia
                      ${SNDFILE_LIBRARIES}
                      libaudiostream)
 

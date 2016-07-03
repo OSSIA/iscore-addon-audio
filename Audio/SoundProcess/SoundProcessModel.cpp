@@ -1,5 +1,5 @@
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
-#include <DummyProcess/DummyLayerModel.hpp>
+#include <Process/Dummy/DummyLayerModel.hpp>
 #include <Explorer/DocumentPlugin/DeviceDocumentPlugin.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 #include <iscore/plugins/documentdelegate/plugin/ElementPluginModelList.hpp>
@@ -73,98 +73,9 @@ QString ProcessModel::prettyName() const
     return "Audio Process";
 }
 
-QByteArray ProcessModel::makeLayerConstructionData() const
-{
-    return {};
-}
-
-void ProcessModel::setDurationAndScale(const TimeValue& newDuration)
-{
-    setDuration(newDuration);
-}
-
-void ProcessModel::setDurationAndGrow(const TimeValue& newDuration)
-{
-    setDuration(newDuration);
-}
-
-void ProcessModel::setDurationAndShrink(const TimeValue& newDuration)
-{
-    setDuration(newDuration);
-}
-
-void ProcessModel::startExecution()
-{
-}
-
-void ProcessModel::stopExecution()
-{
-}
-
-void ProcessModel::reset()
-{
-}
-
-ProcessStateDataInterface* ProcessModel::startStateData() const
-{
-    return nullptr;
-}
-
-ProcessStateDataInterface* ProcessModel::endStateData() const
-{
-    return nullptr;
-}
-
-Selection ProcessModel::selectableChildren() const
-{
-    return {};
-}
-
-Selection ProcessModel::selectedChildren() const
-{
-    return {};
-}
-
-void ProcessModel::setSelection(const Selection&) const
-{
-}
-
 void ProcessModel::serialize_impl(const VisitorVariant& s) const
 {
     serialize_dyn(s, *this);
-}
-
-Process::LayerModel* ProcessModel::makeLayer_impl(
-        const Id<Process::LayerModel>& viewModelId,
-        const QByteArray& constructionData,
-        QObject* parent)
-{
-    return new LayerModel{*this, viewModelId, parent};
-}
-
-Process::LayerModel* ProcessModel::loadLayer_impl(
-        const VisitorVariant& vis,
-        QObject* parent)
-{
-    return deserialize_dyn(vis, [&] (auto&& deserializer)
-    {
-        auto autom = new LayerModel{
-                        deserializer, *this, parent};
-
-        return autom;
-    });
-}
-
-Process::LayerModel* ProcessModel::cloneLayer_impl(
-        const Id<Process::LayerModel>& newId,
-        const Process::LayerModel& source,
-        QObject* parent)
-{
-    return new LayerModel{
-        safe_cast<const LayerModel&>(source),
-                *this,
-                newId,
-                parent};
 }
 }
 
