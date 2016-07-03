@@ -71,11 +71,6 @@ set(HDRS ${HDRS}
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioArray.hpp"
 
-#    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioBlock.hpp"
-#    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioEngine.hpp"
-#    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioProcess.hpp"
-#    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/WavBlock.hpp"
-
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/ChangeAudioFile.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/ChangeSend.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/CreateSoundBox.hpp"
@@ -172,7 +167,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/TimeNodeComponent.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/ProcessComponent.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/ScenarioComponent.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/ScenarioWrapper.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/ScenarioComponentFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/LoopComponent.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/LoopComponentFactory.cpp"
@@ -181,8 +175,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/SoundComponentFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/EffectComponent.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/EffectComponentFactory.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/MixComponent.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/MixComponentFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/SendComponent.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/SendComponentFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/ReturnComponent.cpp"
@@ -191,7 +183,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Utility.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TGroupAudioStream.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/ExecutorAudioEffect.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TBufferManager.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TChannelAudioStream.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TFixedLoopAudioStream.cpp"
@@ -203,17 +194,10 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TSendAudioStream.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TSinusAudioStream.cpp"
 
-#    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioBlock.cpp"
-#    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioEngine.cpp"
-#    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/AudioProcess.cpp"
-#    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/CustomEngine/WavBlock.cpp"
-
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/ChangeAudioFile.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/ChangeSend.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/AudioCommandFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/InsertEffect.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/MoveEffect.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/RemoveEffect.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/UpdateMix.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.cpp"
 
@@ -223,20 +207,16 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/ReturnInspector.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/MixInspector.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsPresenter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsView.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessLayer.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessLayerPanelProxy.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessPresenter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessView.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/Drop/SoundDrop.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectFactory.cpp"
@@ -245,19 +225,14 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/FaustEffectFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/MissingEffectModel.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessModel.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessModel.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SendProcess/SendProcessFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SendProcess/SendProcessModel.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessModel.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.cpp"
