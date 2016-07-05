@@ -30,7 +30,17 @@ LV2EffectModel*LV2EffectModel::clone(const Id<EffectModel>& newId, QObject* pare
 
 QString LV2EffectModel::title() const
 {
-    return tr("LV2");
+  return tr("LV2");
+}
+
+void LV2EffectModel::init()
+{
+
+}
+
+void LV2EffectModel::reload()
+{
+
 }
 
 }
