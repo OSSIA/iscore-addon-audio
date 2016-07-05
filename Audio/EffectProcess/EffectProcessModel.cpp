@@ -49,7 +49,7 @@ void ProcessModel::insertEffect(
         EffectModel* eff,
         int pos)
 {
-    clamp(pos, 0, m_effectOrder.size());
+    clamp(pos, 0, int(m_effectOrder.size()));
 
     m_effects.add(eff);
     auto it = m_effectOrder.begin();
