@@ -10,7 +10,7 @@ namespace Audio
 namespace AudioStreamEngine
 {
 class ScenarioComponent final :
-        public ProcessComponent_T<Scenario::ScenarioModel, false, true>
+        public ProcessComponent_T<Scenario::ProcessModel, false, true>
 {
        COMPONENT_METADATA(Audio::AudioStreamEngine::ScenarioComponent)
 
@@ -19,7 +19,7 @@ class ScenarioComponent final :
            ScenarioComponentHierarchyManager<
                ScenarioComponent,
                system_t,
-               Scenario::ScenarioModel,
+               Scenario::ProcessModel,
                ConstraintComponent,
                EventComponent,
                TimeNodeComponent,
@@ -29,7 +29,7 @@ class ScenarioComponent final :
     public:
        ScenarioComponent(
                const Id<Component>& id,
-               Scenario::ScenarioModel& scenario,
+               Scenario::ProcessModel& scenario,
                system_t& doc,
                const iscore::DocumentContext& ctx,
                QObject* parent_obj);

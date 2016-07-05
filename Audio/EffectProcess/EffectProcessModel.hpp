@@ -31,6 +31,7 @@ class ProcessModel final : public Process::ProcessModel
 {
         ISCORE_SERIALIZE_FRIENDS(Audio::Effect::ProcessModel, DataStream)
         ISCORE_SERIALIZE_FRIENDS(Audio::Effect::ProcessModel, JSONObject)
+        PROCESS_METADATA_IMPL(Audio::Effect::ProcessModel)
 
         Q_OBJECT
     public:
@@ -63,25 +64,10 @@ class ProcessModel final : public Process::ProcessModel
         void insertEffect(EffectModel* eff, int pos);
         void removeEffect(const EffectModel&);
 
-        // Process interface
-        ProcessModel* clone(
-                const Id<Process::ProcessModel>& newId,
-                QObject* newParent) const override;
-
-        UuidKey<Process::ProcessFactory> concreteFactoryKey() const override
-        {
-            return Metadata<ConcreteFactoryKey_k, Audio::Effect::ProcessModel>::get();
-        }
-
-        QString prettyName() const override;
-
-
     signals:
         void effectsChanged();
 
     private:
-        void serialize_impl(const VisitorVariant& vis) const override;
-
         // The actual effect instances
         NotifyingMap<EffectModel> m_effects;
 

@@ -21,6 +21,7 @@ class ProcessModel final :
 {
         ISCORE_SERIALIZE_FRIENDS(Audio::Send::ProcessModel, DataStream)
         ISCORE_SERIALIZE_FRIENDS(Audio::Send::ProcessModel, JSONObject)
+        PROCESS_METADATA_IMPL(Audio::Send::ProcessModel)
 
         Q_OBJECT
     public:
@@ -44,20 +45,6 @@ class ProcessModel final :
         {
             vis.writeTo(*this);
         }
-
-        // Process interface
-        ProcessModel* clone(
-                const Id<Process::ProcessModel>& newId,
-                QObject* newParent) const override;
-
-        UuidKey<Process::ProcessFactory> concreteFactoryKey() const override
-        {
-            return Metadata<ConcreteFactoryKey_k, Audio::Send::ProcessModel>::get();
-        }
-
-        QString prettyName() const override;
-
-        void serialize_impl(const VisitorVariant& vis) const override;
 
     signals:
         void routingChanged();

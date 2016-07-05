@@ -60,23 +60,6 @@ void ProcessModel::setFile(const MediaFileHandle &file)
     m_file = file;
     emit fileChanged();
 }
-
-ProcessModel* ProcessModel::clone(
-        const Id<Process::ProcessModel>& newId,
-        QObject* newParent) const
-{
-    return new ProcessModel{*this, newId, newParent};
-}
-
-QString ProcessModel::prettyName() const
-{
-    return "Audio Process";
-}
-
-void ProcessModel::serialize_impl(const VisitorVariant& s) const
-{
-    serialize_dyn(s, *this);
-}
 }
 
 }
