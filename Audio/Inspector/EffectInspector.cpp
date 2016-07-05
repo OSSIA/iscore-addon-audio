@@ -91,6 +91,7 @@ void InspectorWidget::recreate()
     {
         EffectModel& fx = process().effects().at(fx_id);
         auto item = new QListWidgetItem(fx.title(), m_list);
+        // TODO on_titleChanged...
         item->setData(Qt::UserRole, QVariant::fromValue(fx_id));
         m_list->addItem(item);
     }

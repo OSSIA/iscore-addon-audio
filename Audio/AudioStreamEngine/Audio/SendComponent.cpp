@@ -57,25 +57,9 @@ void SendComponent::makeStream(const Context& ctx)
                 continue;
         }
 
-        if(auto scenar = dynamic_cast<ScenarioComponent*>(&proc.component))
+        if(proc.component.hasOutput())
         {
-            inputStreams.push_back(scenar->getStream());
-        }
-        else if(auto loop = dynamic_cast<LoopComponent*>(&proc.component))
-        {
-            inputStreams.push_back(loop->getStream());
-        }
-        else if(auto sound = dynamic_cast<SoundComponent*>(&proc.component))
-        {
-            inputStreams.push_back(sound->getStream());
-        }
-        else if(auto ret = dynamic_cast<ReturnComponent*>(&proc.component))
-        {
-            inputStreams.push_back(ret->getStream());
-        }
-        else if(auto fx = dynamic_cast<EffectProcessComponent*>(&proc.component))
-        {
-            inputStreams.push_back(fx->getStream());
+            inputStreams.push_back(proc.component.getStream());
         }
     }
 

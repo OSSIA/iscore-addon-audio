@@ -28,6 +28,7 @@ ProcessModel::ProcessModel(
                       this};
 
     init();
+    metadata.setName(Metadata<PrettyName_k, ProcessModel>::get() + QString(".%1").arg(*this->id().val()));
 }
 
 ProcessModel::ProcessModel(

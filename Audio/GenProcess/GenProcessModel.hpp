@@ -1,25 +1,19 @@
 #pragma once
 #include <Process/Process.hpp>
-#include <iscore/serialization/DataStreamVisitor.hpp>
-#include <iscore/serialization/JSONVisitor.hpp>
-#include <iscore/serialization/VisitorCommon.hpp>
-#include <Audio/InputProcess/InputProcessMetadata.hpp>
-#include <Process/Dummy/DummyLayerPanelProxy.hpp>
-#include <Process/LayerModel.hpp>
-#include <Audio/MediaFileHandle.hpp>
-#include <unordered_set>
+#include <Audio/GenProcess/GenProcessMetadata.hpp>
 
+#include <LibAudioStreamMC++.h>
 namespace Audio
 {
-namespace Input
+namespace Gen
 {
 class ProcessModel final :
         public Process::ProcessModel,
         public Nano::Observer
 {
-        ISCORE_SERIALIZE_FRIENDS(Audio::Input::ProcessModel, DataStream)
-        ISCORE_SERIALIZE_FRIENDS(Audio::Input::ProcessModel, JSONObject)
-        PROCESS_METADATA_IMPL(Audio::Input::ProcessModel)
+        ISCORE_SERIALIZE_FRIENDS(Audio::Gen::ProcessModel, DataStream)
+        ISCORE_SERIALIZE_FRIENDS(Audio::Gen::ProcessModel, JSONObject)
+        PROCESS_METADATA_IMPL(Audio::Gen::ProcessModel)
         Q_OBJECT
     public:
         explicit ProcessModel(
@@ -41,7 +35,25 @@ class ProcessModel final :
             Process::ProcessModel{vis, parent}
         {
             vis.writeTo(*this);
+            init();
         }
+
+
+        const QString& text() const
+        {
+            return m_text;
+        }
+
+        void setText(const QString& txt);
+
+    signals:
+        void textChanged();
+
+    private:
+        void init();
+        void reload();
+        QString m_text;
+        AudioEffect m_effect;
 
 };
 }

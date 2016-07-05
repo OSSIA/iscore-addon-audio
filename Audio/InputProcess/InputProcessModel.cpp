@@ -24,6 +24,7 @@ ProcessModel::ProcessModel(
     pluginModelList = new iscore::ElementPluginModelList{
                       iscore::IDocument::documentContext(*parent),
                       this};
+    metadata.setName(Metadata<PrettyName_k, ProcessModel>::get() + QString(".%1").arg(*this->id().val()));
 }
 
 ProcessModel::ProcessModel(

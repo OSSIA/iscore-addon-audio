@@ -51,7 +51,10 @@ void EffectProcessComponent::makeStream(const Context& ctx)
     auto cst_comp = static_cast<ConstraintComponent*>(&(*cst_comp_it));
     AudioStream sound = cst_comp->makeInputMix(this->process().id());
 
-    ISCORE_ASSERT(sound);
+    if(!sound)
+    {
+        sound = MakeNullSound(LONG_MAX);
+    }
     for(auto& fx : process().effects())
     {
         if(auto faust_fx = dynamic_cast<Effect::FaustEffectModel*>(&fx))
@@ -76,7 +79,8 @@ void EffectProcessComponent::makeStream(const Context& ctx)
         }
     }
 
-    m_stream = MakeSend(sound);
+    if(sound)
+        m_stream = MakeSend(sound);
 }
 
 }

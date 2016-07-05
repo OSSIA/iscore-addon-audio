@@ -116,6 +116,10 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessMetadata.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessModel.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/GenProcess/GenProcessFactory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/GenProcess/GenProcessMetadata.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/GenProcess/GenProcessModel.hpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SendProcess/SendProcessFactory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SendProcess/SendProcessMetadata.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SendProcess/SendProcessModel.hpp"
@@ -147,6 +151,7 @@ set(SRCS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessModelSerialization.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessModelSerialization.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/GenProcess/GenProcessModelSerialization.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SendProcess/SendProcessModelSerialization.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessModelSerialization.cpp"
 
@@ -216,11 +221,9 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessModel.cpp"
-
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessModel.cpp"
-
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/GenProcess/GenProcessModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SendProcess/SendProcessModel.cpp"
-
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessModel.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.cpp"

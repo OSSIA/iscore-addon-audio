@@ -91,9 +91,9 @@ void ConstraintComponent::makeStream(const Context& player)
             };
         }
 
-        auto make_stream_impl = [&] (auto component, const auto& proc)
+        auto make_stream_impl = [&] (auto& component, const auto& proc)
         {
-            auto stream = component->getStream();
+            auto stream = component.getStream();
             if(stream)
             {
                 auto dur = GetLengthSound(stream);
@@ -109,6 +109,7 @@ void ConstraintComponent::makeStream(const Context& player)
                         : toFrame(cst_dur.isRigid() ? def : maxdur);
                 if(dur < parent_max_dur)
                 {
+                    // TODO this may break with rubberband...
                     extended_stream =
                             MakeSeqSound(
                                 stream,
@@ -133,39 +134,25 @@ void ConstraintComponent::makeStream(const Context& player)
         {
             auto& proc = proc_pair.process;
             auto& comp = proc_pair.component;
-            if(auto scenar = dynamic_cast<ScenarioComponent*>(&comp))
-            {
-                make_stream_impl(scenar, proc);
-            }
-            else if(auto loop = dynamic_cast<LoopComponent*>(&comp))
-            {
-                make_stream_impl(loop, proc);
-            }
-            else if(auto sound = dynamic_cast<SoundComponent*>(&comp))
-            {
-                make_stream_impl(sound, proc);
-            }
-            else if(auto sfx = dynamic_cast<EffectProcessComponent*>(&comp))
-            {
-                // TODO if there is only an effect and no input,
-                // we should feed it at least some silence.
-                make_stream_impl(sfx, proc);
-            }
-            else if(auto ret = dynamic_cast<ReturnComponent*>(&comp))
-            {
-                make_stream_impl(ret, proc);
-            }
-            else if(auto send = dynamic_cast<SendComponent*>(&comp))
+            if(auto send = dynamic_cast<SendComponent*>(&comp))
             {
                 AudioStream stream = send->getStream();
                 if(stream)
                 {
+                    // We disable the sound output of the sends, we only pull them regularly.
+                    // This would maybe be better achieved with a regular command.
                     auto channel = MakeChannelSound(stream, zero());
                     inputStreams.push_back(channel);
                 }
             }
+            else if(comp.hasOutput())
+            {
+                // TODO for the effects case, if there is only an effect and no input,
+                // we should feed it at least some silence.
+                make_stream_impl(comp, proc);
+            }
         }
-        m_stream =
+
         m_stream = MakePitchSchiftTimeStretchSound(
                     MixNStreams(inputStreams),
                     &m_shift,
@@ -206,11 +193,11 @@ AudioStream ConstraintComponent::makeInputMix(
         };
     }
 
-    auto make_stream_impl = [&] (auto component, const auto& proc)
+    auto make_stream_impl = [&] (auto& component, const auto& proc)
     {
-        ISCORE_ASSERT(component->getStream());
+        ISCORE_ASSERT(component.getStream());
         auto channel = MakeChannelSound(
-                           MakeReturn(component->getStream()),
+                           MakeReturn(component.getStream()),
                            getTarget(proc.process.id(), target));
         ISCORE_ASSERT(channel);
         inputStreams.push_back(channel);
@@ -219,6 +206,9 @@ AudioStream ConstraintComponent::makeInputMix(
 
     for(auto proc : processes())
     {
+        if(proc.process.id() == target)
+            continue;
+
         if(mix)
         {
             auto routing_it = mix->routings().find(Mix::Routing{proc.process.id(), target});
@@ -229,30 +219,16 @@ AudioStream ConstraintComponent::makeInputMix(
             }
         }
 
-        if(auto scenar = dynamic_cast<ScenarioComponent*>(&proc.component))
+        // TODO this does not work if there are two effect chains :
+        // they will go into each other.
+        // Use the GUI disablement.
+        if(proc.component.hasOutput())
         {
-            make_stream_impl(scenar, proc);
+            make_stream_impl(proc.component, proc);
         }
-        else if(auto loop = dynamic_cast<LoopComponent*>(&proc.component))
-        {
-            make_stream_impl(loop, proc);
-        }
-        else if(auto sound = dynamic_cast<SoundComponent*>(&proc.component))
-        {
-            make_stream_impl(sound, proc);
-        }
-        else if(auto ret = dynamic_cast<ReturnComponent*>(&proc.component))
-        {
-            make_stream_impl(ret, proc);
-        }
-        // TODO loop...
     }
 
-    ISCORE_ASSERT(inputStreams.size() > 0);
-    auto res = MixNStreams(inputStreams);
-    ISCORE_ASSERT(res);
-    return res;
-
+    return MixNStreams(inputStreams);
 }
 
 

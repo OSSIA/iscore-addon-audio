@@ -1,15 +1,11 @@
-#include <Audio/EffectProcess/EffectProcessModel.hpp>
-#include <Process/Dummy/DummyLayerModel.hpp>
-#include <Explorer/DocumentPlugin/DeviceDocumentPlugin.hpp>
-#include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
+#include <Audio/GenProcess/GenProcessModel.hpp>
+#include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
+#include <QJsonDocument>
 #include <iscore/plugins/documentdelegate/plugin/ElementPluginModelList.hpp>
-
-#include <iscore/tools/Clamp.hpp>
-#include <QFile>
 
 namespace Audio
 {
-namespace Effect
+namespace Gen
 {
 
 ProcessModel::ProcessModel(
@@ -21,8 +17,8 @@ ProcessModel::ProcessModel(
     pluginModelList = new iscore::ElementPluginModelList{
                       iscore::IDocument::documentContext(*parent),
                       this};
-
     metadata.setName(Metadata<PrettyName_k, ProcessModel>::get() + QString(".%1").arg(*this->id().val()));
+    init();
 }
 
 ProcessModel::ProcessModel(
@@ -38,8 +34,7 @@ ProcessModel::ProcessModel(
     pluginModelList = new iscore::ElementPluginModelList{
                       *source.pluginModelList,
             this};
-
-    ISCORE_TODO;
+    init();
 }
 
 ProcessModel::~ProcessModel()
@@ -47,27 +42,32 @@ ProcessModel::~ProcessModel()
 
 }
 
-void ProcessModel::insertEffect(
-        EffectModel* eff,
-        int pos)
+void ProcessModel::setText(const QString& txt)
 {
-    clamp(pos, 0, int(m_effectOrder.size()));
-
-    m_effects.add(eff);
-    auto it = m_effectOrder.begin();
-    std::advance(it, pos);
-    m_effectOrder.insert(it, eff->id());
-
-    emit effectsChanged();
+    m_text = txt;
+    reload();
+    emit textChanged();
 }
 
-void ProcessModel::removeEffect(const EffectModel& e)
-{
-    ISCORE_TODO;
 
-    emit effectsChanged();
+void ProcessModel::init()
+{
+    // We have to reload the faust FX whenever
+    // some soundcard settings changes
+    auto& ctx = iscore::AppContext().components.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>();
+    con(ctx, &AudioStreamEngine::ApplicationPlugin::audioEngineRestarted,
+            this, [this] () {
+        reload();
+    });
 }
 
+void ProcessModel::reload()
+{
+    auto fx_text = m_text.toLocal8Bit();
+    if(!fx_text.isEmpty())
+        m_effect = MakeFaustAudioEffect(fx_text, "", ""); // TODO compute the path to the "architecture" folder here
+
+}
 }
 
 }
