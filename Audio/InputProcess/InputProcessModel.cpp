@@ -46,23 +46,6 @@ ProcessModel::~ProcessModel()
 
 }
 
-ProcessModel* ProcessModel::clone(
-        const Id<Process::ProcessModel>& newId,
-        QObject* newParent) const
-{
-    return new ProcessModel{*this, newId, newParent};
-}
-
-QString ProcessModel::prettyName() const
-{
-    return "Input Process";
-}
-
-void ProcessModel::serialize_impl(const VisitorVariant& s) const
-{
-    serialize_dyn(s, *this);
-}
-
 }
 
 }

@@ -96,23 +96,6 @@ void ProcessModel::updateDirectMix(const DirectMix & dmx)
     emit routingChanged();
 }
 
-ProcessModel* ProcessModel::clone(
-        const Id<Process::ProcessModel>& newId,
-        QObject* newParent) const
-{
-    return new ProcessModel{*this, newId, newParent};
-}
-
-QString ProcessModel::prettyName() const
-{
-    return "Mix Process";
-}
-
-void ProcessModel::serialize_impl(const VisitorVariant& s) const
-{
-    serialize_dyn(s, *this);
-}
-
 void ProcessModel::init()
 {
     if(auto ptr_cst = dynamic_cast<Scenario::ConstraintModel*>(parent()))
@@ -132,7 +115,7 @@ void ProcessModel::init()
 void ProcessModel::on_processAdded(const Process::ProcessModel & proc)
 {
     auto proc_id = proc.id();
-    if(dynamic_cast<const Scenario::ScenarioModel*>(&proc) ||
+    if(dynamic_cast<const Scenario::ProcessModel*>(&proc) ||
        dynamic_cast<const Loop::ProcessModel*>(&proc) ||
        dynamic_cast<const Sound::ProcessModel*>(&proc) ||
        dynamic_cast<const Return::ProcessModel*>(&proc))
@@ -187,7 +170,7 @@ void ProcessModel::on_processAdded(const Process::ProcessModel & proc)
 void ProcessModel::on_processRemoved(const Process::ProcessModel & proc)
 {
     auto proc_id = proc.id();
-    if(dynamic_cast<const Scenario::ScenarioModel*>(&proc) ||
+    if(dynamic_cast<const Scenario::ProcessModel*>(&proc) ||
        dynamic_cast<const Loop::ProcessModel*>(&proc) ||
        dynamic_cast<const Return::ProcessModel*>(&proc) ||
        dynamic_cast<const Sound::ProcessModel*>(&proc))

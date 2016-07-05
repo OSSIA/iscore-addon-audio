@@ -125,7 +125,7 @@ bool DropHandler::createInParallel(
            pres.context().context.commandStack};
 
     // Create a box.
-    const Scenario::ScenarioModel& scenar = pres.processModel();
+    const Scenario::ProcessModel& scenar = pres.processModel();
     Scenario::Point pt = pres.toScenarioPoint(pos);
 
     TimeValue t = drop.dropMaxDuration();
@@ -158,7 +158,7 @@ bool DropHandler::createInParallel(
 
 // TODO put me in some "algorithms" file.
 static bool constraintHasNoFollowers(
-        const Scenario::ScenarioModel& scenar,
+        const Scenario::ProcessModel& scenar,
         const Scenario::ConstraintModel& cst)
 {
     auto& tn = Scenario::endTimeNode(cst, scenar);
@@ -208,7 +208,7 @@ bool ConstraintDropHandler::handle(
                             ExpandMode::GrowShrink};
             m.submitCommand(resize_cmd);
         }
-        else if(auto scenar = dynamic_cast<Scenario::ScenarioModel*>(constraint.parent()))
+        else if(auto scenar = dynamic_cast<Scenario::ProcessModel*>(constraint.parent()))
         {
             // First check that the end time node has nothing afterwards :
             // all its states must not have next constraints

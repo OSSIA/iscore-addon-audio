@@ -117,16 +117,16 @@ class FaustComponent : public EffectComponent
 
                 // Set value to current value of fx
                 auto addr = param_node->getAddress();
-                addr->addCallback([=] (const OSSIA::Value* val) {
-                    if(val->getType() != OSSIA::Value::Type::FLOAT)
+                addr->addCallback([=] (const OSSIA::Value& val) {
+                    if(val.getType() != OSSIA::Value::Type::FLOAT)
                         return;
                     if(!m_audio_effect)
                         return;
 
-                    auto current_val = static_cast<const OSSIA::Float*>(val)->value;
+                    auto current_val = static_cast<const OSSIA::Float&>(val).value;
                     SetControlValueEffect(m_audio_effect, i, current_val);
                 });
-                addr->pushValue(new OSSIA::Float{init});
+                addr->pushValue(OSSIA::Float{init});
             }
         }
 

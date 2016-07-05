@@ -19,6 +19,7 @@ class ProcessModel final : public Process::ProcessModel
 {
         ISCORE_SERIALIZE_FRIENDS(Audio::Sound::ProcessModel, DataStream)
         ISCORE_SERIALIZE_FRIENDS(Audio::Sound::ProcessModel, JSONObject)
+        PROCESS_METADATA_IMPL(Audio::Sound::ProcessModel)
 
         Q_OBJECT
     public:
@@ -48,20 +49,6 @@ class ProcessModel final : public Process::ProcessModel
 
         const MediaFileHandle& file() const
         { return m_file; }
-
-        // Process interface
-        ProcessModel* clone(
-                const Id<Process::ProcessModel>& newId,
-                QObject* newParent) const override;
-
-        UuidKey<Process::ProcessFactory> concreteFactoryKey() const override
-        {
-            return Metadata<ConcreteFactoryKey_k, Audio::Sound::ProcessModel>::get();
-        }
-
-        QString prettyName() const override;
-
-        void serialize_impl(const VisitorVariant& vis) const override;
 
     signals:
         void fileChanged();

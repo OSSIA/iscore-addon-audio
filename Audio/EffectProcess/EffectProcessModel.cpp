@@ -66,23 +66,6 @@ void ProcessModel::removeEffect(const EffectModel& e)
     emit effectsChanged();
 }
 
-ProcessModel* ProcessModel::clone(
-        const Id<Process::ProcessModel>& newId,
-        QObject* newParent) const
-{
-    return new ProcessModel{*this, newId, newParent};
-}
-
-QString ProcessModel::prettyName() const
-{
-    return tr("Effect Process");
-}
-
-void ProcessModel::serialize_impl(const VisitorVariant& s) const
-{
-    serialize_dyn(s, *this);
-}
-
 }
 
 }

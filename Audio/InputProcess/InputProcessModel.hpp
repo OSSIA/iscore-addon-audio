@@ -9,8 +9,6 @@
 #include <Audio/MediaFileHandle.hpp>
 #include <unordered_set>
 
-#include <boost/multi_index/identity.hpp>
-
 namespace Audio
 {
 namespace Input
@@ -21,7 +19,7 @@ class ProcessModel final :
 {
         ISCORE_SERIALIZE_FRIENDS(Audio::Input::ProcessModel, DataStream)
         ISCORE_SERIALIZE_FRIENDS(Audio::Input::ProcessModel, JSONObject)
-
+        PROCESS_METADATA_IMPL(Audio::Input::ProcessModel)
         Q_OBJECT
     public:
         explicit ProcessModel(
@@ -44,20 +42,6 @@ class ProcessModel final :
         {
             vis.writeTo(*this);
         }
-
-        // Process interface
-        ProcessModel* clone(
-                const Id<Process::ProcessModel>& newId,
-                QObject* newParent) const override;
-
-        UuidKey<Process::ProcessFactory> concreteFactoryKey() const override
-        {
-            return Metadata<ConcreteFactoryKey_k, Audio::Input::ProcessModel>::get();
-        }
-
-        QString prettyName() const override;
-
-        void serialize_impl(const VisitorVariant& vis) const override;
 
     signals:
         void routingChanged();

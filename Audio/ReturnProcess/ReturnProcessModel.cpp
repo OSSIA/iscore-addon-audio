@@ -49,24 +49,6 @@ const Send::ProcessModel* ProcessModel::send_ptr() const
 
     return dynamic_cast<Send::ProcessModel*>(maybe_send);
 }
-
-ProcessModel* ProcessModel::clone(
-        const Id<Process::ProcessModel>& newId,
-        QObject* newParent) const
-{
-    return new ProcessModel{*this, newId, newParent};
-}
-
-QString ProcessModel::prettyName() const
-{
-    return "Return Process";
-}
-
-void ProcessModel::serialize_impl(const VisitorVariant& s) const
-{
-    serialize_dyn(s, *this);
-}
-
 }
 
 }
