@@ -24,12 +24,12 @@
 
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.hpp>
 
-#include <Audio/AudioStreamEngine/Scenario/ScenarioComponentFactory.hpp>
-#include <Audio/AudioStreamEngine/Scenario/LoopComponentFactory.hpp>
-#include <Audio/AudioStreamEngine/Audio/EffectComponentFactory.hpp>
-#include <Audio/AudioStreamEngine/Audio/SoundComponentFactory.hpp>
-#include <Audio/AudioStreamEngine/Audio/SendComponentFactory.hpp>
-#include <Audio/AudioStreamEngine/Audio/ReturnComponentFactory.hpp>
+#include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
+#include <Audio/AudioStreamEngine/Scenario/LoopComponent.hpp>
+#include <Audio/AudioStreamEngine/Audio/EffectComponent.hpp>
+#include <Audio/AudioStreamEngine/Audio/SoundComponent.hpp>
+#include <Audio/AudioStreamEngine/Audio/SendComponent.hpp>
+#include <Audio/AudioStreamEngine/Audio/ReturnComponent.hpp>
 
 #include <Audio/AudioStreamEngine/Clock/AudioClock.hpp>
 #include <iscore_plugin_audio_commands_files.hpp>
@@ -62,7 +62,7 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
             Audio::Return::ProcessFactory
             >,
         FW<Audio::AudioStreamEngine::ProcessComponentFactory,
-            Audio::AudioStreamEngine::EffectComponentFactory,
+            Audio::AudioStreamEngine::EffectProcessComponentFactory,
             Audio::AudioStreamEngine::SoundComponentFactory,
             Audio::AudioStreamEngine::SendComponentFactory,
             Audio::AudioStreamEngine::ReturnComponentFactory,

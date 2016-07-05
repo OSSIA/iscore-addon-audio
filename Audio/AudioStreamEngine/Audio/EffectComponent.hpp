@@ -13,7 +13,7 @@ namespace AudioStreamEngine
 class EffectProcessComponent final :
         public ProcessComponent_T<Effect::ProcessModel, true, true>
 {
-       COMPONENT_METADATA(Audio::AudioStreamEngine::EffectComponent)
+       COMPONENT_METADATA(Audio::AudioStreamEngine::EffectProcessComponent)
 
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
     public:
@@ -32,5 +32,7 @@ class EffectProcessComponent final :
     private:
        std::map<Id<Effect::EffectModel>, AudioEffect> m_effects;
 };
+
+AUDIO_COMPONENT_FACTORY(EffectProcessComponentFactory, "ebfdbbb4-9f19-4b64-bc92-374af65122d3", EffectProcessComponent, Effect::ProcessModel)
 }
 }

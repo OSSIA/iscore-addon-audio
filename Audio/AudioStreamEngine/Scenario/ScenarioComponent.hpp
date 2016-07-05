@@ -85,5 +85,6 @@ class ScenarioComponent final :
 
 };
 
+AUDIO_COMPONENT_FACTORY(ScenarioComponentFactory, "34f7cb5f-fe0e-4dd8-8250-956702e41e13", ScenarioComponent, Scenario::ProcessModel)
 }
 }

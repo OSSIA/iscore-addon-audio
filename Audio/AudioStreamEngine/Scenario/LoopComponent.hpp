@@ -84,5 +84,6 @@ class LoopComponent final :
         AudioStream m_groupStream;
 };
 
+AUDIO_COMPONENT_FACTORY(LoopComponentFactory, "1dee91f9-3eb9-4e51-93a3-7ee696c2f357", LoopComponent, Loop::ProcessModel)
 }
 }

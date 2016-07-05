@@ -79,5 +79,39 @@ class ProcessComponent_T : public ProcessComponent
         bool hasOutput() const override
         { return Output; }
 };
+
+template<
+        typename ProcessComponent_T,
+        typename Process_T>
+class ProcessComponentFactory_T : public ProcessComponentFactory
+{
+    public:
+        using ProcessComponentFactory::ProcessComponentFactory;
+
+        bool matches(
+                Process::ProcessModel& p,
+                const Audio::AudioStreamEngine::DocumentPlugin&,
+                const iscore::DocumentContext&) const final override
+        {
+            return dynamic_cast<Process_T*>(&p);
+        }
+
+        ProcessComponent* make(
+                const Id<iscore::Component>& id,
+                Process::ProcessModel& proc,
+                DocumentPlugin& doc,
+                const iscore::DocumentContext& ctx,
+                QObject* paren_objt) const final override
+        {
+            return new ProcessComponent_T{id, static_cast<Process_T&>(proc), doc, ctx, paren_objt};
+        }
+};
 }
 }
+
+#define AUDIO_COMPONENT_FACTORY(FactoryName, Uuid, ProcessComponent, Process) \
+class FactoryName final : \
+        public ProcessComponentFactory_T<ProcessComponent, Process> \
+{ \
+        ISCORE_CONCRETE_FACTORY_DECL(Uuid)  \
+};
