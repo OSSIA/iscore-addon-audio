@@ -54,5 +54,7 @@ class ConstraintDropHandler final :
                  const Scenario::ConstraintModel&,
                  const QMimeData *mime) override;
 };
+
+// TODO drop in slots, drop in rack ?
 }
 }
