@@ -86,7 +86,7 @@ void ProcessModel::updateRouting(const Routing & r)
 
     m_routings.modify(it, [&] (auto& obj) { obj.mix = r.mix; });
 
-    emit routingChanged();
+    emit routingChanged(r);
 }
 
 void ProcessModel::updateDirectMix(const DirectMix & dmx)
@@ -94,7 +94,7 @@ void ProcessModel::updateDirectMix(const DirectMix & dmx)
     // TODO multi_index to the rescue...
     auto in_dmx = findDirectMix(dmx);
     in_dmx->mix = dmx.mix;
-    emit routingChanged();
+    emit directMixChanged(dmx);
 }
 
 void ProcessModel::init()
@@ -165,7 +165,7 @@ void ProcessModel::on_processAdded(const Process::ProcessModel & proc)
         return;
     }
 
-    emit routingChanged();
+    emit structureChanged();
 }
 
 void ProcessModel::on_processRemoved(const Process::ProcessModel & proc)
@@ -211,7 +211,7 @@ void ProcessModel::on_processRemoved(const Process::ProcessModel & proc)
         }
     }
 
-    emit routingChanged();
+    emit structureChanged();
 }
 }
 

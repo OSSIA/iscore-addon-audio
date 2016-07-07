@@ -12,7 +12,7 @@ namespace AudioStreamEngine
 class ScenarioComponent final :
         public ProcessComponent_T<Scenario::ProcessModel, false, true>
 {
-       COMPONENT_METADATA(Audio::AudioStreamEngine::ScenarioComponent)
+        COMPONENT_METADATA("33a11e0f-d320-4fc7-98e4-714845f21dc8")
 
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
         using hierarchy_t =

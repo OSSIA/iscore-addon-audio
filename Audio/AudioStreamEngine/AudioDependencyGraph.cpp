@@ -35,21 +35,6 @@ struct get_id {
 };
 }
 
-
-SendComponent *AudioDependencyGraph::getComponent(const Send::ProcessModel &proc)
-{
-    // TODO add an UUID index ?
-    for(auto& comp : proc.components)
-    {
-        if(auto res = dynamic_cast<SendComponent*>(&comp))
-        {
-            return res;
-        }
-    }
-
-    return nullptr;
-}
-
 AudioDependencyGraph::AudioDependencyGraph(ConstraintComponent &root)
 {
     // 1. Create vertices
@@ -71,13 +56,12 @@ AudioDependencyGraph::AudioDependencyGraph(ConstraintComponent &root)
             if(!send)
                 continue;
 
-            auto send_comp = getComponent(*send);
-            ISCORE_ASSERT(send_comp);
+            auto& send_comp = iscore::component<SendComponent>(send->components);
 
             // Then find the corresponding send
             for(auto it_k = vertices.first; it_k != vertices.second; ++it_k)
             {
-                if(m_graph[*it_k] == send_comp)
+                if(m_graph[*it_k] == &send_comp)
                 {
                     // Add an edge from return to send
                     boost::add_edge(*it_k, *it, m_graph);

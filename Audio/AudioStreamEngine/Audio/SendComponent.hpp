@@ -12,7 +12,7 @@ namespace AudioStreamEngine
 class SendComponent final :
         public ProcessComponent_T<Send::ProcessModel, true, false>
 {
-       COMPONENT_METADATA(Audio::AudioStreamEngine::SendComponent)
+        COMPONENT_METADATA("8f973706-d3c2-4025-b121-e7918cf3a286")
 
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
     public:

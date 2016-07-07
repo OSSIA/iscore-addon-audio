@@ -50,8 +50,6 @@ struct AudioDependencyGraph
         using vtx_t = decltype(boost::add_vertex(node_t{}, m_graph));
 
     public:
-        SendComponent* getComponent(const Send::ProcessModel& proc);
-
         AudioDependencyGraph(ConstraintComponent& root);
 
         boost::optional<std::deque<int>> check() const;

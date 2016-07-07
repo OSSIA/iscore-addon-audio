@@ -12,7 +12,7 @@ namespace AudioStreamEngine
 class ReturnComponent final :
         public ProcessComponent_T<Return::ProcessModel, false, true>
 {
-       COMPONENT_METADATA(Audio::AudioStreamEngine::ReturnComponent)
+        COMPONENT_METADATA("11770cd3-dc49-4d4a-93b2-ab2e5e7faec4")
 
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
     public:

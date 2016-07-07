@@ -32,13 +32,6 @@ static const double* one() {
     return &val;
 }
 
-const iscore::Component::Key&ConstraintComponent::key() const
-{
-    static const Key k{"a19b8885-5077-4331-a6b1-828571fa5128"};
-    return k;
-}
-
-
 ConstraintComponent::ConstraintComponent(
         const Id<iscore::Component>& id,
         Scenario::ConstraintModel& constraint,
@@ -202,6 +195,7 @@ AudioStream ConstraintComponent::makeInputMix(
         ISCORE_ASSERT(channel);
         inputStreams.push_back(channel);
     };
+
     ISCORE_ASSERT(processes().size() > 0);
 
     for(auto proc : processes())
@@ -212,9 +206,12 @@ AudioStream ConstraintComponent::makeInputMix(
         if(mix)
         {
             auto routing_it = mix->routings().find(Mix::Routing{proc.process.id(), target});
-            if(!((routing_it != mix->routings().end()) && routing_it->enabled))
+            if(routing_it == mix->routings().end())
             {
                 qDebug() << "Mix not found !" << proc.process.id() << target;
+            }
+            else if(!routing_it->enabled)
+            {
                 continue;
             }
         }

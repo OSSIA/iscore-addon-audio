@@ -12,7 +12,7 @@ namespace AudioStreamEngine
 class SoundComponent final :
         public ProcessComponent_T<Sound::ProcessModel, false, true>
 {
-       COMPONENT_METADATA(Audio::AudioStreamEngine::SoundComponent)
+        COMPONENT_METADATA("12289f16-36ac-4900-afc8-18de63cdff89")
 
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
     public:

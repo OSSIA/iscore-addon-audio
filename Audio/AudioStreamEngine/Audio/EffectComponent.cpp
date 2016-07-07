@@ -38,23 +38,19 @@ void EffectProcessComponent::makeStream(const Context& ctx)
     auto parent_cst = safe_cast<Scenario::ConstraintModel*>(process().parent());
 
     // Get its audio component
-    auto cst_comp_it = find_if(
-                parent_cst->components,
-                [] (auto& comp) {
-        return dynamic_cast<ConstraintComponent*>(&comp);
-    });
+    auto& cst_comp = iscore::component<ConstraintComponent>(parent_cst->components);
 
     // The constraint has the mix information, hence we request it to create
     // the mix.
-    if(cst_comp_it == parent_cst->components.end())
-        return;
-    auto cst_comp = static_cast<ConstraintComponent*>(&(*cst_comp_it));
-    AudioStream sound = cst_comp->makeInputMix(this->process().id());
+    AudioStream sound = cst_comp.makeInputMix(this->process().id());
 
     if(!sound)
     {
+        // No input -> maybe the effect will still be making some noise
+        // or act as an instrument ?
         sound = MakeNullSound(LONG_MAX);
     }
+
     for(auto& fx : process().effects())
     {
         if(auto faust_fx = dynamic_cast<Effect::FaustEffectModel*>(&fx))

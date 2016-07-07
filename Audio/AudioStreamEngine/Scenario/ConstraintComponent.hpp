@@ -15,7 +15,9 @@ namespace AudioStreamEngine
 class ConstraintComponent final :
         public iscore::Component
 {
+        COMPONENT_METADATA("13521db6-0de7-462c-9a43-57612a250216")
     public:
+        static const constexpr bool is_unique = true;
         using StreamPair = std::pair<Process::ProcessModel&, AudioStream>;
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
         using process_component_t = Audio::AudioStreamEngine::ProcessComponent;
@@ -31,8 +33,6 @@ class ConstraintComponent final :
 
         const Scenario::ConstraintModel& constraint() const
         { return m_hm.constraint; }
-
-        const Key& key() const override;
 
         ConstraintComponent(
                 const Id<Component>& id,

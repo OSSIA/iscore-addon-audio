@@ -91,7 +91,9 @@ class ProcessModel final :
         void updateDirectMix(const DirectMix&);
 
     signals:
-        void routingChanged();
+        void structureChanged();
+        void routingChanged(const Routing&);
+        void directMixChanged(const DirectMix&);
 
     private:
         void init();

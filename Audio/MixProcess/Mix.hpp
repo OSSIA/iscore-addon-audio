@@ -37,6 +37,13 @@ struct DirectMix
 
 		DirectMix() = default;
 
+        DirectMix(Id<Process::ProcessModel> p) :
+            process(std::move(p)),
+            mix(0)
+        {
+
+        }
+
 		DirectMix(Id<Process::ProcessModel> p, double m) :
 			process(std::move(p)),
 			mix(m)
@@ -121,6 +128,16 @@ public:
         return seed;
     }
 };
+template<>
+struct hash<Audio::Mix::DirectMix> {
+public:
+    auto operator()(const Audio::Mix::DirectMix &s) const
+    {
+        std::size_t seed = 0;
+        boost::hash_combine(seed, s.process);
+        return seed;
+    }
+};
 }
 
 
@@ -133,6 +150,16 @@ public:
         std::size_t seed = 0;
         boost::hash_combine(seed, s.in);
         boost::hash_combine(seed, s.out);
+        return seed;
+    }
+};
+template<>
+struct hash<Audio::Mix::DirectMix> {
+public:
+    auto operator()(const Audio::Mix::DirectMix &s) const
+    {
+        std::size_t seed = 0;
+        boost::hash_combine(seed, s.process);
         return seed;
     }
 };

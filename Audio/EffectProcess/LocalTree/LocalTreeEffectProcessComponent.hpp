@@ -65,7 +65,8 @@ class EffectComponentFactory :
 
 class FaustComponent : public EffectComponent
 {
-        COMPONENT_METADATA(Audio::Effect::LocalTree::FaustComponent)
+        COMPONENT_METADATA("4309e626-e125-4c5c-9e4a-86f2a85cd0a1")
+
         const Effect::FaustEffectModel& m_proc;
     public:
         FaustComponent(
@@ -190,6 +191,7 @@ class EffectComponentHierarchyManager : public Nano::Observer
 
         void remove(const EffectPair& pair);
 
+        void clear();
         ~EffectComponentHierarchyManager();
 
 
@@ -204,11 +206,9 @@ class EffectComponentHierarchyManager : public Nano::Observer
         std::list<EffectPair> m_children; // todo map ? multi_index with both index of the component and of the process ?
 };
 
-
-
 class EffectProcessComponent final : public Ossia::LocalTree::ProcessComponent
 {
-       COMPONENT_METADATA(Audio::Effect::LocalTree::EffectProcessComponent)
+        COMPONENT_METADATA("0313e6df-1a18-4349-a4fb-8bc3461cc6b5")
 
     public:
        EffectProcessComponent(
@@ -229,6 +229,8 @@ class EffectProcessComponent final : public Ossia::LocalTree::ProcessComponent
                QObject *parent_component);
 
        void removing(const Effect::EffectModel& cst, const EffectComponent& comp);
+
+       ~EffectProcessComponent();
 
     private:
         std::shared_ptr<OSSIA::Node> m_effectsNode;

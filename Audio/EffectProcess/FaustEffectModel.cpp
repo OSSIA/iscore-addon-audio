@@ -69,7 +69,7 @@ void FaustEffectModel::reload()
 {
     auto fx_text = m_text.toLocal8Bit();
     if(!fx_text.isEmpty())
-        m_effect = MakeFaustAudioEffect(fx_text, "", ""); // TODO compute the path to the "architecture" folder here
+        m_effect = MakeFaustAudioEffect(fx_text, "/usr/local/lib/faust/", ""); // TODO compute the path to the "architecture" folder here
 
     if(m_effect)
     {
@@ -84,6 +84,10 @@ void FaustEffectModel::reload()
         {
             qDebug() << err.errorString();
         }
+    }
+    else
+    {
+        qDebug() << "could not load effect";
     }
 }
 

@@ -15,6 +15,8 @@ namespace AudioStreamEngine
 class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent : public iscore::Component
 {
     public:
+        static constexpr bool is_unique = true;
+
         const Process::ProcessModel& process;
 
         ProcessComponent(

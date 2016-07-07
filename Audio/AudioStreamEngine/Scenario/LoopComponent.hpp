@@ -13,7 +13,7 @@ namespace AudioStreamEngine
 class LoopComponent final :
         public ProcessComponent_T<Loop::ProcessModel, false, true>
 {
-       COMPONENT_METADATA(Audio::AudioStreamEngine::ScenarioComponent)
+        COMPONENT_METADATA("ab3dd763-0748-4ed1-bd07-2be6a17d52b1")
 
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
         using hierarchy_t =

@@ -6,7 +6,7 @@
 #include <QCheckBox>
 #include <QSpinBox>
 #include <QTableWidget>
-
+#include <QVBoxLayout>
 namespace Audio
 {
 namespace Mix
@@ -26,8 +26,12 @@ InspectorWidget::InspectorWidget(
     m_table = new QTableWidget{this};
     recreate();
 
-    con(object, &Mix::ProcessModel::routingChanged,
+    con(object, &Mix::ProcessModel::structureChanged,
         this, &InspectorWidget::recreate);
+    con(object, &Mix::ProcessModel::routingChanged,
+        this, &InspectorWidget::updateRouting);
+    con(object, &Mix::ProcessModel::directMixChanged,
+        this, &InspectorWidget::updateDirectMix);
 }
 
 class MixSpinBox : public QSpinBox
@@ -43,12 +47,50 @@ class MixSpinBox : public QSpinBox
         }
 };
 
+class DirectMixTableWidget : public QWidget
+{
+    public:
+        DirectMixTableWidget(
+                QWidget* parent,
+                QuietOngoingCommandDispatcher& dispatcher,
+                const Mix::ProcessModel& mix,
+                const Id<Process::ProcessModel>& column):
+            QWidget{parent},
+            spinBox{new MixSpinBox{this}}
+        {
+            auto lay = new QVBoxLayout;
+            this->setLayout(lay);
+
+            lay->addWidget(spinBox);
+            setMix(mix.mix(column));
+
+            connect(spinBox, SignalUtils::QSpinBox_valueChanged_int(),
+                    this, [=,&mix,&dispatcher] (int val) {
+                dispatcher.submitCommand<Audio::Commands::UpdateDirect>(
+                                mix,
+                                Audio::Mix::DirectMix(column, val / 100.));
+            });
+
+            connect(spinBox, &QSpinBox::editingFinished,
+                    this, [=,&dispatcher] () { dispatcher.commit(); });
+        }
+
+        void setMix(double m)
+        {
+            spinBox->setValue(m * 100);
+        }
+
+    private:
+        MixSpinBox* const spinBox{};
+
+};
+
 class RoutingTableWidget : public QWidget
 {
     public:
         RoutingTableWidget(
                 QWidget* parent,
-                OngoingCommandDispatcher& dispatcher,
+                QuietOngoingCommandDispatcher& dispatcher,
                 const Mix::ProcessModel& mix,
                 const Id<Process::ProcessModel>& column,
                 const Id<Process::ProcessModel>& row):
@@ -62,7 +104,7 @@ class RoutingTableWidget : public QWidget
             lay->addWidget(spinBox);
             lay->addWidget(checkBox);
 
-            spinBox->setValue(mix.mix(column, row) * 100);
+            setMix(mix.mix(column, row));
             checkBox->setChecked(mix.routings().find(Routing{column, row})->enabled);
             connect(spinBox, SignalUtils::QSpinBox_valueChanged_int(),
                     this, [=,&mix,&dispatcher] (int val) {
@@ -83,15 +125,20 @@ class RoutingTableWidget : public QWidget
                                 mix,
                                 Routing{column, row, spinBox->value() / 100., bool(check)});
                 dispatcher.commit();
-
-            } );
+            });
         }
+
+        void setMix(double m)
+        {
+            spinBox->setValue(m * 100);
+        }
+
 
     private:
         QCheckBox* const checkBox{};
         MixSpinBox* const spinBox{};
-
 };
+
 void InspectorWidget::recreate()
 {
     m_table->clear();
@@ -112,11 +159,7 @@ void InspectorWidget::recreate()
 
     // For each direct data, create relevant items.
     auto pretty_name = [&] (const Id<Process::ProcessModel>& dmx) {
-
-        return cst->processes.at(dmx).objectName()
-                + " ("
-                + QString::number(*dmx.val())
-                + ")";
+        return cst->processes.at(dmx).metadata.name();
     };
 
     QStringList col_labels;
@@ -132,6 +175,7 @@ void InspectorWidget::recreate()
         {
             auto sb = new RoutingTableWidget{m_table, m_dispatcher, mix, col_it->process, fx_it->process};
             m_table->setCellWidget(row, col, sb);
+            m_routings.insert(std::make_pair(Routing{col_it->process, fx_it->process}, sb));
 
             row_labels.push_back(pretty_name(fx_it->process));
             fx_it++;
@@ -143,25 +187,16 @@ void InspectorWidget::recreate()
         {
             auto sb = new RoutingTableWidget{m_table, m_dispatcher, mix, col_it->process, *send_it};
             m_table->setCellWidget(row, col, sb);
+            m_routings.insert(std::make_pair(Routing{col_it->process, *send_it}, sb));
 
             row_labels.push_back(pretty_name(*send_it));
             send_it++;
         }
 
         // Data -> Direct
-        auto sb = new MixSpinBox{m_table};
-        sb->setValue(mix.mix(col_it->process));
+        auto sb = new DirectMixTableWidget{m_table, m_dispatcher, mix, col_it->process};
         m_table->setCellWidget(n_fx + n_sends, col, sb);
-
-        connect(sb, SignalUtils::QSpinBox_valueChanged_int(),
-                this, [=,&mix] (int val) {
-            m_dispatcher.submitCommand<Audio::Commands::UpdateDirect>(
-                            mix,
-                            Audio::Mix::DirectMix(col_it->process, val / 100.));
-        });
-        connect(sb, &QSpinBox::editingFinished,
-                this, [=] () { m_dispatcher.commit(); });
-
+        m_directs.insert(std::make_pair(DirectMix{col_it->process}, sb));
 
         row_labels.push_back(tr("Direct"));
         col_it++;
@@ -179,30 +214,39 @@ void InspectorWidget::recreate()
         {
             auto sb = new RoutingTableWidget{m_table, m_dispatcher, mix, col_it->process, *send_it};
             m_table->setCellWidget(row, col, sb);
+            m_routings.insert(std::make_pair(Routing{col_it->process, *send_it}, sb));
 
             send_it++;
         }
 
         // Fx -> Direct
-        auto sb = new MixSpinBox{m_table};
-        sb->setValue(mix.mix(col_it->process));
+        auto sb = new DirectMixTableWidget{m_table, m_dispatcher, mix, col_it->process};
         m_table->setCellWidget(n_fx + n_sends, col, sb);
-
-        connect(sb, SignalUtils::QSpinBox_valueChanged_int(),
-                this, [=,&mix] (int val) {
-            m_dispatcher.submitCommand<Audio::Commands::UpdateDirect>(
-                            mix,
-                            DirectMix{col_it->process, val / 100.});
-        });
-        connect(sb, &QSpinBox::editingFinished,
-                this, [=] () { m_dispatcher.commit(); });
-
+        m_directs.insert(std::make_pair(DirectMix{col_it->process}, sb));
         col_it++;
     }
     m_table->setHorizontalHeaderLabels(col_labels);
     m_table->setVerticalHeaderLabels(row_labels);
 
     this->layout()->addWidget(m_table);
+}
+
+void InspectorWidget::updateRouting(const Routing & r)
+{
+    auto it = m_routings.find(r);
+    ISCORE_ASSERT(it != m_routings.end());
+
+    it->second->setMix(r.mix);
+
+}
+
+void InspectorWidget::updateDirectMix(const DirectMix & d)
+{
+    auto it = m_directs.find(d);
+    ISCORE_ASSERT(it != m_directs.end());
+
+    it->second->setMix(d.mix);
+
 }
 
 }

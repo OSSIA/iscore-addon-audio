@@ -27,7 +27,7 @@ void LoopComponent::makeStream(const Context& ctx)
     m_synchros.clear();
     m_csts.clear();
 
-    auto& pattern_cst = m_hm.constraints().at(0);
+    auto& pattern_cst = *m_hm.constraints().begin();
     auto sound = pattern_cst.component.getStream();
     if(!sound)
         return;
@@ -36,9 +36,9 @@ void LoopComponent::makeStream(const Context& ctx)
     // If we are in the "good" case of a non-interactive loop, we
     // can have sample-accurate looping : each loop iteration will be exactly one
     // sample after the following.
-    auto& start_node = m_hm.timeNodes().at(0);
-    auto& start_event = m_hm.events().at(0);
-    auto& end_node = m_hm.timeNodes().at(1);
+    auto& start_node = *m_hm.timeNodes().begin();
+    auto& start_event = *m_hm.events().begin();
+    auto& end_node = *++m_hm.timeNodes().begin();
 
     if(!start_node.element.trigger()->active() &&
        !end_node.element.trigger()->active() &&

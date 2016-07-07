@@ -61,12 +61,18 @@ void EffectComponentHierarchyManager::remove(const EffectComponentHierarchyManag
     pair.model.components.remove(pair.component);
 }
 
-EffectComponentHierarchyManager::~EffectComponentHierarchyManager()
+void EffectComponentHierarchyManager::clear()
 {
     for(EffectPair element : m_children)
     {
         remove(element);
     }
+    m_children.clear();
+}
+
+EffectComponentHierarchyManager::~EffectComponentHierarchyManager()
+{
+    clear();
 }
 
 void EffectComponentHierarchyManager::remove(const Effect::EffectModel& process)
@@ -119,6 +125,17 @@ void EffectProcessComponent::removing(const EffectModel& cst, const EffectCompon
     m_effectsNode->erase(it);
 }
 
+EffectProcessComponent::~EffectProcessComponent()
+{
+    m_hierarchy.clear();
+
+    m_properties.clear();
+
+    m_effectsNode.reset();
+
+    m_thisNode.clear();
+}
+
 
 
 ///////// Process componnet factory
@@ -156,7 +173,8 @@ EffectComponent::EffectComponent(
 
 EffectComponent::~EffectComponent()
 {
-
+    m_parametersNode.reset();
+    m_thisNode.reset();
 }
 
 EffectComponent* FaustComponentFactory::make(
