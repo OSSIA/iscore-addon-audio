@@ -104,8 +104,10 @@ class RoutingTableWidget : public QWidget
             lay->addWidget(spinBox);
             lay->addWidget(checkBox);
 
-            setMix(mix.mix(column, row));
-            checkBox->setChecked(mix.routings().find(Routing{column, row})->enabled);
+            const Routing& routing = *mix.routings().find(Routing{column, row});
+            setMix(routing.mix);
+            setEnabled(routing.enabled);
+
             connect(spinBox, SignalUtils::QSpinBox_valueChanged_int(),
                     this, [=,&mix,&dispatcher] (int val) {
                 dispatcher.submitCommand<Audio::Commands::UpdateRouting>(
@@ -120,17 +122,25 @@ class RoutingTableWidget : public QWidget
 
             connect(checkBox, &QCheckBox::stateChanged,
                     this, [=,&mix,&dispatcher] (int check) {
-                // TODO check if different
-                dispatcher.submitCommand<Audio::Commands::UpdateRouting>(
+                const Routing& routing = *mix.routings().find(Routing{column, row});
+                if(routing.enabled != check)
+                {
+                    dispatcher.submitCommand<Audio::Commands::UpdateRouting>(
                                 mix,
                                 Routing{column, row, spinBox->value() / 100., bool(check)});
-                dispatcher.commit();
+                    dispatcher.commit();
+                }
             });
         }
 
         void setMix(double m)
         {
             spinBox->setValue(m * 100);
+        }
+
+        void setEnabled(bool b)
+        {
+            checkBox->setChecked(b);
         }
 
 
@@ -237,6 +247,7 @@ void InspectorWidget::updateRouting(const Routing & r)
     ISCORE_ASSERT(it != m_routings.end());
 
     it->second->setMix(r.mix);
+    it->second->setEnabled(r.enabled);
 
 }
 
@@ -246,7 +257,6 @@ void InspectorWidget::updateDirectMix(const DirectMix & d)
     ISCORE_ASSERT(it != m_directs.end());
 
     it->second->setMix(d.mix);
-
 }
 
 }

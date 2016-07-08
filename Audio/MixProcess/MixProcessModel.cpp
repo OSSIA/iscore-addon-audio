@@ -84,7 +84,10 @@ void ProcessModel::updateRouting(const Routing & r)
     auto it = m_routings.find(r);
     ISCORE_ASSERT(it != m_routings.end());
 
-    m_routings.modify(it, [&] (auto& obj) { obj.mix = r.mix; });
+    m_routings.modify(it, [&] (auto& obj) {
+        obj.mix = r.mix;
+        obj.enabled = r.enabled;
+    });
 
     emit routingChanged(r);
 }

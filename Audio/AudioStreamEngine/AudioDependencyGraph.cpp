@@ -223,7 +223,11 @@ AudioDependencyGraph::vtx_t AudioDependencyGraph::visit(ConstraintComponent &cst
                     // TODO transform this into an assert when the FX's can be routed each into
                     // each other.
                     auto routing_it = mix->routings().find(Mix::Routing{gen_id, in_id});
-                    if(routing_it != mix->routings().end() && routing_it->enabled)
+                    if(routing_it == mix->routings().end())
+                    {
+                        qDebug() << "routing not found in mix";
+                    }
+                    else if(routing_it->enabled)
                     {
                         boost::add_edge(gen, input, m_graph);
                     }

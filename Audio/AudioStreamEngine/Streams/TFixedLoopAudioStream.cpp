@@ -65,7 +65,8 @@ long TFixedLoopAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long frame
         auto remainder = framesNum - toRead;
         fPos = remainder;
 
-        fStream->Read(buffer, remainder, framePos + toRead);
+        if(remainder > 0)
+            fStream->Read(buffer, remainder, framePos + toRead);
     }
 
     return framesNum;
