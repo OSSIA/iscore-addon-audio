@@ -12,8 +12,8 @@ class ProcessModel;
 }
 namespace AudioStreamEngine
 {
-class Constraint final :
-        public iscore::Component
+class ConstraintBase :
+        public Scenario::GenericConstraintComponent<DocumentPlugin>
 {
         COMPONENT_METADATA("13521db6-0de7-462c-9a43-57612a250216")
     public:
@@ -24,40 +24,42 @@ class Constraint final :
         using process_component_factory_t = Audio::AudioStreamEngine::ProcessComponentFactory;
         using process_component_factory_list_t = Audio::AudioStreamEngine::ProcessComponentFactoryList;
 
-        using parent_t = ::ConstraintComponentHierarchyManager<
-            Constraint,
-            system_t,
-            process_component_t,
-            process_component_factory_list_t
-        >;
-
-        const Scenario::ConstraintModel& constraint() const
-        { return m_hm.constraint; }
-
-        Constraint(
-                const Id<Component>& id,
+        ConstraintBase(
                 Scenario::ConstraintModel& constraint,
-                system_t& doc,
+                ConstraintBase::system_t& doc,
+                const Id<iscore::Component>& id,
                 QObject* parent_comp);
-        ~Constraint();
+        ~ConstraintBase();
+
+        ProcessComponent* make_processComponent(
+                const Id<Component> & id,
+                ProcessComponentFactory& factory,
+                Process::ProcessModel &process);
+
+        void removing(const Process::ProcessModel& cst, const ProcessComponent& comp);
+
+};
+
+class Constraint final : public ConstraintComponentHierarchyManager<
+    ConstraintBase,
+    ConstraintBase::process_component_t,
+    ConstraintBase::process_component_factory_list_t>
+{
+        using parent_t = ConstraintComponentHierarchyManager<
+        ConstraintBase,
+        ConstraintBase::process_component_t,
+        ConstraintBase::process_component_factory_list_t>;
+    public:
+        Constraint(
+                Scenario::ConstraintModel& constraint,
+                ConstraintBase::system_t& doc,
+                const Id<iscore::Component>& id,
+                QObject* parent_comp);
 
         void makeStream(const Context& player);
         AudioStream getStream() const { return m_stream; }
 
         AudioStream makeInputMix(const Id<Process::ProcessModel>& target);
-
-        ProcessComponent* make_processComponent(
-                const Id<Component> & id,
-                ProcessComponentFactory& factory,
-                Process::ProcessModel &process,
-                DocumentPlugin &system,
-                QObject *parent_component);
-
-        void removing(const Process::ProcessModel& cst, const ProcessComponent& comp);
-
-        const auto& processes() const
-        { return m_hm.processes(); }
-
         Mix::ProcessModel* findMix() const;
 
         std::function<void(audio_frame_t, bool)> onStartDateFixed;
@@ -68,18 +70,15 @@ class Constraint final :
 
         audio_frame_t defaultStartDate = INT64_MAX;
         audio_frame_t defaultDuration = INT64_MAX;
-    private:
 
+    private:
         audio_frame_t toFrame(TimeValue t) const;
 
-        parent_t m_hm;
         double m_shift{1.0};
         double m_stretch{1.0};
 
         AudioStream m_stream{};
 };
-
-
 
 }
 }

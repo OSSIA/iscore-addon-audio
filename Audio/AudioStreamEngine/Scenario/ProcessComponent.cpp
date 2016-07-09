@@ -3,11 +3,11 @@
 
 Audio::AudioStreamEngine::ProcessComponent::ProcessComponent(
         Process::ProcessModel& process,
+        DocumentPlugin& doc,
         const Id<iscore::Component>& id,
         const QString& name,
         QObject* parent):
-    Component{id, name, parent},
-    process{process}
+    Scenario::GenericProcessComponent<DocumentPlugin>{process, doc, id, name, parent}
 {
 }
 

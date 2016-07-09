@@ -15,20 +15,16 @@ class ScenarioComponentBase :
         COMPONENT_METADATA("33a11e0f-d320-4fc7-98e4-714845f21dc8")
 
     public:
-        using system_t = Audio::AudioStreamEngine::DocumentPlugin;
-        system_t& system;
-
        ScenarioComponentBase(
-               const Id<Component>& id,
                Scenario::ProcessModel& scenario,
-               system_t& doc,
+               DocumentPlugin& doc,
+                const Id<Component>& id,
                QObject* parent_obj);
 
        template<typename Component_T, typename Element>
        Component_T* make(
                const Id<Component>& id,
-               Element& elt,
-               QObject* parent);
+               Element& elt);
 
        template<typename... Args>
        void removing(Args&&...) { }
@@ -37,7 +33,6 @@ class ScenarioComponentBase :
 
 class ScenarioComponent final : public HierarchicalScenarioComponent<
     ScenarioComponentBase,
-    ScenarioComponentBase::system_t,
     Scenario::ProcessModel,
     Constraint,
     Event,
@@ -47,7 +42,6 @@ class ScenarioComponent final : public HierarchicalScenarioComponent<
     public:
         using HierarchicalScenarioComponent<
         ScenarioComponentBase,
-        ScenarioComponentBase::system_t,
         Scenario::ProcessModel,
         Constraint,
         Event,
@@ -57,7 +51,6 @@ class ScenarioComponent final : public HierarchicalScenarioComponent<
         void makeStream(const Context& ctx) override;
 
     private:
-
         void onDateFixed(const TimeNode& t, audio_frame_t time, bool force_update);
         void onDateFixed(const Event& t, audio_frame_t time, bool force_update);
         void onStartDateFixed(Constraint& t, audio_frame_t time, bool force_update);

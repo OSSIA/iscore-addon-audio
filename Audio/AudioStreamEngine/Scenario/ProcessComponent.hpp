@@ -4,7 +4,7 @@
 #include <iscore/component/Component.hpp>
 #include <iscore/component/ComponentFactory.hpp>
 #include <iscore_plugin_audio_export.h>
-
+#include <Scenario/Document/Components/ConstraintComponent.hpp>
 // TODO clean me up
 namespace Audio
 {
@@ -12,15 +12,15 @@ namespace AudioStreamEngine
 {
 
 
-class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent : public iscore::Component
+class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent :
+        public Scenario::GenericProcessComponent<DocumentPlugin>
 {
     public:
         static constexpr bool is_unique = true;
 
-        const Process::ProcessModel& process;
-
         ProcessComponent(
                 Process::ProcessModel& proc,
+                DocumentPlugin& doc,
                 const Id<iscore::Component>& id,
                 const QString& name,
                 QObject* parent);
@@ -38,6 +38,24 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent : public iscore::Component
         AudioStream m_stream;
 };
 
+/// Utility class
+template<typename Process_T,
+         bool Input,
+         bool Output>
+class ProcessComponent_T : public ProcessComponent
+{
+    public:
+        using ProcessComponent::ProcessComponent;
+
+        const Process_T& process() const
+        { return static_cast<const Process_T&>(ProcessComponent::process()); }
+
+        bool hasInput() const override
+        { return Input; }
+        bool hasOutput() const override
+        { return Output; }
+};
+
 
 class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponentFactory :
         public iscore::GenericComponentFactory<
@@ -51,9 +69,9 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponentFactory :
     public:
         virtual ~ProcessComponentFactory();
         virtual ProcessComponent* make(
-                const Id<iscore::Component>&,
                 Process::ProcessModel& proc,
                 DocumentPlugin& doc,
+                const Id<iscore::Component>&,
                 QObject* paren_objt) const = 0;
 };
 
@@ -62,24 +80,6 @@ using ProcessComponentFactoryList =
             Process::ProcessModel,
             DocumentPlugin,
             ProcessComponentFactory>;
-
-/// Utility class
-template<typename Process_T,
-         bool Input,
-         bool Output>
-class ProcessComponent_T : public ProcessComponent
-{
-    public:
-        using ProcessComponent::ProcessComponent;
-
-        const Process_T& process() const
-        { return static_cast<const Process_T&>(ProcessComponent::process); }
-
-        bool hasInput() const override
-        { return Input; }
-        bool hasOutput() const override
-        { return Output; }
-};
 
 template<
         typename ProcessComponent_T,
@@ -97,12 +97,12 @@ class ProcessComponentFactory_T : public ProcessComponentFactory
         }
 
         ProcessComponent* make(
-                const Id<iscore::Component>& id,
                 Process::ProcessModel& proc,
                 DocumentPlugin& doc,
+                const Id<iscore::Component>& id,
                 QObject* paren_objt) const final override
         {
-            return new ProcessComponent_T{id, static_cast<Process_T&>(proc), doc, paren_objt};
+            return new ProcessComponent_T{static_cast<Process_T&>(proc), doc, id, paren_objt};
         }
 };
 }

@@ -13,13 +13,11 @@ class SendComponent final :
         public ProcessComponent_T<Send::ProcessModel, true, false>
 {
         COMPONENT_METADATA("8f973706-d3c2-4025-b121-e7918cf3a286")
-
-        using system_t = Audio::AudioStreamEngine::DocumentPlugin;
     public:
        SendComponent(
-               const Id<Component>& id,
                Send::ProcessModel& sound,
-               const system_t& doc,
+               DocumentPlugin& doc,
+                const Id<Component>& id,
                QObject* parent_obj);
 
 

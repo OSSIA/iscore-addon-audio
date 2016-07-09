@@ -15,12 +15,11 @@ class EffectProcessComponent final :
 {
        COMPONENT_METADATA("1b7abce0-47d0-4f39-96f3-6308445be35e")
 
-        using system_t = Audio::AudioStreamEngine::DocumentPlugin;
     public:
        EffectProcessComponent(
-               const Id<Component>& id,
                Effect::ProcessModel& sound,
-               const system_t& doc,
+               DocumentPlugin& doc,
+               const Id<Component>& id,
                QObject* parent_obj);
 
 

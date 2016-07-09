@@ -8,12 +8,11 @@ namespace AudioStreamEngine
 {
 
 LoopComponentBase::LoopComponentBase(
-        const Id<iscore::Component>& id,
         Loop::ProcessModel& scenario,
-        LoopComponentBase::system_t& doc,
+        DocumentPlugin& doc,
+        const Id<iscore::Component>& id,
         QObject* parent_obj):
-    ProcessComponent_T{scenario, id, "LoopComponent", parent_obj},
-    system{doc}
+    ProcessComponent_T{scenario, doc, id, "LoopComponent", parent_obj}
 {
 }
 
@@ -83,35 +82,31 @@ void LoopComponent::makeStream(const Context& ctx)
 template<>
 Constraint* LoopComponentBase::make<Constraint, Scenario::ConstraintModel>(
         const Id<iscore::Component>& id,
-        Scenario::ConstraintModel& elt,
-        QObject* parent)
+        Scenario::ConstraintModel& elt)
 {
-    return new Constraint{id, elt, system, parent};
+    return new Constraint{elt, system(), id, this};
 }
 
 template<>
 Event* LoopComponentBase::make<Event, Scenario::EventModel>(
         const Id<iscore::Component>& id,
-        Scenario::EventModel& elt,
-        QObject* parent)
+        Scenario::EventModel& elt)
 {
-    return new Event{id, elt, system, parent};
+    return new Event{id, elt, system(), this};
 }
 
 template<>
 TimeNode* LoopComponentBase::make<TimeNode, Scenario::TimeNodeModel>(
         const Id<iscore::Component>& id,
-        Scenario::TimeNodeModel& elt,
-        QObject* parent)
+        Scenario::TimeNodeModel& elt)
 {
-    return new TimeNode{id, elt, system, parent};
+    return new TimeNode{id, elt, system(), this};
 }
 
 template<>
 State* LoopComponentBase::make<State, Scenario::StateModel>(
         const Id<iscore::Component>& id,
-        Scenario::StateModel& elt,
-        QObject* parent)
+        Scenario::StateModel& elt)
 {
     return nullptr;
 }
@@ -119,7 +114,7 @@ State* LoopComponentBase::make<State, Scenario::StateModel>(
 
 audio_frame_t LoopComponentBase::toFrame(const TimeValue& t) const
 {
-    return t.msec() * system.audioContext.audio.sample_rate / 1000.0;
+    return t.msec() * system().audioContext.audio.sample_rate / 1000.0;
 }
 
 }

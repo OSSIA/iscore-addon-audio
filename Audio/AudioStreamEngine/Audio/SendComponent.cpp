@@ -17,11 +17,11 @@ namespace AudioStreamEngine
 {
 
 SendComponent::SendComponent(
-        const Id<iscore::Component>& id,
         Send::ProcessModel& sound,
-        const SendComponent::system_t& doc,
+        DocumentPlugin& doc,
+        const Id<iscore::Component>& id,
         QObject* parent_obj):
-    ProcessComponent_T{sound, id, "SendComponent", parent_obj}
+    ProcessComponent_T{sound, doc, id, "SendComponent", parent_obj}
 {
 
 }

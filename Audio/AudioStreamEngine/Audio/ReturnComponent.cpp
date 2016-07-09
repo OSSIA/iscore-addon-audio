@@ -11,11 +11,11 @@ namespace AudioStreamEngine
 
 // TODO CMake - factory pattern : std::tuple<Fac1, Fac2, ..., std::vector<unique_ptr<Fac>>> ; ?
 ReturnComponent::ReturnComponent(
-        const Id<iscore::Component>& id,
         Return::ProcessModel& sound,
-        const ReturnComponent::system_t& doc,
+        DocumentPlugin& doc,
+        const Id<iscore::Component>& id,
         QObject* parent_obj):
-    ProcessComponent_T{sound, id, "ReturnComponent", parent_obj}
+    ProcessComponent_T{sound, doc, id, "ReturnComponent", parent_obj}
 {
 
 }

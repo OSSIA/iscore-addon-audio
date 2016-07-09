@@ -18,11 +18,11 @@ namespace AudioStreamEngine
 {
 
 EffectProcessComponent::EffectProcessComponent(
-        const Id<iscore::Component>& id,
         Effect::ProcessModel& sound,
-        const EffectProcessComponent::system_t& doc,
+        DocumentPlugin& doc,
+        const Id<iscore::Component>& id,
         QObject* parent_obj):
-    ProcessComponent_T{sound, id, "EffectComponent", parent_obj}
+    ProcessComponent_T{sound, doc, id, "EffectComponent", parent_obj}
 {
 
 }

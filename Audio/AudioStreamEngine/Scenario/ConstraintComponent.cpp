@@ -32,13 +32,21 @@ static const double* one() {
     return &val;
 }
 
-Constraint::Constraint(
-        const Id<iscore::Component>& id,
+ConstraintBase::ConstraintBase(
         Scenario::ConstraintModel& constraint,
-        Constraint::system_t& doc,
+        ConstraintBase::system_t& doc,
+        const Id<iscore::Component>& id,
         QObject* parent_comp):
-    Component{id, "ConstraintComponent", parent_comp},
-    m_hm{*this, constraint, doc, this}
+    Scenario::GenericConstraintComponent<DocumentPlugin>{constraint, doc, id, "ConstraintComponent", parent_comp}
+{
+}
+
+Constraint::Constraint(
+        Scenario::ConstraintModel& constraint,
+        ConstraintBase::system_t& doc,
+        const Id<iscore::Component>& id,
+        QObject* parent_comp):
+    parent_t{constraint, doc, id, parent_comp}
 {
     con(constraint.duration, &Scenario::ConstraintDurations::executionSpeedChanged,
         this, [=] (double d) {
@@ -49,15 +57,14 @@ Constraint::Constraint(
         m_stretch = constraint.duration.executionSpeed();
 }
 
-Constraint::~Constraint()
+ConstraintBase::~ConstraintBase()
 {
 }
 
 
 void Constraint::makeStream(const Context& player)
 {
-    auto& cst = m_hm.constraint;
-    if(cst.processes.empty())
+    if(constraint().processes.empty())
     {
         // Silence
     }
@@ -122,7 +129,7 @@ void Constraint::makeStream(const Context& player)
             }
         };
 
-        for(auto& proc_pair :  m_hm.processes())
+        for(auto& proc_pair : this->processes())
         {
             auto& proc = proc_pair.process;
             auto& comp = proc_pair.component;
@@ -228,18 +235,16 @@ AudioStream Constraint::makeInputMix(
 }
 
 
-ProcessComponent*Constraint::make_processComponent(
+ProcessComponent* ConstraintBase::make_processComponent(
         const Id<iscore::Component>& id,
         ProcessComponentFactory& factory,
-        Process::ProcessModel& process,
-        DocumentPlugin& system,
-        QObject* parent_component)
+        Process::ProcessModel& process)
 {
-    return factory.make(id, process, system, parent_component);
+    return factory.make(process, system(), id, this);
 }
 
 
-void Constraint::removing(
+void ConstraintBase::removing(
         const Process::ProcessModel& cst,
         const ProcessComponent& comp)
 {
@@ -247,16 +252,17 @@ void Constraint::removing(
 
 Mix::ProcessModel* Constraint::findMix() const
 {
-    auto it = find_if(m_hm.constraint.processes, [] (auto& val) {
+    auto& procs = constraint().processes;
+    auto it = find_if(procs, [] (auto& val) {
         return dynamic_cast<Mix::ProcessModel*>(&val);
     });
-    return it != m_hm.constraint.processes.end() ? static_cast<Mix::ProcessModel*>(&(*it)) : nullptr;
+    return it != procs.end() ? static_cast<Mix::ProcessModel*>(&(*it)) : nullptr;
 }
 
 
 audio_frame_t Constraint::toFrame(TimeValue t) const
 {
-    return t.msec() * m_hm.system.audioContext.audio.sample_rate / 1000.0;
+    return t.msec() * system().audioContext.audio.sample_rate / 1000.0;
 }
 
 }

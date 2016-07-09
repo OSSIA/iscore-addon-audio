@@ -10,12 +10,11 @@ namespace AudioStreamEngine
 {
 
 ScenarioComponentBase::ScenarioComponentBase(
-        const Id<iscore::Component>& id,
         Scenario::ProcessModel& scenario,
-        ScenarioComponentBase::system_t& doc,
+        DocumentPlugin& doc,
+        const Id<iscore::Component>& id,
         QObject* parent_obj):
-    ProcessComponent_T{scenario, id, "ScenarioComponent", parent_obj},
-    system{doc}
+    ProcessComponent_T{scenario, doc, id, "ScenarioComponent", parent_obj}
 {
 }
 
@@ -101,35 +100,31 @@ void ScenarioComponent::makeStream(const Context& ctx)
 template<>
 Constraint* ScenarioComponentBase::make<Constraint, Scenario::ConstraintModel>(
         const Id<iscore::Component>& id,
-        Scenario::ConstraintModel& elt,
-        QObject* parent)
+        Scenario::ConstraintModel& elt)
 {
-    return new Constraint{id, elt, system, parent};
+    return new Constraint{elt, system(), id, this};
 }
 
 template<>
 Event* ScenarioComponentBase::make<Event, Scenario::EventModel>(
         const Id<iscore::Component>& id,
-        Scenario::EventModel& elt,
-        QObject* parent)
+        Scenario::EventModel& elt)
 {
-    return new Event{id, elt, system, parent};
+    return new Event{id, elt, system(), this};
 }
 
 template<>
 TimeNode* ScenarioComponentBase::make<TimeNode, Scenario::TimeNodeModel>(
         const Id<iscore::Component>& id,
-        Scenario::TimeNodeModel& elt,
-        QObject* parent)
+        Scenario::TimeNodeModel& elt)
 {
-    return new TimeNode{id, elt, system, parent};
+    return new TimeNode{id, elt, system(), this};
 }
 
 template<>
 State* ScenarioComponentBase::make<State, Scenario::StateModel>(
         const Id<iscore::Component>& id,
-        Scenario::StateModel& elt,
-        QObject* parent)
+        Scenario::StateModel& elt)
 {
     return nullptr;
 }
@@ -232,7 +227,7 @@ void ScenarioComponent::onSpeedChanged(const Constraint& c, double speed)
 
 audio_frame_t ScenarioComponent::toFrame(const TimeValue& t) const
 {
-    return t.msec() * system.audioContext.audio.sample_rate / 1000.0;
+    return t.msec() * system().audioContext.audio.sample_rate / 1000.0;
 }
 
 void ScenarioComponent::onDateFixed(

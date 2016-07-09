@@ -14,12 +14,11 @@ class ReturnComponent final :
 {
         COMPONENT_METADATA("11770cd3-dc49-4d4a-93b2-ab2e5e7faec4")
 
-        using system_t = Audio::AudioStreamEngine::DocumentPlugin;
     public:
        ReturnComponent(
-               const Id<Component>& id,
                Return::ProcessModel& sound,
-               const system_t& doc,
+               DocumentPlugin& doc,
+                const Id<Component>& id,
                QObject* parent_obj);
 
 

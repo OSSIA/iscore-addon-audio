@@ -16,20 +16,16 @@ class LoopComponentBase :
         COMPONENT_METADATA("ab3dd763-0748-4ed1-bd07-2be6a17d52b1")
 
     public:
-       using system_t = Audio::AudioStreamEngine::DocumentPlugin;
-       system_t& system;
-
        LoopComponentBase(
-               const Id<Component>& id,
                Loop::ProcessModel& scenario,
-               system_t& doc,
+               DocumentPlugin& doc,
+               const Id<Component>& id,
                QObject* parent_obj);
 
        template<typename Component_T, typename Element>
        Component_T* make(
                const Id<Component>& id,
-               Element& elt,
-               QObject* parent);
+               Element& elt);
 
        template<typename... Args>
        void removing(Args&&...) {}
@@ -40,7 +36,6 @@ class LoopComponentBase :
 
 class LoopComponent final : public HierarchicalBaseScenario<
     LoopComponentBase,
-    LoopComponentBase::system_t,
     Loop::ProcessModel,
     Constraint,
     Event,
@@ -50,7 +45,6 @@ class LoopComponent final : public HierarchicalBaseScenario<
     public:
         using HierarchicalBaseScenario<
         LoopComponentBase,
-        LoopComponentBase::system_t,
         Loop::ProcessModel,
         Constraint,
         Event,

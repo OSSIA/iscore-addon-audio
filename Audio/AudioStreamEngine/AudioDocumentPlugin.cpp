@@ -32,9 +32,9 @@ AudioStream DocumentPlugin::makeStream()
 
     // Create our tree
     m_comp = new Constraint(
-                getStrongId(doc->baseConstraint().components),
                 doc->baseConstraint(),
                 *this,
+                getStrongId(doc->baseConstraint().components),
                 this);
     doc->baseConstraint().components.add(m_comp);
     AudioDependencyGraph graph{*m_comp};

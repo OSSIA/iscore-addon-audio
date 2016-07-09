@@ -8,11 +8,11 @@ namespace AudioStreamEngine
 {
 
 SoundComponent::SoundComponent(
-        const Id<iscore::Component>& id,
         Sound::ProcessModel& sound,
-        const SoundComponent::system_t& doc,
+        DocumentPlugin& doc,
+        const Id<iscore::Component>& id,
         QObject* parent_obj):
-    ProcessComponent_T{sound, id, "SoundComponent", parent_obj}
+    ProcessComponent_T{sound, doc, id, "SoundComponent", parent_obj}
 {
 
 }
