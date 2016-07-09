@@ -22,7 +22,7 @@ namespace AudioStreamEngine
 
 namespace {
 struct get_id {
-        Id<Process::ProcessModel> operator()(ConstraintComponent* comp)
+        Id<Process::ProcessModel> operator()(Constraint* comp)
         {
             return Id<Process::ProcessModel>{};
         }
@@ -35,7 +35,7 @@ struct get_id {
 };
 }
 
-AudioDependencyGraph::AudioDependencyGraph(ConstraintComponent &root)
+AudioDependencyGraph::AudioDependencyGraph(Constraint &root)
 {
     // 1. Create vertices
     visit(root);
@@ -142,7 +142,7 @@ void AudioDependencyGraph::apply(const std::deque<int>& sorted_vertices, Context
     }
 }
 
-AudioDependencyGraph::vtx_t AudioDependencyGraph::visit(ConstraintComponent &cst)
+AudioDependencyGraph::vtx_t AudioDependencyGraph::visit(Constraint &cst)
 {
     auto res = boost::add_vertex(&cst, m_graph);
 

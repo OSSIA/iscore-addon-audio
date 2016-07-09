@@ -7,13 +7,13 @@ namespace Audio
 {
 namespace AudioStreamEngine
 {
-class StateComponent final :
+class State final :
         public iscore::Component
 {
     public:
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
 
-        StateComponent(
+        State(
                 const Id<iscore::Component>& id,
                 Scenario::StateModel& state,
                 const system_t& doc,
@@ -21,7 +21,7 @@ class StateComponent final :
 
         const Key& key() const override;
 
-        ~StateComponent();
+        ~State();
 
     private:
 

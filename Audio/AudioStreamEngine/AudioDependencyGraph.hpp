@@ -25,7 +25,7 @@ class ProcessModel;
 namespace AudioStreamEngine
 {
 struct Context;
-class ConstraintComponent;
+class Constraint;
 class SendComponent;
 class EffectProcessComponent;
 class ReturnComponent;
@@ -36,7 +36,7 @@ class LoopComponent;
 struct AudioDependencyGraph
 {
         using node_t = eggs::variant<
-            ConstraintComponent*,
+            Constraint*,
             ScenarioComponent*,
             EffectProcessComponent*,
             LoopComponent*,
@@ -50,13 +50,13 @@ struct AudioDependencyGraph
         using vtx_t = decltype(boost::add_vertex(node_t{}, m_graph));
 
     public:
-        AudioDependencyGraph(ConstraintComponent& root);
+        AudioDependencyGraph(Constraint& root);
 
         boost::optional<std::deque<int>> check() const;
         void apply(const std::deque<int>&, Context& ctx);
 
     private:
-        vtx_t visit(ConstraintComponent& cst);
+        vtx_t visit(Constraint& cst);
         vtx_t visit(ScenarioComponent& proc);
         vtx_t visit(EffectProcessComponent& proc);
         vtx_t visit(LoopComponent& proc);

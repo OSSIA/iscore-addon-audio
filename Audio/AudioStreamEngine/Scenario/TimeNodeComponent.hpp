@@ -8,14 +8,14 @@ namespace Audio
 namespace AudioStreamEngine
 {
 class DocumentPlugin;
-class TimeNodeComponent final :
+class TimeNode final :
         public iscore::Component
 {
         Q_OBJECT
     public:
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
 
-        TimeNodeComponent(
+        TimeNode(
                 const Id<iscore::Component>& id,
                 Scenario::TimeNodeModel& timeNode,
                 const system_t& doc,
@@ -23,7 +23,7 @@ class TimeNodeComponent final :
 
         const Key& key() const override;
 
-        ~TimeNodeComponent();
+        ~TimeNode();
 
 
         std::function<void(audio_frame_t, bool)> onDateFixed;

@@ -10,76 +10,58 @@ namespace Audio
 {
 namespace AudioStreamEngine
 {
-class LoopComponent final :
+class LoopComponentBase :
         public ProcessComponent_T<Loop::ProcessModel, false, true>
 {
         COMPONENT_METADATA("ab3dd763-0748-4ed1-bd07-2be6a17d52b1")
 
-        using system_t = Audio::AudioStreamEngine::DocumentPlugin;
-        using hierarchy_t =
-           BaseScenarioComponentHierarchyManager<
-               LoopComponent,
-               system_t,
-               Loop::ProcessModel,
-               ConstraintComponent,
-               EventComponent,
-               TimeNodeComponent,
-               StateComponent
-        >;
-
     public:
-       LoopComponent(
+       using system_t = Audio::AudioStreamEngine::DocumentPlugin;
+       system_t& system;
+
+       LoopComponentBase(
                const Id<Component>& id,
                Loop::ProcessModel& scenario,
                system_t& doc,
                QObject* parent_obj);
 
-       const auto& constraints() const
-       { return m_hm.constraints(); }
-
-       void makeStream(const Context& ctx) override;
-
-
-
        template<typename Component_T, typename Element>
        Component_T* make(
                const Id<Component>& id,
                Element& elt,
-               system_t& doc,
                QObject* parent);
 
-        void removing(
-                const Scenario::ConstraintModel& elt,
-                const ConstraintComponent& comp);
-
-        void removing(
-                const Scenario::EventModel& elt,
-                const EventComponent& comp);
-
-        void removing(
-                const Scenario::TimeNodeModel& elt,
-                const TimeNodeComponent& comp);
-
-        void removing(
-                const Scenario::StateModel& elt,
-                const StateComponent& comp);
-
-    private:
-        void onDateFixed(const TimeNodeComponent& t, audio_frame_t time);
-        void onDateFixed(const EventComponent& t, audio_frame_t time);
-        void onStartDateFixed(const ConstraintComponent& t, audio_frame_t time);
-        void onStopDateFixed(const ConstraintComponent& t, audio_frame_t time);
+       template<typename... Args>
+       void removing(Args&&...) {}
 
         audio_frame_t toFrame(const TimeValue& t) const;
 
-        hierarchy_t m_hm;
+};
 
+class LoopComponent final : public HierarchicalBaseScenario<
+    LoopComponentBase,
+    LoopComponentBase::system_t,
+    Loop::ProcessModel,
+    Constraint,
+    Event,
+    TimeNode,
+    State>
+{
+    public:
+        using HierarchicalBaseScenario<
+        LoopComponentBase,
+        LoopComponentBase::system_t,
+        Loop::ProcessModel,
+        Constraint,
+        Event,
+        TimeNode,
+        State>::HierarchicalBaseScenario;
 
-        std::map<Id<Scenario::ConstraintModel>, std::pair<SymbolicDate, QMetaObject::Connection>> m_synchros;
-        std::map<Id<Scenario::ConstraintModel>, AudioStream> m_csts;
+        void makeStream(const Context& ctx) override;
 
-        AudioRendererPtr m_groupPlayer;
-        AudioStream m_groupStream;
+    private:
+        std::vector<QMetaObject::Connection> m_connections;
+
 };
 
 AUDIO_PROCESS_COMPONENT_FACTORY(LoopComponentFactory, "1dee91f9-3eb9-4e51-93a3-7ee696c2f357", LoopComponent, Loop::ProcessModel)

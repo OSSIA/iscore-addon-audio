@@ -9,76 +9,64 @@ namespace Audio
 {
 namespace AudioStreamEngine
 {
-class ScenarioComponent final :
+class ScenarioComponentBase :
         public ProcessComponent_T<Scenario::ProcessModel, false, true>
 {
         COMPONENT_METADATA("33a11e0f-d320-4fc7-98e4-714845f21dc8")
 
-        using system_t = Audio::AudioStreamEngine::DocumentPlugin;
-        using hierarchy_t =
-           ScenarioComponentHierarchyManager<
-               ScenarioComponent,
-               system_t,
-               Scenario::ProcessModel,
-               ConstraintComponent,
-               EventComponent,
-               TimeNodeComponent,
-               StateComponent
-        >;
-
     public:
-       ScenarioComponent(
+        using system_t = Audio::AudioStreamEngine::DocumentPlugin;
+        system_t& system;
+
+       ScenarioComponentBase(
                const Id<Component>& id,
                Scenario::ProcessModel& scenario,
                system_t& doc,
                QObject* parent_obj);
 
-
-       const auto& constraints() const
-       { return m_hm.constraints(); }
-
-       void makeStream(const Context& ctx) override;
-
-
-
        template<typename Component_T, typename Element>
        Component_T* make(
                const Id<Component>& id,
                Element& elt,
-               system_t& doc,
                QObject* parent);
 
-        void removing(
-                const Scenario::ConstraintModel& elt,
-                const ConstraintComponent& comp);
+       template<typename... Args>
+       void removing(Args&&...) { }
+};
 
-        void removing(
-                const Scenario::EventModel& elt,
-                const EventComponent& comp);
 
-        void removing(
-                const Scenario::TimeNodeModel& elt,
-                const TimeNodeComponent& comp);
+class ScenarioComponent final : public HierarchicalScenarioComponent<
+    ScenarioComponentBase,
+    ScenarioComponentBase::system_t,
+    Scenario::ProcessModel,
+    Constraint,
+    Event,
+    TimeNode,
+    State>
+{
+    public:
+        using HierarchicalScenarioComponent<
+        ScenarioComponentBase,
+        ScenarioComponentBase::system_t,
+        Scenario::ProcessModel,
+        Constraint,
+        Event,
+        TimeNode,
+        State>::HierarchicalScenarioComponent;
 
-        void removing(
-                const Scenario::StateModel& elt,
-                const StateComponent& comp);
+        void makeStream(const Context& ctx) override;
 
     private:
-        void onDateFixed(const TimeNodeComponent& t, audio_frame_t time, bool force_update);
-        void onDateFixed(const EventComponent& t, audio_frame_t time, bool force_update);
-        void onStartDateFixed(ConstraintComponent& t, audio_frame_t time, bool force_update);
-        void onStopDateFixed(const ConstraintComponent& t, audio_frame_t time);
-        void onSpeedChanged(const ConstraintComponent& t, double speed);
 
+        void onDateFixed(const TimeNode& t, audio_frame_t time, bool force_update);
+        void onDateFixed(const Event& t, audio_frame_t time, bool force_update);
+        void onStartDateFixed(Constraint& t, audio_frame_t time, bool force_update);
+        void onStopDateFixed(const Constraint& t, audio_frame_t time);
+        void onSpeedChanged(const Constraint& t, double speed);
         audio_frame_t toFrame(const TimeValue& t) const;
 
-        hierarchy_t m_hm;
-
-        std::map<Id<Scenario::ConstraintModel>, AudioStream> m_csts;
-
-        std::vector<QMetaObject::Connection> m_connections;
         AudioRendererPtr m_groupPlayer;
+        std::vector<QMetaObject::Connection> m_connections;
 
 };
 

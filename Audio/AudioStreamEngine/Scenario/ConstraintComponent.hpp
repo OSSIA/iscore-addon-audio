@@ -12,7 +12,7 @@ class ProcessModel;
 }
 namespace AudioStreamEngine
 {
-class ConstraintComponent final :
+class Constraint final :
         public iscore::Component
 {
         COMPONENT_METADATA("13521db6-0de7-462c-9a43-57612a250216")
@@ -25,7 +25,7 @@ class ConstraintComponent final :
         using process_component_factory_list_t = Audio::AudioStreamEngine::ProcessComponentFactoryList;
 
         using parent_t = ::ConstraintComponentHierarchyManager<
-            ConstraintComponent,
+            Constraint,
             system_t,
             process_component_t,
             process_component_factory_list_t
@@ -34,12 +34,12 @@ class ConstraintComponent final :
         const Scenario::ConstraintModel& constraint() const
         { return m_hm.constraint; }
 
-        ConstraintComponent(
+        Constraint(
                 const Id<Component>& id,
                 Scenario::ConstraintModel& constraint,
                 system_t& doc,
                 QObject* parent_comp);
-        ~ConstraintComponent();
+        ~Constraint();
 
         void makeStream(const Context& player);
         AudioStream getStream() const { return m_stream; }

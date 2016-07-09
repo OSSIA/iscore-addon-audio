@@ -31,7 +31,7 @@ AudioStream DocumentPlugin::makeStream()
     openPlayer();
 
     // Create our tree
-    m_comp = new ConstraintComponent(
+    m_comp = new Constraint(
                 getStrongId(doc->baseConstraint().components),
                 doc->baseConstraint(),
                 *this,

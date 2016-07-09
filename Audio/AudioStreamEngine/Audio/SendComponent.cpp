@@ -32,7 +32,7 @@ void SendComponent::makeStream(const Context& ctx)
     // take their "send" streams, create returns, mix the returns,
     // put it on input of the effect, create a send, return the output
     auto parent_cst = safe_cast<Scenario::ConstraintModel*>(process().parent());
-    ConstraintComponent& cst_comp = iscore::component<ConstraintComponent>(parent_cst->components);
+    Constraint& cst_comp = iscore::component<Constraint>(parent_cst->components);
 
     m_stream = MakeSend(cst_comp.makeInputMix(this->process().id()));
 }

@@ -32,10 +32,10 @@ static const double* one() {
     return &val;
 }
 
-ConstraintComponent::ConstraintComponent(
+Constraint::Constraint(
         const Id<iscore::Component>& id,
         Scenario::ConstraintModel& constraint,
-        ConstraintComponent::system_t& doc,
+        Constraint::system_t& doc,
         QObject* parent_comp):
     Component{id, "ConstraintComponent", parent_comp},
     m_hm{*this, constraint, doc, this}
@@ -49,12 +49,12 @@ ConstraintComponent::ConstraintComponent(
         m_stretch = constraint.duration.executionSpeed();
 }
 
-ConstraintComponent::~ConstraintComponent()
+Constraint::~Constraint()
 {
 }
 
 
-void ConstraintComponent::makeStream(const Context& player)
+void Constraint::makeStream(const Context& player)
 {
     auto& cst = m_hm.constraint;
     if(cst.processes.empty())
@@ -159,7 +159,7 @@ void ConstraintComponent::makeStream(const Context& player)
     // Then look for the "Mix" process and do the mix
 }
 
-AudioStream ConstraintComponent::makeInputMix(
+AudioStream Constraint::makeInputMix(
         const Id<Process::ProcessModel>& target)
 {
     std::vector<AudioStream> inputStreams;
@@ -228,7 +228,7 @@ AudioStream ConstraintComponent::makeInputMix(
 }
 
 
-ProcessComponent*ConstraintComponent::make_processComponent(
+ProcessComponent*Constraint::make_processComponent(
         const Id<iscore::Component>& id,
         ProcessComponentFactory& factory,
         Process::ProcessModel& process,
@@ -239,13 +239,13 @@ ProcessComponent*ConstraintComponent::make_processComponent(
 }
 
 
-void ConstraintComponent::removing(
+void Constraint::removing(
         const Process::ProcessModel& cst,
         const ProcessComponent& comp)
 {
 }
 
-Mix::ProcessModel* ConstraintComponent::findMix() const
+Mix::ProcessModel* Constraint::findMix() const
 {
     auto it = find_if(m_hm.constraint.processes, [] (auto& val) {
         return dynamic_cast<Mix::ProcessModel*>(&val);
@@ -254,7 +254,7 @@ Mix::ProcessModel* ConstraintComponent::findMix() const
 }
 
 
-audio_frame_t ConstraintComponent::toFrame(TimeValue t) const
+audio_frame_t Constraint::toFrame(TimeValue t) const
 {
     return t.msec() * m_hm.system.audioContext.audio.sample_rate / 1000.0;
 }
