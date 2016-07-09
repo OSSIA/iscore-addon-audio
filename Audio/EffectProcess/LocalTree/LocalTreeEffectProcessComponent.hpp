@@ -201,7 +201,8 @@ class EffectComponentHierarchyManager : public Nano::Observer
         std::list<EffectPair> m_children; // todo map ? multi_index with both index of the component and of the process ?
 };
 
-class EffectProcessComponent final : public Ossia::LocalTree::ProcessComponent
+class EffectProcessComponent final :
+        public Ossia::LocalTree::ProcessComponent_T<ProcessModel>
 {
         COMPONENT_METADATA("0313e6df-1a18-4349-a4fb-8bc3461cc6b5")
 
@@ -210,7 +211,7 @@ class EffectProcessComponent final : public Ossia::LocalTree::ProcessComponent
                const Id<Component>& id,
                OSSIA::Node& parent,
                Effect::ProcessModel& scenario,
-               const Ossia::LocalTree::DocumentPlugin& doc,
+               Ossia::LocalTree::DocumentPlugin& doc,
                QObject* parent_obj);
 
 

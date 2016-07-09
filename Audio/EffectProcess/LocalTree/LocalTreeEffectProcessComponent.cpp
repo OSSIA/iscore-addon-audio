@@ -93,9 +93,9 @@ EffectProcessComponent::EffectProcessComponent(
         const Id<iscore::Component>& id,
         OSSIA::Node& parent,
         Effect::ProcessModel& scenario,
-        const Ossia::LocalTree::DocumentPlugin& doc,
+        Ossia::LocalTree::DocumentPlugin& doc,
         QObject* parent_obj):
-    ProcessComponent{parent, scenario, id, "EffectProcessComponent", parent_obj},
+    Ossia::LocalTree::ProcessComponent_T<ProcessModel>{parent, scenario, doc, id, "EffectProcessComponent", parent_obj},
     m_effectsNode{add_node(*node(), "effects")},
     m_hierarchy{*this, scenario, doc, this}
 {
