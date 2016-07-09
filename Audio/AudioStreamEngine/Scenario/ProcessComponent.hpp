@@ -54,7 +54,6 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponentFactory :
                 const Id<iscore::Component>&,
                 Process::ProcessModel& proc,
                 DocumentPlugin& doc,
-                const iscore::DocumentContext& ctx,
                 QObject* paren_objt) const = 0;
 };
 
@@ -92,8 +91,7 @@ class ProcessComponentFactory_T : public ProcessComponentFactory
 
         bool matches(
                 Process::ProcessModel& p,
-                const Audio::AudioStreamEngine::DocumentPlugin&,
-                const iscore::DocumentContext&) const final override
+                const Audio::AudioStreamEngine::DocumentPlugin&) const final override
         {
             return dynamic_cast<Process_T*>(&p);
         }
@@ -102,18 +100,17 @@ class ProcessComponentFactory_T : public ProcessComponentFactory
                 const Id<iscore::Component>& id,
                 Process::ProcessModel& proc,
                 DocumentPlugin& doc,
-                const iscore::DocumentContext& ctx,
                 QObject* paren_objt) const final override
         {
-            return new ProcessComponent_T{id, static_cast<Process_T&>(proc), doc, ctx, paren_objt};
+            return new ProcessComponent_T{id, static_cast<Process_T&>(proc), doc, paren_objt};
         }
 };
 }
 }
 
-#define AUDIO_COMPONENT_FACTORY(FactoryName, Uuid, ProcessComponent, Process) \
+#define AUDIO_PROCESS_COMPONENT_FACTORY(FactoryName, Uuid, ProcessComponent, Process) \
 class FactoryName final : \
-        public ProcessComponentFactory_T<ProcessComponent, Process> \
+        public Audio::AudioStreamEngine::ProcessComponentFactory_T<ProcessComponent, Process> \
 { \
         ISCORE_CONCRETE_FACTORY_DECL(Uuid)  \
 };

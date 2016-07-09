@@ -31,9 +31,7 @@ class ScenarioComponent final :
                const Id<Component>& id,
                Scenario::ProcessModel& scenario,
                system_t& doc,
-               const iscore::DocumentContext& ctx,
                QObject* parent_obj);
-
 
 
        const auto& constraints() const
@@ -48,7 +46,6 @@ class ScenarioComponent final :
                const Id<Component>& id,
                Element& elt,
                system_t& doc,
-               const iscore::DocumentContext& ctx,
                QObject* parent);
 
         void removing(
@@ -85,6 +82,6 @@ class ScenarioComponent final :
 
 };
 
-AUDIO_COMPONENT_FACTORY(ScenarioComponentFactory, "34f7cb5f-fe0e-4dd8-8250-956702e41e13", ScenarioComponent, Scenario::ProcessModel)
+AUDIO_PROCESS_COMPONENT_FACTORY(ScenarioComponentFactory, "34f7cb5f-fe0e-4dd8-8250-956702e41e13", ScenarioComponent, Scenario::ProcessModel)
 }
 }

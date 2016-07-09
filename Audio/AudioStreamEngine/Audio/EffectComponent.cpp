@@ -21,7 +21,6 @@ EffectProcessComponent::EffectProcessComponent(
         const Id<iscore::Component>& id,
         Effect::ProcessModel& sound,
         const EffectProcessComponent::system_t& doc,
-        const iscore::DocumentContext& ctx,
         QObject* parent_obj):
     ProcessComponent_T{sound, id, "EffectComponent", parent_obj}
 {

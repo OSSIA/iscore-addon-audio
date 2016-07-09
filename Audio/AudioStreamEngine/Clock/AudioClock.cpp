@@ -48,7 +48,7 @@ void AudioClock::play_impl(
 
     m_default.play(t);
     AudioStream finals = MakeIScoreExecutor(stream, *bs.baseConstraint()->OSSIAConstraint());
-    auto& player = m_audioPlug.context.audio.player;
+    auto& player = m_audioPlug.audioContext.audio.player;
 
 
     StartSound(player, finals, GenRealDate(player, 0));
@@ -59,14 +59,14 @@ void AudioClock::pause_impl(
         RecreateOnPlay::BaseScenarioElement& bs)
 {
     m_default.pause();
-    PauseAudioPlayer(m_audioPlug.context.audio.player);
+    PauseAudioPlayer(m_audioPlug.audioContext.audio.player);
 }
 
 void AudioClock::resume_impl(
         RecreateOnPlay::BaseScenarioElement& bs)
 {
     m_default.resume();
-    ContAudioPlayer(m_audioPlug.context.audio.player);
+    ContAudioPlayer(m_audioPlug.audioContext.audio.player);
 }
 
 void AudioClock::stop_impl(

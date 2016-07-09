@@ -21,7 +21,6 @@ class EffectProcessComponent final :
                const Id<Component>& id,
                Effect::ProcessModel& sound,
                const system_t& doc,
-               const iscore::DocumentContext& ctx,
                QObject* parent_obj);
 
 
@@ -33,6 +32,6 @@ class EffectProcessComponent final :
        std::map<Id<Effect::EffectModel>, AudioEffect> m_effects;
 };
 
-AUDIO_COMPONENT_FACTORY(EffectProcessComponentFactory, "ebfdbbb4-9f19-4b64-bc92-374af65122d3", EffectProcessComponent, Effect::ProcessModel)
+AUDIO_PROCESS_COMPONENT_FACTORY(EffectProcessComponentFactory, "ebfdbbb4-9f19-4b64-bc92-374af65122d3", EffectProcessComponent, Effect::ProcessModel)
 }
 }

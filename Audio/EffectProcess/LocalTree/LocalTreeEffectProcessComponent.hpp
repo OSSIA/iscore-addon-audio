@@ -58,7 +58,6 @@ class EffectComponentFactory :
                 OSSIA::Node& parent,
                 Effect::EffectModel& proc,
                 const Ossia::LocalTree::DocumentPlugin& doc,
-                const iscore::DocumentContext& ctx,
                 QObject* paren_objt) const = 0;
 };
 
@@ -146,13 +145,11 @@ class FaustComponentFactory :
                 OSSIA::Node& parent,
                 Effect::EffectModel& proc,
                 const Ossia::LocalTree::DocumentPlugin& doc,
-                const iscore::DocumentContext& ctx,
                 QObject* paren_objt) const override;
 
         bool matches(
                 EffectModel & m,
-                const Ossia::LocalTree::DocumentPlugin &,
-                const iscore::DocumentContext &) const override
+                const Ossia::LocalTree::DocumentPlugin &) const override
         {
             return dynamic_cast<FaustEffectModel*>(&m);
         }
@@ -179,7 +176,6 @@ class EffectComponentHierarchyManager : public Nano::Observer
                 EffectProcessComponent& component,
                 Effect::ProcessModel& cst,
                 const Ossia::LocalTree::DocumentPlugin& doc,
-                const iscore::DocumentContext& ctx,
                 QObject* component_as_parent);
 
         const std::list<EffectPair>& effects() const
@@ -199,7 +195,6 @@ class EffectComponentHierarchyManager : public Nano::Observer
         EffectProcessComponent& m_component;
         const LocalTree::EffectComponentFactoryList& m_componentFactory;
         const Ossia::LocalTree::DocumentPlugin& m_system;
-        const iscore::DocumentContext& m_context;
 
         QObject* m_parentObject{};
 
@@ -216,7 +211,6 @@ class EffectProcessComponent final : public Ossia::LocalTree::ProcessComponent
                OSSIA::Node& parent,
                Effect::ProcessModel& scenario,
                const Ossia::LocalTree::DocumentPlugin& doc,
-               const iscore::DocumentContext& ctx,
                QObject* parent_obj);
 
 
@@ -225,7 +219,6 @@ class EffectProcessComponent final : public Ossia::LocalTree::ProcessComponent
                EffectComponentFactory& factory,
                Effect::EffectModel &process,
                const Ossia::LocalTree::DocumentPlugin &system,
-               const iscore::DocumentContext &ctx,
                QObject *parent_component);
 
        void removing(const Effect::EffectModel& cst, const EffectComponent& comp);
@@ -248,15 +241,13 @@ class EffectProcessComponentFactory final :
 
         bool matches(
                 Process::ProcessModel& p,
-                const Ossia::LocalTree::DocumentPlugin&,
-                const iscore::DocumentContext&) const override;
+                const Ossia::LocalTree::DocumentPlugin&) const override;
 
         Ossia::LocalTree::ProcessComponent* make(
                 const Id<iscore::Component>& id,
                 OSSIA::Node& parent,
                 Process::ProcessModel& proc,
                 Ossia::LocalTree::DocumentPlugin& doc,
-                const iscore::DocumentContext& ctx,
                 QObject* paren_objt) const override;
 };
 }

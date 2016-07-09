@@ -20,13 +20,12 @@ class ReturnComponent final :
                const Id<Component>& id,
                Return::ProcessModel& sound,
                const system_t& doc,
-               const iscore::DocumentContext& ctx,
                QObject* parent_obj);
 
 
        void makeStream(const Context& ctx) override;
 };
 
-AUDIO_COMPONENT_FACTORY(ReturnComponentFactory, "f8d4cbe3-b187-43ed-8831-2510b4cffb01", ReturnComponent, Return::ProcessModel)
+AUDIO_PROCESS_COMPONENT_FACTORY(ReturnComponentFactory, "f8d4cbe3-b187-43ed-8831-2510b4cffb01", ReturnComponent, Return::ProcessModel)
 }
 }

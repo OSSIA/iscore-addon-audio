@@ -10,7 +10,6 @@ TimeNodeComponent::TimeNodeComponent(
         const Id<iscore::Component>& id,
         Scenario::TimeNodeModel& tn,
         const TimeNodeComponent::system_t& doc,
-        const iscore::DocumentContext& ctx,
         QObject* parent_comp):
     Component{id, "TimeNodeComponent", parent_comp},
     timeNode{tn}

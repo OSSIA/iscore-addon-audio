@@ -20,7 +20,6 @@ SendComponent::SendComponent(
         const Id<iscore::Component>& id,
         Send::ProcessModel& sound,
         const SendComponent::system_t& doc,
-        const iscore::DocumentContext& ctx,
         QObject* parent_obj):
     ProcessComponent_T{sound, id, "SendComponent", parent_obj}
 {

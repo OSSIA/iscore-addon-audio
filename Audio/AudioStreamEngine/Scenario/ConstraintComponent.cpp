@@ -36,10 +36,9 @@ ConstraintComponent::ConstraintComponent(
         const Id<iscore::Component>& id,
         Scenario::ConstraintModel& constraint,
         ConstraintComponent::system_t& doc,
-        const iscore::DocumentContext& ctx,
         QObject* parent_comp):
     Component{id, "ConstraintComponent", parent_comp},
-    m_hm{*this, constraint, doc, ctx, this}
+    m_hm{*this, constraint, doc, this}
 {
     con(constraint.duration, &Scenario::ConstraintDurations::executionSpeedChanged,
         this, [=] (double d) {
@@ -234,10 +233,9 @@ ProcessComponent*ConstraintComponent::make_processComponent(
         ProcessComponentFactory& factory,
         Process::ProcessModel& process,
         DocumentPlugin& system,
-        const iscore::DocumentContext& ctx,
         QObject* parent_component)
 {
-    return factory.make(id, process, system, ctx, parent_component);
+    return factory.make(id, process, system, parent_component);
 }
 
 
@@ -258,7 +256,7 @@ Mix::ProcessModel* ConstraintComponent::findMix() const
 
 audio_frame_t ConstraintComponent::toFrame(TimeValue t) const
 {
-    return t.msec() * m_hm.system.context.audio.sample_rate / 1000.0;
+    return t.msec() * m_hm.system.audioContext.audio.sample_rate / 1000.0;
 }
 
 }

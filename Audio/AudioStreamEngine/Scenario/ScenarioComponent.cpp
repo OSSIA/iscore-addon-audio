@@ -13,10 +13,9 @@ ScenarioComponent::ScenarioComponent(
         const Id<iscore::Component>& id,
         Scenario::ProcessModel& scenario,
         ScenarioComponent::system_t& doc,
-        const iscore::DocumentContext& ctx,
         QObject* parent_obj):
     ProcessComponent_T{scenario, id, "ScenarioComponent", parent_obj},
-    m_hm{*this, scenario, doc, ctx, this}
+    m_hm{*this, scenario, doc, this}
 {
 }
 
@@ -93,10 +92,9 @@ ConstraintComponent* ScenarioComponent::make<ConstraintComponent, Scenario::Cons
         const Id<iscore::Component>& id,
         Scenario::ConstraintModel& elt,
         ScenarioComponent::system_t& doc,
-        const iscore::DocumentContext& ctx,
         QObject* parent)
 {
-    auto comp = new ConstraintComponent{id, elt, doc, ctx, parent};
+    auto comp = new ConstraintComponent{id, elt, doc, parent};
     comp->onStartDateFixed = [=] (audio_frame_t t, bool force) { onStartDateFixed(*comp, t, force); };
     comp->onStopDateFixed = [=] (audio_frame_t t) { onStopDateFixed(*comp, t); };
     return comp;
@@ -107,10 +105,9 @@ EventComponent* ScenarioComponent::make<EventComponent, Scenario::EventModel>(
         const Id<iscore::Component>& id,
         Scenario::EventModel& elt,
         ScenarioComponent::system_t& doc,
-        const iscore::DocumentContext& ctx,
         QObject* parent)
 {
-    auto comp = new EventComponent{id, elt, doc, ctx, parent};
+    auto comp = new EventComponent{id, elt, doc, parent};
     comp->onDateFixed = [=] (audio_frame_t t, bool force) { onDateFixed(*comp, t, force); };
     return comp;
 }
@@ -120,10 +117,9 @@ TimeNodeComponent* ScenarioComponent::make<TimeNodeComponent, Scenario::TimeNode
         const Id<iscore::Component>& id,
         Scenario::TimeNodeModel& elt,
         ScenarioComponent::system_t& doc,
-        const iscore::DocumentContext& ctx,
         QObject* parent)
 {
-    auto comp = new TimeNodeComponent{id, elt, doc, ctx, parent};
+    auto comp = new TimeNodeComponent{id, elt, doc, parent};
     comp->onDateFixed = [=] (audio_frame_t t, bool force) { onDateFixed(*comp, t, force); };
     return comp;
 }
@@ -133,10 +129,9 @@ StateComponent* ScenarioComponent::make<StateComponent, Scenario::StateModel>(
         const Id<iscore::Component>& id,
         Scenario::StateModel& elt,
         ScenarioComponent::system_t& doc,
-        const iscore::DocumentContext& ctx,
         QObject* parent)
 {
-    return new StateComponent{id, elt, doc, ctx, parent};
+    return new StateComponent{id, elt, doc, parent};
 }
 
 void ScenarioComponent::removing(const Scenario::ConstraintModel& elt, const ConstraintComponent& comp)
@@ -253,7 +248,7 @@ void ScenarioComponent::onSpeedChanged(const ConstraintComponent& c, double spee
 
 audio_frame_t ScenarioComponent::toFrame(const TimeValue& t) const
 {
-    return t.msec() * m_hm.system.context.audio.sample_rate / 1000.0;
+    return t.msec() * m_hm.system.audioContext.audio.sample_rate / 1000.0;
 }
 
 void ScenarioComponent::onDateFixed(

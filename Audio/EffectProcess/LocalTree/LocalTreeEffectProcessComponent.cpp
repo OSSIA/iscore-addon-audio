@@ -14,13 +14,11 @@ EffectComponentHierarchyManager::EffectComponentHierarchyManager(
         EffectProcessComponent& component,
         ProcessModel& cst,
         const Ossia::LocalTree::DocumentPlugin& doc,
-        const iscore::DocumentContext& ctx,
         QObject* component_as_parent):
     process{cst},
     m_component{component},
-    m_componentFactory{ctx.app.components.factory<EffectComponentFactoryList>()},
+    m_componentFactory{doc.context().app.components.factory<EffectComponentFactoryList>()},
     m_system{doc},
-    m_context{ctx},
     m_parentObject{component_as_parent}
 {
     for(auto& fx : process.effects())
@@ -40,13 +38,13 @@ EffectComponentHierarchyManager::EffectComponentHierarchyManager(
 void EffectComponentHierarchyManager::add(EffectModel& process)
 {
     // Will return a factory for the given process if available
-    if(auto factory = m_componentFactory.factory(process, m_system, m_context))
+    if(auto factory = m_componentFactory.factory(process, m_system))
     {
         // The subclass should provide this function to construct
         // the correct component relative to this process.
         auto proc_comp = m_component.make_effectComponent(
                              getStrongId(process.components),
-                             *factory, process, m_system, m_context, m_parentObject);
+                             *factory, process, m_system, m_parentObject);
         if(proc_comp)
         {
             process.components.add(proc_comp);
@@ -96,11 +94,10 @@ EffectProcessComponent::EffectProcessComponent(
         OSSIA::Node& parent,
         Effect::ProcessModel& scenario,
         const Ossia::LocalTree::DocumentPlugin& doc,
-        const iscore::DocumentContext& ctx,
         QObject* parent_obj):
     ProcessComponent{parent, scenario, id, "EffectProcessComponent", parent_obj},
     m_effectsNode{add_node(*node(), "effects")},
-    m_hierarchy{*this, scenario, doc, ctx, this}
+    m_hierarchy{*this, scenario, doc, this}
 {
     make_metadata_node(scenario.metadata, *node(), m_properties, this);
 }
@@ -110,10 +107,9 @@ EffectComponent*EffectProcessComponent::make_effectComponent(
         EffectComponentFactory& factory,
         EffectModel& process,
         const Ossia::LocalTree::DocumentPlugin& system,
-        const iscore::DocumentContext& ctx,
         QObject* parent_component)
 {
-    return factory.make(id, *m_effectsNode, process, system, ctx, parent_component);
+    return factory.make(id, *m_effectsNode, process, system, parent_component);
 }
 
 void EffectProcessComponent::removing(const EffectModel& cst, const EffectComponent& comp)
@@ -141,8 +137,7 @@ EffectProcessComponent::~EffectProcessComponent()
 ///////// Process componnet factory
 bool EffectProcessComponentFactory::matches(
         Process::ProcessModel& p,
-        const Ossia::LocalTree::DocumentPlugin&,
-        const iscore::DocumentContext&) const
+        const Ossia::LocalTree::DocumentPlugin&) const
 {
     return dynamic_cast<Effect::ProcessModel*>(&p);
 }
@@ -153,10 +148,9 @@ EffectProcessComponentFactory::make(
         OSSIA::Node& parent,
         Process::ProcessModel& proc,
         Ossia::LocalTree::DocumentPlugin& doc,
-        const iscore::DocumentContext& ctx,
         QObject* paren_objt) const
 {
-    return new EffectProcessComponent{id, parent, static_cast<Effect::ProcessModel&>(proc), doc, ctx, paren_objt};
+    return new EffectProcessComponent{id, parent, static_cast<Effect::ProcessModel&>(proc), doc, paren_objt};
 }
 
 EffectComponent::EffectComponent(
@@ -182,7 +176,6 @@ EffectComponent* FaustComponentFactory::make(
         OSSIA::Node& parent,
         EffectModel& proc,
         const Ossia::LocalTree::DocumentPlugin& doc,
-        const iscore::DocumentContext& ctx,
         QObject* parent_obj) const
 {
     return new FaustComponent{parent, *safe_cast<FaustEffectModel*>(&proc), id, parent_obj};

@@ -32,7 +32,6 @@ class LoopComponent final :
                const Id<Component>& id,
                Loop::ProcessModel& scenario,
                system_t& doc,
-               const iscore::DocumentContext& ctx,
                QObject* parent_obj);
 
        const auto& constraints() const
@@ -47,7 +46,6 @@ class LoopComponent final :
                const Id<Component>& id,
                Element& elt,
                system_t& doc,
-               const iscore::DocumentContext& ctx,
                QObject* parent);
 
         void removing(
@@ -84,6 +82,6 @@ class LoopComponent final :
         AudioStream m_groupStream;
 };
 
-AUDIO_COMPONENT_FACTORY(LoopComponentFactory, "1dee91f9-3eb9-4e51-93a3-7ee696c2f357", LoopComponent, Loop::ProcessModel)
+AUDIO_PROCESS_COMPONENT_FACTORY(LoopComponentFactory, "1dee91f9-3eb9-4e51-93a3-7ee696c2f357", LoopComponent, Loop::ProcessModel)
 }
 }

@@ -11,7 +11,6 @@ SoundComponent::SoundComponent(
         const Id<iscore::Component>& id,
         Sound::ProcessModel& sound,
         const SoundComponent::system_t& doc,
-        const iscore::DocumentContext& ctx,
         QObject* parent_obj):
     ProcessComponent_T{sound, id, "SoundComponent", parent_obj}
 {

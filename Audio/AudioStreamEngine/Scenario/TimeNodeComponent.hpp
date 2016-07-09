@@ -19,7 +19,6 @@ class TimeNodeComponent final :
                 const Id<iscore::Component>& id,
                 Scenario::TimeNodeModel& timeNode,
                 const system_t& doc,
-                const iscore::DocumentContext& ctx,
                 QObject* parent_comp);
 
         const Key& key() const override;

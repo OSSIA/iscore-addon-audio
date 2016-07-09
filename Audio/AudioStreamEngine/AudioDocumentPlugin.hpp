@@ -16,12 +16,12 @@ class DocumentPlugin : public iscore::DocumentPlugin
                 iscore::Document& doc,
                 QObject* parent):
             iscore::DocumentPlugin{doc.context(), "AudioDocumentPlugin", parent},
-            context{doc.context(), ctx}
+            audioContext{doc.context(), ctx}
         {
 
         }
 
-        Context context;
+        Context audioContext;
 
         AudioStream makeStream();
         void stop();

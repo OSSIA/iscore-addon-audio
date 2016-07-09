@@ -20,12 +20,11 @@ class SendComponent final :
                const Id<Component>& id,
                Send::ProcessModel& sound,
                const system_t& doc,
-               const iscore::DocumentContext& ctx,
                QObject* parent_obj);
 
 
        void makeStream(const Context& ctx) override;
 };
-AUDIO_COMPONENT_FACTORY(SendComponentFactory, "2340bde2-3226-48ce-960b-5243563e026a", SendComponent, Send::ProcessModel)
+AUDIO_PROCESS_COMPONENT_FACTORY(SendComponentFactory, "2340bde2-3226-48ce-960b-5243563e026a", SendComponent, Send::ProcessModel)
 }
 }

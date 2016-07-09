@@ -11,10 +11,9 @@ LoopComponent::LoopComponent(
         const Id<iscore::Component>& id,
         Loop::ProcessModel& scenario,
         LoopComponent::system_t& doc,
-        const iscore::DocumentContext& ctx,
         QObject* parent_obj):
     ProcessComponent_T{scenario, id, "LoopComponent", parent_obj},
-    m_hm{*this, scenario, doc, ctx, this}
+    m_hm{*this, scenario, doc, this}
 {
 }
 
@@ -93,10 +92,9 @@ ConstraintComponent* LoopComponent::make<ConstraintComponent, Scenario::Constrai
         const Id<iscore::Component>& id,
         Scenario::ConstraintModel& elt,
         LoopComponent::system_t& doc,
-        const iscore::DocumentContext& ctx,
         QObject* parent)
 {
-    auto comp = new ConstraintComponent{id, elt, doc, ctx, parent};
+    auto comp = new ConstraintComponent{id, elt, doc, parent};
     comp->onStartDateFixed = [=] (audio_frame_t t, bool) { onStartDateFixed(*comp, t); };
     comp->onStopDateFixed = [=] (audio_frame_t t) { onStopDateFixed(*comp, t); };
     return comp;
@@ -107,10 +105,9 @@ EventComponent* LoopComponent::make<EventComponent, Scenario::EventModel>(
         const Id<iscore::Component>& id,
         Scenario::EventModel& elt,
         LoopComponent::system_t& doc,
-        const iscore::DocumentContext& ctx,
         QObject* parent)
 {
-    auto comp = new EventComponent{id, elt, doc, ctx, parent};
+    auto comp = new EventComponent{id, elt, doc, parent};
     comp->onDateFixed = [=] (audio_frame_t t, bool) { onDateFixed(*comp, t); };
     return comp;
 }
@@ -120,10 +117,9 @@ TimeNodeComponent* LoopComponent::make<TimeNodeComponent, Scenario::TimeNodeMode
         const Id<iscore::Component>& id,
         Scenario::TimeNodeModel& elt,
         LoopComponent::system_t& doc,
-        const iscore::DocumentContext& ctx,
         QObject* parent)
 {
-    auto comp = new TimeNodeComponent{id, elt, doc, ctx, parent};
+    auto comp = new TimeNodeComponent{id, elt, doc, parent};
     comp->onDateFixed = [=] (audio_frame_t t, bool) { onDateFixed(*comp, t); };
     return comp;
 }
@@ -133,10 +129,9 @@ StateComponent* LoopComponent::make<StateComponent, Scenario::StateModel>(
         const Id<iscore::Component>& id,
         Scenario::StateModel& elt,
         LoopComponent::system_t& doc,
-        const iscore::DocumentContext& ctx,
         QObject* parent)
 {
-    return new StateComponent{id, elt, doc, ctx, parent};
+    return new StateComponent{id, elt, doc, parent};
 }
 
 void LoopComponent::removing(const Scenario::ConstraintModel& elt, const ConstraintComponent& comp)
@@ -228,7 +223,7 @@ void LoopComponent::onStopDateFixed(const ConstraintComponent& c, audio_frame_t 
 
 audio_frame_t LoopComponent::toFrame(const TimeValue& t) const
 {
-    return t.msec() * m_hm.system.context.audio.sample_rate / 1000.0;
+    return t.msec() * m_hm.system.audioContext.audio.sample_rate / 1000.0;
 }
 
 void LoopComponent::onDateFixed(const TimeNodeComponent& c, audio_frame_t time)

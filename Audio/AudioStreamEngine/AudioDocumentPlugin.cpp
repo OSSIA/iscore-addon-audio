@@ -19,11 +19,11 @@ namespace AudioStreamEngine
 AudioStream DocumentPlugin::makeStream()
 {
     // First find the root constraint
-    auto doc = dynamic_cast<Scenario::ScenarioDocumentModel*>(&context.doc.document.model().modelDelegate());
+    auto doc = dynamic_cast<Scenario::ScenarioDocumentModel*>(&audioContext.doc.document.model().modelDelegate());
     if(!doc)
         return nullptr;
 
-    if(!context.audio.plugin.engineStatus())
+    if(!audioContext.audio.plugin.engineStatus())
         return nullptr;
 
     // Reset the player
@@ -35,13 +35,12 @@ AudioStream DocumentPlugin::makeStream()
                 getStrongId(doc->baseConstraint().components),
                 doc->baseConstraint(),
                 *this,
-                context.doc,
                 this);
     doc->baseConstraint().components.add(m_comp);
     AudioDependencyGraph graph{*m_comp};
     if(auto sorted_vertices = graph.check())
     {
-        graph.apply(*sorted_vertices, context);
+        graph.apply(*sorted_vertices, audioContext);
     }
     else
     {
@@ -49,7 +48,7 @@ AudioStream DocumentPlugin::makeStream()
         return nullptr;
     }
 
-    con(context.doc.document, &iscore::Document::aboutToClose,
+    con(audioContext.doc.document, &iscore::Document::aboutToClose,
         this, [=] () {
         // Stop and clean
         stop();
@@ -69,14 +68,14 @@ AudioStream DocumentPlugin::makeStream()
 
 void DocumentPlugin::stop()
 {
-    if(context.audio.player)
+    if(audioContext.audio.player)
     {
-        StopAudioPlayer(context.audio.player);
-        CloseAudioClient(context.audio.player);
-        context.audio.player = nullptr;
+        StopAudioPlayer(audioContext.audio.player);
+        CloseAudioClient(audioContext.audio.player);
+        audioContext.audio.player = nullptr;
     }
 
-    auto doc = dynamic_cast<Scenario::ScenarioDocumentModel*>(&context.doc.document.model().modelDelegate());
+    auto doc = dynamic_cast<Scenario::ScenarioDocumentModel*>(&audioContext.doc.document.model().modelDelegate());
     if(doc)
     {
         if(m_comp)
@@ -89,9 +88,9 @@ void DocumentPlugin::stop()
 
 void DocumentPlugin::openPlayer()
 {
-    if(!context.audio.player)
+    if(!audioContext.audio.player)
     {
-        context.audio.player = OpenAudioClient(context.audio.renderer);
+        audioContext.audio.player = OpenAudioClient(audioContext.audio.renderer);
     }
 }
 
