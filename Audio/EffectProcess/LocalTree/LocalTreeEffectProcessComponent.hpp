@@ -208,7 +208,7 @@ class EffectProcessComponent final :
 
     public:
        EffectProcessComponent(
-               const Id<Component>& id,
+               const Id<iscore::Component>& id,
                OSSIA::Node& parent,
                Effect::ProcessModel& scenario,
                Ossia::LocalTree::DocumentPlugin& doc,
@@ -216,7 +216,7 @@ class EffectProcessComponent final :
 
 
        EffectComponent* make_effectComponent(
-               const Id<Component> & id,
+               const Id<iscore::Component> & id,
                EffectComponentFactory& factory,
                Effect::EffectModel &process,
                const Ossia::LocalTree::DocumentPlugin &system,

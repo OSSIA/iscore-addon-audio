@@ -4,7 +4,7 @@
 #include <iscore/component/Component.hpp>
 #include <iscore/component/ComponentFactory.hpp>
 #include <iscore_plugin_audio_export.h>
-#include <Scenario/Document/Components/ConstraintComponent.hpp>
+#include <Scenario/Document/Components/ProcessComponent.hpp>
 // TODO clean me up
 namespace Audio
 {

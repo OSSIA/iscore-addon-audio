@@ -19,12 +19,12 @@ class LoopComponentBase :
        LoopComponentBase(
                Loop::ProcessModel& scenario,
                DocumentPlugin& doc,
-               const Id<Component>& id,
+               const Id<iscore::Component>& id,
                QObject* parent_obj);
 
        template<typename Component_T, typename Element>
        Component_T* make(
-               const Id<Component>& id,
+               const Id<iscore::Component>& id,
                Element& elt);
 
        template<typename... Args>

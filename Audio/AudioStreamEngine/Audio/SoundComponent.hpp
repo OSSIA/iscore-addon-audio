@@ -18,7 +18,7 @@ class SoundComponent final :
             SoundComponent(
                 Sound::ProcessModel& sound,
                 DocumentPlugin& doc,
-                const Id<Component>& id,
+                const Id<iscore::Component>& id,
                 QObject* parent_obj);
 
         void makeStream(const Context& ctx) override;

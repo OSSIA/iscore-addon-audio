@@ -32,7 +32,7 @@ class ConstraintBase :
         ~ConstraintBase();
 
         ProcessComponent* make_processComponent(
-                const Id<Component> & id,
+                const Id<iscore::Component> & id,
                 ProcessComponentFactory& factory,
                 Process::ProcessModel &process);
 

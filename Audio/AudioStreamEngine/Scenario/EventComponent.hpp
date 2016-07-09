@@ -15,7 +15,7 @@ class Event final :
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
 
         Event(
-                const Id<Component>& id,
+                const Id<iscore::Component>& id,
                 Scenario::EventModel& event,
                 const system_t& doc,
                 QObject* parent_comp);

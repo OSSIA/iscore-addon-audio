@@ -17,7 +17,7 @@ class SendComponent final :
        SendComponent(
                Send::ProcessModel& sound,
                DocumentPlugin& doc,
-                const Id<Component>& id,
+                const Id<iscore::Component>& id,
                QObject* parent_obj);
 
 

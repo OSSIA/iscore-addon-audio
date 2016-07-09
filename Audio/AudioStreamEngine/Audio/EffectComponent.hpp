@@ -19,7 +19,7 @@ class EffectProcessComponent final :
        EffectProcessComponent(
                Effect::ProcessModel& sound,
                DocumentPlugin& doc,
-               const Id<Component>& id,
+               const Id<iscore::Component>& id,
                QObject* parent_obj);
 
 
