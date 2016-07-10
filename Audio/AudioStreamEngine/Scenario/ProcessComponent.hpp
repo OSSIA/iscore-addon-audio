@@ -5,6 +5,7 @@
 #include <iscore/component/ComponentFactory.hpp>
 #include <iscore_plugin_audio_export.h>
 #include <Scenario/Document/Components/ProcessComponent.hpp>
+#include <iscore/plugins/customfactory/ModelFactory.hpp>
 // TODO clean me up
 namespace Audio
 {
@@ -58,17 +59,35 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponentFactory :
         public iscore::GenericComponentFactory<
             Process::ProcessModel,
             DocumentPlugin,
-            ProcessComponentFactory>
+            ProcessComponentFactory>,
+        public iscore::GenericComponentFactory_Make<
+            ProcessComponent,
+            iscore::MakeArgs<
+                Process::ProcessModel&,
+                DocumentPlugin&,
+                const Id<iscore::Component>&,
+                QObject*>
+        >
 {
         ISCORE_ABSTRACT_FACTORY("19b6c620-9beb-4271-8a2c-8b34a3c64deb")
     public:
         virtual ~ProcessComponentFactory();
-        virtual ProcessComponent* make(
+};
+template<typename ProcessComponent_T>
+class ProcessComponentFactory_T :
+        public iscore::GenericComponentFactoryImpl<ProcessComponent_T, ProcessComponentFactory>
+{
+    public:
+        ProcessComponent* make(
                 Process::ProcessModel& proc,
                 DocumentPlugin& doc,
-                const Id<iscore::Component>&,
-                QObject* paren_objt) const = 0;
+                const Id<iscore::Component>& id,
+                QObject* paren_objt) const final override
+        {
+            return new ProcessComponent_T{static_cast< typename ProcessComponent_T::model_type&>(proc), doc, id, paren_objt};
+        }
 };
+
 
 using ProcessComponentFactoryList =
     iscore::GenericComponentFactoryList<
@@ -76,39 +95,5 @@ using ProcessComponentFactoryList =
             DocumentPlugin,
             ProcessComponentFactory>;
 
-template<typename ProcessComponent_T>
-class ProcessComponentFactory_T : public ProcessComponentFactory
-{
-    public:
-        using model_type = typename ProcessComponent_T::model_type;
-        using component_type = ProcessComponent_T;
-        using ProcessComponentFactory::ProcessComponentFactory;
-
-        static auto static_concreteFactoryKey()
-        {
-            return ProcessComponent_T::static_key().impl();
-        }
-
-        ConcreteFactoryKey concreteFactoryKey() const final override
-        {
-            return ProcessComponent_T::static_key().impl(); // Note : here there is a conversion between UuidKey<Component> and ConcreteFactoryKey
-        }
-
-        bool matches(
-                Process::ProcessModel& p,
-                const Audio::AudioStreamEngine::DocumentPlugin&) const final override
-        {
-            return dynamic_cast<model_type*>(&p);
-        }
-
-        ProcessComponent* make(
-                Process::ProcessModel& proc,
-                DocumentPlugin& doc,
-                const Id<iscore::Component>& id,
-                QObject* paren_objt) const final override
-        {
-            return new ProcessComponent_T{static_cast<model_type&>(proc), doc, id, paren_objt};
-        }
-};
 }
 }
