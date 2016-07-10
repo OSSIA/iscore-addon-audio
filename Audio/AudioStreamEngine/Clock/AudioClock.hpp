@@ -30,7 +30,7 @@ class AudioClock final :
 
 class AudioClockFactory final : public RecreateOnPlay::ClockManagerFactory
 {
-        ISCORE_CONCRETE_FACTORY_DECL("97545b15-d9f5-4001-91e6-2c1fcd43b295")
+        ISCORE_CONCRETE_FACTORY("97545b15-d9f5-4001-91e6-2c1fcd43b295")
 
         QString prettyName() const override;
         std::unique_ptr<RecreateOnPlay::ClockManager> make(

@@ -23,6 +23,7 @@ class SoundComponent final :
 
         void makeStream(const Context& ctx) override;
 };
-AUDIO_PROCESS_COMPONENT_FACTORY(SoundComponentFactory, "c5a44139-49af-4374-a0e4-9ed767de18e5", SoundComponent, Sound::ProcessModel)
+
+using SoundComponentFactory = ProcessComponentFactory_T<SoundComponent>;
 }
 }

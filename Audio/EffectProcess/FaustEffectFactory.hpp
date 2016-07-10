@@ -17,7 +17,7 @@ namespace Effect
 class FaustEffectFactory final : public EffectFactory
 {
     public:
-        ISCORE_CONCRETE_FACTORY_DECL("5354c61a-1649-4f59-b952-5c2f1b79c1bd")
+        ISCORE_CONCRETE_FACTORY("5354c61a-1649-4f59-b952-5c2f1b79c1bd")
 
         QString prettyName() const override;
 

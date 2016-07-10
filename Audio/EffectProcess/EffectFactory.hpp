@@ -24,9 +24,7 @@ class EffectModel;
 class ISCORE_PLUGIN_AUDIO_EXPORT EffectFactory :
         public iscore::AbstractFactory<EffectFactory>
 {
-        ISCORE_ABSTRACT_FACTORY_DECL(
-                EffectFactory,
-                "3ffe0073-dfe0-4a7f-862f-220380ebcf08")
+        ISCORE_ABSTRACT_FACTORY("3ffe0073-dfe0-4a7f-862f-220380ebcf08")
     public:
         virtual ~EffectFactory();
 

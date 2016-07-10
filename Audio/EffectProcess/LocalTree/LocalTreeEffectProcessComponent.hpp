@@ -48,9 +48,7 @@ class EffectComponentFactory :
             Ossia::LocalTree::DocumentPlugin,
             Effect::LocalTree::EffectComponentFactory>
 {
-        ISCORE_ABSTRACT_FACTORY_DECL(
-                Effect::LocalTree::EffectComponentFactory,
-                "c9e1f9bc-b974-4695-a3a8-f797c34858ee")
+        ISCORE_ABSTRACT_FACTORY("c9e1f9bc-b974-4695-a3a8-f797c34858ee")
     public:
         virtual ~EffectComponentFactory();
         virtual EffectComponent* make(
@@ -137,7 +135,7 @@ class FaustComponent : public EffectComponent
 class FaustComponentFactory :
         public EffectComponentFactory
 {
-        ISCORE_CONCRETE_FACTORY_DECL("4e00eaab-d3f4-46ec-b4dc-bc53bf104064")
+        ISCORE_CONCRETE_FACTORY("4e00eaab-d3f4-46ec-b4dc-bc53bf104064")
 
     public:
         EffectComponent* make(
@@ -234,12 +232,7 @@ class EffectProcessComponent final :
         EffectComponentHierarchyManager m_hierarchy;
 };
 
-LOCALTREE_PROCESS_COMPONENT_FACTORY(
-        EffectProcessComponentFactory,
-        "6f3cf6d6-ad91-4d97-88fa-2552d8e286ff",
-        EffectProcessComponent,
-        Effect::ProcessModel)
-
+using EffectProcessComponentFactory = Ossia::LocalTree::ProcessComponentFactory_T<EffectProcessComponent>;
 }
 }
 }

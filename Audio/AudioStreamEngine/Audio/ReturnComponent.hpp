@@ -25,6 +25,6 @@ class ReturnComponent final :
        void makeStream(const Context& ctx) override;
 };
 
-AUDIO_PROCESS_COMPONENT_FACTORY(ReturnComponentFactory, "f8d4cbe3-b187-43ed-8831-2510b4cffb01", ReturnComponent, Return::ProcessModel)
+using ReturnComponentFactory = ProcessComponentFactory_T<ReturnComponent>;
 }
 }

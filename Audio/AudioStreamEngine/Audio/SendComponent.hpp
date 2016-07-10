@@ -23,6 +23,7 @@ class SendComponent final :
 
        void makeStream(const Context& ctx) override;
 };
-AUDIO_PROCESS_COMPONENT_FACTORY(SendComponentFactory, "2340bde2-3226-48ce-960b-5243563e026a", SendComponent, Send::ProcessModel)
+
+using SendComponentFactory = ProcessComponentFactory_T<SendComponent>;
 }
 }

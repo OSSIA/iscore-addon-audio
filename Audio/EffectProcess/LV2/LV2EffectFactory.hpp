@@ -15,7 +15,7 @@ namespace Effect
 class LV2EffectFactory final : public EffectFactory
 {
     public:
-        ISCORE_CONCRETE_FACTORY_DECL("fd5243ba-70b5-4164-b44a-ecb0dcdc0494")
+        ISCORE_CONCRETE_FACTORY("fd5243ba-70b5-4164-b44a-ecb0dcdc0494")
 
         QString prettyName() const override;
 

@@ -8,7 +8,7 @@ namespace Sound
 class InspectorFactory final :
         public Process::InspectorWidgetDelegateFactory
 {
-        ISCORE_CONCRETE_FACTORY_DECL("10360b4c-4d73-4274-8339-408644408cab")
+        ISCORE_CONCRETE_FACTORY("10360b4c-4d73-4274-8339-408644408cab")
     public:
         InspectorFactory();
         virtual ~InspectorFactory();
@@ -27,7 +27,7 @@ namespace Mix
 class InspectorFactory final :
         public Process::InspectorWidgetDelegateFactory
 {
-        ISCORE_CONCRETE_FACTORY_DECL("60efbf22-8374-4923-8a07-8caa4d242954")
+        ISCORE_CONCRETE_FACTORY("60efbf22-8374-4923-8a07-8caa4d242954")
     public:
         InspectorFactory();
         virtual ~InspectorFactory();
@@ -46,7 +46,7 @@ namespace Return
 class InspectorFactory final :
         public Process::InspectorWidgetDelegateFactory
 {
-        ISCORE_CONCRETE_FACTORY_DECL("a5afd64d-750b-47c4-90ea-9788f47df9b8")
+        ISCORE_CONCRETE_FACTORY("a5afd64d-750b-47c4-90ea-9788f47df9b8")
     public:
         InspectorFactory();
         virtual ~InspectorFactory();
@@ -65,7 +65,7 @@ namespace Effect
 class InspectorFactory final :
         public Process::InspectorWidgetDelegateFactory
 {
-        ISCORE_CONCRETE_FACTORY_DECL("cc8ceff3-ef93-4b73-865a-a9f870d6e898")
+        ISCORE_CONCRETE_FACTORY("cc8ceff3-ef93-4b73-865a-a9f870d6e898")
     public:
         InspectorFactory();
         virtual ~InspectorFactory();

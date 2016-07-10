@@ -63,6 +63,6 @@ class ScenarioComponent final : public HierarchicalScenarioComponent<
 
 };
 
-AUDIO_PROCESS_COMPONENT_FACTORY(ScenarioComponentFactory, "34f7cb5f-fe0e-4dd8-8250-956702e41e13", ScenarioComponent, Scenario::ProcessModel)
+using ScenarioComponentFactory = ProcessComponentFactory_T<ScenarioComponent>;
 }
 }
