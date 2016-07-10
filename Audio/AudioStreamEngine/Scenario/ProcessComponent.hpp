@@ -42,13 +42,10 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent :
 template<typename Process_T,
          bool Input,
          bool Output>
-class ProcessComponent_T : public ProcessComponent
+class ProcessComponent_T : public Scenario::GenericProcessComponent_T<ProcessComponent, Process_T>
 {
     public:
-        using ProcessComponent::ProcessComponent;
-
-        const Process_T& process() const
-        { return static_cast<const Process_T&>(ProcessComponent::process()); }
+        using Scenario::GenericProcessComponent_T<ProcessComponent, Process_T>::GenericProcessComponent_T;
 
         bool hasInput() const override
         { return Input; }

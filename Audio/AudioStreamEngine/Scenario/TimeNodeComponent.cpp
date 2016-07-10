@@ -16,15 +16,5 @@ TimeNode::TimeNode(
 {
 }
 
-const iscore::Component::Key&TimeNode::key() const
-{
-    static const Key k{"94e54e1c-5e33-4003-9b7d-fc69fb037e85"};
-    return k;
-}
-
-TimeNode::~TimeNode()
-{
-}
-
 }
 }

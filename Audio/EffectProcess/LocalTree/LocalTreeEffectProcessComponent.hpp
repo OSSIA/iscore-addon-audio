@@ -234,23 +234,12 @@ class EffectProcessComponent final :
         EffectComponentHierarchyManager m_hierarchy;
 };
 
+LOCALTREE_PROCESS_COMPONENT_FACTORY(
+        EffectProcessComponentFactory,
+        "6f3cf6d6-ad91-4d97-88fa-2552d8e286ff",
+        EffectProcessComponent,
+        Effect::ProcessModel)
 
-class EffectProcessComponentFactory final :
-        public Ossia::LocalTree::ProcessComponentFactory
-{
-        ISCORE_CONCRETE_FACTORY_DECL("6f3cf6d6-ad91-4d97-88fa-2552d8e286ff")
-
-        bool matches(
-                Process::ProcessModel& p,
-                const Ossia::LocalTree::DocumentPlugin&) const override;
-
-        Ossia::LocalTree::ProcessComponent* make(
-                const Id<iscore::Component>& id,
-                OSSIA::Node& parent,
-                Process::ProcessModel& proc,
-                Ossia::LocalTree::DocumentPlugin& doc,
-                QObject* paren_objt) const override;
-};
 }
 }
 }

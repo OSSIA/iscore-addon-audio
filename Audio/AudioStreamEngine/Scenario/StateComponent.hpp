@@ -19,12 +19,6 @@ class State final :
                 const system_t& doc,
                 QObject* parent_comp);
 
-        const Key& key() const override;
-
-        ~State();
-
-    private:
-
 };
 }
 }

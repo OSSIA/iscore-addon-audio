@@ -135,24 +135,6 @@ EffectProcessComponent::~EffectProcessComponent()
 
 
 ///////// Process componnet factory
-bool EffectProcessComponentFactory::matches(
-        Process::ProcessModel& p,
-        const Ossia::LocalTree::DocumentPlugin&) const
-{
-    return dynamic_cast<Effect::ProcessModel*>(&p);
-}
-
-Ossia::LocalTree::ProcessComponent*
-EffectProcessComponentFactory::make(
-        const Id<iscore::Component>& id,
-        OSSIA::Node& parent,
-        Process::ProcessModel& proc,
-        Ossia::LocalTree::DocumentPlugin& doc,
-        QObject* paren_objt) const
-{
-    return new EffectProcessComponent{id, parent, static_cast<Effect::ProcessModel&>(proc), doc, paren_objt};
-}
-
 EffectComponent::EffectComponent(
         OSSIA::Node& node,
         EffectModel& proc,
