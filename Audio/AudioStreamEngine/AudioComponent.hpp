@@ -15,10 +15,14 @@ class Component : public iscore::GenericComponent<DocumentPlugin>
         virtual optional<AudioGraphVertice> visit(AudioGraph& graph) = 0;
         virtual void makeStream(const Context& player) = 0;
 
+        bool realTime() const { return m_realTime; }
+        void setRealTime(bool b) { m_realTime = b; }
+
         AudioStream getStream() const { return m_stream; }
 
     protected:
         AudioStream m_stream{};
+        bool m_realTime{};
 };
 
 }

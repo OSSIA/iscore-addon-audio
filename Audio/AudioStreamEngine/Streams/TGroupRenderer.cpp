@@ -9,24 +9,18 @@
  */
 class TSharedBufferLocker
 {
-        float** fPrevInBuffer{TSharedBuffers::GetInBuffer()};
-        float** fPrevOutBuffer{TSharedBuffers::GetOutBuffer()};
-        TBufferedAudioStream* fSharedInput = TAudioGlobals::fSharedInput;
+        float** fPrevBuffer{TSharedBuffers::GetOutBuffer()};
 
     public:
-        TSharedBufferLocker(float** in, float** out)
+        TSharedBufferLocker(float** out)
         {
             // TODO maybe we should also save the number of channels ... ?
-            //TSharedBuffers::SetInBuffer(in);
             TSharedBuffers::SetOutBuffer(out);
-            //TAudioGlobals::fSharedInput = nullptr;
         }
 
         ~TSharedBufferLocker()
         {
-            //TSharedBuffers::SetInBuffer(fPrevInBuffer);
-            TSharedBuffers::SetOutBuffer(fPrevOutBuffer);
-            //TAudioGlobals::fSharedInput = fSharedInput;
+            TSharedBuffers::SetOutBuffer(fPrevBuffer);
         }
 };
 
@@ -91,7 +85,7 @@ long TGroupRenderer::Cont()
 
 void TGroupRenderer::Process(int64_t frames)
 {
-    TSharedBufferLocker shared_buffers{fBuffers.fInputBuffer, fBuffers.fOutputBuffer};
+    TSharedBufferLocker shared_buffers{fBuffers.fOutputBuffer};
 
     // Clear output buffers
     UAudioTools::ZeroFloatBlk(fBuffers.fOutputBuffer, frames, fOutput); // TODO set correct channel count
@@ -101,7 +95,7 @@ void TGroupRenderer::Process(int64_t frames)
     {
         if (auto client = iter->fRTClient)
         {
-            client->AudioCallback(fBuffers.fInputBuffer, fBuffers.fOutputBuffer, frames);
+            client->AudioCallback(nullptr, fBuffers.fOutputBuffer, frames);
             ++iter;
         }
         else

@@ -50,7 +50,6 @@ AudioStream DocumentPlugin::makeStream()
 
     con(audioContext.doc.document, &iscore::Document::aboutToClose,
         this, [=] () {
-        // TODO prevent multi-connection
         // Stop and clean
         stop();
     });

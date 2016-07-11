@@ -91,10 +91,11 @@ void ApplicationPlugin::startEngine()
              << dev.fDefaultBufferSize
              << dev.fDefaultSampleRate;
 
+    qDebug() << "openign with" << stngs.getRate() << stngs.getBufferSize();
     AudioGlobalsInit(2, 2, stngs.getRate(),
                      stngs.getBufferSize(),
                      65536*4,
-                     stngs.getRate()*60*20, // TODO this ends up allocating a big 400 mb memory chunk. Instead we should use some kind of circular buffer.
+                     0,
                      1);
 
     m_ctx.renderer = MakeAudioRenderer(api);

@@ -14,7 +14,7 @@ InputComponent::InputComponent(
         QObject* parent_obj):
     ProcessComponent_T{Input, doc, id, "InputComponent", parent_obj}
 {
-
+    m_realTime = true;
 }
 
 void InputComponent::makeStream(const Context& ctx)

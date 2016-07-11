@@ -47,7 +47,7 @@ void CloseAudioPlayer(AudioPlayerPtr ext_player); // In libaudiostreammc
 #if defined(__cplusplus) && !defined(_MSC_VER)
 }
 #endif
-
+#include <QDebug>
 // Implementations
 AUDIOAPI AudioPlayerPtr MakeGroupPlayer()
 {

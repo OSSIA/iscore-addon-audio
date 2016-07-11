@@ -16,6 +16,8 @@
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/LoopComponent.hpp>
 #include <boost/graph/graphviz.hpp>
+#include <boost/range/iterator_range.hpp>
+#include <type_traits>
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -104,8 +106,43 @@ boost::optional<std::deque<int> > AudioGraphBuilder::check() const
     return boost::none;
 }
 
+// Found on stackoverflow : http://stackoverflow.com/a/13453770/1495627
+template<class It>
+boost::iterator_range<It> pair_range(const std::pair<It, It>& p)
+{
+  return boost::make_iterator_range(p.first, p.second);
+}
+
+static void make_realtime_rec(AudioGraphVertice v, const AudioGraph& g)
+{
+    auto& comp = g[v];
+    if(!comp->realTime())
+    {
+        comp->setRealTime(true);
+        for(auto e : pair_range(boost::out_edges(v, g)))
+        {
+            make_realtime_rec(target(e, g), g);
+        }
+    }
+}
+
 void AudioGraphBuilder::apply(const std::deque<int>& sorted_vertices, Context& ctx)
 {
+    // First we check recursively for nodes that have to be real-time
+    // (i.e. they imply real-time input)
+    for(auto vertice : sorted_vertices)
+    {
+        auto component = m_graph[vertice];
+        if(component->realTime())
+        {
+            for(auto e : pair_range(boost::out_edges(vertice, m_graph)))
+            {
+                make_realtime_rec(target(e, m_graph), m_graph);
+            }
+        }
+    }
+
+    // Then we create the streams.
     for(auto vertice : sorted_vertices)
     {
         auto component = m_graph[vertice];

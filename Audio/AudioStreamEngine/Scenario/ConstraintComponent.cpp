@@ -13,6 +13,7 @@
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/LoopComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/EffectComponent.hpp>
+#include <Audio/AudioStreamEngine/Audio/InputComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/ReturnComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/SendComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/SoundComponent.hpp>
@@ -234,6 +235,10 @@ void Constraint::makeStream(const Context& player)
                     inputStreams.push_back(channel);
                 }
             }
+            else if(auto input = dynamic_cast<InputComponent*>(&comp))
+            {
+                inputStreams.push_back(input->getStream());
+            }
             else if(comp.hasOutput())
             {
                 // TODO for the effects case, if there is only an effect and no input,
@@ -242,10 +247,16 @@ void Constraint::makeStream(const Context& player)
             }
         }
 
-        m_stream = MakePitchSchiftTimeStretchSound(
-                    MixNStreams(inputStreams),
-                    &m_shift,
-                    &m_stretch);
+        m_stream = MixNStreams(inputStreams);
+        if(!realTime())
+        {
+            m_stream = MakePitchSchiftTimeStretchSound(
+                        m_stream,
+                        &m_shift,
+                        &m_stretch);
+        }
+        qDebug() << "realtime? " << realTime();
+        //m_stream = MixNStreams(inputStreams); return;
     }
 
     // Look for all the "contents" process :
