@@ -226,8 +226,6 @@ class EffectProcessComponent final :
     private:
         std::shared_ptr<OSSIA::Node> m_effectsNode;
 
-        std::vector<std::unique_ptr<Ossia::LocalTree::BaseProperty>> m_properties;
-
         EffectComponentHierarchyManager m_hierarchy;
 };
 
