@@ -192,7 +192,7 @@ void Constraint::makeStream(const Context& player)
                 audio_frame_t parent_max_dur =
                     cst_dur.isMaxInfinite()
                         ? INT64_MAX
-                        : toFrame(cst_dur.isRigid() ? def : maxdur);
+                        : system().toFrame(cst_dur.isRigid() ? def : maxdur);
                 if(dur < parent_max_dur)
                 {
                     // TODO this may break with rubberband...
@@ -345,12 +345,5 @@ Mix::ProcessModel* Constraint::findMix() const
     });
     return it != procs.end() ? static_cast<Mix::ProcessModel*>(&(*it)) : nullptr;
 }
-
-
-audio_frame_t Constraint::toFrame(TimeValue t) const
-{
-    return t.msec() * system().audioContext.audio.sample_rate / 1000.0;
-}
-
 }
 }

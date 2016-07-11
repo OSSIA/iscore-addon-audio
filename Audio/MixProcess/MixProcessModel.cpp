@@ -10,6 +10,7 @@
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
 #include <Audio/SendProcess/SendProcessModel.hpp>
 #include <Audio/ReturnProcess/ReturnProcessModel.hpp>
+#include <Audio/AudioStreamEngine/Scenario/ProcessComponent.hpp>
 #include <QFile>
 
 namespace Audio
@@ -113,16 +114,19 @@ void ProcessModel::init()
         cst.processes.added.connect<ProcessModel, &ProcessModel::on_processAdded>(this);
         cst.processes.removed.connect<ProcessModel, &ProcessModel::on_processRemoved>(this);
     }
-
 }
 
 void ProcessModel::on_processAdded(const Process::ProcessModel & proc)
 {
+    auto fac = iscore::AppContext().components.factory<Audio::AudioStreamEngine::ProcessComponentFactoryList>().factory(proc);
+    if(!fac)
+        return;
+
+    bool in = fac->hasInput();
+    bool out = fac->hasOutput();
+
     auto proc_id = proc.id();
-    if(dynamic_cast<const Scenario::ProcessModel*>(&proc) ||
-       dynamic_cast<const Loop::ProcessModel*>(&proc) ||
-       dynamic_cast<const Sound::ProcessModel*>(&proc) ||
-       dynamic_cast<const Return::ProcessModel*>(&proc))
+    if(!in && out)
     {
         m_dataProcesses.push_back({proc_id, 1.0});
 
@@ -135,10 +139,10 @@ void ProcessModel::on_processAdded(const Process::ProcessModel & proc)
             m_routings.insert(Routing{proc_id, send, 1.0});
         }
     }
-    else if(auto sfx = dynamic_cast<const Effect::ProcessModel*>(&proc))
+    else if(in && out)
     {
         // For now we forbid mixing FX each into another.
-        m_fxProcesses.push_back({sfx->id(), 1.0});
+        m_fxProcesses.push_back({proc_id, 1.0});
 
         for(const auto& other : m_dataProcesses)
         {
@@ -149,9 +153,9 @@ void ProcessModel::on_processAdded(const Process::ProcessModel & proc)
             m_routings.insert(Routing{proc_id, send, 1.0});
         }
     }
-    else if(auto send = dynamic_cast<const Send::ProcessModel*>(&proc))
+    else if(in && !out)
     {
-        m_sendProcesses.push_back(send->id());
+        m_sendProcesses.push_back(proc_id);
 
         for(const auto& other : m_dataProcesses)
         {
@@ -174,22 +178,25 @@ void ProcessModel::on_processAdded(const Process::ProcessModel & proc)
 void ProcessModel::on_processRemoved(const Process::ProcessModel & proc)
 {
     auto proc_id = proc.id();
-    if(dynamic_cast<const Scenario::ProcessModel*>(&proc) ||
-       dynamic_cast<const Loop::ProcessModel*>(&proc) ||
-       dynamic_cast<const Return::ProcessModel*>(&proc) ||
-       dynamic_cast<const Sound::ProcessModel*>(&proc))
+    auto fac = iscore::AppContext().components.factory<Audio::AudioStreamEngine::ProcessComponentFactoryList>().factory(proc);
+    if(!fac)
+        return;
+
+    bool in = fac->hasInput();
+    bool out = fac->hasOutput();
+    if(!in && out)
     {
         auto it = find(m_dataProcesses, proc_id);
         if(it != m_dataProcesses.end())
             m_dataProcesses.erase(it);
     }
-    else if(auto sfx = dynamic_cast<const Effect::ProcessModel*>(&proc))
+    else if(in && out)
     {
         auto it = find(m_fxProcesses, proc_id);
         if(it != m_fxProcesses.end())
             m_fxProcesses.erase(it);
     }
-    else if(auto send = dynamic_cast<const Send::ProcessModel*>(&proc))
+    else if(in && !out)
     {
         auto it = find(m_sendProcesses, proc_id);
         if(it != m_sendProcesses.end())

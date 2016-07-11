@@ -188,9 +188,9 @@ void ScenarioComponent::onStartDateFixed(
     if(!dur.isRigid())
         return;
 
-    auto end_date = time + toFrame(dur.defaultDuration()) / dur.executionSpeed();
+    auto end_date = time + system().toFrame(dur.defaultDuration()) / dur.executionSpeed();
     SetSymbolicDate(m_groupPlayer, c.stopDate, end_date);
-    c.defaultDuration = toFrame(dur.defaultDuration());
+    c.defaultDuration = system().toFrame(dur.defaultDuration());
 
     const Scenario::TimeNodeModel& end_tn = Scenario::endTimeNode(c.constraint(), process());
     if(end_tn.trigger()->active())
@@ -237,12 +237,6 @@ void ScenarioComponent::onSpeedChanged(const Constraint& c, double speed)
                       [=] (auto& e) { return e.element.id() == end_tn_id; });
     ISCORE_ASSERT(it != timeNodes().end());
     it->component.onDateFixed(end_date, true);
-
-}
-
-audio_frame_t ScenarioComponent::toFrame(const TimeValue& t) const
-{
-    return t.msec() * system().audioContext.audio.sample_rate / 1000.0;
 }
 
 void ScenarioComponent::onDateFixed(

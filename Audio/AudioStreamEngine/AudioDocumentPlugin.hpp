@@ -24,6 +24,12 @@ class DocumentPlugin : public iscore::DocumentPlugin
 
         Context audioContext;
 
+        audio_frame_t toFrame(TimeValue t) const
+        {
+            return t.msec() * audioContext.audio.sample_rate / 1000.0;
+        }
+
+
         AudioStream makeStream();
         void stop();
 

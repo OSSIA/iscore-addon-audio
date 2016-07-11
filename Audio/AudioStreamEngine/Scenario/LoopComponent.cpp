@@ -56,7 +56,7 @@ void LoopComponent::makeStream(const Context& ctx)
             !end_node.element.trigger()->active() &&
             !start_event.element.condition().hasChildren())
     {
-        m_stream = MakeSend(MakeFixedLoopSound(sound, toFrame(pattern_cst.element.duration.defaultDuration())));
+        m_stream = MakeSend(MakeFixedLoopSound(sound, system().toFrame(pattern_cst.element.duration.defaultDuration())));
         return;
     }
     else
@@ -124,12 +124,6 @@ State* LoopComponentBase::make<State, Scenario::StateModel>(
         Scenario::StateModel& elt)
 {
     return nullptr;
-}
-
-
-audio_frame_t LoopComponentBase::toFrame(const TimeValue& t) const
-{
-    return t.msec() * system().audioContext.audio.sample_rate / 1000.0;
 }
 
 }

@@ -47,7 +47,8 @@ class ProcessComponent_T : public Scenario::GenericProcessComponent_T<ProcessCom
 {
     public:
         using Scenario::GenericProcessComponent_T<ProcessComponent, Process_T>::GenericProcessComponent_T;
-
+        static const constexpr bool has_input = Input;
+        static const constexpr bool has_output = Output;
         bool hasInput() const override
         { return Input; }
         bool hasOutput() const override
@@ -72,6 +73,9 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponentFactory :
         ISCORE_ABSTRACT_FACTORY("19b6c620-9beb-4271-8a2c-8b34a3c64deb")
     public:
         virtual ~ProcessComponentFactory();
+
+        virtual bool hasInput() const = 0;
+        virtual bool hasOutput() const = 0;
 };
 
 template<typename ProcessComponent_T>
@@ -87,6 +91,11 @@ class ProcessComponentFactory_T :
         {
             return new ProcessComponent_T{static_cast< typename ProcessComponent_T::model_type&>(proc), doc, id, paren_objt};
         }
+
+        bool hasInput() const override
+        { return ProcessComponent_T::has_input; }
+        bool hasOutput() const override
+        { return ProcessComponent_T::has_output; }
 };
 
 

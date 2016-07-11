@@ -74,8 +74,6 @@ class Constraint final : public ConstraintComponentHierarchyManager<
         audio_frame_t defaultDuration = INT64_MAX;
 
     private:
-        audio_frame_t toFrame(TimeValue t) const;
-
         double m_shift{1.0};
         double m_stretch{1.0};
 };

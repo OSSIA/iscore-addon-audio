@@ -52,6 +52,7 @@ void EffectProcessComponent::makeStream(const Context& ctx)
 
     for(auto& fx : process().effects())
     {
+        // REFACTORME
         if(auto faust_fx = dynamic_cast<Effect::FaustEffectModel*>(&fx))
         {
             auto compiled_fx = faust_fx->effect();
@@ -64,12 +65,10 @@ void EffectProcessComponent::makeStream(const Context& ctx)
 
 
             // Find local tree component.
-            auto it = find_if(faust_fx->components, [] (const auto& comp) {
-                return dynamic_cast<const Audio::Effect::LocalTree::FaustComponent*>(&comp);
-            });
-            if(it != faust_fx->components.end())
+            auto comp = iscore::findComponent<Audio::Effect::LocalTree::FaustComponent>(faust_fx->components);
+            if(comp)
             {
-                static_cast<Audio::Effect::LocalTree::FaustComponent&>(*it).m_audio_effect = compiled_fx;
+                comp->m_audio_effect = compiled_fx;
             }
         }
     }

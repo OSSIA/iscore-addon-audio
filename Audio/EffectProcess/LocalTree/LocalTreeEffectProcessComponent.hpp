@@ -20,6 +20,7 @@ class EffectFactoryList;
 class EffectComponent : public iscore::Component
 {
     public:
+        static const constexpr bool is_unique = true;
         EffectComponent(
                 OSSIA::Node& node,
                 Effect::EffectModel& proc,
@@ -145,11 +146,9 @@ class FaustComponentFactory :
                 const Ossia::LocalTree::DocumentPlugin& doc,
                 QObject* paren_objt) const override;
 
-        bool matches(
-                EffectModel & m,
-                const Ossia::LocalTree::DocumentPlugin &) const override
+        bool matches(const EffectModel & m) const override
         {
-            return dynamic_cast<FaustEffectModel*>(&m);
+            return dynamic_cast<const FaustEffectModel*>(&m);
         }
 };
 

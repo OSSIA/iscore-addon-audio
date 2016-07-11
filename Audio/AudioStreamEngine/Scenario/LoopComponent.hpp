@@ -29,9 +29,6 @@ class LoopComponentBase :
 
        template<typename... Args>
        void removing(Args&&...) {}
-
-        audio_frame_t toFrame(const TimeValue& t) const;
-
 };
 
 class LoopComponent final : public HierarchicalBaseScenario<

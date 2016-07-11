@@ -58,7 +58,6 @@ class ScenarioComponent final : public HierarchicalScenarioComponent<
         void onStartDateFixed(Constraint& t, audio_frame_t time, bool force_update);
         void onStopDateFixed(const Constraint& t, audio_frame_t time);
         void onSpeedChanged(const Constraint& t, double speed);
-        audio_frame_t toFrame(const TimeValue& t) const;
 
         AudioRendererPtr m_groupPlayer;
         std::vector<QMetaObject::Connection> m_connections;
