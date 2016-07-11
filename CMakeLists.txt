@@ -27,6 +27,8 @@ file(GLOB_RECURSE HDRS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libaudiotool/src/li
 set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioApplicationPlugin.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioDocumentPlugin.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioComponent.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioGraphNode.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioDependencyGraph.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioDependencyGraph.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Context.hpp"
@@ -157,6 +159,7 @@ set(SRCS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioApplicationPlugin.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioDocumentPlugin.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/AudioComponent.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Clock/AudioClock.cpp"
 

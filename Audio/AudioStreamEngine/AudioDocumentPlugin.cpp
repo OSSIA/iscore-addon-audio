@@ -37,7 +37,7 @@ AudioStream DocumentPlugin::makeStream()
                 getStrongId(doc->baseConstraint().components),
                 this);
     doc->baseConstraint().components.add(m_comp);
-    AudioDependencyGraph graph{*m_comp};
+    AudioGraphBuilder graph{*m_comp};
     if(auto sorted_vertices = graph.check())
     {
         graph.apply(*sorted_vertices, audioContext);
@@ -93,6 +93,5 @@ void DocumentPlugin::openPlayer()
         audioContext.audio.player = OpenAudioClient(audioContext.audio.renderer);
     }
 }
-
 }
 }

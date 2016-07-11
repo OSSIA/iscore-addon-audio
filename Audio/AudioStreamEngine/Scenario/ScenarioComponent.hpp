@@ -48,6 +48,8 @@ class ScenarioComponent final : public HierarchicalScenarioComponent<
         TimeNode,
         State>::HierarchicalScenarioComponent;
 
+        AudioGraphVertice visit(AudioGraph& graph) override;
+
         void makeStream(const Context& ctx) override;
 
     private:

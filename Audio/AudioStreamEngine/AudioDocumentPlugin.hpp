@@ -3,6 +3,7 @@
 #include <core/document/Document.hpp>
 #include <Audio/AudioStreamEngine/Context.hpp>
 #include <Process/TimeValue.hpp>
+#include <Audio/AudioStreamEngine/AudioGraphNode.hpp>
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -31,5 +32,6 @@ class DocumentPlugin : public iscore::DocumentPlugin
 
         Constraint* m_comp{};
 };
+
 }
 }

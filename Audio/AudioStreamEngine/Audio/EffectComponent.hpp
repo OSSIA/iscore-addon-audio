@@ -22,7 +22,6 @@ class EffectProcessComponent final :
                const Id<iscore::Component>& id,
                QObject* parent_obj);
 
-
        void makeStream(const Context& ctx) override;
 
        AudioEffect effect(const Id<Effect::EffectModel>& id) const

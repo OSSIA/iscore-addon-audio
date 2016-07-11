@@ -18,6 +18,21 @@ ScenarioComponentBase::ScenarioComponentBase(
 {
 }
 
+AudioGraphVertice ScenarioComponent::visit(AudioGraph& graph)
+{
+    auto res = boost::add_vertex(this, graph);
+
+    for(auto& constraint : constraints())
+    {
+        if(auto cst_vtx = constraint.component.visit(graph))
+        {
+            boost::add_edge(cst_vtx, res, graph);
+        }
+    }
+
+    return res;
+}
+
 void ScenarioComponent::makeStream(const Context& ctx)
 {
     for(auto& con : m_connections)

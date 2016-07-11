@@ -1,6 +1,7 @@
 #pragma once
 #include <Audio/AudioStreamEngine/Scenario/ProcessComponent.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
+#include <Audio/AudioStreamEngine/AudioComponent.hpp>
 #include <Scenario/Document/Components/ConstraintComponent.hpp>
 #include <functional>
 
@@ -13,7 +14,7 @@ class ProcessModel;
 namespace AudioStreamEngine
 {
 class ConstraintBase :
-        public Scenario::GenericConstraintComponent<DocumentPlugin>
+        public Scenario::ConstraintComponent<Component>
 {
         COMPONENT_METADATA("13521db6-0de7-462c-9a43-57612a250216")
     public:
@@ -56,7 +57,8 @@ class Constraint final : public ConstraintComponentHierarchyManager<
                 const Id<iscore::Component>& id,
                 QObject* parent_comp);
 
-        void makeStream(const Context& player);
+        AudioGraphVertice visit(AudioGraph& graph) override;
+        void makeStream(const Context& player) override;
         AudioStream getStream() const { return m_stream; }
 
         AudioStream makeInputMix(const Id<Process::ProcessModel>& target);
@@ -76,8 +78,6 @@ class Constraint final : public ConstraintComponentHierarchyManager<
 
         double m_shift{1.0};
         double m_stretch{1.0};
-
-        AudioStream m_stream{};
 };
 
 }

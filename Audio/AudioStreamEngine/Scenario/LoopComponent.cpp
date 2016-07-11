@@ -16,6 +16,21 @@ LoopComponentBase::LoopComponentBase(
 {
 }
 
+AudioGraphVertice LoopComponent::visit(AudioGraph& graph)
+{
+    auto res = boost::add_vertex(this, graph);
+
+    for(auto& constraint : constraints())
+    {
+        if(auto cst_vtx = constraint.component.visit(graph))
+        {
+            boost::add_edge(cst_vtx, res, graph);
+        }
+    }
+
+    return res;
+}
+
 void LoopComponent::makeStream(const Context& ctx)
 {
     for(auto& elt : m_connections)

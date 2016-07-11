@@ -37,7 +37,7 @@ ConstraintBase::ConstraintBase(
         ConstraintBase::system_t& doc,
         const Id<iscore::Component>& id,
         QObject* parent_comp):
-    Scenario::GenericConstraintComponent<DocumentPlugin>{constraint, doc, id, "ConstraintComponent", parent_comp}
+    Scenario::ConstraintComponent<Component>{constraint, doc, id, "ConstraintComponent", parent_comp}
 {
 }
 
@@ -55,6 +55,93 @@ Constraint::Constraint(
     });
     if(constraint.duration.executionSpeed() > 0.01)
         m_stretch = constraint.duration.executionSpeed();
+}
+
+AudioGraphVertice Constraint::visit(AudioGraph& graph)
+{
+    int n_proc = processes().size();
+    std::vector<AudioGraphVertice> processes;
+    processes.reserve(n_proc);
+    std::vector<AudioGraphVertice> generators; // Everything that output a mixable stream
+    generators.reserve(n_proc);
+    std::vector<AudioGraphVertice> inputs; // FX, Send
+    inputs.reserve(n_proc / 2);
+
+    // If there is no mix process, we assume that everything is
+    // routed into everything.
+    // Else, we use it to create the correct relations.
+    // TODO think of the policies !!!!
+    for(auto& proc_pair : this->processes())
+    {
+        ProcessComponent& proc = proc_pair.component;
+        if(auto sub_res = proc.visit(graph))
+        {
+            if(proc.hasInput())
+            {
+                inputs.push_back(sub_res);
+            }
+
+            if(proc.hasOutput())
+            {
+                generators.push_back(sub_res);
+            }
+
+            processes.push_back(sub_res);
+        }
+    }
+
+    // For all inputs, generate edges going from all generators
+    const auto mix = findMix();
+    for(auto input : inputs)
+    {
+        for(auto gen : generators)
+        {
+            if(gen != input)
+            {
+                if(mix)
+                {
+                    auto gen_ptr = safe_cast<ProcessComponent*>(graph[gen]);
+                    auto in_ptr = safe_cast<ProcessComponent*>(graph[input]);
+
+                    auto gen_id = gen_ptr->process().id();
+                    ISCORE_ASSERT(bool(gen_id));
+                    auto in_id = in_ptr->process().id();
+                    ISCORE_ASSERT(bool(in_id));
+
+                    auto routing_it = mix->routings().find(Mix::Routing{gen_id, in_id});
+                    if(routing_it == mix->routings().end())
+                    {
+                        qDebug() << "routing not found in mix";
+                    }
+                    else if(routing_it->enabled)
+                    {
+                        boost::add_edge(gen, input, graph);
+                    }
+                }
+                else
+                {
+                    boost::add_edge(gen, input, graph);
+                }
+            }
+        }
+    }
+
+    if(!processes.empty())
+    {
+        auto res = boost::add_vertex(this, graph);
+
+        // Add edge from all processes to the constraint mix stream
+        // Even for the sends : the constraint "pulls" the send process
+        // to ensure that it is up-to-date.
+        for(auto proc : processes)
+        {
+            boost::add_edge(proc, res, graph);
+        }
+
+        return res;
+    }
+
+    return {};
 }
 
 ConstraintBase::~ConstraintBase()

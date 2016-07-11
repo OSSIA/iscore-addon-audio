@@ -1,20 +1,21 @@
 #pragma once
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
+#include <Audio/AudioStreamEngine/AudioComponent.hpp>
 #include <Process/Process.hpp>
 #include <iscore/component/Component.hpp>
 #include <iscore/component/ComponentFactory.hpp>
 #include <iscore_plugin_audio_export.h>
 #include <Scenario/Document/Components/ProcessComponent.hpp>
 #include <iscore/plugins/customfactory/ModelFactory.hpp>
+#include <Audio/AudioStreamEngine/AudioDependencyGraph.hpp>
+
 // TODO clean me up
 namespace Audio
 {
 namespace AudioStreamEngine
 {
-
-
 class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent :
-        public Scenario::GenericProcessComponent<DocumentPlugin>
+        public Scenario::ProcessComponent<Component>
 {
     public:
         static constexpr bool is_unique = true;
@@ -28,15 +29,14 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent :
 
         virtual ~ProcessComponent();
 
-        virtual void makeStream(const Context& ctx) = 0;
-        AudioStream getStream() const
-        { return m_stream; }
+        virtual AudioGraphVertice visit(AudioGraph& graph) override
+        {
+            // Covers most cases
+            return boost::add_vertex(this, graph);
+        }
 
         virtual bool hasInput() const = 0;
         virtual bool hasOutput() const = 0;
-
-    protected:
-        AudioStream m_stream;
 };
 
 /// Utility class
@@ -73,6 +73,7 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponentFactory :
     public:
         virtual ~ProcessComponentFactory();
 };
+
 template<typename ProcessComponent_T>
 class ProcessComponentFactory_T :
         public iscore::GenericComponentFactoryImpl<ProcessComponent_T, ProcessComponentFactory>

@@ -7,7 +7,7 @@ Audio::AudioStreamEngine::ProcessComponent::ProcessComponent(
         const Id<iscore::Component>& id,
         const QString& name,
         QObject* parent):
-    Scenario::GenericProcessComponent<DocumentPlugin>{process, doc, id, name, parent}
+    Scenario::ProcessComponent<Component>{process, doc, id, name, parent}
 {
 }
 

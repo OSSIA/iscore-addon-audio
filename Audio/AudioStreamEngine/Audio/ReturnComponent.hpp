@@ -21,6 +21,7 @@ class ReturnComponent final :
                 const Id<iscore::Component>& id,
                QObject* parent_obj);
 
+        AudioGraphVertice visit(AudioGraph& graph) override;
 
        void makeStream(const Context& ctx) override;
 };

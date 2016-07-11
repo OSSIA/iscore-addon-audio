@@ -20,6 +20,16 @@ ReturnComponent::ReturnComponent(
 
 }
 
+AudioGraphVertice ReturnComponent::visit(AudioGraph& graph)
+{
+    auto send = process().send_ptr();
+    if(send)
+    {
+        return ProcessComponent::visit(graph);
+    }
+    return {};
+}
+
 void ReturnComponent::makeStream(const Context& ctx)
 {
     // Find send
@@ -28,8 +38,8 @@ void ReturnComponent::makeStream(const Context& ctx)
 
     // Create stream from send
     m_stream = MakeSend(
-                MakeReturn(
-                    iscore::component<SendComponent>(send->components).getStream()));
+                   MakeReturn(
+                       iscore::component<SendComponent>(send->components).getStream()));
 }
 
 }
