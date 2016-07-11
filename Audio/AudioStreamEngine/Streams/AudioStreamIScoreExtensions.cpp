@@ -52,6 +52,7 @@ void CloseAudioPlayer(AudioPlayerPtr ext_player); // In libaudiostreammc
 AUDIOAPI AudioPlayerPtr MakeGroupPlayer()
 {
     int res;
+    const int n_out_channels = 2;
 
     TAudioGlobals::ClearLibError();
 
@@ -61,13 +62,12 @@ AUDIOAPI AudioPlayerPtr MakeGroupPlayer()
     }
 
     player->fRenderer = new TGroupRenderer;
-    res = player->fRenderer->Open(0, 2,
-                                  TAudioGlobals::fBufferSize, TAudioGlobals::fSampleRate);
+    res = player->fRenderer->Open(TAudioGlobals::fInput, n_out_channels, TAudioGlobals::fBufferSize, TAudioGlobals::fSampleRate);
     if (!player->fRenderer) {
         goto error;
     }
 
-    player->fMixer = new TGroupAudioMixer{TAudioGlobals::fBufferSize, 2};
+    player->fMixer = new TGroupAudioMixer{TAudioGlobals::fBufferSize, n_out_channels};
     if (!player->fMixer) {
         goto error;
     }

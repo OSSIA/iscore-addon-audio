@@ -13,6 +13,11 @@ namespace Audio
 {
 namespace Input
 {
+struct InputChannels
+{
+        std::vector<long> inputs;
+};
+
 class ProcessModel final :
         public Process::ProcessModel,
         public Nano::Observer
@@ -42,6 +47,9 @@ class ProcessModel final :
         {
             vis.writeTo(*this);
         }
+
+        InputChannels inputs() const
+        { return {{0, 1}}; }
 
 };
 }

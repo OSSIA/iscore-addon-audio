@@ -57,7 +57,7 @@ Constraint::Constraint(
         m_stretch = constraint.duration.executionSpeed();
 }
 
-AudioGraphVertice Constraint::visit(AudioGraph& graph)
+optional<AudioGraphVertice> Constraint::visit(AudioGraph& graph)
 {
     int n_proc = processes().size();
     std::vector<AudioGraphVertice> processes;
@@ -74,8 +74,11 @@ AudioGraphVertice Constraint::visit(AudioGraph& graph)
     for(auto& proc_pair : this->processes())
     {
         ProcessComponent& proc = proc_pair.component;
-        if(auto sub_res = proc.visit(graph))
+        auto maybe_sub_res = proc.visit(graph);
+        qDebug() << bool(maybe_sub_res);
+        if(maybe_sub_res)
         {
+            auto& sub_res = *maybe_sub_res;
             if(proc.hasInput())
             {
                 inputs.push_back(sub_res);

@@ -17,16 +17,16 @@ class TSharedBufferLocker
         TSharedBufferLocker(float** in, float** out)
         {
             // TODO maybe we should also save the number of channels ... ?
-            TSharedBuffers::SetInBuffer(in);
+            //TSharedBuffers::SetInBuffer(in);
             TSharedBuffers::SetOutBuffer(out);
-            TAudioGlobals::fSharedInput = nullptr;
+            //TAudioGlobals::fSharedInput = nullptr;
         }
 
         ~TSharedBufferLocker()
         {
-            TSharedBuffers::SetInBuffer(fPrevInBuffer);
+            //TSharedBuffers::SetInBuffer(fPrevInBuffer);
             TSharedBuffers::SetOutBuffer(fPrevOutBuffer);
-            TAudioGlobals::fSharedInput = fSharedInput;
+            //TAudioGlobals::fSharedInput = fSharedInput;
         }
 };
 
@@ -55,8 +55,8 @@ TGroupRenderer::~TGroupRenderer()
 
 long TGroupRenderer::Open(long inChan, long outChan, long bufferSize, long sampleRate)
 {
-    TAudioRenderer::Open(0, outChan, bufferSize, sampleRate);
-    fBuffers = TBufferManager(0, outChan, bufferSize, sampleRate);
+    TAudioRenderer::Open(inChan, outChan, bufferSize, sampleRate);
+    fBuffers = TBufferManager(inChan, outChan, bufferSize, sampleRate);
     return 0;
 }
 

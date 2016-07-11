@@ -48,7 +48,7 @@ class LoopComponent final : public HierarchicalBaseScenario<
         TimeNode,
         State>::HierarchicalBaseScenario;
 
-        AudioGraphVertice visit(AudioGraph& graph) override;
+        optional<AudioGraphVertice> visit(AudioGraph& graph) override;
 
         void makeStream(const Context& ctx) override;
 

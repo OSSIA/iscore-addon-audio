@@ -44,6 +44,7 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/LoopComponent.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/SoundComponent.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/InputComponent.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/EffectComponent.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/SendComponent.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/ReturnComponent.hpp"
@@ -172,6 +173,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Scenario/LoopComponent.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/SoundComponent.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/InputComponent.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/EffectComponent.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/SendComponent.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Audio/ReturnComponent.cpp"

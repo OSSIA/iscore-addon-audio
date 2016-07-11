@@ -16,7 +16,7 @@ LoopComponentBase::LoopComponentBase(
 {
 }
 
-AudioGraphVertice LoopComponent::visit(AudioGraph& graph)
+optional<AudioGraphVertice> LoopComponent::visit(AudioGraph& graph)
 {
     auto res = boost::add_vertex(this, graph);
 
@@ -24,7 +24,7 @@ AudioGraphVertice LoopComponent::visit(AudioGraph& graph)
     {
         if(auto cst_vtx = constraint.component.visit(graph))
         {
-            boost::add_edge(cst_vtx, res, graph);
+            boost::add_edge(*cst_vtx, res, graph);
         }
     }
 

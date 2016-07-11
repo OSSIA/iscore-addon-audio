@@ -50,20 +50,12 @@ AudioStream DocumentPlugin::makeStream()
 
     con(audioContext.doc.document, &iscore::Document::aboutToClose,
         this, [=] () {
+        // TODO prevent multi-connection
         // Stop and clean
         stop();
     });
 
-
-    if(m_comp)
-    {
-        return m_comp->getStream();
-    }
-    else
-    {
-        qDebug("No component!");
-        return nullptr;
-    }
+    return m_comp->getStream();
 }
 
 void DocumentPlugin::stop()

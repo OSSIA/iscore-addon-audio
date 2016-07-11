@@ -1,19 +1,17 @@
 #include "iscore_plugin_audio.hpp"
 #include <Audio/SoundProcess/SoundProcessFactory.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
-#include <core/document/Document.hpp>
-#include <iscore/plugins/application/GUIApplicationContextPlugin.hpp>
 #include <Scenario/Application/ScenarioApplicationPlugin.hpp>
-#include <iscore/plugins/customfactory/FactoryFamily.hpp>
-#include <core/document/DocumentModel.hpp>
-#include <iscore/plugins/customfactory/FactorySetup.hpp>
 #include <QAction>
 #include <Audio/Inspector/Factory.hpp>
+
 #include <Audio/SoundProcess/SoundProcessFactory.hpp>
 #include <Audio/EffectProcess/EffectProcessFactory.hpp>
 #include <Audio/MixProcess/MixProcessFactory.hpp>
 #include <Audio/SendProcess/SendProcessFactory.hpp>
 #include <Audio/ReturnProcess/ReturnProcessFactory.hpp>
+#include <Audio/InputProcess/InputProcessFactory.hpp>
+
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
 #include <Audio/Settings/Card/CardSettingsFactory.hpp>
 #include <Audio/Panel/TrackListPanelFactory.hpp>
@@ -30,8 +28,15 @@
 #include <Audio/AudioStreamEngine/Audio/SoundComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/SendComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/ReturnComponent.hpp>
+#include <Audio/AudioStreamEngine/Audio/InputComponent.hpp>
 
 #include <Audio/AudioStreamEngine/Clock/AudioClock.hpp>
+
+#include <iscore/plugins/application/GUIApplicationContextPlugin.hpp>
+#include <iscore/plugins/customfactory/FactoryFamily.hpp>
+#include <iscore/plugins/customfactory/FactorySetup.hpp>
+#include <core/document/Document.hpp>
+#include <core/document/DocumentModel.hpp>
 #include <iscore_plugin_audio_commands_files.hpp>
 
 std::pair<const CommandParentFactoryKey, CommandGeneratorMap> iscore_plugin_audio::make_commands()
@@ -59,13 +64,15 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
             Audio::Effect::ProcessFactory,
             Audio::Mix::ProcessFactory,
             Audio::Send::ProcessFactory,
-            Audio::Return::ProcessFactory
+            Audio::Return::ProcessFactory,
+            Audio::Input::ProcessFactory
             >,
         FW<Audio::AudioStreamEngine::ProcessComponentFactory,
             Audio::AudioStreamEngine::EffectProcessComponentFactory,
             Audio::AudioStreamEngine::SoundComponentFactory,
             Audio::AudioStreamEngine::SendComponentFactory,
             Audio::AudioStreamEngine::ReturnComponentFactory,
+            Audio::AudioStreamEngine::InputComponentFactory,
             Audio::AudioStreamEngine::ScenarioComponentFactory,
             Audio::AudioStreamEngine::LoopComponentFactory
             >,

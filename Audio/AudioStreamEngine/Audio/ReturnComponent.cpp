@@ -20,7 +20,7 @@ ReturnComponent::ReturnComponent(
 
 }
 
-AudioGraphVertice ReturnComponent::visit(AudioGraph& graph)
+optional<AudioGraphVertice> ReturnComponent::visit(AudioGraph& graph)
 {
     auto send = process().send_ptr();
     if(send)

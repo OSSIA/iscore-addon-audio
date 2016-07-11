@@ -29,7 +29,7 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent :
 
         virtual ~ProcessComponent();
 
-        virtual AudioGraphVertice visit(AudioGraph& graph) override
+        virtual optional<AudioGraphVertice> visit(AudioGraph& graph) override
         {
             // Covers most cases
             return boost::add_vertex(this, graph);

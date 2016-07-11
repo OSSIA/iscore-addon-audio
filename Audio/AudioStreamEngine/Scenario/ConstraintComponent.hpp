@@ -57,7 +57,7 @@ class Constraint final : public ConstraintComponentHierarchyManager<
                 const Id<iscore::Component>& id,
                 QObject* parent_comp);
 
-        AudioGraphVertice visit(AudioGraph& graph) override;
+        optional<AudioGraphVertice> visit(AudioGraph& graph) override;
         void makeStream(const Context& player) override;
         AudioStream getStream() const { return m_stream; }
 
