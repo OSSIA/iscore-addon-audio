@@ -128,5 +128,5 @@ iscore::Version iscore_plugin_audio::version() const
 
 UuidKey<iscore::Plugin> iscore_plugin_audio::key() const
 {
-    return "f07abe79-1b83-4abd-b002-958c878755c1";
+    return_uuid("f07abe79-1b83-4abd-b002-958c878755c1");
 }

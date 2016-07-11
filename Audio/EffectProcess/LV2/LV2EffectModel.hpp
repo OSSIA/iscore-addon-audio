@@ -53,7 +53,7 @@ class LV2EffectModel :
         { m_path = s; }
         UuidKey<EffectFactory> concreteFactoryKey() const override
         {
-            return "fd5243ba-70b5-4164-b44a-ecb0dcdc0494";
+            return_uuid("fd5243ba-70b5-4164-b44a-ecb0dcdc0494");
         }
     signals:
         void textChanged();

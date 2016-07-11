@@ -54,7 +54,7 @@ class FaustEffectModel :
 
         UuidKey<EffectFactory> concreteFactoryKey() const override
         {
-            return "5354c61a-1649-4f59-b952-5c2f1b79c1bd";
+            return_uuid("5354c61a-1649-4f59-b952-5c2f1b79c1bd");
         }
 
         void serialize_impl(const VisitorVariant& vis) const override;
