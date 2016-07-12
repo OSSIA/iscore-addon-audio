@@ -7,10 +7,10 @@ namespace Audio
 namespace AudioStreamEngine
 {
 
-class Component : public iscore::GenericComponent<DocumentPlugin>
+class Component : public iscore::SystemComponent<iscore::Component, DocumentPlugin>
 {
     public:
-        using iscore::GenericComponent<DocumentPlugin>::GenericComponent;
+        using iscore::SystemComponent<iscore::Component, DocumentPlugin>::SystemComponent;
         virtual ~Component();
         virtual optional<AudioGraphVertice> visit(AudioGraph& graph) = 0;
         virtual void makeStream(const Context& player) = 0;
