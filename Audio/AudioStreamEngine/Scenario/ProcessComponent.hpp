@@ -35,6 +35,7 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent :
             return boost::add_vertex(this, graph);
         }
 
+        virtual QString prettyName() const override;
         virtual bool hasInput() const = 0;
         virtual bool hasOutput() const = 0;
 };

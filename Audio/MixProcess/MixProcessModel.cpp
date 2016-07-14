@@ -148,6 +148,15 @@ void ProcessModel::on_processAdded(const Process::ProcessModel & proc)
         {
             m_routings.insert(Routing{other.process, proc_id, 1.0});
         }
+
+        for(const auto& other : m_fxProcesses)
+        {
+            // By default we disable mixing Fx's into each other
+            // to prevent cycles.
+            m_routings.insert(Routing{other.process, proc_id, 1.0, false});
+            m_routings.insert(Routing{proc_id, other.process, 1.0, false});
+        }
+
         for(const auto& send : m_sendProcesses)
         {
             m_routings.insert(Routing{proc_id, send, 1.0});

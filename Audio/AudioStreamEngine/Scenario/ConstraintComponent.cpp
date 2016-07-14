@@ -76,7 +76,7 @@ optional<AudioGraphVertice> Constraint::visit(AudioGraph& graph)
     {
         ProcessComponent& proc = proc_pair.component;
         auto maybe_sub_res = proc.visit(graph);
-        qDebug() << bool(maybe_sub_res);
+
         if(maybe_sub_res)
         {
             auto& sub_res = *maybe_sub_res;
@@ -255,8 +255,6 @@ void Constraint::makeStream(const Context& player)
                         &m_shift,
                         &m_stretch);
         }
-        qDebug() << "realtime? " << realTime();
-        //m_stream = MixNStreams(inputStreams); return;
     }
 
     // Look for all the "contents" process :

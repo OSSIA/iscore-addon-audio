@@ -15,6 +15,8 @@ class Component : public iscore::SystemComponent<iscore::Component, DocumentPlug
         virtual optional<AudioGraphVertice> visit(AudioGraph& graph) = 0;
         virtual void makeStream(const Context& player) = 0;
 
+        virtual QString prettyName() const { return objectName(); }
+
         bool realTime() const { return m_realTime; }
         void setRealTime(bool b) { m_realTime = b; }
 

@@ -18,6 +18,9 @@
 #include <boost/graph/graphviz.hpp>
 #include <boost/range/iterator_range.hpp>
 #include <type_traits>
+#include <sstream>
+#include <QMessageBox>
+#include <QApplication>
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -61,11 +64,8 @@ AudioGraphBuilder::AudioGraphBuilder(Constraint &root)
     }
 
     // 3. Generate image of the graph.
-    boost::write_graphviz(std::cerr, m_graph,
-                          [&] (std::ostream& out, const auto& v) {
-        out << "[label=\"" << names[v] << "\"]";
-    },
-    [] (auto&&...) {});
+    auto str = toGraphViz();
+    std::cerr << str;
 }
 
 boost::optional<std::deque<int> > AudioGraphBuilder::check() const
@@ -99,7 +99,8 @@ boost::optional<std::deque<int> > AudioGraphBuilder::check() const
     }
     catch(const boost::not_a_dag& e)
     {
-        qDebug() << e.what();
+        QMessageBox::warning(qApp->activeWindow(),
+                             QObject::tr("Unable to play"), e.what(), QMessageBox::Ok, QMessageBox::NoButton);
         return boost::none;
     }
 
@@ -153,6 +154,18 @@ void AudioGraphBuilder::apply(const std::deque<int>& sorted_vertices, Context& c
             qDebug() << "Warning: component does not have a stream";
         }
     }
+}
+
+std::string AudioGraphBuilder::toGraphViz()
+{
+    std::stringstream s;
+    boost::write_graphviz(s, m_graph, [&] (auto& out, const auto& v) {
+        out << "[label=\"" << this->m_graph[v]->prettyName().toStdString() << "\"]";
+    },
+    [] (auto&&...) {});
+
+    // Iterate over lambda closure members
+    return s.str();
 }
 }
 }

@@ -1,7 +1,12 @@
 #include "ProcessComponent.hpp"
 #include <Process/Process.hpp>
+#include <QStringBuilder>
+namespace Audio
+{
+namespace AudioStreamEngine
+{
 
-Audio::AudioStreamEngine::ProcessComponent::ProcessComponent(
+ProcessComponent::ProcessComponent(
         Process::ProcessModel& process,
         DocumentPlugin& doc,
         const Id<iscore::Component>& id,
@@ -11,12 +16,20 @@ Audio::AudioStreamEngine::ProcessComponent::ProcessComponent(
 {
 }
 
-Audio::AudioStreamEngine::ProcessComponent::~ProcessComponent()
+ProcessComponent::~ProcessComponent()
 {
 
 }
 
-Audio::AudioStreamEngine::ProcessComponentFactory::~ProcessComponentFactory()
+QString ProcessComponent::prettyName() const
+{
+    return process().metadata.name() % " " % QString::number(process().id_val());
+}
+
+ProcessComponentFactory::~ProcessComponentFactory()
 {
 
+}
+
+}
 }
