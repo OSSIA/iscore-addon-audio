@@ -320,6 +320,24 @@ AudioStream Constraint::makeInputMix(
                 continue;
             }
         }
+        else
+        {
+            // We disable effect -> effect when there is no mix.
+            // the better way would be to automatically get a mix component on "audio" constraints...
+            // but this needs serializable components...
+            // Find target
+            auto target_proc_it = find_if(processes(),
+                                          [=] (const auto& p) {
+                return p.process.id() == target;
+            });
+            ISCORE_ASSERT(target_proc_it != processes().end());
+            auto& target_comp = target_proc_it->component;
+            if(proc.component.hasInput() && proc.component.hasOutput() &&
+               target_comp.hasInput() && target_comp.hasOutput())
+            {
+                continue;
+            }
+        }
 
         // TODO this does not work if there are two effect chains :
         // they will go into each other.

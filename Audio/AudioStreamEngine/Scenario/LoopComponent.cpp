@@ -123,7 +123,9 @@ State* LoopComponentBase::make<State, Scenario::StateModel>(
         const Id<iscore::Component>& id,
         Scenario::StateModel& elt)
 {
-    return nullptr;
+    // TODO if the state is missing, an assert is triggered in HierarchicalBaseConstraint's
+    // setup. Fix this to do nothing if there is no component
+    return new State{id, elt, system(), this};
 }
 
 }
