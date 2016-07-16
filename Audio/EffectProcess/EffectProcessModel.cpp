@@ -44,6 +44,7 @@ ProcessModel::ProcessModel(
 
 ProcessModel::~ProcessModel()
 {
+    // TODO delete components
 
 }
 
