@@ -1,7 +1,6 @@
 #include <Audio/GenProcess/GenProcessModel.hpp>
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
 #include <QJsonDocument>
-#include <iscore/plugins/documentdelegate/plugin/ElementPluginModelList.hpp>
 
 namespace Audio
 {
@@ -14,9 +13,6 @@ ProcessModel::ProcessModel(
         QObject* parent):
     Process::ProcessModel{duration, id, Metadata<ObjectKey_k, ProcessModel>::get(), parent}
 {
-    pluginModelList = new iscore::ElementPluginModelList{
-                      iscore::IDocument::documentContext(*parent),
-                      this};
     metadata.setName(Metadata<PrettyName_k, ProcessModel>::get() + QString(".%1").arg(*this->id().val()));
     init();
 }
@@ -31,9 +27,6 @@ ProcessModel::ProcessModel(
         Metadata<ObjectKey_k, ProcessModel>::get(),
         parent}
 {
-    pluginModelList = new iscore::ElementPluginModelList{
-                      *source.pluginModelList,
-            this};
     init();
 }
 

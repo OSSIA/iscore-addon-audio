@@ -2,7 +2,6 @@
 #include <Process/Dummy/DummyLayerModel.hpp>
 #include <Explorer/DocumentPlugin/DeviceDocumentPlugin.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
-#include <iscore/plugins/documentdelegate/plugin/ElementPluginModelList.hpp>
 
 #include <QFile>
 #include <Audio/SoundProcess/SoundProcessLayer.hpp>
@@ -18,10 +17,6 @@ ProcessModel::ProcessModel(
         QObject* parent):
     Process::ProcessModel{duration, id, Metadata<ObjectKey_k, ProcessModel>::get(), parent}
 {
-    pluginModelList = new iscore::ElementPluginModelList{
-                      iscore::IDocument::documentContext(*parent),
-                      this};
-
     setFile("/tmp/bass.aif");
 }
 
@@ -36,9 +31,6 @@ ProcessModel::ProcessModel(
         parent},
     m_file{source.m_file}
 {
-    pluginModelList = new iscore::ElementPluginModelList{
-                      *source.pluginModelList,
-            this};
 }
 
 ProcessModel::~ProcessModel()

@@ -2,7 +2,6 @@
 #include <Process/Dummy/DummyLayerModel.hpp>
 #include <Explorer/DocumentPlugin/DeviceDocumentPlugin.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
-#include <iscore/plugins/documentdelegate/plugin/ElementPluginModelList.hpp>
 #include <Scenario/Document/Constraint/ConstraintModel.hpp>
 #include <Scenario/Process/ScenarioModel.hpp>
 #include <Loop/LoopProcessModel.hpp>
@@ -24,10 +23,6 @@ ProcessModel::ProcessModel(
         QObject* parent):
     Process::ProcessModel{duration, id, Metadata<ObjectKey_k, ProcessModel>::get(), parent}
 {
-    pluginModelList = new iscore::ElementPluginModelList{
-                      iscore::IDocument::documentContext(*parent),
-                      this};
-
     init();
     metadata.setName(Metadata<PrettyName_k, ProcessModel>::get() + QString(".%1").arg(*this->id().val()));
 }
@@ -42,9 +37,6 @@ ProcessModel::ProcessModel(
         Metadata<ObjectKey_k, ProcessModel>::get(),
         parent}
 {
-    pluginModelList = new iscore::ElementPluginModelList{
-                      *source.pluginModelList,
-            this};
 }
 
 ProcessModel::~ProcessModel()
