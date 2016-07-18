@@ -105,7 +105,6 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectFactory.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectFactory.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Missing/MissingEffectModel.hpp"
 
@@ -223,7 +222,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectFactory.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModel.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Missing/MissingEffectModel.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.cpp"

@@ -26,7 +26,7 @@ class FaustEffectModel :
         Q_OBJECT
         ISCORE_SERIALIZE_FRIENDS(FaustEffectModel, DataStream)
         ISCORE_SERIALIZE_FRIENDS(FaustEffectModel, JSONObject)
-        EFFECT_METADATA_IMPL(FaustEffectModel)
+        MODEL_METADATA_IMPL(FaustEffectModel)
 
     public:
         FaustEffectModel(

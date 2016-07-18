@@ -18,7 +18,7 @@
 
 #include <Audio/SoundProcess/Drop/SoundDrop.hpp>
 #include <Audio/EffectProcess/Effect/EffectFactory.hpp>
-#include <Audio/EffectProcess/Effect/Faust/FaustEffectFactory.hpp>
+#include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
 
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeFaustEffectComponent.hpp>
@@ -77,9 +77,6 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
             Audio::AudioStreamEngine::ScenarioComponentFactory,
             Audio::AudioStreamEngine::LoopComponentFactory
             >,
-            /*
-        FW<RecreateOnPlay::ProcessComponentFactory,
-            RecreateOnPlay::Audio::ComponentFactory>,*/
         FW<Process::InspectorWidgetDelegateFactory,
             Audio::Sound::InspectorFactory,
             Audio::Mix::InspectorFactory,

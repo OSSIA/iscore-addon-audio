@@ -21,7 +21,7 @@ class ProcessModel final :
 {
         ISCORE_SERIALIZE_FRIENDS(Audio::Send::ProcessModel, DataStream)
         ISCORE_SERIALIZE_FRIENDS(Audio::Send::ProcessModel, JSONObject)
-        PROCESS_METADATA_IMPL(Audio::Send::ProcessModel)
+        MODEL_METADATA_IMPL(Audio::Send::ProcessModel)
 
         Q_OBJECT
     public:

@@ -31,7 +31,7 @@ class ProcessModel final : public Process::ProcessModel
 {
         ISCORE_SERIALIZE_FRIENDS(Audio::Effect::ProcessModel, DataStream)
         ISCORE_SERIALIZE_FRIENDS(Audio::Effect::ProcessModel, JSONObject)
-        PROCESS_METADATA_IMPL(Audio::Effect::ProcessModel)
+        MODEL_METADATA_IMPL(Audio::Effect::ProcessModel)
 
         Q_OBJECT
     public:
