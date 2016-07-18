@@ -17,8 +17,8 @@
 #include <Audio/Panel/TrackListPanelFactory.hpp>
 
 #include <Audio/SoundProcess/Drop/SoundDrop.hpp>
-#include <Audio/EffectProcess/EffectFactory.hpp>
-#include <Audio/EffectProcess/FaustEffectFactory.hpp>
+#include <Audio/EffectProcess/Effect/EffectFactory.hpp>
+#include <Audio/EffectProcess/Effect/Faust/FaustEffectFactory.hpp>
 
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeFaustEffectComponent.hpp>

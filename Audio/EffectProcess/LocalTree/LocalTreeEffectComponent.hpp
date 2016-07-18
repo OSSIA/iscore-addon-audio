@@ -1,7 +1,7 @@
 #pragma once
 #include <OSSIA/LocalTree/LocalTreeDocumentPlugin.hpp>
 #include <OSSIA/LocalTree/NameProperty.hpp>
-#include <Audio/EffectProcess/EffectModel.hpp>
+#include <Audio/EffectProcess/Effect/EffectModel.hpp>
 #include <Audio/AudioStreamEngine/Audio/EffectComponent.hpp>
 
 namespace Audio

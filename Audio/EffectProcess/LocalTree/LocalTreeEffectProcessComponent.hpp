@@ -2,9 +2,9 @@
 #include <OSSIA/LocalTree/Scenario/ProcessComponent.hpp>
 #include <OSSIA/LocalTree/LocalTreeComponent.hpp>
 #include <OSSIA/LocalTree/NameProperty.hpp>
-#include <Audio/EffectProcess/EffectModel.hpp>
+#include <Audio/EffectProcess/Effect/EffectModel.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
-#include <Audio/EffectProcess/FaustEffectModel.hpp>
+#include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp>
 
 #include <Audio/AudioStreamEngine/Audio/EffectComponent.hpp>

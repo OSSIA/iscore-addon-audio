@@ -3,7 +3,7 @@
 #include <iscore/tools/SettableIdentifierGeneration.hpp>
 #include <iscore/tools/ModelPathSerialization.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
-#include <Audio/EffectProcess/EffectFactory.hpp>
+#include <Audio/EffectProcess/Effect/EffectFactory.hpp>
 namespace Audio
 {
 namespace Commands

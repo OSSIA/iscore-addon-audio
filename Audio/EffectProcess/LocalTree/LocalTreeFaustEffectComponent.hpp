@@ -1,6 +1,6 @@
 #pragma once
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp>
-#include <Audio/EffectProcess/FaustEffectModel.hpp>
+#include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
 namespace Audio
 {
 namespace Effect

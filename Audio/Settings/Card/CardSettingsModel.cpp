@@ -17,7 +17,7 @@ namespace Parameters
         const iscore::sp<ModelBufferSizeParameter> BufferSize{QStringLiteral("Audio/BufferSize"), 512};
         const iscore::sp<ModelRateParameter> Rate{QStringLiteral("Audio/SamplingRate"), 44100};
 
-        auto list() {
+        static auto list() {
             return std::tie(Driver, Card, BufferSize, Rate);
         }
 }

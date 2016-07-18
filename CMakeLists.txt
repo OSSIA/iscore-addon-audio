@@ -100,13 +100,13 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessFactory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessMetadata.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessModel.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectModel.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectFactory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectModel.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectFactory.hpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/FaustEffectModel.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/FaustEffectFactory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectFactory.hpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/MissingEffectModel.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Missing/MissingEffectModel.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp"
@@ -145,9 +145,9 @@ set(HDRS ${HDRS}
 
 set(SRCS
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectModelSerialization.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/FaustEffectModelSerialization.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/MissingEffectModelSerialization.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectModelSerialization.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModelSerialization.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Missing/MissingEffectModelSerialization.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessLayerSerialization.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessModelSerialization.cpp"
@@ -218,12 +218,12 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/Drop/SoundDrop.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessModel.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectModel.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectFactory.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectModel.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectFactory.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/FaustEffectModel.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/FaustEffectFactory.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/MissingEffectModel.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModel.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectFactory.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Missing/MissingEffectModel.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.cpp"

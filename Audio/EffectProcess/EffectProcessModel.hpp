@@ -8,7 +8,7 @@
 #include <Process/LayerModel.hpp>
 #include <Audio/MediaFileHandle.hpp>
 #include <iscore/tools/NotifyingMap.hpp>
-#include <Audio/EffectProcess/EffectModel.hpp>
+#include <Audio/EffectProcess/Effect/EffectModel.hpp>
 namespace Audio
 {
 namespace Effect

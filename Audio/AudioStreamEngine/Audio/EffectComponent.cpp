@@ -9,7 +9,7 @@
 #include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
 #include <Audio/AudioStreamEngine/Utility.hpp>
 
-#include <Audio/EffectProcess/FaustEffectModel.hpp>
+#include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeFaustEffectComponent.hpp>
 

@@ -1,6 +1,6 @@
 #include "EffectInspector.hpp"
-#include <Audio/EffectProcess/FaustEffectModel.hpp>
-#include <Audio/EffectProcess/FaustEffectFactory.hpp>
+#include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
+#include <Audio/EffectProcess/Effect/Faust/FaustEffectFactory.hpp>
 #include <Audio/Commands/InsertEffect.hpp>
 #include <Audio/Commands/EditFaustEffect.hpp>
 

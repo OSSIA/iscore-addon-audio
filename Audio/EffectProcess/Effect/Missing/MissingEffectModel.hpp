@@ -1,5 +1,5 @@
 #pragma once
-#include <Audio/EffectProcess/EffectModel.hpp>
+#include <Audio/EffectProcess/Effect/EffectModel.hpp>
 
 namespace Audio
 {

@@ -2,7 +2,7 @@
 
 #include <iscore/tools/SettableIdentifierGeneration.hpp>
 #include <iscore/tools/ModelPathSerialization.hpp>
-#include <Audio/EffectProcess/FaustEffectModel.hpp>
+#include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
 namespace Audio
 {
 namespace Commands

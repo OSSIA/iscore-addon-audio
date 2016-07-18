@@ -1,5 +1,5 @@
 #pragma once
-#include <Audio/EffectProcess/EffectFactory.hpp>
+#include <Audio/EffectProcess/Effect/EffectFactory.hpp>
 
 #include <iscore/component/Component.hpp>
 #include <iscore/tools/IdentifiedObject.hpp>
