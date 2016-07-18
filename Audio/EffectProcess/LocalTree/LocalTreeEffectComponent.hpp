@@ -1,61 +1,21 @@
 #pragma once
-#include <OSSIA/LocalTree/LocalTreeDocumentPlugin.hpp>
-#include <OSSIA/LocalTree/NameProperty.hpp>
+#include <OSSIA/LocalTree/LocalTreeComponent.hpp>
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
-#include <Audio/AudioStreamEngine/Audio/EffectComponent.hpp>
+#include <Audio/EffectProcess/Effect/EffectComponent.hpp>
+#include <iscore/component/ComponentFactory.hpp>
+#include <iscore/plugins/customfactory/ModelFactory.hpp>
 
 namespace Audio
 {
 namespace Effect
 {
-
-template<typename EffectBase_T, typename Component_T>
-class EffectComponentBase :
-        public Component_T
-{
-    public:
-        template<typename... Args>
-        EffectComponentBase(EffectBase_T& cst, Args&&... args):
-            Component_T{std::forward<Args>(args)...},
-            m_effect{cst}
-        {
-
-        }
-
-        EffectBase_T& effect() const
-        { return m_effect; }
-
-    private:
-        EffectBase_T& m_effect;
-};
-
-template<typename Component_T>
-using EffectComponent = EffectComponentBase<Effect::EffectModel, Component_T>;
-
-template<typename System_T>
-using GenericEffectComponent =
-    Effect::EffectComponent<iscore::GenericComponent<System_T>>;
-
-
-
-template<typename EffectComponentBase_T, typename Effect_T>
-class GenericEffectComponent_T : public EffectComponentBase_T
-{
-    public:
-        using model_type = Effect_T;
-        using EffectComponentBase_T::EffectComponentBase_T;
-
-        const Effect_T& effect() const
-        { return static_cast<const Effect_T&>(EffectComponentBase_T::effect()); }
-};
-
-
 namespace LocalTree
 {
 class EffectComponent :
-        public GenericEffectComponent<Ossia::LocalTree::DocumentPlugin>
+        public Ossia::LocalTree::Component<GenericEffectComponent<Ossia::LocalTree::DocumentPlugin>>
 {
     public:
+        using parent_t = Ossia::LocalTree::Component<GenericEffectComponent<Ossia::LocalTree::DocumentPlugin>>;
         static const constexpr bool is_unique = true;
         EffectComponent(
                 OSSIA::Node& node,
@@ -66,15 +26,9 @@ class EffectComponent :
                 QObject* parent);
 
         virtual ~EffectComponent();
-        auto& node() const
-        { return m_thisNode; }
 
     protected:
         std::shared_ptr<OSSIA::Node> m_parametersNode;
-
-    private:
-        std::shared_ptr<OSSIA::Node> m_thisNode;
-        OSSIA::CallbackContainer<OSSIA::NodeChangeCallback>::iterator m_callbackIt;
 };
 
 template<typename Effect_T>
@@ -124,3 +78,4 @@ using EffectComponentFactoryList =
 }
 }
 }
+

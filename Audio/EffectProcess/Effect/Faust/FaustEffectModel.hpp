@@ -1,5 +1,6 @@
 #pragma once
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
+#include <Audio/EffectProcess/Effect/EffectFactory.hpp>
 #include <QJsonDocument>
 namespace Audio
 {
@@ -63,5 +64,7 @@ class FaustEffectModel :
         void reload();
         QString m_text;
 };
+
+using FaustEffectFactory = EffectFactory_T<FaustEffectModel>;
 }
 }

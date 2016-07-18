@@ -59,12 +59,14 @@ template<typename Model_T>
  *
  * Should handle most cases
  */
-class GenericEffectFactory final :
+class EffectFactory_T final :
         public EffectFactory
 {
     public:
-        virtual ~GenericEffectFactory() = default;
+        virtual ~EffectFactory_T() = default;
 
+        static auto static_concreteFactoryKey()
+        { return Metadata<ConcreteFactoryKey_k, Model_T>::get(); }
     private:
         UuidKey<Effect::EffectFactory> concreteFactoryKey() const override
         { return Metadata<ConcreteFactoryKey_k, Model_T>::get(); }
@@ -75,14 +77,14 @@ class GenericEffectFactory final :
         Model_T* make(
                 const QString& info, // plugin name ? faust code ? dll location ?
                 const Id<EffectModel>& id,
-                QObject* parent) final override
+                QObject* parent) const final override
         {
             return new Model_T{info, id, parent};
         }
 
         Model_T* load(
                 const VisitorVariant& vis,
-                QObject* parent) final override
+                QObject* parent) const final override
         {
             return deserialize_dyn(vis, [&] (auto&& deserializer)
             { return new Model_T{deserializer, parent}; });

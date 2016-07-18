@@ -19,7 +19,6 @@ EffectProcessComponentBase::EffectProcessComponentBase(
     Ossia::LocalTree::ProcessComponent_T<ProcessModel>{parent, scenario, doc, id, "EffectProcessComponent", parent_obj},
     m_effectsNode{add_node(*node(), "effects")}
 {
-    make_metadata_node(scenario.metadata, *node(), m_properties, this);
 }
 
 EffectComponent*EffectProcessComponentBase::make(
