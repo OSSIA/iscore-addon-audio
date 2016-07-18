@@ -5,7 +5,15 @@ namespace Audio
 {
 namespace Effect
 {
+class FaustEffectModel;
+}
+}
+EFFECT_METADATA(, Audio::Effect::FaustEffectModel, "5354c61a-1649-4f59-b952-5c2f1b79c1bd", "Faust", "Faust")
 
+namespace Audio
+{
+namespace Effect
+{
 /** Faust effect model.
  * Should contain an effect, maybe instantiated with
  * LibAudioStream's MakeFaustAudioEffect
@@ -17,6 +25,8 @@ class FaustEffectModel :
         Q_OBJECT
         ISCORE_SERIALIZE_FRIENDS(FaustEffectModel, DataStream)
         ISCORE_SERIALIZE_FRIENDS(FaustEffectModel, JSONObject)
+        EFFECT_METADATA_IMPL(FaustEffectModel)
+
     public:
         FaustEffectModel(
                 const QString& faustProgram,
@@ -38,24 +48,12 @@ class FaustEffectModel :
             init();
         }
 
-        FaustEffectModel* clone(
-                const Id<EffectModel>& newId,
-                QObject* parent) const override;
-
         const QString& text() const
         {
             return m_text;
         }
 
         void setText(const QString& txt);
-
-        UuidKey<EffectFactory> concreteFactoryKey() const override
-        {
-            return_uuid("5354c61a-1649-4f59-b952-5c2f1b79c1bd");
-        }
-
-        void serialize_impl(const VisitorVariant& vis) const override;
-
 
     signals:
         void textChanged();

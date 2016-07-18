@@ -68,4 +68,24 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
 #define EFFECT_METADATA(Export, Model, Uuid, ObjectKey, PrettyName) \
     MODEL_METADATA(Export, Audio::Effect::EffectFactory, Model, Uuid, ObjectKey, PrettyName)
 
+#define EFFECT_METADATA_IMPL(Effect_T) \
+UuidKey<Audio::Effect::EffectFactory> concreteFactoryKey() const final override \
+{ \
+    return Metadata<ConcreteFactoryKey_k, Effect_T>::get(); \
+} \
+ \
+void serialize_impl(const VisitorVariant& vis) const final override \
+{ \
+    serialize_dyn(vis, *this); \
+} \
+\
+Effect_T* clone( \
+    const Id<Audio::Effect::EffectModel>& newId, \
+    QObject* newParent) const final override\
+{ \
+   return new Effect_T{*this, newId, newParent}; \
+}
+
+
+
 Q_DECLARE_METATYPE(Id<Audio::Effect::EffectModel>)

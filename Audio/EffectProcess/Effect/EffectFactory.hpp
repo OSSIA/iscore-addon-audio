@@ -63,7 +63,7 @@ class GenericEffectFactory final :
         public EffectFactory
 {
     public:
-        virtual ~GenericProcessFactory() = default;
+        virtual ~GenericEffectFactory() = default;
 
     private:
         UuidKey<Effect::EffectFactory> concreteFactoryKey() const override

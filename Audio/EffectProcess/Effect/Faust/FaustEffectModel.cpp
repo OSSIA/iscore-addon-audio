@@ -25,21 +25,11 @@ FaustEffectModel::FaustEffectModel(
     init();
 }
 
-FaustEffectModel*FaustEffectModel::clone(const Id<EffectModel>& newId, QObject* parent) const
-{
-    return new FaustEffectModel{*this, newId, parent};
-}
-
 void FaustEffectModel::setText(const QString& txt)
 {
     m_text = txt;
     reload();
     emit textChanged();
-}
-
-void FaustEffectModel::serialize_impl(const VisitorVariant& vis) const
-{
-    serialize_dyn(vis, *this);
 }
 
 void FaustEffectModel::init()
