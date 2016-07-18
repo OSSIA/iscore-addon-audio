@@ -11,10 +11,11 @@ namespace LocalTree
 EffectComponent::EffectComponent(
         OSSIA::Node& node,
         EffectModel& proc,
+        Ossia::LocalTree::DocumentPlugin& doc,
         const Id<iscore::Component>& id,
         const QString& name,
         QObject* parent):
-    Component{id, "EffectComponent", parent}
+    GenericEffectComponent<Ossia::LocalTree::DocumentPlugin>{proc, doc, id, "EffectComponent", parent}
 {
     m_thisNode = *node.emplace(node.children().end(), name.toStdString());
     m_parametersNode = *m_thisNode->emplace(m_thisNode->children().end(), "parameters");

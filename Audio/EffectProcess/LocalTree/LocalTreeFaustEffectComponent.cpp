@@ -7,9 +7,13 @@ namespace Effect
 {
 namespace LocalTree
 {
-FaustComponent::FaustComponent(OSSIA::Node& node, FaustEffectModel& proc, const Id<iscore::Component>& id, QObject* parent):
-    EffectComponent{node, proc, id, proc.title(), parent},
-    m_proc{proc}
+FaustComponent::FaustComponent(
+        const Id<iscore::Component>& id,
+        OSSIA::Node& node,
+        FaustEffectModel& proc,
+        Ossia::LocalTree::DocumentPlugin& doc,
+        QObject* parent):
+    EffectComponent_T<Effect::FaustEffectModel>{node, proc, doc, id, proc.title(), parent}
 {
     // Create a fake effect on each change,
     // and check its number / range of parameters.
@@ -31,7 +35,7 @@ void FaustComponent::recreate()
         m_parametersNode->erase(m_parametersNode->children().begin());
     }
 
-    auto fx = m_proc.effect();
+    auto fx = effect().effect();
     if(!fx)
         return;
 
@@ -64,18 +68,6 @@ void FaustComponent::recreate()
         addr->pushValue(OSSIA::Float{init});
     }
 }
-
-
-EffectComponent* FaustComponentFactory::make(
-        const Id<iscore::Component>& id,
-        OSSIA::Node& parent,
-        EffectModel& proc,
-        const Ossia::LocalTree::DocumentPlugin& doc,
-        QObject* parent_obj) const
-{
-    return new FaustComponent{parent, *safe_cast<FaustEffectModel*>(&proc), id, parent_obj};
-}
-
 }
 }
 }
