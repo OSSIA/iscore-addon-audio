@@ -3,6 +3,7 @@
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 #include <Audio/AudioStreamEngine/AudioComponent.hpp>
 #include <Scenario/Document/Components/ConstraintComponent.hpp>
+#include <iscore/component/ComponentHierarchy.hpp>
 #include <functional>
 
 namespace Audio
@@ -20,10 +21,11 @@ class ConstraintBase :
     public:
         static const constexpr bool is_unique = true;
         using StreamPair = std::pair<Process::ProcessModel&, AudioStream>;
+        using model_t = Process::ProcessModel;
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
-        using process_component_t = Audio::AudioStreamEngine::ProcessComponent;
-        using process_component_factory_t = Audio::AudioStreamEngine::ProcessComponentFactory;
-        using process_component_factory_list_t = Audio::AudioStreamEngine::ProcessComponentFactoryList;
+        using component_t = Audio::AudioStreamEngine::ProcessComponent;
+        using component_factory_t = Audio::AudioStreamEngine::ProcessComponentFactory;
+        using component_factory_list_t = Audio::AudioStreamEngine::ProcessComponentFactoryList;
 
         ConstraintBase(
                 Scenario::ConstraintModel& constraint,
@@ -32,24 +34,18 @@ class ConstraintBase :
                 QObject* parent_comp);
         ~ConstraintBase();
 
-        ProcessComponent* make_processComponent(
+        ProcessComponent* make(
                 const Id<iscore::Component> & id,
                 ProcessComponentFactory& factory,
                 Process::ProcessModel &process);
 
         void removing(const Process::ProcessModel& cst, const ProcessComponent& comp);
-
 };
 
-class Constraint final : public ConstraintComponentHierarchyManager<
-    ConstraintBase,
-    ConstraintBase::process_component_t,
-    ConstraintBase::process_component_factory_list_t>
+class Constraint final :
+        public iscore::PolymorphicComponentHierarchy<ConstraintBase>
 {
-        using parent_t = ConstraintComponentHierarchyManager<
-        ConstraintBase,
-        ConstraintBase::process_component_t,
-        ConstraintBase::process_component_factory_list_t>;
+        using parent_t = iscore::PolymorphicComponentHierarchy<ConstraintBase>;
     public:
         Constraint(
                 Scenario::ConstraintModel& constraint,

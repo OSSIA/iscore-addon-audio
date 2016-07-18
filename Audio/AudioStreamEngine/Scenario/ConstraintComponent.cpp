@@ -60,7 +60,7 @@ Constraint::Constraint(
 
 optional<AudioGraphVertice> Constraint::visit(AudioGraph& graph)
 {
-    int n_proc = processes().size();
+    int n_proc = this->children().size();
     std::vector<AudioGraphVertice> processes;
     processes.reserve(n_proc);
     std::vector<AudioGraphVertice> generators; // Everything that output a mixable stream
@@ -72,9 +72,9 @@ optional<AudioGraphVertice> Constraint::visit(AudioGraph& graph)
     // routed into everything.
     // Else, we use it to create the correct relations.
     // TODO think of the policies !!!!
-    for(auto& proc_pair : this->processes())
+    for(auto& proc_pair : this->children())
     {
-        ProcessComponent& proc = proc_pair.component;
+        ProcessComponent& proc = *proc_pair.component;
         auto maybe_sub_res = proc.visit(graph);
 
         if(maybe_sub_res)
@@ -220,10 +220,10 @@ void Constraint::makeStream(const Context& player)
             }
         };
 
-        for(auto& proc_pair : this->processes())
+        for(auto& proc_pair : this->children())
         {
-            auto& proc = proc_pair.process;
-            auto& comp = proc_pair.component;
+            auto& proc = *proc_pair.model;
+            auto& comp = *proc_pair.component;
             if(auto send = dynamic_cast<SendComponent*>(&comp))
             {
                 AudioStream stream = send->getStream();
@@ -291,29 +291,29 @@ AudioStream Constraint::makeInputMix(
         };
     }
 
-    auto make_stream_impl = [&] (auto& component, const auto& proc)
+    auto make_stream_impl = [&] (const auto& pair)
     {
-        ISCORE_ASSERT(component.getStream());
+        ISCORE_ASSERT(pair.component->getStream());
         auto channel = MakeChannelSound(
-                           MakeReturn(component.getStream()),
-                           getTarget(proc.process.id(), target));
+                           MakeReturn(pair.component->getStream()),
+                           getTarget(pair.model->id(), target));
         ISCORE_ASSERT(channel);
         inputStreams.push_back(channel);
     };
 
-    ISCORE_ASSERT(processes().size() > 0);
+    ISCORE_ASSERT(children().size() > 0);
 
-    for(auto proc : processes())
+    for(auto pair : children())
     {
-        if(proc.process.id() == target)
+        if(pair.model->id() == target)
             continue;
 
         if(mix)
         {
-            auto routing_it = mix->routings().find(Mix::Routing{proc.process.id(), target});
+            auto routing_it = mix->routings().find(Mix::Routing{pair.model->id(), target});
             if(routing_it == mix->routings().end())
             {
-                qDebug() << "Mix not found !" << proc.process.id() << target;
+                qDebug() << "Mix not found !" << pair.model->id() << target;
             }
             else if(!routing_it->enabled)
             {
@@ -326,14 +326,14 @@ AudioStream Constraint::makeInputMix(
             // the better way would be to automatically get a mix component on "audio" constraints...
             // but this needs serializable components...
             // Find target
-            auto target_proc_it = find_if(processes(),
+            auto target_proc_it = find_if(children(),
                                           [=] (const auto& p) {
-                return p.process.id() == target;
+                return p.model->id() == target;
             });
-            ISCORE_ASSERT(target_proc_it != processes().end());
+            ISCORE_ASSERT(target_proc_it != children().end());
             auto& target_comp = target_proc_it->component;
-            if(proc.component.hasInput() && proc.component.hasOutput() &&
-               target_comp.hasInput() && target_comp.hasOutput())
+            if(pair.component->hasInput() && pair.component->hasOutput() &&
+               target_comp->hasInput() && target_comp->hasOutput())
             {
                 continue;
             }
@@ -342,9 +342,9 @@ AudioStream Constraint::makeInputMix(
         // TODO this does not work if there are two effect chains :
         // they will go into each other.
         // Use the GUI disablement.
-        if(proc.component.hasOutput())
+        if(pair.component->hasOutput())
         {
-            make_stream_impl(proc.component, proc);
+            make_stream_impl(pair);
         }
     }
 
@@ -352,7 +352,7 @@ AudioStream Constraint::makeInputMix(
 }
 
 
-ProcessComponent* ConstraintBase::make_processComponent(
+ProcessComponent* ConstraintBase::make(
         const Id<iscore::Component>& id,
         ProcessComponentFactory& factory,
         Process::ProcessModel& process)

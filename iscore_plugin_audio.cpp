@@ -21,6 +21,7 @@
 #include <Audio/EffectProcess/FaustEffectFactory.hpp>
 
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.hpp>
+#include <Audio/EffectProcess/LocalTree/LocalTreeFaustEffectComponent.hpp>
 
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/LoopComponent.hpp>
