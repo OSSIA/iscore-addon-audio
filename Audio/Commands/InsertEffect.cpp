@@ -36,7 +36,7 @@ void InsertEffect::redo() const
 
     if(Effect::EffectFactory* fact = fact_list.get(m_effectKind))
     {
-        auto model = fact->makeModel(m_effect, m_id, &process);
+        auto model = fact->make(m_effect, m_id, &process);
         process.insertEffect(model, m_pos);
     }
     else

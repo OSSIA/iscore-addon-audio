@@ -30,18 +30,6 @@ FaustEffectModel*FaustEffectModel::clone(const Id<EffectModel>& newId, QObject* 
     return new FaustEffectModel{*this, newId, parent};
 }
 
-QString FaustEffectModel::title() const
-{
-    if(m_name.isEmpty())
-    {
-        return tr("Faust");
-    }
-    else
-    {
-        return m_name;
-    }
-}
-
 void FaustEffectModel::setText(const QString& txt)
 {
     m_text = txt;
@@ -78,7 +66,7 @@ void FaustEffectModel::reload()
         auto qjs = QJsonDocument::fromJson(json, &err);
         if(err.error == QJsonParseError::NoError)
         {
-            m_name = qjs.object()["name"].toString();
+            metadata.setName(qjs.object()["name"].toString());
         }
         else
         {

@@ -43,9 +43,6 @@ class LV2EffectModel :
                 const Id<EffectModel>& newId,
                 QObject* parent) const override;
 
-
-        QString title() const override;
-
         const QString& path() const
         { return m_path; }
 

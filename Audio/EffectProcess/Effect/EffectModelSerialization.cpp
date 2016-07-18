@@ -7,27 +7,29 @@ void Visitor<Reader<DataStream>>::readFrom_impl(
     // Save the parent class
     readFrom(static_cast<const IdentifiedObject<Audio::Effect::EffectModel>&>(eff));
 
-    // Save this class
-    // ... nothing for now
+    readFrom(eff.metadata);
 }
 
 template<>
 void Visitor<Writer<DataStream>>::writeTo(
         Audio::Effect::EffectModel& eff)
 {
+    writeTo(eff.metadata);
 }
 
 template<>
 void Visitor<Reader<JSONObject>>::readFrom_impl(
-        const Audio::Effect::EffectModel& area)
+        const Audio::Effect::EffectModel& eff)
 {
     // Save the parent class
-    readFrom(static_cast<const IdentifiedObject<Audio::Effect::EffectModel>&>(area));
+    readFrom(static_cast<const IdentifiedObject<Audio::Effect::EffectModel>&>(eff));
+    m_obj[iscore::StringConstant().Metadata] = toJsonObject(eff.metadata);
 
 }
 
 template<>
 void Visitor<Writer<JSONObject>>::writeTo(
-        Audio::Effect::EffectModel& area)
+        Audio::Effect::EffectModel& eff)
 {
+    eff.metadata = fromJsonObject<ModelMetadata>(m_obj[iscore::StringConstant().Metadata]);
 }

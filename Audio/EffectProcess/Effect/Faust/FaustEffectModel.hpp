@@ -42,9 +42,6 @@ class FaustEffectModel :
                 const Id<EffectModel>& newId,
                 QObject* parent) const override;
 
-
-        QString title() const override;
-
         const QString& text() const
         {
             return m_text;
@@ -67,7 +64,6 @@ class FaustEffectModel :
         void init();
         void reload();
         QString m_text;
-        QString m_name;
 };
 }
 }

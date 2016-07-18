@@ -13,7 +13,7 @@ FaustComponent::FaustComponent(
         FaustEffectModel& proc,
         Ossia::LocalTree::DocumentPlugin& doc,
         QObject* parent):
-    EffectComponent_T<Effect::FaustEffectModel>{node, proc, doc, id, proc.title(), parent}
+    EffectComponent_T<Effect::FaustEffectModel>{node, proc, doc, id, proc.metadata.name(), parent}
 {
     // Create a fake effect on each change,
     // and check its number / range of parameters.

@@ -10,7 +10,7 @@ QString FaustEffectFactory::prettyName() const
     return "Faust";
 }
 
-EffectModel*FaustEffectFactory::makeModel(
+EffectModel*FaustEffectFactory::make(
         const QString& info,
         const Id<EffectModel>& id,
         QObject* parent) const

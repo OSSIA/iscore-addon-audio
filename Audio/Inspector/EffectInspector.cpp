@@ -59,13 +59,27 @@ InspectorWidget::InspectorWidget(
     con(process(), &Effect::ProcessModel::effectsChanged,
         this, &InspectorWidget::recreate);
 
+
+    connect(m_list, &QListWidget::itemDoubleClicked,
+            this, [=] (QListWidgetItem* item) {
+        // Make a text dialog to edit faust program.
+        auto id = item->data(Qt::UserRole).value<Id<EffectModel>>();
+        auto faust = safe_cast<FaustEffectModel*>(&process().effects().at(id));
+
+        FaustEditDialog edit{*faust};
+        auto res = edit.exec();
+        if(res)
+        {
+            m_dispatcher.submitCommand(new Commands::EditFaustEffect{*faust, edit.text()});
+        }
+    }, Qt::QueuedConnection);
+
     recreate();
 
     // Add an effect
     m_add = new QPushButton{tr("Add")};
     connect(m_add, &QPushButton::pressed,
             this, [=] () {
-
         m_dispatcher.submitCommand(
                     new Commands::InsertEffect{
                         process(),
@@ -82,6 +96,14 @@ InspectorWidget::InspectorWidget(
 
     this->setLayout(lay);
 }
+struct ListWidgetItem :
+        public QObject,
+        public QListWidgetItem
+{
+    public:
+        using QListWidgetItem::QListWidgetItem;
+
+};
 
 void InspectorWidget::recreate()
 {
@@ -90,8 +112,10 @@ void InspectorWidget::recreate()
     for(const auto& fx_id : process().effectsOrder())
     {
         EffectModel& fx = process().effects().at(fx_id);
-        auto item = new QListWidgetItem(fx.title(), m_list);
-        // TODO on_titleChanged...
+        auto item = new ListWidgetItem(fx.metadata.name(), m_list);
+
+        con(fx.metadata, &ModelMetadata::nameChanged,
+            item, [=] (const auto& name) { item->setText(name); });
         item->setData(Qt::UserRole, QVariant::fromValue(fx_id));
         m_list->addItem(item);
     }
@@ -103,21 +127,6 @@ void InspectorWidget::recreate()
         // Ask it to create a GUI.
     });
     */
-
-
-    connect(m_list, &QListWidget::itemDoubleClicked,
-            this, [=] (QListWidgetItem* item) {
-        // Make a text dialog to edit faust program.
-        auto id = item->data(Qt::UserRole).value<Id<EffectModel>>();
-        auto faust = safe_cast<FaustEffectModel*>(&process().effects().at(id));
-
-        FaustEditDialog edit{*faust};
-        auto res = edit.exec();
-        if(res)
-        {
-            m_dispatcher.submitCommand(new Commands::EditFaustEffect{*faust, edit.text()});
-        }
-    });
 
 }
 }

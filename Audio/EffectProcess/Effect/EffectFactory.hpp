@@ -31,12 +31,12 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectFactory :
         virtual QString prettyName() const = 0; // VST, FaUST, etc...
 
         /**
-         * @brief makeModel Creates an effect model
+         * @brief makeM Creates an effect model
          * @param info Data used for the creation of the effect
          * @param parent Parent object
          * @return A valid effect instance if the info is correct, else nullptr.
          */
-        virtual EffectModel* makeModel(
+        virtual EffectModel* make(
                 const QString& info, // plugin name ? faust code ? dll location ?
                 const Id<EffectModel>&,
                 QObject* parent) const = 0;
@@ -51,6 +51,42 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectFactory :
         virtual EffectModel* load(
                 const VisitorVariant& data,
                 QObject* parent) const = 0;
+};
+
+template<typename Model_T>
+/**
+ * @brief The GenericEffectFactory class
+ *
+ * Should handle most cases
+ */
+class GenericEffectFactory final :
+        public EffectFactory
+{
+    public:
+        virtual ~GenericProcessFactory() = default;
+
+    private:
+        UuidKey<Effect::EffectFactory> concreteFactoryKey() const override
+        { return Metadata<ConcreteFactoryKey_k, Model_T>::get(); }
+
+        QString prettyName() const override
+        { return Metadata<PrettyName_k, Model_T>::get(); }
+
+        Model_T* make(
+                const QString& info, // plugin name ? faust code ? dll location ?
+                const Id<EffectModel>& id,
+                QObject* parent) final override
+        {
+            return new Model_T{info, id, parent};
+        }
+
+        Model_T* load(
+                const VisitorVariant& vis,
+                QObject* parent) final override
+        {
+            return deserialize_dyn(vis, [&] (auto&& deserializer)
+            { return new Model_T{deserializer, parent}; });
+        }
 };
 
 

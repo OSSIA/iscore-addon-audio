@@ -21,7 +21,7 @@ class FaustEffectFactory final : public EffectFactory
 
         QString prettyName() const override;
 
-        EffectModel* makeModel(
+        EffectModel* make(
                 const QString& info,
                 const Id<EffectModel>&,
                 QObject* parent) const override;

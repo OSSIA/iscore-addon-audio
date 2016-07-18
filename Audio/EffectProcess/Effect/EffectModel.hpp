@@ -1,5 +1,6 @@
 #pragma once
 #include <Audio/EffectProcess/Effect/EffectFactory.hpp>
+#include <Process/ModelMetadata.hpp>
 
 #include <iscore/component/Component.hpp>
 #include <iscore/tools/IdentifiedObject.hpp>
@@ -29,6 +30,7 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
         ISCORE_SERIALIZE_FRIENDS(Audio::Effect::EffectModel, JSONObject)
     public:
         iscore::Components components;
+        ModelMetadata metadata;
 
         EffectModel(
                 const Id<EffectModel>&,
@@ -54,8 +56,6 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
                 const Id<EffectModel>& newId,
                 QObject* parent) const = 0;
 
-        virtual QString title() const = 0;
-
         AudioEffect effect() const
         { return m_effect; }
 
@@ -64,5 +64,8 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
 };
 }
 }
+
+#define EFFECT_METADATA(Export, Model, Uuid, ObjectKey, PrettyName) \
+    MODEL_METADATA(Export, Audio::Effect::EffectFactory, Model, Uuid, ObjectKey, PrettyName)
 
 Q_DECLARE_METATYPE(Id<Audio::Effect::EffectModel>)
