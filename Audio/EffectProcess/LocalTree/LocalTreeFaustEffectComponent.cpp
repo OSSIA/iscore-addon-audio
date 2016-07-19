@@ -50,14 +50,14 @@ void FaustComponent::recreate()
         std::shared_ptr<OSSIA::Node> param_node = *m_parametersNode->emplace(
                                                       m_parametersNode->children().end(),
                                                       label,
-                                                      OSSIA::Value::Type::FLOAT,
+                                                      OSSIA::Type::FLOAT,
                                                       OSSIA::AccessMode::BI,
                                                       OSSIA::Domain::create(new OSSIA::Float{min}, new OSSIA::Float{max}));
 
         // Set value to current value of fx
         auto addr = param_node->getAddress();
         addr->addCallback([=] (const OSSIA::Value& val) {
-            if(val.getType() != OSSIA::Value::Type::FLOAT)
+            if(val.getType() != OSSIA::Type::FLOAT)
                 return;
             if(!m_audio_effect)
                 return;
