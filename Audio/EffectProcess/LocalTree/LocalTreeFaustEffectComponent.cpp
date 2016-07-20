@@ -52,17 +52,17 @@ void FaustComponent::recreate()
                                                       label,
                                                       OSSIA::Type::FLOAT,
                                                       OSSIA::AccessMode::BI,
-                                                      OSSIA::Domain::create(new OSSIA::Float{min}, new OSSIA::Float{max}));
+                                                      OSSIA::Domain::create(OSSIA::Float{min}, OSSIA::Float{max}));
 
         // Set value to current value of fx
         auto addr = param_node->getAddress();
-        addr->addCallback([=] (const OSSIA::Value& val) {
+        addr->addCallback([=] (const OSSIA::SafeValue& val) {
             if(val.getType() != OSSIA::Type::FLOAT)
                 return;
             if(!m_audio_effect)
                 return;
 
-            auto current_val = static_cast<const OSSIA::Float&>(val).value;
+            auto current_val = val.get<OSSIA::Float>().value;
             SetControlValueEffect(m_audio_effect, i, current_val);
         });
         addr->pushValue(OSSIA::Float{init});
