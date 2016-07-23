@@ -56,7 +56,7 @@ void FaustComponent::recreate()
 
         // Set value to current value of fx
         auto addr = param_node->getAddress();
-        addr->addCallback([=] (const OSSIA::SafeValue& val) {
+        addr->addCallback([=] (const OSSIA::Value& val) {
             if(val.getType() != OSSIA::Type::FLOAT)
                 return;
             if(!m_audio_effect)
