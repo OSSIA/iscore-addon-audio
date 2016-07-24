@@ -65,7 +65,7 @@ std::vector<std::vector<double> > LayerView::computeDataSet(ZoomRatio ratio, dou
     for (int c = 0; c < nchannels; ++c) {
 
         const auto& chan = m_data[c];
-        const auto chan_n = chan.size();
+        const int chan_n = chan.size();
 
         const double length = (1000 * chan_n) / m_sampleRate; // duration of the track
         const double size = ratio > 0 ? length / ratio : 0; // number of pixels the track will occupy in its entirety
