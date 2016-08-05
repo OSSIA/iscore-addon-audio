@@ -1,6 +1,6 @@
 #pragma once
 #include <Scenario/Document/Event/EventModel.hpp>
-#include <Network/Node.h>
+#include <ossia/network/base/node.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 
 namespace Audio

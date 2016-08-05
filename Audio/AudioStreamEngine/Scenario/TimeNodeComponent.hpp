@@ -1,6 +1,6 @@
 #pragma once
 #include <Scenario/Document/TimeNode/TimeNodeModel.hpp>
-#include <Network/Node.h>
+#include <ossia/network/base/node.hpp>
 #include <functional>
 using audio_frame_t = int64_t;
 namespace Audio

@@ -18,7 +18,7 @@ class EffectComponent :
         using parent_t = Ossia::LocalTree::Component<GenericEffectComponent<Ossia::LocalTree::DocumentPlugin>>;
         static const constexpr bool is_unique = true;
         EffectComponent(
-                OSSIA::Node& node,
+                ossia::net::node_base& node,
                 Effect::EffectModel& proc,
                 Ossia::LocalTree::DocumentPlugin& doc,
                 const Id<iscore::Component>& id,
@@ -28,7 +28,7 @@ class EffectComponent :
         virtual ~EffectComponent();
 
     protected:
-        std::shared_ptr<OSSIA::Node> m_parametersNode;
+        ossia::net::node_base& m_parametersNode;
 };
 
 template<typename Effect_T>
@@ -46,7 +46,7 @@ class EffectComponentFactory :
         virtual ~EffectComponentFactory();
         virtual EffectComponent* make(
                 const Id<iscore::Component>&,
-                OSSIA::Node& n,
+                ossia::net::node_base& n,
                 Effect::EffectModel& proc,
                 Ossia::LocalTree::DocumentPlugin& doc,
                 QObject* paren_objt) const = 0;
@@ -61,7 +61,7 @@ class EffectComponentFactory_T :
         using model_type = typename EffectComponent_T::model_type;
         EffectComponent* make(
                 const Id<iscore::Component>& id,
-                OSSIA::Node& n,
+                ossia::net::node_base& n,
                 Effect::EffectModel& proc,
                 Ossia::LocalTree::DocumentPlugin& doc,
                 QObject* paren_objt) const override

@@ -9,7 +9,7 @@ namespace LocalTree
 {
 FaustComponent::FaustComponent(
         const Id<iscore::Component>& id,
-        OSSIA::Node& node,
+        ossia::net::node_base& node,
         FaustEffectModel& proc,
         Ossia::LocalTree::DocumentPlugin& doc,
         QObject* parent):
@@ -30,10 +30,7 @@ FaustComponent::FaustComponent(
 
 void FaustComponent::recreate()
 {
-    while(!m_parametersNode->children().empty())
-    {
-        m_parametersNode->erase(m_parametersNode->children().begin());
-    }
+    m_parametersNode.clearChildren();
 
     auto fx = effect().effect();
     if(!fx)
@@ -47,16 +44,13 @@ void FaustComponent::recreate()
 
         GetControlParamEffect(fx, i, label, &min, &max, &init);
 
-        std::shared_ptr<OSSIA::Node> param_node = *m_parametersNode->emplace(
-                                                      m_parametersNode->children().end(),
-                                                      label,
-                                                      OSSIA::Type::FLOAT,
-                                                      OSSIA::AccessMode::BI,
-                                                      OSSIA::Domain::create(OSSIA::Float{min}, OSSIA::Float{max}));
+        auto param_node = m_parametersNode.createChild(label);
+        auto param_addr = param_node->createAddress(ossia::val_type::FLOAT);
+        param_addr->setAccessMode(ossia::access_mode::BI);
+        param_addr->setDomain(ossia::net::makeDomain(ossia::Float{min}, ossia::Float{max}));
 
         // Set value to current value of fx
-        auto addr = param_node->getAddress();
-        addr->addCallback([=] (const OSSIA::Value& val) {
+        param_addr->add_callback([=] (const ossia::value& val) {
             if(val.getType() != OSSIA::Type::FLOAT)
                 return;
             if(!m_audio_effect)
@@ -65,7 +59,7 @@ void FaustComponent::recreate()
             auto current_val = val.get<OSSIA::Float>().value;
             SetControlValueEffect(m_audio_effect, i, current_val);
         });
-        addr->pushValue(OSSIA::Float{init});
+        param_addr->pushValue(OSSIA::Float{init});
     }
 }
 }

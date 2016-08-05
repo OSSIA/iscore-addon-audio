@@ -29,7 +29,7 @@ class LV2AudioEffect : public TAudioEffectInterface
 
     private:
 
-        OSSIA::TimeConstraint& m_root;
+        ossia::time_constraint& m_root;
         void Process(float** input, float** output, long framesNum) override
         {
             m_root.tick();

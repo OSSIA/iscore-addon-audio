@@ -28,9 +28,9 @@ AudioClock::AudioClock(
 
     auto& audio = context.doc.app.settings<Audio::Settings::Model>();
 
-    OSSIA::TimeConstraint& ossia_cst = *bs->baseConstraint()->OSSIAConstraint();
+    ossia::time_constraint& ossia_cst = *bs->baseConstraint()->OSSIAConstraint();
 
-    ossia_cst.setDriveMode(OSSIA::Clock::DriveMode::EXTERNAL);
+    ossia_cst.setDriveMode(ossia::clock::DriveMode::EXTERNAL);
     // Number of milliseconds in each step -> we tick once per buffer
     ossia_cst.setGranularity(1000 * audio.getBufferSize() / audio.getRate() );
 }

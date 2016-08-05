@@ -35,7 +35,7 @@ class EffectProcessComponentBase :
 
        EffectProcessComponentBase(
                const Id<iscore::Component>& id,
-               OSSIA::Node& parent,
+               ossia::net::node_base& parent,
                Effect::ProcessModel& scenario,
                Ossia::LocalTree::DocumentPlugin& doc,
                QObject* parent_obj);
@@ -62,7 +62,7 @@ class EffectProcessComponentBase :
 
 
     private:
-        std::shared_ptr<OSSIA::Node> m_effectsNode;
+        std::shared_ptr<ossia::net::node_base> m_effectsNode;
 };
 
 class EffectProcessComponent final :

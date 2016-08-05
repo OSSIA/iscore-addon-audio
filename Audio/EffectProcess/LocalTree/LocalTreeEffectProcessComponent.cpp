@@ -12,7 +12,7 @@ namespace LocalTree
 ///////// Process component
 EffectProcessComponentBase::EffectProcessComponentBase(
         const Id<iscore::Component>& id,
-        OSSIA::Node& parent,
+        ossia::net::node_base& parent,
         Effect::ProcessModel& scenario,
         Ossia::LocalTree::DocumentPlugin& doc,
         QObject* parent_obj):
