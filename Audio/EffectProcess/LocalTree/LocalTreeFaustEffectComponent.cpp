@@ -51,15 +51,15 @@ void FaustComponent::recreate()
 
         // Set value to current value of fx
         param_addr->add_callback([=] (const ossia::value& val) {
-            if(val.getType() != OSSIA::Type::FLOAT)
+            if(val.getType() != ossia::val_type::FLOAT)
                 return;
             if(!m_audio_effect)
                 return;
 
-            auto current_val = val.get<OSSIA::Float>().value;
+            auto current_val = val.get<ossia::Float>().value;
             SetControlValueEffect(m_audio_effect, i, current_val);
         });
-        param_addr->pushValue(OSSIA::Float{init});
+        param_addr->pushValue(ossia::Float{init});
     }
 }
 }

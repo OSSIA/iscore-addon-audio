@@ -62,7 +62,7 @@ class EffectProcessComponentBase :
 
 
     private:
-        std::shared_ptr<ossia::net::node_base> m_effectsNode;
+        ossia::net::node_base& m_effectsNode;
 };
 
 class EffectProcessComponent final :

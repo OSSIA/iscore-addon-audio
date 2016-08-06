@@ -17,7 +17,7 @@ EffectProcessComponentBase::EffectProcessComponentBase(
         Ossia::LocalTree::DocumentPlugin& doc,
         QObject* parent_obj):
     Ossia::LocalTree::ProcessComponent_T<ProcessModel>{parent, scenario, doc, id, "EffectProcessComponent", parent_obj},
-    m_effectsNode{add_node(*node(), "effects")}
+    m_effectsNode{*node().createChild("effects")}
 {
 }
 
@@ -26,25 +26,31 @@ EffectComponent*EffectProcessComponentBase::make(
         EffectComponentFactory& factory,
         EffectModel& model)
 {
-    return factory.make(id, *m_effectsNode, model, this->system(), this);
+    return factory.make(id, m_effectsNode, model, this->system(), this);
 }
 
 void EffectProcessComponentBase::removing(const EffectModel& cst, const EffectComponent& comp)
 {
-    auto it = find_if(m_effectsNode->children(), [&] (const auto& node)
+    // TODO
+    /*
+    auto it = find_if(m_effectsNode.children(), [&] (const auto& node)
     { return node == comp.node(); });
-    ISCORE_ASSERT(it != m_effectsNode->children().end());
+    ISCORE_ASSERT(it != m_effectsNode.children().end());
 
-    m_effectsNode->erase(it);
+    m_effectsNode.erase(it);
+    */
 }
 
 EffectProcessComponentBase::~EffectProcessComponentBase()
 {
+    // TODO
+    /*
     m_properties.clear();
 
     m_effectsNode.reset();
 
     m_thisNode.clear();
+    */
 }
 }
 }
