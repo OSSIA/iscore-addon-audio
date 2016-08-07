@@ -1,4 +1,6 @@
 #include "LocalTreeFaustEffectComponent.hpp"
+#include <boost/algorithm/string/find.hpp>
+#include <boost/algorithm/string/erase.hpp>
 
 
 namespace Audio
@@ -39,12 +41,18 @@ void FaustComponent::recreate()
     auto count = GetControlCountEffect(fx);
     for(int i = 0; i < count; i++)
     {
-        char label[64];
+        char label[512];
         float min, max, init;
 
         GetControlParamEffect(fx, i, label, &min, &max, &init);
 
-        auto param_node = m_parametersNode.createChild(label);
+        std::string label_s{label};
+        auto idx = label_s.find_last_of('/');
+        if(idx != std::string::npos)
+        {
+            label_s = label_s.substr(idx + 1, label_s.size());
+        }
+        auto param_node = m_parametersNode.createChild(label_s);
         auto param_addr = param_node->createAddress(ossia::val_type::FLOAT);
         param_addr->setAccessMode(ossia::access_mode::BI);
         param_addr->setDomain(ossia::net::makeDomain(ossia::Float{min}, ossia::Float{max}));
