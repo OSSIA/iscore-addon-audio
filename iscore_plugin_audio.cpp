@@ -89,11 +89,11 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
             Audio::Panel::TrackListPanelFactory>,*/
         FW<Audio::Effect::EffectFactory,
             Audio::Effect::FaustEffectFactory>,
-        FW<Ossia::LocalTree::ProcessComponentFactory,
+        FW<Engine::LocalTree::ProcessComponentFactory,
             Audio::Effect::LocalTree::EffectProcessComponentFactory>,
         FW<Audio::Effect::LocalTree::EffectComponentFactory,
             Audio::Effect::LocalTree::FaustComponentFactory>,
-        FW<RecreateOnPlay::ClockManagerFactory,
+        FW<Engine::Execution::ClockManagerFactory,
             Audio::AudioStreamEngine::AudioClockFactory>,
         FW<Scenario::DropHandler,
             Audio::Sound::DropHandler>,

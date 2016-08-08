@@ -1,5 +1,5 @@
 #pragma once
-#include <OSSIA/LocalTree/LocalTreeComponent.hpp>
+#include <Engine/LocalTree/LocalTreeComponent.hpp>
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
 #include <Audio/EffectProcess/Effect/EffectComponent.hpp>
 #include <iscore/component/ComponentFactory.hpp>
@@ -12,15 +12,15 @@ namespace Effect
 namespace LocalTree
 {
 class EffectComponent :
-        public Ossia::LocalTree::Component<GenericEffectComponent<Ossia::LocalTree::DocumentPlugin>>
+        public Engine::LocalTree::Component<GenericEffectComponent<Engine::LocalTree::DocumentPlugin>>
 {
     public:
-        using parent_t = Ossia::LocalTree::Component<GenericEffectComponent<Ossia::LocalTree::DocumentPlugin>>;
+        using parent_t = Engine::LocalTree::Component<GenericEffectComponent<Engine::LocalTree::DocumentPlugin>>;
         static const constexpr bool is_unique = true;
         EffectComponent(
                 ossia::net::node_base& node,
                 Effect::EffectModel& proc,
-                Ossia::LocalTree::DocumentPlugin& doc,
+                Engine::LocalTree::DocumentPlugin& doc,
                 const Id<iscore::Component>& id,
                 const QString& name,
                 QObject* parent);
@@ -38,7 +38,7 @@ using EffectComponent_T = Effect::GenericEffectComponent_T<EffectComponent, Effe
 class EffectComponentFactory :
         public iscore::GenericComponentFactory<
             Effect::EffectModel,
-            Ossia::LocalTree::DocumentPlugin,
+            Engine::LocalTree::DocumentPlugin,
             Effect::LocalTree::EffectComponentFactory>
 {
         ISCORE_ABSTRACT_FACTORY("c9e1f9bc-b974-4695-a3a8-f797c34858ee")
@@ -48,7 +48,7 @@ class EffectComponentFactory :
                 const Id<iscore::Component>&,
                 ossia::net::node_base& n,
                 Effect::EffectModel& proc,
-                Ossia::LocalTree::DocumentPlugin& doc,
+                Engine::LocalTree::DocumentPlugin& doc,
                 QObject* paren_objt) const = 0;
 };
 
@@ -63,7 +63,7 @@ class EffectComponentFactory_T :
                 const Id<iscore::Component>& id,
                 ossia::net::node_base& n,
                 Effect::EffectModel& proc,
-                Ossia::LocalTree::DocumentPlugin& doc,
+                Engine::LocalTree::DocumentPlugin& doc,
                 QObject* paren_objt) const override
         {
             return new EffectComponent_T{id, n, static_cast<model_type&>(proc), doc, paren_objt};
@@ -73,7 +73,7 @@ class EffectComponentFactory_T :
 using EffectComponentFactoryList =
     iscore::GenericComponentFactoryList<
             Effect::EffectModel,
-            Ossia::LocalTree::DocumentPlugin,
+            Engine::LocalTree::DocumentPlugin,
             Effect::LocalTree::EffectComponentFactory>;
 }
 }

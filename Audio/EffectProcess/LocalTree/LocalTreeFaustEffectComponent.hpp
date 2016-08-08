@@ -17,7 +17,7 @@ class FaustComponent : public EffectComponent_T<Effect::FaustEffectModel>
                 const Id<iscore::Component>& id,
                 ossia::net::node_base& node,
                 Effect::FaustEffectModel& proc,
-                Ossia::LocalTree::DocumentPlugin& doc,
+                Engine::LocalTree::DocumentPlugin& doc,
                 QObject* parent);
 
         void recreate();

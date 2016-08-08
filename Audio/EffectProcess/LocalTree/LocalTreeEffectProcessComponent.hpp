@@ -1,7 +1,7 @@
 #pragma once
-#include <OSSIA/LocalTree/Scenario/ProcessComponent.hpp>
-#include <OSSIA/LocalTree/LocalTreeComponent.hpp>
-#include <OSSIA/LocalTree/NameProperty.hpp>
+#include <Engine/LocalTree/Scenario/ProcessComponent.hpp>
+#include <Engine/LocalTree/LocalTreeComponent.hpp>
+#include <Engine/LocalTree/NameProperty.hpp>
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
 #include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
@@ -24,7 +24,7 @@ class EffectProcessComponent;
 class EffectFactoryList;
 
 class EffectProcessComponentBase :
-        public Ossia::LocalTree::ProcessComponent_T<ProcessModel>
+        public Engine::LocalTree::ProcessComponent_T<ProcessModel>
 {
         COMPONENT_METADATA("0313e6df-1a18-4349-a4fb-8bc3461cc6b5")
 
@@ -37,7 +37,7 @@ class EffectProcessComponentBase :
                const Id<iscore::Component>& id,
                ossia::net::node_base& parent,
                Effect::ProcessModel& scenario,
-               Ossia::LocalTree::DocumentPlugin& doc,
+               Engine::LocalTree::DocumentPlugin& doc,
                QObject* parent_obj);
 
 
@@ -72,7 +72,7 @@ class EffectProcessComponent final :
         using iscore::PolymorphicComponentHierarchy<EffectProcessComponentBase>::PolymorphicComponentHierarchyManager;
 };
 
-using EffectProcessComponentFactory = Ossia::LocalTree::ProcessComponentFactory_T<EffectProcessComponent>;
+using EffectProcessComponentFactory = Engine::LocalTree::ProcessComponentFactory_T<EffectProcessComponent>;
 }
 }
 }

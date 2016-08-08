@@ -10,7 +10,7 @@ namespace LocalTree
 EffectComponent::EffectComponent(
         ossia::net::node_base& n,
         EffectModel& model,
-        Ossia::LocalTree::DocumentPlugin& doc,
+        Engine::LocalTree::DocumentPlugin& doc,
         const Id<iscore::Component>& id,
         const QString& name,
         QObject* parent):

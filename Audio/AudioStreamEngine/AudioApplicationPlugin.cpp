@@ -3,7 +3,7 @@
 #include <core/document/Document.hpp>
 #include <core/document/DocumentModel.hpp>
 #include <Scenario/Application/ScenarioApplicationPlugin.hpp>
-#include <OSSIA/OSSIAApplicationPlugin.hpp>
+#include <Engine/ApplicationPlugin.hpp>
 #include <QAction>
 #include <Audio/Settings/Card/CardSettingsModel.hpp>
 #include <LibAudioStreamMC++.h>

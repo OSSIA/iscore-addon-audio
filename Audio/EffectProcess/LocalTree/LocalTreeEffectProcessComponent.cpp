@@ -1,5 +1,5 @@
 #include "LocalTreeEffectProcessComponent.hpp"
-#include <OSSIA/LocalTree/Scenario/MetadataParameters.hpp>
+#include <Engine/LocalTree/Scenario/MetadataParameters.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
 #include <iscore/tools/SettableIdentifierGeneration.hpp>
 
@@ -14,9 +14,9 @@ EffectProcessComponentBase::EffectProcessComponentBase(
         const Id<iscore::Component>& id,
         ossia::net::node_base& parent,
         Effect::ProcessModel& scenario,
-        Ossia::LocalTree::DocumentPlugin& doc,
+        Engine::LocalTree::DocumentPlugin& doc,
         QObject* parent_obj):
-    Ossia::LocalTree::ProcessComponent_T<ProcessModel>{parent, scenario, doc, id, "EffectProcessComponent", parent_obj},
+    Engine::LocalTree::ProcessComponent_T<ProcessModel>{parent, scenario, doc, id, "EffectProcessComponent", parent_obj},
     m_effectsNode{*node().createChild("effects")}
 {
 }

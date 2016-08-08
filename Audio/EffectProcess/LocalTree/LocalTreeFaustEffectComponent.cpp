@@ -13,7 +13,7 @@ FaustComponent::FaustComponent(
         const Id<iscore::Component>& id,
         ossia::net::node_base& node,
         FaustEffectModel& proc,
-        Ossia::LocalTree::DocumentPlugin& doc,
+        Engine::LocalTree::DocumentPlugin& doc,
         QObject* parent):
     EffectComponent_T<Effect::FaustEffectModel>{node, proc, doc, id, proc.metadata.name(), parent}
 {

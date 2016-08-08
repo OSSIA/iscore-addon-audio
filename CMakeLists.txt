@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 project(iscore_plugin_audio LANGUAGES CXX)
 
-if(NOT TARGET iscore_plugin_ossia)
+if(NOT TARGET iscore_plugin_engine)
     return()
 endif()
 find_package(Sndfile)
@@ -262,7 +262,7 @@ set_property(TARGET ${PROJECT_NAME}  PROPERTY COTIRE_ADD_UNITY_BUILD FALSE)
 iscore_generate_command_list_file(${PROJECT_NAME} "${HDRS}")
 target_link_libraries(${PROJECT_NAME} PUBLIC
                      Qt5::Core Qt5::Widgets Qt5::Multimedia
-                     iscore_lib_base iscore_plugin_ossia
+                     iscore_lib_base iscore_plugin_engine
                      ${SNDFILE_LIBRARIES}
                      libaudiostream)
 
