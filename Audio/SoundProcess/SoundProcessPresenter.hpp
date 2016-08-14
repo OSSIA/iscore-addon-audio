@@ -38,7 +38,6 @@ class LayerPresenter final :
     private:
         const LayerModel& m_layer;
         LayerView* m_view{};
-        FocusDispatcher m_focusDispatcher;
         ZoomRatio m_ratio{1};
 };
 }

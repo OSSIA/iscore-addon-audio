@@ -1,3 +1,5 @@
+#include <boost/graph/graphviz.hpp>
+#include <boost/range/iterator_range.hpp>
 #include "AudioDependencyGraph.hpp"
 
 
@@ -15,8 +17,6 @@
 #include <Audio/AudioStreamEngine/Scenario/ConstraintComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/LoopComponent.hpp>
-#include <boost/graph/graphviz.hpp>
-#include <boost/range/iterator_range.hpp>
 #include <type_traits>
 #include <sstream>
 #include <QMessageBox>

@@ -8,7 +8,7 @@
 #include <QDialogButtonBox>
 #include <QDialog>
 #include <QListWidget>
-
+#include <QPushButton>
 namespace Audio
 {
 namespace Effect
