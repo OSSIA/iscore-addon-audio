@@ -2,6 +2,7 @@
 #include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
 #include <Audio/Commands/InsertEffect.hpp>
 #include <Audio/Commands/EditFaustEffect.hpp>
+#include <iscore/document/DocumentContext.hpp>
 
 #include <QPlainTextEdit>
 #include <QVBoxLayout>

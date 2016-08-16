@@ -5,7 +5,7 @@ namespace Audio
 namespace Sound
 {
 
-LayerModel::LayerModel(
+Layer::Layer(
         ProcessModel& model,
         const Id<Process::LayerModel>& id,
         QObject* parent):
@@ -13,8 +13,8 @@ LayerModel::LayerModel(
 {
 }
 
-LayerModel::LayerModel(
-        const LayerModel&,
+Layer::Layer(
+        const Layer&,
         ProcessModel& model,
         const Id<Process::LayerModel>& id,
         QObject* parent):
@@ -23,16 +23,10 @@ LayerModel::LayerModel(
 
 }
 
-void LayerModel::serialize(const VisitorVariant& vis) const
+void Layer::serialize_impl(const VisitorVariant& vis) const
 {
     serialize_dyn(vis, *this);
 }
-
-Process::LayerModelPanelProxy* LayerModel::make_panelProxy(QObject* parent) const
-{
-    return new Dummy::DummyLayerPanelProxy{*this, parent};
-}
-
 
 }
 }

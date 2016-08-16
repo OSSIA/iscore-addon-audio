@@ -11,7 +11,7 @@ namespace Sound
 {
 using ProcessFactory = Process::GenericProcessFactory<
     Sound::ProcessModel,
-    Sound::LayerModel,
+    Sound::Layer,
     Sound::LayerPresenter,
     Sound::LayerView>;
 }

@@ -6,7 +6,7 @@ namespace Audio
 namespace Sound
 {
 LayerPresenter::LayerPresenter(
-        const LayerModel& layer,
+        const Layer& layer,
         LayerView* view,
         const Process::ProcessPresenterContext& ctx,
         QObject* parent):
@@ -64,7 +64,7 @@ void LayerPresenter::parentGeometryChanged()
     m_view->recompute(processModel().duration(), m_ratio);
 }
 
-const LayerModel& LayerPresenter::layerModel() const
+const Layer& LayerPresenter::layerModel() const
 {
     return m_layer;
 }

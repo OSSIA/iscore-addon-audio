@@ -3,13 +3,13 @@
 
 template<>
 void Visitor<Reader<DataStream>>::readFrom_impl(
-        const Audio::Sound::LayerModel& lm)
+        const Audio::Sound::Layer& lm)
 {
 }
 
 template<>
 void Visitor<Writer<DataStream>>::writeTo(
-        Audio::Sound::LayerModel& lm)
+        Audio::Sound::Layer& lm)
 {
 }
 
@@ -17,12 +17,12 @@ void Visitor<Writer<DataStream>>::writeTo(
 
 template<>
 void Visitor<Reader<JSONObject>>::readFrom_impl(
-        const Audio::Sound::LayerModel& lm)
+        const Audio::Sound::Layer& lm)
 {
 }
 
 template<>
 void Visitor<Writer<JSONObject>>::writeTo(
-        Audio::Sound::LayerModel& lm)
+        Audio::Sound::Layer& lm)
 {
 }

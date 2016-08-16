@@ -8,27 +8,27 @@ namespace Audio
 namespace Sound
 {
 class ProcessModel;
-class LayerModel final : public Process::LayerModel
+class Layer final : public Process::LayerModel
 {
-        ISCORE_SERIALIZE_FRIENDS(LayerModel, DataStream)
-        ISCORE_SERIALIZE_FRIENDS(LayerModel, JSONObject)
+        ISCORE_SERIALIZE_FRIENDS(Layer, DataStream)
+        ISCORE_SERIALIZE_FRIENDS(Layer, JSONObject)
 
     public:
-        explicit LayerModel(
+        explicit Layer(
                 ProcessModel& model,
                 const Id<Process::LayerModel>& id,
                 QObject* parent);
 
         // Copy
-        explicit LayerModel(
-                const LayerModel& source,
+        explicit Layer(
+                const Layer& source,
                 ProcessModel& model,
                 const Id<Process::LayerModel>& id,
                 QObject* parent);
 
         // Load
         template<typename Impl>
-        explicit LayerModel(
+        explicit Layer(
                 Deserializer<Impl>& vis,
                 ProcessModel& model,
                 QObject* parent) :
@@ -37,8 +37,7 @@ class LayerModel final : public Process::LayerModel
             vis.writeTo(*this);
         }
 
-        void serialize(const VisitorVariant&) const override;
-        Process::LayerModelPanelProxy* make_panelProxy(QObject* parent) const override;
+        void serialize_impl(const VisitorVariant&) const override;
 };
 
 }

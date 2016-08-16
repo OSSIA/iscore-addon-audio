@@ -3,7 +3,7 @@
 #include <Scenario/Document/Constraint/ConstraintModel.hpp>
 #include <iscore/widgets/SignalUtils.hpp>
 #include <iscore/widgets/MarginLess.hpp>
-
+#include <iscore/document/DocumentContext.hpp>
 #include <QCheckBox>
 #include <QSpinBox>
 #include <QTableWidget>
