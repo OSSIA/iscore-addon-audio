@@ -55,7 +55,7 @@ void FaustComponent::recreate()
         auto param_node = m_parametersNode.createChild(label_s);
         auto param_addr = param_node->createAddress(ossia::val_type::FLOAT);
         param_addr->setAccessMode(ossia::access_mode::BI);
-        param_addr->setDomain(ossia::net::makeDomain(ossia::Float{min}, ossia::Float{max}));
+        param_addr->setDomain(ossia::net::make_domain(ossia::Float{min}, ossia::Float{max}));
 
         // Set value to current value of fx
         param_addr->add_callback([=] (const ossia::value& val) {
