@@ -51,8 +51,6 @@ set(HDRS ${HDRS}
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Utility.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TGroupAudioStream.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/GroupAudioStream.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/GroupAudioStream.h"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/ExecutorAudioEffect.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TBufferManager.hpp"
@@ -149,7 +147,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModelSerialization.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Missing/MissingEffectModelSerialization.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessLayerSerialization.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessModelSerialization.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessModelSerialization.cpp"
@@ -211,7 +208,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsPresenter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsView.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessLayer.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessPresenter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessView.cpp"
