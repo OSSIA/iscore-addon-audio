@@ -198,7 +198,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/UpdateMix.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/EffectInspector.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/ReturnInspector.cpp"
