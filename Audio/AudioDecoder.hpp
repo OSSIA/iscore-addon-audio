@@ -2,6 +2,7 @@
 #include <QAudioDecoder>
 #include <vector>
 #include <atomic>
+#include <Audio/AudioArray.hpp>
 
 namespace Audio
 {
@@ -9,15 +10,15 @@ class AudioDecoder :
         public QObject
 {
     public:
-        static std::vector<std::vector<float>> readAudio(const QString& path);
+        static AudioArray readAudio(const QString& path);
 
     private:
         AudioDecoder(
-                std::vector<std::vector<float>>& p_data,
+                AudioArray& p_data,
                 const QString& path);
 
         QAudioDecoder decoder;
-        std::vector<std::vector<float>>& data;
+        AudioArray& data;
         std::atomic_bool ready{false};
 };
 }
