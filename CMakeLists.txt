@@ -132,6 +132,7 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessModel.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioDecoder.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/Track.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/TrackListPanel.hpp"
@@ -230,6 +231,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessModel.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioDecoder.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/Track.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/TrackListPanel.cpp"

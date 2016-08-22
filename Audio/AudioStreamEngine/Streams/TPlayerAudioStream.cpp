@@ -3,8 +3,8 @@
 #include "TGroupAudioMixer.hpp"
 
 TPlayerAudioStream::TPlayerAudioStream(
-        TGroupRenderer& renderer,
-        TGroupAudioMixer& mixer):
+        TGroupRenderer* renderer,
+        TGroupAudioMixer* mixer):
     fRenderer{renderer},
     fMixer{mixer}
 {
@@ -20,17 +20,20 @@ TPlayerAudioStream::~TPlayerAudioStream()
 long TPlayerAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos)
 {
     assert_stream(framesNum, framePos);
+
+    auto& renderer = *fRenderer;
+    auto& mixer = *fMixer;
     if(fScheduleReset)
     {
-        fRenderer.Stop();
-        fMixer.Reset();
+        renderer.Stop();
+        mixer.Reset();
         fScheduleReset = false;
     }
 
     float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
 
-    fRenderer.Process(framesNum);
-    auto out_buffer = fRenderer.GetOutputBuffer();
+    renderer.Process(framesNum);
+    auto out_buffer = renderer.GetOutputBuffer();
 
     UAudioTools::MixFrameToFrameBlk1(buffer->GetFrame(framePos, temp1),
                                      out_buffer,

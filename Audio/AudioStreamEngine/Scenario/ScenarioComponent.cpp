@@ -18,6 +18,10 @@ ScenarioComponentBase::ScenarioComponentBase(
 {
 }
 
+ScenarioComponent::~ScenarioComponent()
+{
+}
+
 optional<AudioGraphVertice> ScenarioComponent::visit(AudioGraph& graph)
 {
     auto res = boost::add_vertex(this, graph);

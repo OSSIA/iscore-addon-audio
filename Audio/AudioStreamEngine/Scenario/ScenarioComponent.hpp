@@ -47,6 +47,7 @@ class ScenarioComponent final : public HierarchicalScenarioComponent<
         Event,
         TimeNode,
         State>::HierarchicalScenarioComponent;
+        ~ScenarioComponent();
 
         optional<AudioGraphVertice> visit(AudioGraph& graph) override;
 

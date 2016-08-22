@@ -94,7 +94,7 @@ AUDIOAPI AudioStream MakeGroupStream(AudioPlayerPtr p)
     if(!mix)
         return nullptr;
 
-    return new TPlayerAudioStream{*grp, *mix};
+    return new TPlayerAudioStream{grp, mix};
 }
 
 AUDIOAPI AudioStream MakeSinusStream(long length, float freq)

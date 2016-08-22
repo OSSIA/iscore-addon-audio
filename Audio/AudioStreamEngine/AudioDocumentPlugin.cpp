@@ -10,6 +10,7 @@
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
 #include <Audio/AudioStreamEngine/AudioDependencyGraph.hpp>
 #include <Audio/AudioStreamEngine/Scenario/ConstraintComponent.hpp>
+#include <thread>
 
 namespace Audio
 {
@@ -62,7 +63,9 @@ void DocumentPlugin::stop()
     if(audioContext.audio.player)
     {
         StopAudioPlayer(audioContext.audio.player);
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
         CloseAudioClient(audioContext.audio.player);
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
         audioContext.audio.player = nullptr;
     }
 

@@ -21,6 +21,8 @@ struct MediaFileHandle
         const AudioArray& data() const
         { return m_array; }
 
+        float** audioData() const;
+
         int sampleRate() const
         { return m_sampleRate; }
 
@@ -30,10 +32,13 @@ struct MediaFileHandle
         int64_t samples() const;
         int64_t channels() const;
 
+        bool empty() const
+        { return channels() == 0 || samples() == 0; }
+
     private:
-        AudioArray readFile(const QFile& filename, int* sRate = nullptr);
         QString m_file;
         AudioArray m_array;
+        std::array<float*, 2> m_data;
         int m_sampleRate;
 };
 }

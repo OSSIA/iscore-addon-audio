@@ -46,6 +46,8 @@ class ProcessModel final : public Process::ProcessModel
         void setFile(const QString& file);
         void setFile(const MediaFileHandle& file);
 
+        MediaFileHandle& file()
+        { return m_file; }
         const MediaFileHandle& file() const
         { return m_file; }
 

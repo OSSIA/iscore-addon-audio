@@ -65,20 +65,20 @@ std::vector<std::vector<double> > LayerView::computeDataSet(ZoomRatio ratio, dou
     for (int c = 0; c < nchannels; ++c) {
 
         const auto& chan = m_data[c];
-        const int chan_n = chan.size();
+        const int64_t chan_n = chan.size();
 
-        const double length = (1000 * chan_n) / m_sampleRate; // duration of the track
+        const double length = (1000ll * chan_n) / m_sampleRate; // duration of the track
         const double size = ratio > 0 ? length / ratio : 0; // number of pixels the track will occupy in its entirety
 
-        const int npoints = size;
+        const int64_t npoints = size;
 
         std::vector<double>& rmsv = dataset[c];
         rmsv.reserve(npoints);
 
-        for (int i = 0; i < npoints; ++i)
+        for (int64_t i = 0; i < npoints; ++i)
         {
             double rms = 0;
-            for (int j = 0;
+            for (int64_t j = 0;
                  (j < density_i) && ((i * density_i + j) < chan_n);
                  ++j)
             {
@@ -110,7 +110,7 @@ void LayerView::drawWaveForms(ZoomRatio ratio) {
     // Height of each channel
     const auto h = height() / (double)nchannels;
 
-    const int w = width();
+    const int64_t w = width();
 
     // Trace lines between channels
 
@@ -124,13 +124,15 @@ void LayerView::drawWaveForms(ZoomRatio ratio) {
     auto view = scene()->views().first();
     auto x0 = std::max(mapFromScene(view->mapToScene(0, 0)).x(), qreal(0));
 
-    int i0 = x0 / densityratio;
-    const int n = m_curdata[0].size();
+    int64_t i0 = x0 / densityratio;
+    const int64_t n = m_curdata[0].size();
+    if(n == 0)
+        return;
 
     auto xf = mapFromScene(view->mapToScene(view->width(), 0)).x();
 
-   for (int c = 0; c < nchannels ; ++c) {
-        const int current_height = c * h;
+   for (int64_t c = 0; c < nchannels ; ++c) {
+        const int64_t current_height = c * h;
         std::vector<double> dataset = m_curdata[c];
 
         QPainterPath path{};
@@ -142,7 +144,7 @@ void LayerView::drawWaveForms(ZoomRatio ratio) {
         if (n > i0) {
             path.moveTo(x0, dataset[i0] + height_adjustemnt);
             double x = x0;
-            for (int i = i0; (i < n) && (x <= xf); ++i) {
+            for (int64_t i = i0; (i < n) && (x <= xf); ++i) {
                 x = i * densityratio;
                 path.lineTo(x, dataset[i] * h / 2. + height_adjustemnt);
             }
@@ -161,7 +163,7 @@ void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
     if(m_data.size() == 0)
         return;
 
-    const int density = std::max((int)(ratio * m_sampleRate / 1000), 1);
+    const int64_t density = std::max((int)(ratio * m_sampleRate / 1000), 1);
     long action = compareDensity(density);
 
     switch (action) {

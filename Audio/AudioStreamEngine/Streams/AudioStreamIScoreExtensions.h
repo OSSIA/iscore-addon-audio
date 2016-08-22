@@ -11,6 +11,8 @@ extern "C"
 {
 #endif
 AudioRendererPtr MakeGroupPlayer();
+
+// The stream takes ownership of the player
 AudioStream MakeGroupStream(AudioRendererPtr p);
 
 AudioStream MakeSinusStream(long length, float freq);

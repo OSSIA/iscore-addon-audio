@@ -58,6 +58,10 @@ Constraint::Constraint(
         m_stretch = constraint.duration.executionSpeed();
 }
 
+Constraint::~Constraint()
+{
+}
+
 optional<AudioGraphVertice> Constraint::visit(AudioGraph& graph)
 {
     int n_proc = this->children().size();
@@ -197,7 +201,7 @@ void Constraint::makeStream(const Context& player)
                     cst_dur.isMaxInfinite()
                         ? INT64_MAX
                         : system().toFrame(cst_dur.isRigid() ? def : maxdur);
-                if(dur < parent_max_dur)
+                if(dur >= 0 && dur < parent_max_dur)
                 {
                     // TODO this may break with rubberband...
                     extended_stream =
