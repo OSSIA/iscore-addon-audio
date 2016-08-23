@@ -1,5 +1,6 @@
 #include "LV2EffectModel.hpp"
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
+
 namespace Audio
 {
 namespace Effect

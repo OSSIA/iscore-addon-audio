@@ -23,7 +23,7 @@ void Visitor<Reader<JSONObject>>::readFrom_impl(
 {
     // Save the parent class
     readFrom(static_cast<const IdentifiedObject<Audio::Effect::EffectModel>&>(eff));
-    m_obj[iscore::StringConstant().Metadata] = toJsonObject(eff.metadata);
+    m_obj[strings.Metadata] = toJsonObject(eff.metadata);
 
 }
 
@@ -31,5 +31,5 @@ template<>
 void Visitor<Writer<JSONObject>>::writeTo(
         Audio::Effect::EffectModel& eff)
 {
-    eff.metadata = fromJsonObject<ModelMetadata>(m_obj[iscore::StringConstant().Metadata]);
+    eff.metadata = fromJsonObject<ModelMetadata>(m_obj[strings.Metadata]);
 }

@@ -30,7 +30,7 @@ struct SendEnumeratorDialog : public QDialog
         {
             for(auto elt : m_sends)
             {
-                auto str = elt->metadata.name() + " (" + fromPath(*elt) + ")";
+                auto str = elt->metadata.getName() + " (" + fromPath(*elt) + ")";
                 m_sendNames.push_back(str);
             }
 
@@ -86,13 +86,13 @@ InspectorWidget::InspectorWidget(
 
     if(auto res = object.send_ptr())
     {
-        lbl->setText(res->metadata.name());
+        lbl->setText(res->metadata.getName());
     }
 
     con(object, &Return::ProcessModel::sendChanged,
         this, [=,&object] () {
         auto res = object.send_ptr();
-        lbl->setText(res ? res->metadata.name() : "");
+        lbl->setText(res ? res->metadata.getName() : "");
     });
 
     connect(but, &QPushButton::pressed,

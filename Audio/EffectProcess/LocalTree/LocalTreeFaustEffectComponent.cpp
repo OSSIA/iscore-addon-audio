@@ -15,7 +15,7 @@ FaustComponent::FaustComponent(
         FaustEffectModel& proc,
         Engine::LocalTree::DocumentPlugin& doc,
         QObject* parent):
-    EffectComponent_T<Effect::FaustEffectModel>{node, proc, doc, id, proc.metadata.name(), parent}
+    EffectComponent_T<Effect::FaustEffectModel>{node, proc, doc, id, proc.metadata.getName(), parent}
 {
     // Create a fake effect on each change,
     // and check its number / range of parameters.

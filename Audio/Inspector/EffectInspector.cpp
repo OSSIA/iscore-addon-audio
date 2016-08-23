@@ -112,9 +112,9 @@ void InspectorWidget::recreate()
     for(const auto& fx_id : process().effectsOrder())
     {
         EffectModel& fx = process().effects().at(fx_id);
-        auto item = new ListWidgetItem(fx.metadata.name(), m_list);
+        auto item = new ListWidgetItem(fx.metadata.getName(), m_list);
 
-        con(fx.metadata, &ModelMetadata::nameChanged,
+        con(fx.metadata, &ModelMetadata::NameChanged,
             item, [=] (const auto& name) { item->setText(name); });
         item->setData(Qt::UserRole, QVariant::fromValue(fx_id));
         m_list->addItem(item);
