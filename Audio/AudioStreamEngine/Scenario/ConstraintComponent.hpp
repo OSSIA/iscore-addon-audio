@@ -17,7 +17,7 @@ namespace AudioStreamEngine
 class ConstraintBase :
         public Scenario::ConstraintComponent<Component>
 {
-        COMPONENT_METADATA("13521db6-0de7-462c-9a43-57612a250216")
+        COMMON_COMPONENT_METADATA("13521db6-0de7-462c-9a43-57612a250216")
     public:
         static const constexpr bool is_unique = true;
         using StreamPair = std::pair<Process::ProcessModel&, AudioStream>;

@@ -11,7 +11,7 @@ class DocumentPlugin;
 class TimeNode final :
         public iscore::Component
 {
-        COMPONENT_METADATA("76c10344-74ed-44fb-8e13-cf7907759e1a")
+        COMMON_COMPONENT_METADATA("76c10344-74ed-44fb-8e13-cf7907759e1a")
     public:
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
 

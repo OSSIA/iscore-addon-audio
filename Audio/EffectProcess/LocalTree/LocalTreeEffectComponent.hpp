@@ -14,6 +14,7 @@ namespace LocalTree
 class EffectComponent :
         public Engine::LocalTree::Component<GenericEffectComponent<Engine::LocalTree::DocumentPlugin>>
 {
+        ABSTRACT_COMPONENT_METADATA(Audio::Effect::LocalTree::EffectComponent, "c9e1f9bc-b974-4695-a3a8-f797c34858ee")
     public:
         using parent_t = Engine::LocalTree::Component<GenericEffectComponent<Engine::LocalTree::DocumentPlugin>>;
         static const constexpr bool is_unique = true;
@@ -26,6 +27,9 @@ class EffectComponent :
                 QObject* parent);
 
         virtual ~EffectComponent();
+
+        ossia::net::node_base& parameters() const
+        { return m_parametersNode; }
 
     protected:
         ossia::net::node_base& m_parametersNode;
@@ -41,7 +45,7 @@ class EffectComponentFactory :
             Engine::LocalTree::DocumentPlugin,
             Effect::LocalTree::EffectComponentFactory>
 {
-        ISCORE_ABSTRACT_FACTORY("c9e1f9bc-b974-4695-a3a8-f797c34858ee")
+        ISCORE_ABSTRACT_COMPONENT_FACTORY(Audio::Effect::LocalTree::EffectComponent)
     public:
         virtual ~EffectComponentFactory();
         virtual EffectComponent* make(

@@ -55,13 +55,13 @@ class ProcessModel final : public Process::ProcessModel
             vis.writeTo(*this);
         }
 
-        const auto& effects() const
+        const NotifyingMap<EffectModel>& effects() const
         { return m_effects; }
         const auto& effectsOrder() const
         { return m_effectOrder; }
 
         void insertEffect(EffectModel* eff, int pos);
-        void removeEffect(const EffectModel&);
+        void removeEffect(const Id<EffectModel>&);
 
     signals:
         void effectsChanged();

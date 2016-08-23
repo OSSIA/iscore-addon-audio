@@ -59,6 +59,9 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
         AudioEffect effect() const
         { return m_effect; }
 
+    signals:
+        void effectChanged() const;
+
     protected:
         AudioEffect m_effect;
 };

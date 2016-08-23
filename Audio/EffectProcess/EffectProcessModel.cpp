@@ -53,9 +53,12 @@ void ProcessModel::insertEffect(
     emit effectsChanged();
 }
 
-void ProcessModel::removeEffect(const EffectModel& e)
+void ProcessModel::removeEffect(const Id<EffectModel>& e)
 {
-    ISCORE_TODO;
+    auto it = find(m_effectOrder, e);
+    m_effectOrder.erase(it);
+
+    m_effects.remove(e);
 
     emit effectsChanged();
 }

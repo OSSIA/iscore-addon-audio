@@ -10,7 +10,7 @@ namespace AudioStreamEngine
 class State final :
         public iscore::Component
 {
-        COMPONENT_METADATA("1d598747-106d-431f-a465-bb47c70d03ab")
+        COMMON_COMPONENT_METADATA("1d598747-106d-431f-a465-bb47c70d03ab")
     public:
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
 

@@ -67,6 +67,8 @@ void FaustEffectModel::reload()
     {
         qDebug() << "could not load effect";
     }
+
+    emit effectChanged();
 }
 
 }

@@ -69,6 +69,7 @@ void FaustComponent::recreate()
         });
         param_addr->pushValue(ossia::Float{init});
     }
+    emit effect().effectChanged();
 }
 }
 }

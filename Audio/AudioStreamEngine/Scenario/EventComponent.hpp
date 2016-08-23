@@ -10,7 +10,7 @@ namespace AudioStreamEngine
 class Event final :
         public iscore::Component
 {
-        COMPONENT_METADATA("080226c0-b415-448d-977c-21d2996f63fd")
+        COMMON_COMPONENT_METADATA("080226c0-b415-448d-977c-21d2996f63fd")
     public:
         Event(
                 const Id<iscore::Component>& id,

@@ -25,8 +25,7 @@ InsertEffect::InsertEffect(
 void InsertEffect::undo() const
 {
     auto& process = m_model.find();
-    auto& eff = process.effects().at(m_id);
-    process.removeEffect(eff);
+    process.removeEffect(m_id);
 }
 
 void InsertEffect::redo() const
@@ -56,5 +55,52 @@ void InsertEffect::deserializeImpl(DataStreamOutput& s)
     s >> m_model >> m_id >> m_effectKind >> m_effect >> m_pos;
 }
 
+
+
+
+RemoveEffect::RemoveEffect(
+        const Effect::ProcessModel& model,
+        const Effect::EffectModel& effect):
+    m_model{model},
+    m_id{effect.id()},
+    m_savedEffect{marshall<DataStream>(effect)}
+{
+    auto& order = model.effectsOrder();
+    m_pos = std::distance(order.begin(), find(order,m_id));
+}
+
+void RemoveEffect::undo() const
+{
+    auto& process = m_model.find();
+    auto& fact_list = context.components.factory<Effect::EffectFactoryList>();
+
+
+    Deserializer<DataStream> des{m_savedEffect};
+    if(auto fx = deserialize_interface(fact_list, des, &process))
+    {
+        process.insertEffect(fx, m_pos);
+    }
+    else
+    {
+        ISCORE_TODO;
+        // Insert a fake effect ?
+    }
+}
+
+void RemoveEffect::redo() const
+{
+    auto& process = m_model.find();
+    process.removeEffect(m_id);
+}
+
+void RemoveEffect::serializeImpl(DataStreamInput& s) const
+{
+    s << m_model << m_id << m_savedEffect << m_pos;
+}
+
+void RemoveEffect::deserializeImpl(DataStreamOutput& s)
+{
+    s >> m_model >> m_id >> m_savedEffect >> m_pos;
+}
 }
 }
