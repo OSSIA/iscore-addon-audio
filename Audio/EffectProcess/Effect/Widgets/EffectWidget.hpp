@@ -3,11 +3,50 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
-
+#include <iscore/widgets/ClearLayout.hpp>
+#include <boost/iterator_adaptors.hpp>
 namespace Audio
 {
 namespace Effect
 {
+template<typename Property_T>
+class QReactiveLabel : public QLabel
+{
+        QReactiveLabel(const typename Property_T::model_type& model, QWidget* parent):
+            QLabel{model.get(), parent}
+        {
+            con(&model, Property_T::notify(),
+                this, &QLabel::setText);
+        }
+};
+
+
+struct EffectParameter
+{
+        int64_t id{};
+        QString label;
+        float min{};
+        float max{};
+        float init{};
+};
+
+struct AudioEffectParameterAdaptor
+{
+        AudioEffect& effect;
+};
+
+
+auto begin(AudioEffectParameterAdaptor fx)
+{
+
+}
+
+
+struct EffectParameterIterator
+{
+        AudioEffect effect;
+        int i = -1;
+};
 
 /**
  * @brief The EffectWidget class
@@ -26,9 +65,8 @@ class EffectWidget :
             auto lay = new QVBoxLayout;
             m_layout = new QGridLayout;
 
-            auto lab = new QLabel;
-            lab->setText(fx.metadata.getName());
-            lay->addWidget(new QLabel);
+            lay->addWidget(new QReactiveLabel<ModelMetadataNameParameter>(fx.metadata, this));
+            lay->addLayout(m_layout);
 
             reflow();
         }
@@ -42,8 +80,18 @@ class EffectWidget :
     private:
         void reflow()
         {
+
             auto fx = m_effect.effect();
-            int n = ;
+            if(!fx)
+            {
+                iscore::clearLayout(m_layout);
+                return;
+            }
+            int n = fx->GetControlCount();
+            for(int i = 0; i < n; i++)
+            {
+
+            }
 
         }
 
