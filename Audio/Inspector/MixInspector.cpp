@@ -195,7 +195,7 @@ void MixWidget::recreate()
 
     // For each direct data, create relevant items.
     auto pretty_name = [&] (const Id<Process::ProcessModel>& dmx) {
-        return cst->processes.at(dmx).metadata.name();
+        return cst->processes.at(dmx).metadata.getName();
     };
 
     QStringList col_labels;
