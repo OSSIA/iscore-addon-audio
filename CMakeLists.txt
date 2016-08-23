@@ -1,19 +1,17 @@
 cmake_minimum_required(VERSION 3.1)
 project(iscore_plugin_audio LANGUAGES CXX)
 
+# Dependencies
 if(NOT TARGET iscore_plugin_engine)
     return()
 endif()
-find_package(Sndfile)
+
 find_package(Faust REQUIRED)
-# find_package(RtAudio)
 
-if(NOT SNDFILE_LIBRARY)
-message("audio plugin requires libsndfile, portaudio")
-return()
-endif()
-
+set(LIBAUDIOSTREAM_FRAMEWORK OFF)
+set(LIBAUDIOSTREAM_SHARED OFF)
 add_subdirectory(3rdparty/libaudiostream)
+
 iscore_common_setup()
 
 # Packages
