@@ -1,5 +1,8 @@
 #include "EffectWidget.hpp"
+#include <QContextMenuEvent>
+#include <QMenu>
 #include <QPushButton>
+#include <QMessageBox>
 
 namespace Audio
 {
@@ -41,6 +44,9 @@ class EffectSlider : public QWidget
                 }
             });
 
+            m_addAutomAction = new QAction{tr("Add automation")};
+            connect(m_addAutomAction, &QAction::triggered,
+                    this, &EffectSlider::on_addAutomation);
             // TODO show tooltip with current value
         }
 
@@ -53,13 +59,29 @@ class EffectSlider : public QWidget
         }
 
     private:
+        void on_addAutomation()
+        {
+          auto addr = m_param.getAddress()->getTextualAddress();
+          QMessageBox::warning(nullptr, "", QString::fromStdString(addr));
+        }
+
+        void contextMenuEvent(QContextMenuEvent* event) override
+        {
+          QMenu* contextMenu = new QMenu{this};
+
+          contextMenu->addAction(m_addAutomAction);
+          contextMenu->exec(event->globalPos());
+
+          contextMenu->deleteLater();
+        }
+
         const ossia::net::node_base& m_param;
         ossia::net::address_base::callback_index m_callback;
         float m_min{0.};
         float m_max{1.};
 
         iscore::DoubleSlider* m_slider{};
-
+        QAction* m_addAutomAction{};
 };
 
 
