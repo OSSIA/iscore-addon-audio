@@ -71,6 +71,7 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/InsertEffect.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/UpdateMix.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/CreateEffectAutomation.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.hpp"
@@ -99,6 +100,7 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectModel.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectComponent.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectFactory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Widgets/EffectSlider.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Widgets/EffectWidget.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Widgets/EffectListWidget.hpp"
 
@@ -216,6 +218,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectFactory.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Widgets/EffectSlider.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Widgets/EffectWidget.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Widgets/EffectListWidget.cpp"
 

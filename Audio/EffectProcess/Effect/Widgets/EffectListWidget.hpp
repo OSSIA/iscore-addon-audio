@@ -15,6 +15,7 @@ class EffectListWidget :
         public Nano::Observer
 {
         const Effect::ProcessModel& m_effects;
+        const iscore::DocumentContext& m_context;
         CommandDispatcher<> m_dispatcher;
 
         QHBoxLayout* m_layout{};
@@ -27,6 +28,7 @@ class EffectListWidget :
                 QWidget* parent):
             QWidget{parent},
             m_effects{fx},
+            m_context{doc},
             m_dispatcher{doc.commandStack}
         {
             this->setLayout(m_layout = new QHBoxLayout);
@@ -55,7 +57,7 @@ class EffectListWidget :
             iscore::clearLayout(m_layout);
             for(auto& effect : m_effects.effects())
             {
-                auto widg = new EffectWidget{effect, this};
+                auto widg = new EffectWidget{effect, m_context, this};
                 m_widgets.push_back(widg);
                 connect(widg, &EffectWidget::removeRequested, this, [=,&effect] () {
                     auto cmd = new Commands::RemoveEffect{m_effects, effect};

@@ -1,94 +1,29 @@
 #include "EffectWidget.hpp"
-#include <QContextMenuEvent>
 #include <QMenu>
 #include <QPushButton>
 #include <QMessageBox>
+
+#include <Scenario/Commands/Constraint/AddProcessToConstraint.hpp>
+#include <Automation/AutomationModel.hpp>
+#include <Scenario/Document/Constraint/ConstraintModel.hpp>
+#include <iscore/command/Dispatchers/MacroCommandDispatcher.hpp>
+#include <Audio/Commands/CreateEffectAutomation.hpp>
+#include <Automation/Commands/InitAutomation.hpp>
+#include <Audio/EffectProcess/Effect/Widgets/EffectSlider.hpp>
 
 namespace Audio
 {
 namespace Effect
 {
 
-class EffectSlider : public QWidget
-{
-    public:
-        EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
-            QWidget{parent},
-            m_param{fx}
-        {
-            auto addr = m_param.getAddress();
-            auto dom = addr->getDomain();
 
-            if(auto f = ossia::net::min(dom).try_get<ossia::Float>()) m_min = f->value;
-            if(auto f = ossia::net::max(dom).try_get<ossia::Float>()) m_max = f->value;
-
-            auto lay = new QVBoxLayout;
-            lay->addWidget(new QLabel{QString::fromStdString(m_param.getName())});
-            m_slider = new iscore::DoubleSlider{this};
-            lay->addWidget(m_slider);
-            this->setLayout(lay);
-
-
-            connect(m_slider, &iscore::DoubleSlider::valueChanged,
-                    this, [=] (double v)
-            {
-                // v is between 0 - 1
-                m_param.getAddress()->pushValue(ossia::Float{float(m_min + (m_max - m_min) * v)});
-            });
-
-            m_callback = addr->add_callback([=] (const ossia::value& val)
-            {
-                if(auto v = val.try_get<ossia::Float>())
-                {
-                    m_slider->setValue(v->value);
-                }
-            });
-
-            m_addAutomAction = new QAction{tr("Add automation")};
-            connect(m_addAutomAction, &QAction::triggered,
-                    this, &EffectSlider::on_addAutomation);
-            // TODO show tooltip with current value
-        }
-
-        ~EffectSlider()
-        {
-            if(auto addr = m_param.getAddress())
-            {
-                addr->remove_callback(m_callback);
-            }
-        }
-
-    private:
-        void on_addAutomation()
-        {
-          auto addr = m_param.getAddress()->getTextualAddress();
-          QMessageBox::warning(nullptr, "", QString::fromStdString(addr));
-        }
-
-        void contextMenuEvent(QContextMenuEvent* event) override
-        {
-          QMenu* contextMenu = new QMenu{this};
-
-          contextMenu->addAction(m_addAutomAction);
-          contextMenu->exec(event->globalPos());
-
-          contextMenu->deleteLater();
-        }
-
-        const ossia::net::node_base& m_param;
-        ossia::net::address_base::callback_index m_callback;
-        float m_min{0.};
-        float m_max{1.};
-
-        iscore::DoubleSlider* m_slider{};
-        QAction* m_addAutomAction{};
-};
-
-
-
-EffectWidget::EffectWidget(EffectModel& fx, QWidget* parent):
+EffectWidget::EffectWidget(
+        EffectModel& fx,
+        const iscore::DocumentContext& doc,
+        QWidget* parent):
     QFrame{parent},
-    m_effect{fx}
+    m_effect{fx},
+    m_context{doc}
 {
     setObjectName("EffectWidget");
     setStyleSheet("QFrame#EffectWidget { border: 1px solid black; border-radius: 10px; }");
@@ -133,6 +68,35 @@ EffectWidget::EffectWidget(EffectModel& fx, QWidget* parent):
     setup();
 }
 
+void EffectWidget::on_createAutomation(const State::Address& addr, double min, double max)
+{
+
+    QObject* obj = &m_effect;
+    while(obj)
+    {
+        auto parent = obj->parent();
+        if(auto cst = dynamic_cast<Scenario::ConstraintModel*>(parent))
+        {
+            RedoMacroCommandDispatcher<Commands::CreateEffectAutomation> macro{m_context.commandStack};
+            auto make_cmd =
+                    Scenario::Command::make_AddProcessToConstraint(
+                        *cst,
+                        Metadata<ConcreteFactoryKey_k, Automation::ProcessModel>::get());
+            macro.submitCommand(make_cmd);
+
+            auto& autom = safe_cast<Automation::ProcessModel&>(cst->processes.at(make_cmd->processId()));
+            macro.submitCommand(new Automation::InitAutomation{autom, addr, min, max});
+
+            macro.commit();
+
+        }
+        else
+        {
+            obj = parent;
+        }
+    }
+}
+
 void EffectWidget::setup()
 {
     iscore::clearLayout(m_layout);
@@ -147,7 +111,11 @@ void EffectWidget::setup()
     {
         if(param_node->getAddress())
         {
-            m_sliders.push_back(new EffectSlider{*param_node, this});
+            auto slider = new EffectSlider{*param_node, this};
+            m_sliders.push_back(slider);
+            connect(slider, &EffectSlider::createAutomation,
+                    this, &EffectWidget::on_createAutomation,
+                    Qt::QueuedConnection);
         }
     }
 

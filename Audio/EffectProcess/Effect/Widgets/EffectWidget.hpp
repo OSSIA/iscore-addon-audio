@@ -3,7 +3,6 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QSlider>
-#include <iscore/widgets/DoubleSlider.hpp>
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp>
 #include <iscore/widgets/ClearLayout.hpp>
@@ -123,13 +122,18 @@ class EffectWidget :
 {
         Q_OBJECT
     public:
-        EffectWidget(EffectModel& fx, QWidget* parent);
+        EffectWidget(
+                EffectModel& fx,
+                const iscore::DocumentContext& doc,
+                QWidget* parent);
 
         auto& effect() const { return m_effect; }
     signals:
         void removeRequested();
 
     private:
+        void on_createAutomation(const State::Address&, double min, double max);
+
         void setup();
 
         void resizeEvent(QResizeEvent *event) override;
@@ -139,6 +143,7 @@ class EffectWidget :
         void reflow();
 
         EffectModel& m_effect;
+        const iscore::DocumentContext& m_context;
         QGridLayout* m_layout{};
         std::vector<EffectSlider*> m_sliders;
 };
