@@ -42,15 +42,9 @@ ApplicationPlugin::~ApplicationPlugin()
     //stopMTDSPFactories();
 }
 
-void ApplicationPlugin::on_newDocument(iscore::Document* doc)
+void ApplicationPlugin::on_createdDocument(iscore::Document& doc)
 {
-    auto plug = new DocumentPlugin{m_ctx, *doc, &doc->model()};
-    doc->model().addPluginModel(plug);
-}
-
-void ApplicationPlugin::on_loadedDocument(iscore::Document* doc)
-{
-    on_newDocument(doc);
+    doc.model().addPluginModel(new DocumentPlugin{m_ctx, doc, &doc.model()});
 }
 
 static int CardIdFromString(int api, const QString& str);

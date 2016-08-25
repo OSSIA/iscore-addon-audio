@@ -28,8 +28,7 @@ class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPl
 
         void initialize() override;
 
-        void on_newDocument(iscore::Document* doc) override;
-        void on_loadedDocument(iscore::Document* doc) override;
+        void on_createdDocument(iscore::Document& doc) override;
 };
 }
 }
