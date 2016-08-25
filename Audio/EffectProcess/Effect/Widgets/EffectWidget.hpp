@@ -7,24 +7,13 @@
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp>
 #include <iscore/widgets/ClearLayout.hpp>
+#include <iscore/widgets/ReactiveLabel.hpp>
 #include <boost/iterator_adaptors.hpp>
 
 namespace Audio
 {
 namespace Effect
 {
-template<typename Property_T>
-class QReactiveLabel : public QLabel
-{
-    public:
-        QReactiveLabel(const typename Property_T::model_type& model, QWidget* parent):
-            QLabel{(model.*Property_T::get())(), parent}
-        {
-            con(model, Property_T::notify(),
-                this, &QLabel::setText);
-        }
-};
-
 struct EffectParameter
 {
         EffectParameter() = default;

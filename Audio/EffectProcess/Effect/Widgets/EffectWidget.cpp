@@ -33,7 +33,7 @@ class EffectSlider : public QWidget
                     this, [=] (double v)
             {
                 // v is between 0 - 1
-                m_param.getAddress()->pushValue(ossia::Float{m_min + (m_max - m_min) * v});
+                m_param.getAddress()->pushValue(ossia::Float{float(m_min + (m_max - m_min) * v)});
             });
 
             m_callback = addr->add_callback([=] (const ossia::value& val)
@@ -100,7 +100,7 @@ EffectWidget::EffectWidget(EffectModel& fx, QWidget* parent):
         auto title_lay = new QHBoxLayout;
         title->setLayout(title_lay);
 
-        auto label = new QReactiveLabel<ModelMetadataNameParameter>(fx.metadata, this);
+        auto label = new iscore::ReactiveLabel<ModelMetadataNameParameter>(fx.metadata, this);
         label->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
         title_lay->addWidget(label);
 
