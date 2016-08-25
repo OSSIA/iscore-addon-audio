@@ -24,10 +24,8 @@ namespace Audio
 {
 namespace Sound
 {
-using disp = GenericMacroCommandDispatcher<RedoStrategy::Redo, SendStrategy::Quiet>;
-
 static void createSoundProcesses(
-        disp& m,
+        RedoMacroCommandDispatcher<Audio::Commands::CreateSoundBoxMacro>& m,
         const Scenario::ConstraintModel& constraint,
         const Scenario::RackModel& rack,
         DroppedAudioFiles& drop)
@@ -121,8 +119,8 @@ bool DropHandler::createInParallel(
         QPointF pos,
         DroppedAudioFiles&& drop)
 {
-    disp m{new Audio::Commands::CreateSoundBoxMacro,
-           pres.context().context.commandStack};
+    RedoMacroCommandDispatcher<Audio::Commands::CreateSoundBoxMacro> m{
+        pres.context().context.commandStack};
 
     // Create a box.
     const Scenario::ProcessModel& scenar = pres.processModel();
@@ -186,9 +184,8 @@ bool ConstraintDropHandler::handle(
         return false;
     }
 
-    using disp = GenericMacroCommandDispatcher<RedoStrategy::Redo, SendStrategy::Quiet>;
     auto& doc = iscore::IDocument::documentContext(constraint);
-    disp m{new Audio::Commands::CreateSoundBoxMacro, doc.commandStack};
+    RedoMacroCommandDispatcher<Audio::Commands::CreateSoundBoxMacro> m{doc.commandStack};
 
     // TODO dynamic_safe_cast ? for non-static-castable types, have the compiler enforce dynamic_cast ?
     auto scenar = dynamic_cast<Scenario::ScenarioInterface*>(constraint.parent());

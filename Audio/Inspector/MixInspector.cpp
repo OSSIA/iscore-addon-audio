@@ -75,7 +75,7 @@ class DirectMixTableWidget : public QWidget
 
     private:
         MixSpinBox* const spinBox{};
-        QuietOngoingCommandDispatcher dispatcher;
+        iscore::QuietOngoingCommandDispatcher dispatcher;
 
 };
 
@@ -143,7 +143,7 @@ class RoutingTableWidget : public QWidget
     private:
         QCheckBox* const checkBox{};
         MixSpinBox* const spinBox{};
-        QuietOngoingCommandDispatcher dispatcher;
+        iscore::QuietOngoingCommandDispatcher dispatcher;
 };
 
 MixWidget::MixWidget(
