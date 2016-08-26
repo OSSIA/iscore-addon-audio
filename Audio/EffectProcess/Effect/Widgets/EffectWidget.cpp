@@ -2,6 +2,9 @@
 #include <QMenu>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QMouseEvent>
+#include <QMimeData>
+#include <QDrag>
 
 #include <Scenario/Commands/Constraint/AddProcessToConstraint.hpp>
 #include <Automation/AutomationModel.hpp>
@@ -25,6 +28,7 @@ EffectWidget::EffectWidget(
     m_effect{fx},
     m_context{doc}
 {
+    // Setup ui
     setObjectName("EffectWidget");
     setStyleSheet("QFrame#EffectWidget { border: 1px solid black; border-radius: 10px; }");
     auto lay = new QVBoxLayout;
@@ -65,7 +69,13 @@ EffectWidget::EffectWidget(
 
     con(fx, &EffectModel::effectChanged,
         this, &EffectWidget::setup, Qt::QueuedConnection);
+
+    // Create the actual widget
     setup();
+
+    // Setup drag'n'drop
+    setAcceptDrops(true);
+
 }
 
 void EffectWidget::on_createAutomation(const State::Address& addr, double min, double max)
@@ -88,7 +98,7 @@ void EffectWidget::on_createAutomation(const State::Address& addr, double min, d
             macro.submitCommand(new Automation::InitAutomation{autom, addr, min, max});
 
             macro.commit();
-
+            return;
         }
         else
         {
@@ -182,8 +192,64 @@ void EffectWidget::reflow()
 
         cur_row++;
     }
+}
 
 
+void EffectWidget::mousePressEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton) {
+
+        auto drag = new QDrag(this);
+        auto mimeData = new QMimeData;
+
+        mimeData->setData("application/x-iscore-effectdrag",
+                          marshall<DataStream>(make_path(m_effect)));
+        drag->setMimeData(mimeData);
+        QLabel label{m_effect.metadata.getName()};
+        drag->setPixmap(label.grab());
+        drag->setHotSpot(label.rect().center());
+
+        drag->exec();
+    }
+}
+
+void EffectWidget::dragEnterEvent(QDragEnterEvent* event)
+{
+    if(!event->mimeData()->hasFormat("application/x-iscore-effectdrag"))
+        return;
+
+    auto path = unmarshall<Path<EffectModel>>(event->mimeData()->data("application/x-iscore-effectdrag"));
+    EffectModel* res = path.try_find();
+    if(!res)
+        return;
+
+    if(res == &m_effect)
+        return;
+
+    if(res->parent() != m_effect.parent())
+        return;
+
+    event->acceptProposedAction();
+}
+
+void EffectWidget::dragMoveEvent(QDragMoveEvent* event)
+{
+    // TODO : show a bar to indicate
+    // graphically where the drop will occur.
+}
+
+void EffectWidget::dropEvent(QDropEvent* event)
+{
+    // Get the process
+    auto path = unmarshall<Path<EffectModel>>(
+                    event->mimeData()->data("application/x-iscore-effectdrag"));
+
+
+    // Position
+    emit sig_performInsert(path, m_effect, event->pos().x() < rect().center().x());
+
+    // Accept
+    event->acceptProposedAction();
 }
 
 }

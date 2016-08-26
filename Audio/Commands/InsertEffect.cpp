@@ -102,5 +102,41 @@ void RemoveEffect::deserializeImpl(DataStreamOutput& s)
 {
     s >> m_model >> m_id >> m_savedEffect >> m_pos;
 }
+
+
+
+MoveEffect::MoveEffect(
+        const Effect::ProcessModel& model,
+        Id<Effect::EffectModel> id,
+        int new_pos):
+    m_model{model},
+    m_id{id},
+    m_newPos{new_pos}
+{
+    auto& order = model.effectsOrder();
+    m_oldPos = std::distance(order.begin(), find(order, m_id));
+}
+
+void MoveEffect::undo() const
+{
+    auto& process = m_model.find();
+    process.moveEffect(m_id, m_oldPos);
+}
+
+void MoveEffect::redo() const
+{
+    auto& process = m_model.find();
+    process.moveEffect(m_id, m_newPos);
+}
+
+void MoveEffect::serializeImpl(DataStreamInput& s) const
+{
+    s << m_model << m_id << m_oldPos << m_newPos;
+}
+
+void MoveEffect::deserializeImpl(DataStreamOutput& s)
+{
+    s >> m_model >> m_id >> m_oldPos >> m_newPos;
+}
 }
 }

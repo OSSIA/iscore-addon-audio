@@ -62,6 +62,9 @@ class ProcessModel final : public Process::ProcessModel
 
         void insertEffect(EffectModel* eff, int pos);
         void removeEffect(const Id<EffectModel>&);
+        void moveEffect(const Id<EffectModel>&, int new_pos);
+
+        int effectPosition(const Id<EffectModel>& e) const;
 
     signals:
         void effectsChanged();
@@ -71,7 +74,7 @@ class ProcessModel final : public Process::ProcessModel
         NotifyingMap<EffectModel> m_effects;
 
         // The effect chain.
-        std::list<Id<EffectModel>> m_effectOrder;
+        QList<Id<EffectModel>> m_effectOrder;
 };
 }
 }

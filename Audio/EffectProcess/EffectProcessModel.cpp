@@ -46,21 +46,34 @@ void ProcessModel::insertEffect(
     clamp(pos, 0, int(m_effectOrder.size()));
 
     m_effects.add(eff);
-    auto it = m_effectOrder.begin();
-    std::advance(it, pos);
-    m_effectOrder.insert(it, eff->id());
+    m_effectOrder.insert(pos, eff->id());
 
     emit effectsChanged();
 }
 
 void ProcessModel::removeEffect(const Id<EffectModel>& e)
 {
-    auto it = find(m_effectOrder, e);
-    m_effectOrder.erase(it);
+    m_effectOrder.removeAll(e);
 
     m_effects.remove(e);
 
     emit effectsChanged();
+}
+
+void ProcessModel::moveEffect(const Id<EffectModel>& e, int new_pos)
+{
+    new_pos = clamp(new_pos, 0, m_effectOrder.size() - 1);
+    auto old_pos = m_effectOrder.indexOf(e);
+    if(old_pos != -1)
+    {
+        m_effectOrder.move(old_pos, new_pos);
+        emit effectsChanged();
+    }
+}
+
+int ProcessModel::effectPosition(const Id<EffectModel>& e) const
+{
+    return m_effectOrder.indexOf(e);
 }
 
 }

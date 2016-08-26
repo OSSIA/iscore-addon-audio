@@ -128,10 +128,21 @@ class EffectWidget :
                 QWidget* parent);
 
         auto& effect() const { return m_effect; }
+
     signals:
         void removeRequested();
+        void sig_performInsert(
+                const Path<Effect::EffectModel>& fx1,
+                const Path<Effect::EffectModel>& fx2,
+                bool after);
 
     private:
+        void mousePressEvent(QMouseEvent * event) override;
+        void dragEnterEvent(QDragEnterEvent* event) override;
+        void dragMoveEvent(QDragMoveEvent* event) override;
+        void dropEvent(QDropEvent* event) override;
+
+
         void on_createAutomation(const State::Address&, double min, double max);
 
         void setup();

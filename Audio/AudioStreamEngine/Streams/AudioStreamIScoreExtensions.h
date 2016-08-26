@@ -21,6 +21,8 @@ AudioStream MakeSend(AudioStream s);
 AudioStream MakeReturn(AudioStream s);
 
 AudioStream MakeChannelSound(AudioStream s, double const * volume);
+
+AudioStream MakeSimpleBufferSound(float** buffer, long length, long channels);
 AudioStream MakeIScoreExecutor(AudioStream s, ossia::time_constraint& t);
 
 AudioStream MakeFixedLoopSound(AudioStream s, long maxlength);

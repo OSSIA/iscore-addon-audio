@@ -61,5 +61,28 @@ class RemoveEffect final : public iscore::SerializableCommand
         QByteArray m_savedEffect;
         int m_pos{};
 };
+
+
+class MoveEffect final : public iscore::SerializableCommand
+{
+           ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), MoveEffect, "Move effect")
+    public:
+        MoveEffect(
+                const Effect::ProcessModel& model,
+                 Id<Effect::EffectModel> id,
+                 int new_pos);
+
+        void undo() const override;
+        void redo() const override;
+
+    protected:
+        void serializeImpl(DataStreamInput & s) const override;
+        void deserializeImpl(DataStreamOutput & s) override;
+
+    private:
+        Path<Effect::ProcessModel> m_model;
+        Id<Effect::EffectModel> m_id;
+        int m_oldPos, m_newPos{};
+};
 }
 }

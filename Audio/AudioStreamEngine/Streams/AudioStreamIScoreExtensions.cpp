@@ -7,6 +7,7 @@
 #include "TReturnAudioStream.hpp"
 #include "TSinusAudioStream.hpp"
 #include "ExecutorAudioEffect.hpp"
+#include "TSimpleBufferAudioStream.hpp"
 #include <TEffectAudioStream.h>
 
 // TODO refactor this with the part in LibAudioStreamMC++.cpp
@@ -41,6 +42,7 @@ AUDIOAPI AudioStream MakeSend(AudioStream s);
 AUDIOAPI AudioStream MakeReturn(AudioStream s);
 AUDIOAPI AudioStream MakeChannelSound(AudioStream s, double const * volume);
 AUDIOAPI AudioStream MakeFixedLoopSound(AudioStream s, long maxlength);
+AUDIOAPI AudioStream MakeSimpleBufferSound(float **buffer, long length, long channels);
 
 void CloseAudioPlayer(AudioPlayerPtr ext_player); // In libaudiostreammc
 
@@ -131,3 +133,8 @@ AUDIOAPI AudioStream MakeFixedLoopSound(
     return new TFixedLoopAudioStream{s, maxlength};
 }
 
+
+AudioStream MakeSimpleBufferSound(float **buffer, long length, long channels)
+{
+    return new TSimpleBufferAudioStream{buffer, length, channels};
+}

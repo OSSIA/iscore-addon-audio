@@ -24,7 +24,7 @@ void SoundComponent::makeStream(const Context& ctx)
     if(file.empty())
         return;
 
-    auto read_sound = MakeBufferSound(file.audioData(), file.samples(), file.channels(), false);
+    auto read_sound = MakeSimpleBufferSound(file.audioData(), file.samples(), file.channels());
 
     // If the file is mono, we duplicate it.
     auto chan = GetChannelsSound(read_sound);
@@ -51,9 +51,6 @@ void SoundComponent::makeStream(const Context& ctx)
             break;
         }
     }
-
-
-    // TODO optimize me by instead getting the already loaded data.
 }
 
 }

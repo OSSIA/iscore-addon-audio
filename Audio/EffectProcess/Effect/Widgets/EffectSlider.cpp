@@ -1,10 +1,13 @@
 #include "EffectSlider.hpp"
+#include <ossia/network/domain/domain.hpp>
 #include <State/Expression.hpp>
 #include <iscore/widgets/DoubleSlider.hpp>
 
 #include <ossia/network/base/node.hpp>
 #include <ossia/editor/value/value_conversion.hpp>
 #include <QMenu>
+#include <QLabel>
+#include <QVBoxLayout>
 #include <QContextMenuEvent>
 
 namespace Audio
@@ -35,7 +38,7 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
     // v is between 0 - 1
     m_param.getAddress()->pushValue(ossia::Float{float(m_min + (m_max - m_min) * v)});
   });
-
+/*
   m_callback = addr->add_callback([=] (const ossia::value& val)
   {
     if(auto v = val.try_get<ossia::Float>())
@@ -43,13 +46,13 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
       m_slider->setValue(v->value);
     }
   });
-
+*/
   m_addAutomAction = new QAction{tr("Add automation")};
   connect(m_addAutomAction, &QAction::triggered,
           this, [=] () {
     auto& ossia_addr = *m_param.getAddress();
     auto& dom = ossia_addr.getDomain();
-    auto addr = State::parseAddress(QString::fromStdString(ossia_addr.getTextualAddress()));
+    auto addr = State::parseAddress(QString::fromStdString(ossia::net::address_string_from_node(ossia_addr)));
 
     if(addr)
     {
@@ -62,11 +65,12 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
 }
 
 EffectSlider::~EffectSlider()
-{
+{/*
   if(auto addr = m_param.getAddress())
   {
     addr->remove_callback(m_callback);
   }
+  */
 }
 
 void EffectSlider::contextMenuEvent(QContextMenuEvent* event)

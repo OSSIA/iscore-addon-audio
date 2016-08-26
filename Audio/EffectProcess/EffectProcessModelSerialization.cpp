@@ -8,6 +8,7 @@ void Visitor<Reader<DataStream>>::readFrom_impl(const Audio::Effect::ProcessMode
     for(auto& eff : proc.effects())
         readFrom(eff);
 
+    m_stream << proc.effectsOrder();
     insertDelimiter();
 }
 
@@ -25,6 +26,8 @@ void Visitor<Writer<DataStream>>::writeTo(Audio::Effect::ProcessModel& proc)
         proc.insertEffect(fx, i++);
     }
 
+    m_stream >> proc.m_effectOrder;
+
     checkDelimiter();
 }
 
@@ -32,6 +35,7 @@ template<>
 void Visitor<Reader<JSONObject>>::readFrom_impl(const Audio::Effect::ProcessModel& proc)
 {
     m_obj["Effects"] = toJsonArray(proc.effects());
+    m_obj["Order"] = toJsonArray(proc.effectsOrder());
 }
 
 template<>
@@ -48,4 +52,5 @@ void Visitor<Writer<JSONObject>>::writeTo(Audio::Effect::ProcessModel& proc)
         proc.insertEffect(fx, i++);
     }
 
+    fromJsonValueArray(m_obj["Order"].toArray(), proc.m_effectOrder);
 }
