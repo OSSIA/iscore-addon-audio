@@ -1,11 +1,15 @@
 #include "EffectListWidget.hpp"
 
+#include <QMimeData>
+#include <QDropEvent>
 #include <QVBoxLayout>
+#include <QFileInfo>
+#include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
 #include <Audio/EffectProcess/Effect/Widgets/EffectWidget.hpp>
 #include <iscore/widgets/ClearLayout.hpp>
 #include <Audio/Commands/InsertEffect.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
-
+#include <iscore/document/DocumentContext.hpp>
 
 namespace Audio
 {
@@ -21,6 +25,7 @@ EffectListWidget::EffectListWidget(
     m_dispatcher{doc.commandStack}
 {
     this->setLayout(m_layout = new QHBoxLayout);
+    this->setAcceptDrops(true);
 
     con(fx, &Effect::ProcessModel::effectsChanged,
         this, &EffectListWidget::setup);
@@ -77,6 +82,46 @@ void EffectListWidget::setup()
     }
 
     m_layout->addStretch();
+}
+
+void EffectListWidget::dragMoveEvent(QDragMoveEvent *event)
+{
+    if(event->mimeData()->hasUrls())
+        event->acceptProposedAction();
+}
+void EffectListWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+    if(event->mimeData()->hasUrls())
+        event->acceptProposedAction();
+}
+
+void EffectListWidget::dropEvent(QDropEvent *event)
+{
+    if(event->mimeData()->hasUrls())
+    {
+        auto urls = event->mimeData()->urls();
+        int pos = m_effects.effects().size();
+        for(auto url : urls)
+        {
+            QFile f(url.toString(QUrl::PreferLocalFile));
+            if(f.open(QIODevice::ReadOnly))
+            {
+                QFileInfo info(f);
+                if(info.suffix() == "dsp")
+                {
+                    QString dat = f.readAll();
+                    auto cmd = new Commands::InsertEffect{
+                            m_effects,
+                            FaustEffectFactory::static_concreteFactoryKey(),
+                            dat,
+                            pos};
+                    m_dispatcher.submitCommand(cmd);
+                    pos++;
+                }
+            }
+        }
+        event->acceptProposedAction();
+    }
 }
 
 }

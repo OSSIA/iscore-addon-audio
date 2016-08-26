@@ -23,6 +23,7 @@ ProcessModel::ProcessModel(
         QObject* parent):
     Process::ProcessModel{duration, id, Metadata<ObjectKey_k, ProcessModel>::get(), parent}
 {
+    // TODO connect the removing() signal of the process to here.
     init();
     metadata.setName(Metadata<PrettyName_k, ProcessModel>::get() + QString(".%1").arg(*this->id().val()));
 }

@@ -33,6 +33,10 @@ class EffectListWidget :
         void setup();
 
     private:
+        void dragEnterEvent(QDragEnterEvent* event) override;
+        void dragMoveEvent(QDragMoveEvent* event) override;
+        void dropEvent(QDropEvent *event) override;
+
         const Effect::ProcessModel& m_effects;
         const iscore::DocumentContext& m_context;
         CommandDispatcher<> m_dispatcher;

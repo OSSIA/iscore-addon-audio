@@ -98,6 +98,7 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessFactory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessMetadata.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessModel.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectParameters.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectModel.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectComponent.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectFactory.hpp"

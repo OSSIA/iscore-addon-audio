@@ -6,6 +6,8 @@
 #include <QMimeData>
 #include <QDrag>
 
+#include <Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp>
+#include <Scenario/Commands/Constraint/AddLayerInNewSlot.hpp>
 #include <Scenario/Commands/Constraint/AddProcessToConstraint.hpp>
 #include <Automation/AutomationModel.hpp>
 #include <Scenario/Document/Constraint/ConstraintModel.hpp>
@@ -80,7 +82,6 @@ EffectWidget::EffectWidget(
 
 void EffectWidget::on_createAutomation(const State::Address& addr, double min, double max)
 {
-
     QObject* obj = &m_effect;
     while(obj)
     {
@@ -88,11 +89,13 @@ void EffectWidget::on_createAutomation(const State::Address& addr, double min, d
         if(auto cst = dynamic_cast<Scenario::ConstraintModel*>(parent))
         {
             RedoMacroCommandDispatcher<Commands::CreateEffectAutomation> macro{m_context.commandStack};
-            auto make_cmd =
-                    Scenario::Command::make_AddProcessToConstraint(
+            auto make_cmd = new Scenario::Command::AddOnlyProcessToConstraint{
                         *cst,
-                        Metadata<ConcreteFactoryKey_k, Automation::ProcessModel>::get());
+                        Metadata<ConcreteFactoryKey_k, Automation::ProcessModel>::get()};
             macro.submitCommand(make_cmd);
+
+            auto lay_cmd = new Scenario::Command::AddLayerInNewSlot{*cst, make_cmd->processId()};
+            macro.submitCommand(lay_cmd);
 
             auto& autom = safe_cast<Automation::ProcessModel&>(cst->processes.at(make_cmd->processId()));
             macro.submitCommand(new Automation::InitAutomation{autom, addr, min, max});
