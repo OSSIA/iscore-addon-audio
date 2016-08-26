@@ -2,6 +2,7 @@
 #include <Engine/LocalTree/Scenario/MetadataParameters.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
 #include <iscore/tools/SettableIdentifierGeneration.hpp>
+#include <Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp>
 
 namespace Audio
 {
@@ -23,34 +24,17 @@ EffectProcessComponentBase::EffectProcessComponentBase(
 
 EffectComponent*EffectProcessComponentBase::make(
         const Id<iscore::Component>& id,
-        EffectComponentFactory& factory,
         EffectModel& model)
 {
-    return factory.make(id, m_effectsNode, model, this->system(), this);
+    return new EffectComponent{m_effectsNode, model, this->system(), id, "EffectComponent", this};
 }
 
 void EffectProcessComponentBase::removing(const EffectModel& cst, const EffectComponent& comp)
 {
-    // TODO
-    /*
-    auto it = find_if(m_effectsNode.children(), [&] (const auto& node)
-    { return node == comp.node(); });
-    ISCORE_ASSERT(it != m_effectsNode.children().end());
-
-    m_effectsNode.erase(it);
-    */
 }
 
 EffectProcessComponentBase::~EffectProcessComponentBase()
 {
-    // TODO
-    /*
-    m_properties.clear();
-
-    m_effectsNode.reset();
-
-    m_thisNode.clear();
-    */
 }
 }
 }

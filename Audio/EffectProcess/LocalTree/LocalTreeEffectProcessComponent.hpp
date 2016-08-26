@@ -31,7 +31,6 @@ class EffectProcessComponentBase :
     public:
             using model_t = EffectModel;
             using component_t = EffectComponent;
-            using component_factory_list_t = EffectComponentFactoryList;
 
        EffectProcessComponentBase(
                const Id<iscore::Component>& id,
@@ -43,7 +42,6 @@ class EffectProcessComponentBase :
 
        EffectComponent* make(
                const Id<iscore::Component> & id,
-               EffectComponentFactory& factory,
                Effect::EffectModel &process);
 
        void removing(const Effect::EffectModel& cst, const EffectComponent& comp);
@@ -66,10 +64,10 @@ class EffectProcessComponentBase :
 };
 
 class EffectProcessComponent final :
-        public iscore::PolymorphicComponentHierarchy<EffectProcessComponentBase>
+        public iscore::ComponentHierarchy<EffectProcessComponentBase>
 {
     public:
-        using iscore::PolymorphicComponentHierarchy<EffectProcessComponentBase>::PolymorphicComponentHierarchyManager;
+        using iscore::ComponentHierarchy<EffectProcessComponentBase>::ComponentHierarchyManager;
 };
 
 using EffectProcessComponentFactory = Engine::LocalTree::ProcessComponentFactory_T<EffectProcessComponent>;

@@ -23,11 +23,6 @@ class EffectProcessComponent final :
                QObject* parent_obj);
 
        void makeStream(const Context& ctx) override;
-
-       AudioEffect effect(const Id<Effect::EffectModel>& id) const
-       { return m_effects.at(id); }
-    private:
-       std::map<Id<Effect::EffectModel>, AudioEffect> m_effects;
 };
 
 using EffectProcessComponentFactory = ProcessComponentFactory_T<EffectProcessComponent>;

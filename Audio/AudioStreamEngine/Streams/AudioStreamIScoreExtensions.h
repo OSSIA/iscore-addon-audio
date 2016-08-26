@@ -3,9 +3,13 @@
 
 #include "LibAudioStreamMC++.h"
 
+#if defined(LILV_SHARED)
+#include <lilv/lilv.h>
+#endif
 // This file provides a C-like API to allow use with the other
 // functions in the C API of the LibAudioStream.
 namespace ossia { class time_constraint; }
+
 #if defined(__cplusplus) && !defined(_MSC_VER)
 extern "C"
 {
@@ -26,6 +30,11 @@ AudioStream MakeSimpleBufferSound(float** buffer, long length, long channels);
 AudioStream MakeIScoreExecutor(AudioStream s, ossia::time_constraint& t);
 
 AudioStream MakeFixedLoopSound(AudioStream s, long maxlength);
+
+#if defined(LILV_SHARED)
+AudioEffect MakeLV2AudioEffect(const LilvPlugin*, LilvWorld*);
+#endif
+
 #if defined(__cplusplus) && !defined(_MSC_VER)
 }
 #endif

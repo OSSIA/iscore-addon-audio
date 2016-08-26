@@ -30,8 +30,6 @@ EffectProcessComponent::EffectProcessComponent(
 
 void EffectProcessComponent::makeStream(const Context& ctx)
 {
-    m_effects.clear();
-
     // For all "generative" streams in the parent constraint,
     // take their "send" streams, create returns, mix the returns,
     // put it on input of the effect, create a send, return the output
@@ -53,29 +51,22 @@ void EffectProcessComponent::makeStream(const Context& ctx)
 
     for(auto& fx : process().effects())
     {
-        // REFACTORME
-        if(auto faust_fx = dynamic_cast<Effect::FaustEffectModel*>(&fx))
-        {
-            auto compiled_fx = faust_fx->effect();
-            if(!compiled_fx)
-                continue;
+        auto compiled_fx = fx.effect();
+        if(!compiled_fx)
+            continue;
 
-            sound = MakeEffectSound(sound, compiled_fx, 0, 0);
-            ISCORE_ASSERT(sound);
-            m_effects.insert(std::make_pair(fx.id(), compiled_fx));
-
-
-            // Find local tree component.
-            auto comp = iscore::findComponent<Audio::Effect::LocalTree::FaustComponent>(faust_fx->components);
-            if(comp)
-            {
-                comp->m_audio_effect = compiled_fx;
-            }
-        }
+        sound = MakeEffectSound(sound, compiled_fx, 0, 0);
+        if(!sound)
+            continue; // TODO maybe mark it as not working or something...
     }
 
     if(sound)
         m_stream = MakeSend(sound);
+    else
+    {
+        qDebug() << "Effect component could not be created";
+        m_stream = MakeNullSound(LONG_MAX);
+    }
 }
 
 }

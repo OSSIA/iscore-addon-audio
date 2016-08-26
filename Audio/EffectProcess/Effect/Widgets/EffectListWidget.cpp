@@ -11,6 +11,11 @@
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
 #include <iscore/document/DocumentContext.hpp>
 
+#if defined(LILV_SHARED)
+#include <lilv/lilvmm.hpp>
+#include <Audio/EffectProcess/LV2/LV2EffectModel.hpp>
+#endif
+
 namespace Audio
 {
 namespace Effect
@@ -103,21 +108,44 @@ void EffectListWidget::dropEvent(QDropEvent *event)
         int pos = m_effects.effects().size();
         for(auto url : urls)
         {
-            QFile f(url.toString(QUrl::PreferLocalFile));
-            if(f.open(QIODevice::ReadOnly))
+            auto path = url.toString(QUrl::PreferLocalFile);
+            QFileInfo info(path);
+            qDebug() << info.absoluteFilePath();
+            if(info.isFile())
             {
-                QFileInfo info(f);
-                if(info.suffix() == "dsp")
+                QFile f{path};
+                if(f.open(QIODevice::ReadOnly))
                 {
-                    QString dat = f.readAll();
+                    if(info.suffix() == "dsp")
+                    {
+                        QString dat = f.readAll();
+                        auto cmd = new Commands::InsertEffect{
+                                m_effects,
+                                FaustEffectFactory::static_concreteFactoryKey(),
+                                dat,
+                                pos};
+                        m_dispatcher.submitCommand(cmd);
+                        pos++;
+                    }
+                }
+
+            }
+            else if(info.isDir())
+            {
+
+#if defined(LILV_SHARED)
+                if(info.suffix() == "lv2")
+                { // TODO factory instead.
                     auto cmd = new Commands::InsertEffect{
                             m_effects,
-                            FaustEffectFactory::static_concreteFactoryKey(),
-                            dat,
+                            LV2EffectFactory::static_concreteFactoryKey(),
+                            info.absoluteFilePath(),
                             pos};
                     m_dispatcher.submitCommand(cmd);
                     pos++;
+
                 }
+#endif
             }
         }
         event->acceptProposedAction();

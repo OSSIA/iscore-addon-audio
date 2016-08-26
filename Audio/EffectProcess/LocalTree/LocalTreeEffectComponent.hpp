@@ -14,7 +14,8 @@ namespace LocalTree
 class EffectComponent :
         public Engine::LocalTree::Component<GenericEffectComponent<Engine::LocalTree::DocumentPlugin>>
 {
-        ABSTRACT_COMPONENT_METADATA(Audio::Effect::LocalTree::EffectComponent, "c9e1f9bc-b974-4695-a3a8-f797c34858ee")
+        Q_OBJECT
+        COMMON_COMPONENT_METADATA("c9e1f9bc-b974-4695-a3a8-f797c34858ee")
     public:
         using parent_t = Engine::LocalTree::Component<GenericEffectComponent<Engine::LocalTree::DocumentPlugin>>;
         static const constexpr bool is_unique = true;
@@ -28,57 +29,18 @@ class EffectComponent :
 
         virtual ~EffectComponent();
 
+        void recreate();
+
         ossia::net::node_base& parameters() const
         { return m_parametersNode; }
+
+    signals:
+        void effectTreeChanged();
 
     protected:
         ossia::net::node_base& m_parametersNode;
 };
 
-template<typename Effect_T>
-using EffectComponent_T = Effect::GenericEffectComponent_T<EffectComponent, Effect_T>;
-
-
-class EffectComponentFactory :
-        public iscore::GenericComponentFactory<
-            Effect::EffectModel,
-            Engine::LocalTree::DocumentPlugin,
-            Effect::LocalTree::EffectComponentFactory>
-{
-        ISCORE_ABSTRACT_COMPONENT_FACTORY(Audio::Effect::LocalTree::EffectComponent)
-    public:
-        virtual ~EffectComponentFactory();
-        virtual EffectComponent* make(
-                const Id<iscore::Component>&,
-                ossia::net::node_base& n,
-                Effect::EffectModel& proc,
-                Engine::LocalTree::DocumentPlugin& doc,
-                QObject* paren_objt) const = 0;
-};
-
-
-template<typename EffectComponent_T>
-class EffectComponentFactory_T :
-        public iscore::GenericComponentFactoryImpl<EffectComponent_T, EffectComponentFactory>
-{
-    public:
-        using model_type = typename EffectComponent_T::model_type;
-        EffectComponent* make(
-                const Id<iscore::Component>& id,
-                ossia::net::node_base& n,
-                Effect::EffectModel& proc,
-                Engine::LocalTree::DocumentPlugin& doc,
-                QObject* paren_objt) const override
-        {
-            return new EffectComponent_T{id, n, static_cast<model_type&>(proc), doc, paren_objt};
-        }
-};
-
-using EffectComponentFactoryList =
-    iscore::GenericComponentFactoryList<
-            Effect::EffectModel,
-            Engine::LocalTree::DocumentPlugin,
-            Effect::LocalTree::EffectComponentFactory>;
 }
 }
 }

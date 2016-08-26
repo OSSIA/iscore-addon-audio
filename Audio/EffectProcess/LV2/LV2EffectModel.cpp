@@ -1,5 +1,6 @@
 #include "LV2EffectModel.hpp"
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
+#include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
 
 namespace Audio
 {
@@ -24,13 +25,29 @@ LV2EffectModel::LV2EffectModel(
     init();
 }
 
-LV2EffectModel*LV2EffectModel::clone(const Id<EffectModel>& newId, QObject* parent) const
-{
-    return new LV2EffectModel{*this, newId, parent};
-}
-
 void LV2EffectModel::init()
 {
+  auto& world = iscore::AppContext().components.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().lilv;
+
+  auto plugs = world.get_all_plugins();
+  auto it = plugs.begin();
+  while(!plugs.is_end(it))
+  {
+
+      auto plug = plugs.get(it);
+      if(std::string(plug.get_name().as_string()) == "GxFlanger")
+      {
+          m_effect = MakeLV2AudioEffect(plug.me, world.me);
+
+          return;
+
+      }
+      else
+      {
+          it = plugs.next(it);
+      }
+
+  }
 
 }
 

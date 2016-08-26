@@ -17,6 +17,9 @@ ApplicationPlugin::ApplicationPlugin(const iscore::GUIApplicationContext& app):
     iscore::GUIApplicationContextPlugin{app},
     m_ctx{*this}
 {
+#if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
+    lilv.load_all();
+#endif
 }
 
 void ApplicationPlugin::initialize()

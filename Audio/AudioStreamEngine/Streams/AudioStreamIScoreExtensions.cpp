@@ -5,8 +5,10 @@
 #include "TFixedLoopAudioStream.hpp"
 #include "TSendAudioStream.hpp"
 #include "TReturnAudioStream.hpp"
+#include "TGroupAudioStream.hpp"
 #include "TSinusAudioStream.hpp"
 #include "ExecutorAudioEffect.hpp"
+#include <TAudioEffectInterface.h>
 #include "TSimpleBufferAudioStream.hpp"
 #include <TEffectAudioStream.h>
 
@@ -26,6 +28,7 @@ typedef void* AudioPlayerPtr;
 typedef void* AudioRendererPtr;
 typedef AudioPlayer* IntAudioPlayerPtr;
 typedef TAudioStreamPtr AudioStream;
+typedef TAudioEffectInterfacePtr AudioEffect;
 
 #if defined(__cplusplus) && !defined(_MSC_VER)
 extern "C"
@@ -43,6 +46,7 @@ AUDIOAPI AudioStream MakeReturn(AudioStream s);
 AUDIOAPI AudioStream MakeChannelSound(AudioStream s, double const * volume);
 AUDIOAPI AudioStream MakeFixedLoopSound(AudioStream s, long maxlength);
 AUDIOAPI AudioStream MakeSimpleBufferSound(float **buffer, long length, long channels);
+AUDIOAPI AudioEffect MakeLV2AudioEffect(const LilvPlugin* p, LilvWorld* w);
 
 void CloseAudioPlayer(AudioPlayerPtr ext_player); // In libaudiostreammc
 
@@ -133,8 +137,30 @@ AUDIOAPI AudioStream MakeFixedLoopSound(
     return new TFixedLoopAudioStream{s, maxlength};
 }
 
-
-AudioStream MakeSimpleBufferSound(float **buffer, long length, long channels)
+AUDIOAPI AudioStream MakeSimpleBufferSound(float **buffer, long length, long channels)
 {
     return new TSimpleBufferAudioStream{buffer, length, channels};
 }
+
+#if defined(LILV_SHARED)
+AUDIOAPI AudioEffect MakeLV2AudioEffect(const LilvPlugin* p, LilvWorld* w)
+{
+    if(p && w)
+    {
+        LV2Data dat{*p, *w};
+        if(dat.in_ports.size() == 2 && dat.out_ports.size() == 2)
+        {
+            return new StereoLV2AudioEffect{std::move(dat)};
+        }
+        else if(dat.in_ports.size() == 1 && dat.out_ports.size() == 1)
+        {
+            return new MonoLV2AudioEffect{std::move(dat)};
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+    return nullptr;
+}
+#endif

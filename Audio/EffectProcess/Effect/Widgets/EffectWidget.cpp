@@ -69,8 +69,12 @@ EffectWidget::EffectWidget(
     this->setLayout(lay);
     lay->addStretch();
 
-    con(fx, &EffectModel::effectChanged,
-        this, &EffectWidget::setup, Qt::QueuedConnection);
+    auto comp = iscore::findComponent<LocalTree::EffectComponent>(m_effect.components);
+    if(!comp)
+        return;
+
+    connect(comp, &LocalTree::EffectComponent::effectTreeChanged,
+            this, &EffectWidget::setup, Qt::QueuedConnection);
 
     // Create the actual widget
     setup();

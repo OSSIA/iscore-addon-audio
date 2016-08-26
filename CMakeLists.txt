@@ -285,5 +285,12 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-error=return-type-c-linkage")
 endif()
 
+
+# Copy the faust .lib files so that they can be used for the effects.
+add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/3rdpary/faust-lib "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+# TODO install
 #add_subdirectory(Audio/CustomEngine/Faust)
 #add_subdirectory(tests)
