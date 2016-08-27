@@ -16,13 +16,19 @@ class ProcessModel;
 
 class MixWidget : public QWidget
 {
+        Q_OBJECT
     public:
         MixWidget(
                 const Mix::ProcessModel &object,
                 const iscore::DocumentContext &doc,
                 QWidget* parent);
 
+    signals:
+        void pressed();
+
     private:
+        void mousePressEvent(QMouseEvent* event) override;
+
         void recreate();
         void updateRouting(const Routing&);
         void updateDirectMix(const DirectMix&);

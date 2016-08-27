@@ -62,3 +62,4 @@ class EffectWidget :
 };
 }
 }
+Q_DECLARE_METATYPE(Path<Audio::Effect::EffectModel>)

@@ -22,6 +22,7 @@ class EffectListWidget :
         public QWidget,
         public Nano::Observer
 {
+        Q_OBJECT
     public:
         EffectListWidget(
                 const Effect::ProcessModel& fx,
@@ -32,7 +33,11 @@ class EffectListWidget :
 
         void setup();
 
+    signals:
+        void pressed();
+
     private:
+        void mousePressEvent(QMouseEvent* event) override;
         void dragEnterEvent(QDragEnterEvent* event) override;
         void dragMoveEvent(QDragMoveEvent* event) override;
         void dropEvent(QDropEvent *event) override;

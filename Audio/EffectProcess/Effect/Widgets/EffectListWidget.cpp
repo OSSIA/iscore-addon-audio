@@ -151,6 +151,12 @@ void EffectListWidget::dropEvent(QDropEvent *event)
     }
 }
 
+void EffectListWidget::mousePressEvent(QMouseEvent* event)
+{
+    emit pressed();
+}
+
+
 }
 
 }
