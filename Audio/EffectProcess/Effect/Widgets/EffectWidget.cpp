@@ -15,7 +15,7 @@
 #include <Audio/Commands/CreateEffectAutomation.hpp>
 #include <Automation/Commands/InitAutomation.hpp>
 #include <Audio/EffectProcess/Effect/Widgets/EffectSlider.hpp>
-
+#include <iscore/widgets/MarginLess.hpp>
 namespace Audio
 {
 namespace Effect
@@ -33,17 +33,18 @@ EffectWidget::EffectWidget(
     // Setup ui
     setObjectName("EffectWidget");
     setStyleSheet("QFrame#EffectWidget { border: 1px solid black; border-radius: 10px; }");
-    auto lay = new QVBoxLayout;
-    m_layout = new QGridLayout;
+    auto lay = new iscore::MarginLess<QVBoxLayout>;
+    m_layout = new iscore::MarginLess<QGridLayout>;
 
     {
         auto title = new QWidget;
-        auto title_lay = new QHBoxLayout;
+        auto title_lay = new iscore::MarginLess<QHBoxLayout>;
         title->setLayout(title_lay);
 
         auto label = new iscore::ReactiveLabel<ModelMetadataNameParameter>(fx.metadata, this);
         label->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
         title_lay->addWidget(label);
+        title_lay->addStretch();
 
         auto rm_but = new QPushButton{"x"};
         rm_but->setStyleSheet(
@@ -209,6 +210,7 @@ void EffectWidget::mousePressEvent(QMouseEvent* event)
         auto drag = new QDrag(this);
         auto mimeData = new QMimeData;
 
+        // TODO proper MIME serialization.
         mimeData->setData("application/x-iscore-effectdrag",
                           marshall<DataStream>(make_path(m_effect)));
         drag->setMimeData(mimeData);

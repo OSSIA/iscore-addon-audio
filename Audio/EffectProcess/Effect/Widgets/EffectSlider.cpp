@@ -2,18 +2,53 @@
 #include <ossia/network/domain/domain.hpp>
 #include <State/Expression.hpp>
 #include <iscore/widgets/DoubleSlider.hpp>
-
+#include <iscore/widgets/MarginLess.hpp>
+#include <Device/Node/NodeListMimeSerialization.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/editor/value/value_conversion.hpp>
+#include <Engine/OSSIA2iscore.hpp>
 #include <QMenu>
 #include <QLabel>
+#include <QDrag>
 #include <QVBoxLayout>
 #include <QContextMenuEvent>
-
+#include <Device/Address/AddressSettings.hpp>
 namespace Audio
 {
 namespace Effect
 {
+// TODO move me
+class AddressLabel : public QLabel
+{
+        Device::FullAddressSettings m_data;
+    public:
+        AddressLabel(Device::FullAddressSettings data, QString str, QWidget* parent):
+            QLabel{std::move(str), parent},
+            m_data{std::move(data)}
+        {
+
+        }
+
+    private:
+        void mousePressEvent(QMouseEvent* event) override
+        {
+            if (event->button() == Qt::LeftButton)
+            {
+                auto drag = new QDrag(this);
+                auto mimeData = new QMimeData;
+                Mime<Device::FullAddressSettings>::Serializer s{*mimeData};
+                s.serialize(m_data);
+
+                drag->setMimeData(mimeData);
+
+                drag->setPixmap(grab());
+                drag->setHotSpot(rect().center());
+
+                drag->exec();
+            }
+        }
+
+};
 
 EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
   QWidget{parent},
@@ -25,8 +60,11 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
   if(auto f = ossia::net::min(dom).try_get<ossia::Float>()) m_min = f->value;
   if(auto f = ossia::net::max(dom).try_get<ossia::Float>()) m_max = f->value;
 
-  auto lay = new QVBoxLayout;
-  lay->addWidget(new QLabel{QString::fromStdString(m_param.getName())});
+  auto lay = new iscore::MarginLess<QVBoxLayout>;
+  lay->addWidget(new AddressLabel{
+                     Engine::ossia_to_iscore::ToFullAddressSettings(m_param),
+                     QString::fromStdString(m_param.getName()),
+                     this});
   m_slider = new iscore::DoubleSlider{this};
   lay->addWidget(m_slider);
   this->setLayout(lay);
