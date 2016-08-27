@@ -2,11 +2,7 @@
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
 #include <lilv/lilvmm.hpp>
 #include <QJsonDocument>
-struct LV2PluginInfo
-{
-        std::unique_ptr<Lilv::Instance> instance;
-        std::vector<int> in_ports, out_ports, control_in_ports;
-};
+
 namespace Audio
 {
 namespace Effect
@@ -36,7 +32,7 @@ class LV2EffectModel :
         MODEL_METADATA_IMPL(LV2EffectModel)
     public:
         LV2EffectModel(
-                const QString& path,
+                const QString& name,
                 const Id<EffectModel>&,
                 QObject* parent);
 
@@ -55,18 +51,16 @@ class LV2EffectModel :
             init();
         }
 
-        const QString& path() const
-        { return m_path; }
+        const QString& effect() const
+        { return m_effectPath; }
 
-        void setPath(const QString& s)
-        { m_path = s; }
+        void setEffect(const QString& s)
+        { m_effectPath = s; }
 
-        LV2PluginInfo instance{};
-
+        const LilvPlugin* plugin{};
     private:
         void init();
-        void reload();
-        QString m_path;
+        QString m_effectPath;
 };
 using LV2EffectFactory = EffectFactory_T<LV2EffectModel>;
 }

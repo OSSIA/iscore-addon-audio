@@ -1,6 +1,8 @@
 #include "LV2EffectModel.hpp"
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
 #include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
+#include <QUrl>
+#include <QFile>
 
 namespace Audio
 {
@@ -11,7 +13,8 @@ LV2EffectModel::LV2EffectModel(
         const QString& path,
         const Id<EffectModel>& id,
         QObject* parent):
-    EffectModel{id, parent}
+    EffectModel{id, parent},
+    m_effectPath{path}
 {
     init();
 }
@@ -20,41 +23,80 @@ LV2EffectModel::LV2EffectModel(
         const LV2EffectModel& source,
         const Id<EffectModel>& id,
         QObject* parent):
-    EffectModel{id, parent}
+    EffectModel{id, parent},
+    m_effectPath{source.effect()}
 {
     init();
 }
 
 void LV2EffectModel::init()
 {
-  auto& world = iscore::AppContext().components.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().lilv;
+    plugin = nullptr;
+    auto path = m_effectPath;
+    if(path.isEmpty())
+        return;
 
-  auto plugs = world.get_all_plugins();
-  auto it = plugs.begin();
-  while(!plugs.is_end(it))
-  {
+    bool isFile = QFile(QUrl(path).toString(QUrl::PreferLocalFile)).exists();
+    if(isFile)
+    {
+        if(*path.rbegin() != '/')
+            path.append('/');
+    }
 
-      auto plug = plugs.get(it);
-      if(std::string(plug.get_name().as_string()) == "GxFlanger")
-      {
-          m_effect = MakeLV2AudioEffect(plug.me, world.me);
+    auto& world = iscore::AppContext().components.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().lilv;
 
-          return;
-
-      }
-      else
-      {
-          it = plugs.next(it);
-      }
-
-  }
-
+    auto plugs = world.get_all_plugins();
+    auto it = plugs.begin();
+    while(!plugs.is_end(it))
+    {
+        auto plug = plugs.get(it);
+        if(isFile && QString(plug.get_bundle_uri().as_string()) == path)
+        {
+            plugin = plug.me;
+            m_effect = MakeLV2AudioEffect(plug.me, world.me);
+            return;
+        }
+        else if(!isFile && QString(plug.get_name().as_string()) == path)
+        {
+            plugin = plug.me;
+            m_effect = MakeLV2AudioEffect(plug.me, world.me);
+            return;
+        }
+        else
+        {
+            it = plugs.next(it);
+        }
+    }
+}
+}
 }
 
-void LV2EffectModel::reload()
+template<>
+void Visitor<Reader<DataStream>>::readFrom_impl(
+        const Audio::Effect::LV2EffectModel& eff)
 {
-
+    m_stream << eff.effect();
+    insertDelimiter();
 }
 
+template<>
+void Visitor<Writer<DataStream>>::writeTo(
+        Audio::Effect::LV2EffectModel& eff)
+{
+    m_stream >> eff.m_effectPath;
+    checkDelimiter();
 }
+
+template<>
+void Visitor<Reader<JSONObject>>::readFrom_impl(
+        const Audio::Effect::LV2EffectModel& eff)
+{
+    m_obj["Effect"] = eff.effect();
+}
+
+template<>
+void Visitor<Writer<JSONObject>>::writeTo(
+        Audio::Effect::LV2EffectModel& eff)
+{
+    eff.m_effectPath = m_obj["Effect"].toString();
 }

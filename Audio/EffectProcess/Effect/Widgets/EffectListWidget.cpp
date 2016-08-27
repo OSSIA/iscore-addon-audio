@@ -110,7 +110,6 @@ void EffectListWidget::dropEvent(QDropEvent *event)
         {
             auto path = url.toString(QUrl::PreferLocalFile);
             QFileInfo info(path);
-            qDebug() << info.absoluteFilePath();
             if(info.isFile())
             {
                 QFile f{path};
@@ -139,7 +138,7 @@ void EffectListWidget::dropEvent(QDropEvent *event)
                     auto cmd = new Commands::InsertEffect{
                             m_effects,
                             LV2EffectFactory::static_concreteFactoryKey(),
-                            info.absoluteFilePath(),
+                            url.toString(),
                             pos};
                     m_dispatcher.submitCommand(cmd);
                     pos++;
