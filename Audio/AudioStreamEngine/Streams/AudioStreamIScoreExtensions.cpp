@@ -46,6 +46,7 @@ AUDIOAPI AudioStream MakeReturn(AudioStream s);
 AUDIOAPI AudioStream MakeChannelSound(AudioStream s, double const * volume);
 AUDIOAPI AudioStream MakeFixedLoopSound(AudioStream s, long maxlength);
 AUDIOAPI AudioStream MakeSimpleBufferSound(float **buffer, long length, long channels);
+AUDIOAPI SymbolicDate GenPriorisedSymbolicDate(AudioPlayerPtr /*player*/, int64_t prio);
 
 #if defined(LILV_SHARED)
 AUDIOAPI AudioEffect MakeLV2AudioEffect(const LilvPlugin* p, LilvWorld* w);
@@ -142,6 +143,35 @@ AUDIOAPI AudioStream MakeFixedLoopSound(
 AUDIOAPI AudioStream MakeSimpleBufferSound(float **buffer, long length, long channels)
 {
     return new TSimpleBufferAudioStream{buffer, length, channels};
+}
+
+class TPriorisedSymbolicDate : public TSymbolicDate
+{
+    private:
+        int64_t fPriority = 0;
+
+    public :
+        TPriorisedSymbolicDate(int64_t priority):
+            TSymbolicDate(),
+            fPriority{priority}
+        {}
+        TPriorisedSymbolicDate(audio_frame_t date, int64_t priority):
+            TSymbolicDate(date),
+            fPriority(priority)
+        {}
+
+        bool operator< (TSymbolicDate& date) override
+        {
+            auto other = dynamic_cast<TPriorisedSymbolicDate*>(&date);
+            if(other)
+                return fPriority < other->fPriority || TSymbolicDate::operator<(date);
+            else
+                return TSymbolicDate::operator<(date);
+        }
+};
+AUDIOAPI SymbolicDate GenPriorisedSymbolicDate(AudioPlayerPtr /*player*/, int64_t prio)
+{
+    return new TPriorisedSymbolicDate(prio);
 }
 
 #if defined(LILV_SHARED)

@@ -17,7 +17,7 @@ ReturnComponent::ReturnComponent(
         QObject* parent_obj):
     ProcessComponent_T{sound, doc, id, "ReturnComponent", parent_obj}
 {
-
+    m_realTime = true;
 }
 
 optional<AudioGraphVertice> ReturnComponent::visit(AudioGraph& graph)

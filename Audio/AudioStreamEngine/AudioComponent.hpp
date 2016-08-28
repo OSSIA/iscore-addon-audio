@@ -22,6 +22,7 @@ class Component : public iscore::SystemComponent<iscore::Component, DocumentPlug
 
         AudioStream getStream() const { return m_stream; }
 
+        int priority = 0;
     protected:
         AudioStream m_stream{};
         bool m_realTime{};

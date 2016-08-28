@@ -14,6 +14,8 @@
 #include <QAction>
 #include <QContextMenuEvent>
 #include <Device/Address/AddressSettings.hpp>
+#include <State/MessageListSerialization.hpp>
+
 namespace Audio
 {
 namespace Effect
@@ -37,9 +39,14 @@ class AddressLabel : public QLabel
             {
                 auto drag = new QDrag(this);
                 auto mimeData = new QMimeData;
-                Mime<Device::FullAddressSettings>::Serializer s{*mimeData};
-                s.serialize(m_data);
-
+                {
+                    Mime<Device::FullAddressSettings>::Serializer s{*mimeData};
+                    s.serialize(m_data);
+                }
+                {
+                    Mime<State::MessageList>::Serializer s{*mimeData};
+                    s.serialize({State::Message{m_data.address, m_data.value}});
+                }
                 drag->setMimeData(mimeData);
 
                 drag->setPixmap(grab());

@@ -59,6 +59,7 @@ void LV2EffectModel::init()
         else if(!isFile && QString(plug.get_name().as_string()) == path)
         {
             plugin = plug.me;
+            metadata.setName(plug.get_name().as_string());
             m_effect = MakeLV2AudioEffect(plug.me, world.me);
             return;
         }

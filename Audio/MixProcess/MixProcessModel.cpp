@@ -105,7 +105,7 @@ void ProcessModel::init()
         }
 
         cst.processes.added.connect<ProcessModel, &ProcessModel::on_processAdded>(this);
-        cst.processes.removed.connect<ProcessModel, &ProcessModel::on_processRemoved>(this);
+        cst.processes.removing.connect<ProcessModel, &ProcessModel::on_processRemoved>(this);
     }
 }
 

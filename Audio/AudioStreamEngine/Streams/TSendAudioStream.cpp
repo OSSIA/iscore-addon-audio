@@ -1,5 +1,6 @@
 #include "TSendAudioStream.hpp"
-
+#include "TReturnAudioStream.hpp"
+#include <signal.h>
 TSendAudioStream::TSendAudioStream(TAudioStreamPtr as):
     TDecoratedAudioStream{as},
     fBuffers{0, as->Channels(), TAudioGlobals::fBufferSize, TAudioGlobals::fSampleRate},
@@ -22,22 +23,24 @@ long TSendAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos)
     UAudioTools::ZeroFloatBlk(fBuffers.fOutputBuffer, fBuffers.fBufferSize, fBuffers.fOutput);
 
     // Write the new data into the local buffer
-    fStream->Read(&fTempBuffer, framesNum, framePos);
+    int res = fStream->Read(&fTempBuffer, framesNum, framePos);
+    if(framePos != 0) std::cerr << "Send == " << framePos << "\n";
 
     // Mix the local buffer into the output buffer
     float** temp1 = (float**)alloca(buffer->GetChannels()*sizeof(float*));
+    float** temp2 = (float**)alloca(fBuffers.fOutput *sizeof(float*));
     UAudioTools::MixFrameToFrameBlk1(buffer->GetFrame(framePos, temp1),
-                                     fBuffers.fOutputBuffer,
+                                     fTempBuffer.GetFrame(framePos, temp2),
                                      framesNum,
                                      fBuffers.fOutput);
 
     fCount++;
-    return framesNum;
+    return res;
 }
 
-float **TSendAudioStream::GetOutputBuffer() const
+TSharedNonInterleavedAudioBuffer<float>& TSendAudioStream::GetOutputBuffer()
 {
-    return fBuffers.fOutputBuffer;
+    return fTempBuffer;
 }
 
 int TSendAudioStream::GetReadBufferCount() const
@@ -48,10 +51,28 @@ int TSendAudioStream::GetReadBufferCount() const
 void TSendAudioStream::Reset()
 {
     fCount = 0;
+    for(TReturnAudioStream* ret : fReturns)
+    {
+        ret->ResetSendCount();
+    }
     TDecoratedAudioStream::Reset();
 }
 
 TAudioStreamPtr TSendAudioStream::Copy()
 {
     return new TSendAudioStream{fStream->Copy()};
+}
+
+void TSendAudioStream::RegisterReturn(TReturnAudioStream* ret)
+{
+    auto it = std::find(fReturns.begin(), fReturns.end(), ret);
+    if(it == fReturns.end())
+        fReturns.push_back(ret);
+}
+
+void TSendAudioStream::UnregisterReturn(TReturnAudioStream* ret)
+{
+    auto it = std::find(fReturns.begin(), fReturns.end(), ret);
+    if(it != fReturns.end())
+        fReturns.erase(it);
 }

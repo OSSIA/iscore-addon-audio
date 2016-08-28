@@ -163,7 +163,9 @@ class LV2AudioEffect : public TAudioEffectInterface
             return {};
         }
 
-
+        void Reset() override
+        {
+        }
 };
 
 class StereoLV2AudioEffect final : public LV2AudioEffect
@@ -216,12 +218,6 @@ class StereoLV2AudioEffect final : public LV2AudioEffect
         TAudioEffectInterface* Copy() override
         {
             return nullptr;
-        }
-
-        void Reset() override
-        {
-            lilv_instance_deactivate(fInstance);
-            lilv_instance_activate(fInstance);
         }
 };
 
@@ -282,14 +278,6 @@ class MonoLV2AudioEffect final : public LV2AudioEffect
         TAudioEffectInterface* Copy() override
         {
             return nullptr;
-        }
-
-        void Reset() override
-        {
-            lilv_instance_deactivate(fLeft);
-            lilv_instance_activate(fLeft);
-            lilv_instance_deactivate(fRight);
-            lilv_instance_activate(fRight);
         }
 };
 
