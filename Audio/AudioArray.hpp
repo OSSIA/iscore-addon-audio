@@ -1,5 +1,5 @@
 #pragma once
 #include <vector>
 
-using AudioSample = double;
+using AudioSample = float;
 using AudioArray = std::vector<std::vector<AudioSample>>;

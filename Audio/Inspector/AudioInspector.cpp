@@ -1,5 +1,6 @@
 #include "AudioInspector.hpp"
 #include <Audio/Commands/ChangeAudioFile.hpp>
+#include <iscore/document/DocumentContext.hpp>
 
 #include <QFormLayout>
 #include <QLineEdit>

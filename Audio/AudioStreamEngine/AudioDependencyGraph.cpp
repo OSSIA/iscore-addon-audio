@@ -1,3 +1,5 @@
+#include <boost/graph/graphviz.hpp>
+#include <boost/range/iterator_range.hpp>
 #include "AudioDependencyGraph.hpp"
 
 
@@ -15,8 +17,6 @@
 #include <Audio/AudioStreamEngine/Scenario/ConstraintComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/LoopComponent.hpp>
-#include <boost/graph/graphviz.hpp>
-#include <boost/range/iterator_range.hpp>
 #include <type_traits>
 #include <sstream>
 #include <QMessageBox>
@@ -48,12 +48,19 @@ AudioGraphBuilder::AudioGraphBuilder(Constraint &root)
             if(!send)
                 continue;
 
-            auto& send_comp = iscore::component<SendComponent>(send->components);
+            // We actually add an edge not to the send, but to the parent constraint
+            // of the send.
+            auto send_parent = dynamic_cast<Scenario::ConstraintModel*>(send->parent());
+            if(!send_parent)
+                return;
+
+
+            auto& cst_comp = iscore::component<Constraint>(send_parent->components);
 
             // Then find the corresponding send
             for(auto it_k = vertices.first; it_k != vertices.second; ++it_k)
             {
-                if(m_graph[*it_k] == &send_comp)
+                if(m_graph[*it_k] == &cst_comp)
                 {
                     // Add an edge from return to send
                     boost::add_edge(*it_k, *it, m_graph);
@@ -131,9 +138,14 @@ void AudioGraphBuilder::apply(const std::deque<int>& sorted_vertices, Context& c
 {
     // First we check recursively for nodes that have to be real-time
     // (i.e. they imply real-time input)
+    int priority = 0;
     for(auto vertice : sorted_vertices)
     {
         auto component = m_graph[vertice];
+
+        // Set the priority
+        component->priority = priority++;
+
         if(component->realTime())
         {
             for(auto e : pair_range(boost::out_edges(vertice, m_graph)))
@@ -146,7 +158,8 @@ void AudioGraphBuilder::apply(const std::deque<int>& sorted_vertices, Context& c
     // Then we create the streams.
     for(auto vertice : sorted_vertices)
     {
-        auto component = m_graph[vertice];
+        Audio::AudioStreamEngine::Component* component = m_graph[vertice];
+        // qDebug() << component->prettyName() << component->priority;
 
         component->makeStream(ctx);
         if(!component->getStream())

@@ -3,7 +3,7 @@
 #include <core/document/Document.hpp>
 #include <core/document/DocumentModel.hpp>
 #include <Scenario/Application/ScenarioApplicationPlugin.hpp>
-#include <OSSIA/OSSIAApplicationPlugin.hpp>
+#include <Engine/ApplicationPlugin.hpp>
 #include <QAction>
 #include <Audio/Settings/Card/CardSettingsModel.hpp>
 #include <LibAudioStreamMC++.h>
@@ -17,6 +17,9 @@ ApplicationPlugin::ApplicationPlugin(const iscore::GUIApplicationContext& app):
     iscore::GUIApplicationContextPlugin{app},
     m_ctx{*this}
 {
+#if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
+    lilv.load_all();
+#endif
 }
 
 void ApplicationPlugin::initialize()
@@ -42,15 +45,9 @@ ApplicationPlugin::~ApplicationPlugin()
     //stopMTDSPFactories();
 }
 
-void ApplicationPlugin::on_newDocument(iscore::Document* doc)
+void ApplicationPlugin::on_createdDocument(iscore::Document& doc)
 {
-    auto plug = new DocumentPlugin{m_ctx, *doc, &doc->model()};
-    doc->model().addPluginModel(plug);
-}
-
-void ApplicationPlugin::on_loadedDocument(iscore::Document* doc)
-{
-    on_newDocument(doc);
+    doc.model().addPluginModel(new DocumentPlugin{m_ctx, doc, &doc.model()});
 }
 
 static int CardIdFromString(int api, const QString& str);

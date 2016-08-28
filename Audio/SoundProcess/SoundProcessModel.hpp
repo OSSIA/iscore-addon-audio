@@ -4,7 +4,6 @@
 #include <iscore/serialization/JSONVisitor.hpp>
 #include <iscore/serialization/VisitorCommon.hpp>
 #include <Audio/SoundProcess/SoundProcessMetadata.hpp>
-#include <Process/Dummy/DummyLayerPanelProxy.hpp>
 #include <Process/LayerModel.hpp>
 #include <Audio/MediaFileHandle.hpp>
 
@@ -47,6 +46,8 @@ class ProcessModel final : public Process::ProcessModel
         void setFile(const QString& file);
         void setFile(const MediaFileHandle& file);
 
+        MediaFileHandle& file()
+        { return m_file; }
         const MediaFileHandle& file() const
         { return m_file; }
 

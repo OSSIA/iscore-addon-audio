@@ -5,8 +5,11 @@
 #include "TFixedLoopAudioStream.hpp"
 #include "TSendAudioStream.hpp"
 #include "TReturnAudioStream.hpp"
+#include "TGroupAudioStream.hpp"
 #include "TSinusAudioStream.hpp"
 #include "ExecutorAudioEffect.hpp"
+#include <TAudioEffectInterface.h>
+#include "TSimpleBufferAudioStream.hpp"
 #include <TEffectAudioStream.h>
 
 // TODO refactor this with the part in LibAudioStreamMC++.cpp
@@ -25,6 +28,7 @@ typedef void* AudioPlayerPtr;
 typedef void* AudioRendererPtr;
 typedef AudioPlayer* IntAudioPlayerPtr;
 typedef TAudioStreamPtr AudioStream;
+typedef TAudioEffectInterfacePtr AudioEffect;
 
 #if defined(__cplusplus) && !defined(_MSC_VER)
 extern "C"
@@ -35,13 +39,18 @@ AUDIOAPI AudioRendererPtr MakeGroupPlayer();
 AUDIOAPI AudioStream MakeGroupStream(AudioRendererPtr p);
 AUDIOAPI AudioStream MakeSinusStream(long length, float freq);
 
-AUDIOAPI AudioStream MakeIScoreExecutor(AudioStream s, OSSIA::TimeConstraint& t);
+AUDIOAPI AudioStream MakeIScoreExecutor(AudioStream s, ossia::time_constraint& t);
 
 AUDIOAPI AudioStream MakeSend(AudioStream s);
 AUDIOAPI AudioStream MakeReturn(AudioStream s);
 AUDIOAPI AudioStream MakeChannelSound(AudioStream s, double const * volume);
 AUDIOAPI AudioStream MakeFixedLoopSound(AudioStream s, long maxlength);
+AUDIOAPI AudioStream MakeSimpleBufferSound(float **buffer, long length, long channels);
+AUDIOAPI SymbolicDate GenPriorisedSymbolicDate(AudioPlayerPtr /*player*/, int64_t prio);
 
+#if defined(LILV_SHARED)
+AUDIOAPI AudioEffect MakeLV2AudioEffect(const LilvPlugin* p, LilvWorld* w);
+#endif
 void CloseAudioPlayer(AudioPlayerPtr ext_player); // In libaudiostreammc
 
 #if defined(__cplusplus) && !defined(_MSC_VER)
@@ -94,7 +103,7 @@ AUDIOAPI AudioStream MakeGroupStream(AudioPlayerPtr p)
     if(!mix)
         return nullptr;
 
-    return new TPlayerAudioStream{*grp, *mix};
+    return new TPlayerAudioStream{grp, mix};
 }
 
 AUDIOAPI AudioStream MakeSinusStream(long length, float freq)
@@ -119,7 +128,7 @@ AUDIOAPI AudioStream MakeChannelSound(AudioStream s, double const * volume)
     return new TChannelAudioStream{static_cast<TAudioStreamPtr>(s), volume};
 }
 
-AUDIOAPI AudioStream MakeIScoreExecutor(AudioStream s, OSSIA::TimeConstraint& t)
+AUDIOAPI AudioStream MakeIScoreExecutor(AudioStream s, ossia::time_constraint& t)
 {
     return new TEffectAudioStream{s, new ExecutorAudioEffect{t}};
 }
@@ -131,3 +140,59 @@ AUDIOAPI AudioStream MakeFixedLoopSound(
     return new TFixedLoopAudioStream{s, maxlength};
 }
 
+AUDIOAPI AudioStream MakeSimpleBufferSound(float **buffer, long length, long channels)
+{
+    return new TSimpleBufferAudioStream{buffer, length, channels};
+}
+
+class TPriorisedSymbolicDate : public TSymbolicDate
+{
+    private:
+        int64_t fPriority = 0;
+
+    public :
+        TPriorisedSymbolicDate(int64_t priority):
+            TSymbolicDate(),
+            fPriority{priority}
+        {}
+        TPriorisedSymbolicDate(audio_frame_t date, int64_t priority):
+            TSymbolicDate(date),
+            fPriority(priority)
+        {}
+
+        bool operator< (TSymbolicDate& date) override
+        {
+            auto other = dynamic_cast<TPriorisedSymbolicDate*>(&date);
+            if(other)
+                return fPriority < other->fPriority || TSymbolicDate::operator<(date);
+            else
+                return TSymbolicDate::operator<(date);
+        }
+};
+AUDIOAPI SymbolicDate GenPriorisedSymbolicDate(AudioPlayerPtr /*player*/, int64_t prio)
+{
+    return new TPriorisedSymbolicDate(prio);
+}
+
+#if defined(LILV_SHARED)
+AUDIOAPI AudioEffect MakeLV2AudioEffect(const LilvPlugin* p, LilvWorld* w)
+{
+    if(p && w)
+    {
+        LV2Data dat{*p, *w};
+        if(dat.in_ports.size() == 2 && dat.out_ports.size() == 2)
+        {
+            return new StereoLV2AudioEffect{std::move(dat)};
+        }
+        else if(dat.in_ports.size() == 1 && dat.out_ports.size() == 1)
+        {
+            return new MonoLV2AudioEffect{std::move(dat)};
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+    return nullptr;
+}
+#endif

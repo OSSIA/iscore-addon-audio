@@ -56,9 +56,6 @@ class FaustEffectModel :
 
         void setText(const QString& txt);
 
-    signals:
-        void textChanged();
-
     private:
         void init();
         void reload();

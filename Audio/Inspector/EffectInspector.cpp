@@ -2,13 +2,24 @@
 #include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
 #include <Audio/Commands/InsertEffect.hpp>
 #include <Audio/Commands/EditFaustEffect.hpp>
+#include <iscore/document/DocumentContext.hpp>
+
+#if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
+#include <lilv/lilvmm.hpp>
+#include <lv2/lv2plug.in/ns/extensions/ui/ui.h>
+#include <Audio/EffectProcess/LV2/LV2EffectModel.hpp>
+#endif
+
 
 #include <QPlainTextEdit>
 #include <QVBoxLayout>
 #include <QDialogButtonBox>
 #include <QDialog>
 #include <QListWidget>
+#include <QPushButton>
+#include <QInputDialog>
 
+#include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
 namespace Audio
 {
 namespace Effect
@@ -52,7 +63,7 @@ InspectorWidget::InspectorWidget(
 {
     setObjectName("EffectInspectorWidget");
 
-    auto lay = new QHBoxLayout;
+    auto lay = new QVBoxLayout;
     m_list = new QListWidget;
     lay->addWidget(m_list);
     con(process(), &Effect::ProcessModel::effectsChanged,
@@ -63,20 +74,29 @@ InspectorWidget::InspectorWidget(
             this, [=] (QListWidgetItem* item) {
         // Make a text dialog to edit faust program.
         auto id = item->data(Qt::UserRole).value<Id<EffectModel>>();
-        auto faust = safe_cast<FaustEffectModel*>(&process().effects().at(id));
 
-        FaustEditDialog edit{*faust};
-        auto res = edit.exec();
-        if(res)
+        auto proc = &process().effects().at(id);
+        if(auto faust = dynamic_cast<FaustEffectModel*>(proc))
         {
-            m_dispatcher.submitCommand(new Commands::EditFaustEffect{*faust, edit.text()});
+            FaustEditDialog edit{*faust};
+            auto res = edit.exec();
+            if(res)
+            {
+                m_dispatcher.submitCommand(new Commands::EditFaustEffect{*faust, edit.text()});
+            }
         }
+#if defined(LILV_SHARED)
+        else if(auto lv2 = dynamic_cast<LV2EffectModel*>(proc))
+        {
+            // One can take inspiration from Qtractor, and cry a lot.
+        }
+#endif
     }, Qt::QueuedConnection);
 
     recreate();
 
     // Add an effect
-    m_add = new QPushButton{tr("Add")};
+    m_add = new QPushButton{tr("Add (Faust)")};
     connect(m_add, &QPushButton::pressed,
             this, [=] () {
         m_dispatcher.submitCommand(
@@ -88,6 +108,43 @@ InspectorWidget::InspectorWidget(
     });
 
     lay->addWidget(m_add);
+
+#if defined(LILV_SHARED)
+    auto add_lv2 = new QPushButton{tr("Add (LV2)")};
+    connect(add_lv2, &QPushButton::pressed,
+            this, [=] () {
+        auto& world = iscore::AppContext().components.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().lilv;
+
+        auto plugs = world.get_all_plugins();
+
+        QStringList items;
+
+        auto it = plugs.begin();
+        while(!plugs.is_end(it))
+        {
+            auto plug = plugs.get(it);
+            items.push_back(plug.get_name().as_string());
+            it = plugs.next(it);
+        }
+
+        auto res = QInputDialog::getItem(
+                    this,
+                    tr("Select a plug-in"), tr("Select a LV2 plug-in"),
+                    items, 0, false);
+
+        if(!res.isEmpty())
+        {
+            m_dispatcher.submitCommand(
+                        new Commands::InsertEffect{
+                            process(),
+                            LV2EffectFactory::static_concreteFactoryKey(),
+                            res,
+                            (int)process().effects().size()});
+        }
+    });
+
+    lay->addWidget(add_lv2);
+#endif
     // Remove an effect
     // Effects changed
     // Effect list
@@ -111,9 +168,9 @@ void InspectorWidget::recreate()
     for(const auto& fx_id : process().effectsOrder())
     {
         EffectModel& fx = process().effects().at(fx_id);
-        auto item = new ListWidgetItem(fx.metadata.name(), m_list);
+        auto item = new ListWidgetItem(fx.metadata.getName(), m_list);
 
-        con(fx.metadata, &ModelMetadata::nameChanged,
+        con(fx.metadata, &ModelMetadata::NameChanged,
             item, [=] (const auto& name) { item->setText(name); });
         item->setData(Qt::UserRole, QVariant::fromValue(fx_id));
         m_list->addItem(item);

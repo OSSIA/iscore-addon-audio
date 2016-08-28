@@ -29,7 +29,6 @@ void FaustEffectModel::setText(const QString& txt)
 {
     m_text = txt;
     reload();
-    emit textChanged();
 }
 
 void FaustEffectModel::init()
@@ -67,6 +66,8 @@ void FaustEffectModel::reload()
     {
         qDebug() << "could not load effect";
     }
+
+    emit effectChanged();
 }
 
 }

@@ -21,7 +21,6 @@
 #include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
 
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.hpp>
-#include <Audio/EffectProcess/LocalTree/LocalTreeFaustEffectComponent.hpp>
 
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/LoopComponent.hpp>
@@ -40,6 +39,9 @@
 #include <core/document/DocumentModel.hpp>
 #include <iscore_plugin_audio_commands_files.hpp>
 
+#if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
+#include <Audio/EffectProcess/LV2/LV2EffectModel.hpp>
+#endif
 std::pair<const CommandParentFactoryKey, CommandGeneratorMap> iscore_plugin_audio::make_commands()
 {
     using namespace Audio::Commands;
@@ -88,12 +90,14 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
         FW<iscore::PanelDelegateFactory,
             Audio::Panel::TrackListPanelFactory>,*/
         FW<Audio::Effect::EffectFactory,
-            Audio::Effect::FaustEffectFactory>,
-        FW<Ossia::LocalTree::ProcessComponentFactory,
+            Audio::Effect::FaustEffectFactory
+#if defined(LILV_SHARED)
+            , Audio::Effect::LV2EffectFactory
+#endif
+            >,
+        FW<Engine::LocalTree::ProcessComponentFactory,
             Audio::Effect::LocalTree::EffectProcessComponentFactory>,
-        FW<Audio::Effect::LocalTree::EffectComponentFactory,
-            Audio::Effect::LocalTree::FaustComponentFactory>,
-        FW<RecreateOnPlay::ClockManagerFactory,
+        FW<Engine::Execution::ClockManagerFactory,
             Audio::AudioStreamEngine::AudioClockFactory>,
         FW<Scenario::DropHandler,
             Audio::Sound::DropHandler>,
@@ -122,8 +126,7 @@ std::vector<std::unique_ptr<iscore::FactoryListInterface> > iscore_plugin_audio:
 {
     return make_ptr_vector<iscore::FactoryListInterface,
             Audio::AudioStreamEngine::ProcessComponentFactoryList,
-            Audio::Effect::EffectFactoryList,
-            Audio::Effect::LocalTree::EffectComponentFactoryList>();
+            Audio::Effect::EffectFactoryList>();
 }
 
 iscore::Version iscore_plugin_audio::version() const

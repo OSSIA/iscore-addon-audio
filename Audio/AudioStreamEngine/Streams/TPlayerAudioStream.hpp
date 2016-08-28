@@ -1,6 +1,7 @@
 #pragma once
 #include <TAudioStream.h>
 #include <atomic>
+#include <memory>
 
 class TGroupRenderer;
 class TGroupAudioMixer;
@@ -8,14 +9,14 @@ class TGroupAudioMixer;
 // A stream that wraps a group renderer
 class TPlayerAudioStream final : public TAudioStream
 {
-        TGroupRenderer& fRenderer;
-        TGroupAudioMixer& fMixer;
+        std::unique_ptr<TGroupRenderer> fRenderer;
+        std::unique_ptr<TGroupAudioMixer> fMixer;
         std::atomic_bool fScheduleReset{false};
 
     public:
         TPlayerAudioStream(
-                TGroupRenderer&,
-                TGroupAudioMixer&) ;
+                TGroupRenderer*,
+                TGroupAudioMixer*) ;
 
         ~TPlayerAudioStream() ;
 

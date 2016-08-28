@@ -104,7 +104,7 @@ SendComponent::SendComponent(
         QObject* parent_obj):
     ProcessComponent_T{sound, doc, id, "SendComponent", parent_obj}
 {
-
+    m_realTime = true;
 }
 
 void SendComponent::makeStream(const Context& ctx)

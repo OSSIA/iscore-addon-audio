@@ -18,6 +18,10 @@ ScenarioComponentBase::ScenarioComponentBase(
 {
 }
 
+ScenarioComponent::~ScenarioComponent()
+{
+}
+
 optional<AudioGraphVertice> ScenarioComponent::visit(AudioGraph& graph)
 {
     auto res = boost::add_vertex(this, graph);
@@ -58,16 +62,27 @@ void ScenarioComponent::makeStream(const Context& ctx)
 
 
     m_groupPlayer = MakeGroupPlayer();
+    std::list<ConstraintPair> topo_sorted;
 
     for(const auto& cst : constraints())
     {
         auto sound = cst.component.getStream();
         if(!sound)
             continue;
+        topo_sorted.push_back(cst);
+    }
 
+    topo_sorted.sort([] (const ConstraintPair& lhs, const ConstraintPair& rhs)
+    {
+         return lhs.component.priority < rhs.component.priority;
+    });
+
+    for(const auto& cst :topo_sorted)
+    {
+        auto sound = cst.component.getStream();
         {
             auto start_con = con(cst.element, &Scenario::ConstraintModel::executionStarted,
-                                 this, [&] () {
+                                 this, [=] () {
                 onStartDateFixed(cst.component, GetAudioPlayerDateInFrame(m_groupPlayer), true);
             }, Qt::DirectConnection);
             m_connections.push_back(start_con);
@@ -92,8 +107,8 @@ void ScenarioComponent::makeStream(const Context& ctx)
             m_connections.push_back(speed_con);
         }
 
-        cst.component.startDate = GenSymbolicDate(m_groupPlayer);
-        cst.component.stopDate = GenSymbolicDate(m_groupPlayer);
+        cst.component.startDate = GenPriorisedSymbolicDate(m_groupPlayer, cst.component.priority);
+        cst.component.stopDate = GenPriorisedSymbolicDate(m_groupPlayer, cst.component.priority);
         StartSound(m_groupPlayer, sound, cst.component.startDate);
         StopSound(m_groupPlayer, sound, cst.component.stopDate);
     }

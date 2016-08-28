@@ -2,10 +2,21 @@
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
 #include <lilv/lilvmm.hpp>
 #include <QJsonDocument>
+
 namespace Audio
 {
 namespace Effect
 {
+class LV2EffectModel;
+}
+}
+EFFECT_METADATA(, Audio::Effect::LV2EffectModel, "fd5243ba-70b5-4164-b44a-ecb0dcdc0494", "LV2", "LV2")
+namespace Audio
+{
+namespace Effect
+{
+
+
 
 /** LV2 effect model.
  * Should contain an effect, maybe instantiated with
@@ -18,9 +29,10 @@ class LV2EffectModel :
         Q_OBJECT
         ISCORE_SERIALIZE_FRIENDS(LV2EffectModel, DataStream)
         ISCORE_SERIALIZE_FRIENDS(LV2EffectModel, JSONObject)
+        MODEL_METADATA_IMPL(LV2EffectModel)
     public:
         LV2EffectModel(
-                const QString& faustProgram,
+                const QString& name,
                 const Id<EffectModel>&,
                 QObject* parent);
 
@@ -39,26 +51,17 @@ class LV2EffectModel :
             init();
         }
 
-        LV2EffectModel* clone(
-                const Id<EffectModel>& newId,
-                QObject* parent) const override;
+        const QString& effect() const
+        { return m_effectPath; }
 
-        const QString& path() const
-        { return m_path; }
+        void setEffect(const QString& s)
+        { m_effectPath = s; }
 
-        void setPath(const QString& s)
-        { m_path = s; }
-        UuidKey<EffectFactory> concreteFactoryKey() const override
-        {
-            return_uuid("fd5243ba-70b5-4164-b44a-ecb0dcdc0494");
-        }
-    signals:
-        void textChanged();
-
+        const LilvPlugin* plugin{};
     private:
         void init();
-        void reload();
-        QString m_path;
+        QString m_effectPath;
 };
+using LV2EffectFactory = EffectFactory_T<LV2EffectModel>;
 }
 }

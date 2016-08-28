@@ -1,6 +1,6 @@
 #pragma once
-#include <OSSIA/Executor/ClockManager/ClockManagerFactory.hpp>
-#include <OSSIA/Executor/ClockManager/DefaultClockManager.hpp>
+#include <Engine/Executor/ClockManager/ClockManagerFactory.hpp>
+#include <Engine/Executor/ClockManager/DefaultClockManager.hpp>
 #include <LibAudioStreamMC++.h>
 
 
@@ -10,31 +10,31 @@ namespace AudioStreamEngine
 {
 class DocumentPlugin;
 class AudioClock final :
-        public RecreateOnPlay::ClockManager
+        public Engine::Execution::ClockManager
 {
     public:
-        AudioClock(const RecreateOnPlay::Context& ctx);
+        AudioClock(const Engine::Execution::Context& ctx);
 
     private:
         // Clock interface
         void play_impl(
                 const TimeValue& t,
-                RecreateOnPlay::BaseScenarioElement&) override;
-        void pause_impl(RecreateOnPlay::BaseScenarioElement&) override;
-        void resume_impl(RecreateOnPlay::BaseScenarioElement&) override;
-        void stop_impl(RecreateOnPlay::BaseScenarioElement&) override;
+                Engine::Execution::BaseScenarioElement&) override;
+        void pause_impl(Engine::Execution::BaseScenarioElement&) override;
+        void resume_impl(Engine::Execution::BaseScenarioElement&) override;
+        void stop_impl(Engine::Execution::BaseScenarioElement&) override;
 
-        RecreateOnPlay::DefaultClockManager m_default;
+        Engine::Execution::DefaultClockManager m_default;
         AudioStreamEngine::DocumentPlugin& m_audioPlug;
 };
 
-class AudioClockFactory final : public RecreateOnPlay::ClockManagerFactory
+class AudioClockFactory final : public Engine::Execution::ClockManagerFactory
 {
         ISCORE_CONCRETE_FACTORY("97545b15-d9f5-4001-91e6-2c1fcd43b295")
 
         QString prettyName() const override;
-        std::unique_ptr<RecreateOnPlay::ClockManager> make(
-            const RecreateOnPlay::Context& ctx) override;
+        std::unique_ptr<Engine::Execution::ClockManager> make(
+            const Engine::Execution::Context& ctx) override;
 };
 }
 }

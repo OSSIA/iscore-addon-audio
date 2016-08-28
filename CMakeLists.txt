@@ -1,19 +1,17 @@
 cmake_minimum_required(VERSION 3.1)
 project(iscore_plugin_audio LANGUAGES CXX)
 
-if(NOT TARGET iscore_plugin_ossia)
+# Dependencies
+if(NOT TARGET iscore_plugin_engine)
     return()
 endif()
-find_package(Sndfile)
+
 find_package(Faust REQUIRED)
-# find_package(RtAudio)
 
-if(NOT SNDFILE_LIBRARY)
-message("audio plugin requires libsndfile, portaudio")
-return()
-endif()
-
+set(LIBAUDIOSTREAM_FRAMEWORK OFF)
+set(LIBAUDIOSTREAM_SHARED OFF)
 add_subdirectory(3rdparty/libaudiostream)
+
 iscore_common_setup()
 
 # Packages
@@ -51,8 +49,6 @@ set(HDRS ${HDRS}
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Utility.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TGroupAudioStream.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/GroupAudioStream.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/GroupAudioStream.h"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/ExecutorAudioEffect.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TBufferManager.hpp"
@@ -60,6 +56,7 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TFixedLoopAudioStream.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TGroupAudioMixer.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TGroupAudioStream.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TSimpleBufferAudioStream.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TGroupRenderer.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TPlayerAudioStream.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TReturnAudioStream.hpp"
@@ -75,6 +72,7 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/InsertEffect.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/UpdateMix.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/CreateEffectAutomation.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.hpp"
@@ -100,9 +98,13 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessFactory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessMetadata.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessModel.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectParameters.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectModel.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectComponent.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectFactory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Widgets/EffectSlider.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Widgets/EffectWidget.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Widgets/EffectListWidget.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp"
 
@@ -134,6 +136,7 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessModel.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioDecoder.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/Track.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/TrackListPanel.hpp"
@@ -149,7 +152,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModelSerialization.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Missing/MissingEffectModelSerialization.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessLayerSerialization.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessModelSerialization.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessModelSerialization.cpp"
@@ -187,6 +189,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TChannelAudioStream.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TFixedLoopAudioStream.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TGroupAudioMixer.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TSimpleBufferAudioStream.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TGroupAudioStream.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TGroupRenderer.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TPlayerAudioStream.cpp"
@@ -201,7 +204,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/UpdateMix.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/EffectInspector.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/ReturnInspector.cpp"
@@ -211,7 +213,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsPresenter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsView.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessLayer.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessPresenter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessView.cpp"
@@ -220,6 +221,9 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectFactory.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Widgets/EffectSlider.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Widgets/EffectWidget.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Widgets/EffectListWidget.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Missing/MissingEffectModel.cpp"
@@ -235,6 +239,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessModel.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioDecoder.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/Track.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/TrackListPanel.cpp"
@@ -262,9 +267,9 @@ set_property(TARGET ${PROJECT_NAME}  PROPERTY COTIRE_ADD_UNITY_BUILD FALSE)
 iscore_generate_command_list_file(${PROJECT_NAME} "${HDRS}")
 target_link_libraries(${PROJECT_NAME} PUBLIC
                      Qt5::Core Qt5::Widgets Qt5::Multimedia
-                     iscore_lib_base iscore_plugin_ossia
+                     iscore_lib_base iscore_plugin_engine
                      ${SNDFILE_LIBRARIES}
-                     libaudiostream)
+                     LibAudioStream)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
                      ${SNDFILE_INCLUDE_DIR})
@@ -280,5 +285,12 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-error=return-type-c-linkage")
 endif()
 
+
+# Copy the faust .lib files so that they can be used for the effects.
+add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/3rdpary/faust-lib "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+# TODO install
 #add_subdirectory(Audio/CustomEngine/Faust)
 #add_subdirectory(tests)

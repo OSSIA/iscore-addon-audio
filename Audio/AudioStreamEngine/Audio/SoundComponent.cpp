@@ -2,6 +2,7 @@
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
 #include <LibAudioStreamMC++.h>
 #include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
+#include <Audio/AudioDecoder.hpp>
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -19,8 +20,11 @@ SoundComponent::SoundComponent(
 
 void SoundComponent::makeStream(const Context& ctx)
 {
-    auto& path = process().file();
-    auto read_sound = MakeReadSound(path.name().toLocal8Bit().constData());
+    auto& file = process().file();
+    if(file.empty())
+        return;
+
+    auto read_sound = MakeSimpleBufferSound(file.audioData(), file.samples(), file.channels());
 
     // If the file is mono, we duplicate it.
     auto chan = GetChannelsSound(read_sound);
@@ -47,9 +51,6 @@ void SoundComponent::makeStream(const Context& ctx)
             break;
         }
     }
-
-
-    // TODO optimize me by instead getting the already loaded data.
 }
 
 }

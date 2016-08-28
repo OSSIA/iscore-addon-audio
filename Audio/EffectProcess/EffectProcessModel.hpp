@@ -4,7 +4,6 @@
 #include <iscore/serialization/JSONVisitor.hpp>
 #include <iscore/serialization/VisitorCommon.hpp>
 #include <Audio/EffectProcess/EffectProcessMetadata.hpp>
-#include <Process/Dummy/DummyLayerPanelProxy.hpp>
 #include <Process/LayerModel.hpp>
 #include <Audio/MediaFileHandle.hpp>
 #include <iscore/tools/NotifyingMap.hpp>
@@ -56,13 +55,16 @@ class ProcessModel final : public Process::ProcessModel
             vis.writeTo(*this);
         }
 
-        const auto& effects() const
+        const NotifyingMap<EffectModel>& effects() const
         { return m_effects; }
         const auto& effectsOrder() const
         { return m_effectOrder; }
 
         void insertEffect(EffectModel* eff, int pos);
-        void removeEffect(const EffectModel&);
+        void removeEffect(const Id<EffectModel>&);
+        void moveEffect(const Id<EffectModel>&, int new_pos);
+
+        int effectPosition(const Id<EffectModel>& e) const;
 
     signals:
         void effectsChanged();
@@ -72,7 +74,7 @@ class ProcessModel final : public Process::ProcessModel
         NotifyingMap<EffectModel> m_effects;
 
         // The effect chain.
-        std::list<Id<EffectModel>> m_effectOrder;
+        QList<Id<EffectModel>> m_effectOrder;
 };
 }
 }

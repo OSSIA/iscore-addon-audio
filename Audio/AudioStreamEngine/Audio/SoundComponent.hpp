@@ -22,6 +22,7 @@ class SoundComponent final :
                 QObject* parent_obj);
 
         void makeStream(const Context& ctx) override;
+
 };
 
 using SoundComponentFactory = ProcessComponentFactory_T<SoundComponent>;

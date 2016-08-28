@@ -6,7 +6,7 @@ namespace Audio
 namespace AudioStreamEngine
 {
 struct Context;
-struct Constraint;
+class Constraint;
 
 struct AudioGraphBuilder
 {

@@ -3,12 +3,33 @@
 #include <Scenario/Document/Constraint/ConstraintModel.hpp>
 #include <iscore/widgets/SignalUtils.hpp>
 #include <iscore/widgets/MarginLess.hpp>
-
+#include <iscore/document/DocumentContext.hpp>
 #include <QCheckBox>
 #include <QSpinBox>
 #include <QTableWidget>
 #include <QVBoxLayout>
 #include <QFormLayout>
+#include <wobjectdefs.h>
+#include <wobjectimpl.h>
+
+template<typename T>
+class PressableWidget : public T
+{
+    public:
+        W_OBJECT(PressableWidget)
+        using T::T;
+
+    public:
+        void pressed() W_SIGNAL(pressed)
+
+    private:
+        void mousePressEvent(QMouseEvent* e) override
+        {
+            emit pressed();
+            return T::mousePressEvent(e);
+        }
+};
+W_OBJECT_IMPL(PressableWidget<T>, template <typename T>)
 namespace Audio
 {
 namespace Mix
@@ -75,7 +96,7 @@ class DirectMixTableWidget : public QWidget
 
     private:
         MixSpinBox* const spinBox{};
-        QuietOngoingCommandDispatcher dispatcher;
+        iscore::QuietOngoingCommandDispatcher dispatcher;
 
 };
 
@@ -143,7 +164,7 @@ class RoutingTableWidget : public QWidget
     private:
         QCheckBox* const checkBox{};
         MixSpinBox* const spinBox{};
-        QuietOngoingCommandDispatcher dispatcher;
+        iscore::QuietOngoingCommandDispatcher dispatcher;
 };
 
 MixWidget::MixWidget(
@@ -158,7 +179,11 @@ MixWidget::MixWidget(
     this->setLayout(lay);
 
 
-    m_table = new QTableWidget{this};
+    auto table = new PressableWidget<QTableWidget>{this};
+    m_table = table;
+    connect(table, &PressableWidget<QTableWidget>::pressed,
+            this, &MixWidget::pressed);
+
     m_table->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
     m_table->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 
@@ -171,6 +196,11 @@ MixWidget::MixWidget(
         this, &MixWidget::updateRouting);
     con(object, &Mix::ProcessModel::directMixChanged,
         this, &MixWidget::updateDirectMix);
+}
+
+void MixWidget::mousePressEvent(QMouseEvent* event)
+{
+    emit pressed();
 }
 
 
@@ -195,7 +225,7 @@ void MixWidget::recreate()
 
     // For each direct data, create relevant items.
     auto pretty_name = [&] (const Id<Process::ProcessModel>& dmx) {
-        return cst->processes.at(dmx).metadata.name();
+        return cst->processes.at(dmx).metadata.getName();
     };
 
     QStringList col_labels;

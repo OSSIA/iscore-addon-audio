@@ -17,6 +17,7 @@ namespace AudioStreamEngine
 class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent :
         public Scenario::ProcessComponent<Component>
 {
+        ABSTRACT_COMPONENT_METADATA(ProcessComponent, "19b6c620-9beb-4271-8a2c-8b34a3c64deb")
     public:
         static constexpr bool is_unique = true;
 
@@ -71,7 +72,7 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponentFactory :
                 QObject*>
         >
 {
-        ISCORE_ABSTRACT_FACTORY("19b6c620-9beb-4271-8a2c-8b34a3c64deb")
+        ISCORE_ABSTRACT_COMPONENT_FACTORY(ProcessComponent)
     public:
         virtual ~ProcessComponentFactory();
 

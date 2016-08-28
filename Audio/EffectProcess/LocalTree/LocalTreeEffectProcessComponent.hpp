@@ -1,7 +1,7 @@
 #pragma once
-#include <OSSIA/LocalTree/Scenario/ProcessComponent.hpp>
-#include <OSSIA/LocalTree/LocalTreeComponent.hpp>
-#include <OSSIA/LocalTree/NameProperty.hpp>
+#include <Engine/LocalTree/Scenario/ProcessComponent.hpp>
+#include <Engine/LocalTree/LocalTreeComponent.hpp>
+#include <Engine/LocalTree/NameProperty.hpp>
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
 #include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
@@ -24,26 +24,24 @@ class EffectProcessComponent;
 class EffectFactoryList;
 
 class EffectProcessComponentBase :
-        public Ossia::LocalTree::ProcessComponent_T<ProcessModel>
+        public Engine::LocalTree::ProcessComponent_T<ProcessModel>
 {
         COMPONENT_METADATA("0313e6df-1a18-4349-a4fb-8bc3461cc6b5")
 
     public:
             using model_t = EffectModel;
             using component_t = EffectComponent;
-            using component_factory_list_t = EffectComponentFactoryList;
 
        EffectProcessComponentBase(
                const Id<iscore::Component>& id,
-               OSSIA::Node& parent,
+               ossia::net::node_base& parent,
                Effect::ProcessModel& scenario,
-               Ossia::LocalTree::DocumentPlugin& doc,
+               Engine::LocalTree::DocumentPlugin& doc,
                QObject* parent_obj);
 
 
        EffectComponent* make(
                const Id<iscore::Component> & id,
-               EffectComponentFactory& factory,
                Effect::EffectModel &process);
 
        void removing(const Effect::EffectModel& cst, const EffectComponent& comp);
@@ -62,17 +60,17 @@ class EffectProcessComponentBase :
 
 
     private:
-        std::shared_ptr<OSSIA::Node> m_effectsNode;
+        ossia::net::node_base& m_effectsNode;
 };
 
 class EffectProcessComponent final :
-        public iscore::PolymorphicComponentHierarchy<EffectProcessComponentBase>
+        public iscore::ComponentHierarchy<EffectProcessComponentBase>
 {
     public:
-        using iscore::PolymorphicComponentHierarchy<EffectProcessComponentBase>::PolymorphicComponentHierarchyManager;
+        using iscore::ComponentHierarchy<EffectProcessComponentBase>::ComponentHierarchyManager;
 };
 
-using EffectProcessComponentFactory = Ossia::LocalTree::ProcessComponentFactory_T<EffectProcessComponent>;
+using EffectProcessComponentFactory = Engine::LocalTree::ProcessComponentFactory_T<EffectProcessComponent>;
 }
 }
 }

@@ -32,12 +32,12 @@ struct AudioContext
 
 struct Context
 {
-	    Context(const iscore::DocumentContext& d, AudioContext& a) :
-		    doc(d),
-	    	audio(a)
-	    {
+      Context(const iscore::DocumentContext& d, AudioContext& a) :
+        doc(d),
+        audio(a)
+      {
 
-		}
+    }
 
         const iscore::DocumentContext& doc;
         AudioContext& audio;

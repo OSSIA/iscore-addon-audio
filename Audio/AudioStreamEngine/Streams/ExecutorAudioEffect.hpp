@@ -1,12 +1,12 @@
 #pragma once
-#include <Editor/TimeConstraint.h>
-#include <Editor/TimeNode.h>
+#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_node.hpp>
 #include <TAudioEffectInterface.h>
 
 class ExecutorAudioEffect final : public TAudioEffectInterface
 {
     public:
-        ExecutorAudioEffect(OSSIA::TimeConstraint& cst):
+        ExecutorAudioEffect(ossia::time_constraint& cst):
             m_root{cst}
         {
 
@@ -14,7 +14,7 @@ class ExecutorAudioEffect final : public TAudioEffectInterface
 
     private:
 
-        OSSIA::TimeConstraint& m_root;
+        ossia::time_constraint& m_root;
         void Process(float** input, float** output, long framesNum) override
         {
             m_root.tick();

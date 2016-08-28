@@ -28,4 +28,6 @@ class TReturnAudioStream final :
         long Channels() override;
 
         TAudioStreamPtr Copy() override;
+
+        void ResetSendCount();
 };

@@ -2,6 +2,9 @@
 #include <iscore/plugins/application/GUIApplicationContextPlugin.hpp>
 #include <Audio/AudioStreamEngine/Context.hpp>
 
+#if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
+#include <lilv/lilvmm.hpp>
+#endif
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -20,6 +23,10 @@ class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPl
         const AudioContext& context() const
         { return m_ctx; }
 
+#if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
+        Lilv::World lilv;
+#endif
+
     signals:
         void audioEngineRestarted();
 
@@ -28,8 +35,8 @@ class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPl
 
         void initialize() override;
 
-        void on_newDocument(iscore::Document* doc) override;
-        void on_loadedDocument(iscore::Document* doc) override;
+        void on_createdDocument(iscore::Document& doc) override;
+
 };
 }
 }

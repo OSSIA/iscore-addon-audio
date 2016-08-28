@@ -1,14 +1,15 @@
 #include "TReturnAudioStream.hpp"
-
+#include <iscore/tools/Todo.hpp>
 TReturnAudioStream::TReturnAudioStream(TSendAudioStreamPtr as):
     fSend{as}
 {
     assert(fSend.getPointer());
+    fSend->RegisterReturn(this);
 }
 
 TReturnAudioStream::~TReturnAudioStream()
 {
-
+    fSend->UnregisterReturn(this);
 }
 
 long TReturnAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos)
@@ -17,13 +18,17 @@ long TReturnAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos
         return 0;
 
     auto sc = fSend->GetReadBufferCount();
+    if(sc == 0)
+    {
+
+    }
     if(sc <= fLastSendCount)
     {
         // The return has already read its last buffer and was stopped;
         // hence we don't have anything to mix in.
         // Note : if we have some effects generating sound
         // we should instead play a silent buffer. But this applies everywhere.
-        return 0;
+        return framesNum;
     }
     else
     {
@@ -36,33 +41,37 @@ long TReturnAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos
 
     float** temp1 = (float**) alloca(channel_bytes);
 
-    float ** in_buffer;
+    auto& send_buf = fSend->GetOutputBuffer();
+    float** in_buffer = (float**) alloca(channel_bytes);
     if(framesNum < TAudioGlobals::fBufferSize)
     {
         if(!fStarted)
         {
-            std::cerr << (void*)this << " ==> 0: ";
+            // std::cerr << (void*)this << " ==> 0: \n";
             // We haven't started streaming, hence we're mid-buffer.
             fStarted = true;
 
-            in_buffer = (float**) alloca(channel_bytes);
             for(int chan = 0; chan < buffer->GetChannels(); chan++)
             {
-                in_buffer[chan] = fSend->GetOutputBuffer()[chan] + TAudioGlobals::fBufferSize - framesNum;
+                in_buffer[chan] = send_buf.GetBuffer()[chan] + TAudioGlobals::fBufferSize - framesNum;
             }
         }
         else
         {
-            std::cerr << (void*)this << " ==> 1: ";
+            // std::cerr << (void*)this << " ==> 1: \n";
             // We already started streaming so this is the last buffer
             // which begins at the frame 0.
-            in_buffer = fSend->GetOutputBuffer();
+            in_buffer = send_buf.GetFrame(framePos, in_buffer);
         }
     }
     else
     {
-        //std::cerr << (void*)this << " ==> 2: ";
-        in_buffer = fSend->GetOutputBuffer();
+        if(!fStarted)
+        {
+            fStarted = true;
+        }
+        // std::cerr << (void*)this << " ==> 2: \n";
+        in_buffer = send_buf.GetFrame(framePos, in_buffer);
     }
 
     if(fSend->Channels() == buffer->GetChannels())
@@ -93,7 +102,6 @@ long TReturnAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos
 
 void TReturnAudioStream::Reset()
 {
-    ISCORE_TODO;
 }
 
 long TReturnAudioStream::Length()
@@ -109,4 +117,10 @@ long TReturnAudioStream::Channels()
 TAudioStreamPtr TReturnAudioStream::Copy()
 {
     return new TReturnAudioStream{fSend};
+}
+
+void TReturnAudioStream::ResetSendCount()
+{
+    fLastSendCount = -1;
+    fStarted = false;
 }
