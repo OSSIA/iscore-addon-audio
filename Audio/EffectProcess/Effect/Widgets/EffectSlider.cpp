@@ -11,6 +11,7 @@
 #include <QLabel>
 #include <QDrag>
 #include <QVBoxLayout>
+#include <QAction>
 #include <QContextMenuEvent>
 #include <Device/Address/AddressSettings.hpp>
 namespace Audio
@@ -93,7 +94,7 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
     }
   });
 */
-  m_addAutomAction = new QAction{tr("Add automation")};
+  m_addAutomAction = new QAction{tr("Add automation"), this};
   connect(m_addAutomAction, &QAction::triggered,
           this, [=] () {
     auto& ossia_addr = *m_param.getAddress();
