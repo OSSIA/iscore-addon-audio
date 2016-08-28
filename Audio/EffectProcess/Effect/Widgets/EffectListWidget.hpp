@@ -8,7 +8,7 @@ namespace Scenario
 }
 namespace iscore
 {
-class DocumentContext;
+struct DocumentContext;
 }
 class QHBoxLayout;
 namespace Audio

@@ -139,7 +139,7 @@ InspectorWidget::InspectorWidget(
                             process(),
                             LV2EffectFactory::static_concreteFactoryKey(),
                             res,
-                            process().effects().size()});
+                            (int)process().effects().size()});
         }
     });
 
