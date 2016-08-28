@@ -1,16 +1,26 @@
 #include "AudioDecoder.hpp"
 #include <QApplication>
+#include <QTimer>
 #include <eggs/variant.hpp>
 namespace Audio
 {
 AudioArray AudioDecoder::readAudio(const QString& path)
 {
+    qDebug() << "decoding...";
     AudioArray dat;
     AudioDecoder s{dat, path};
 
-    while(!s.ready)
+    std::atomic_bool timeout{false};
+    QTimer::singleShot(5000, [&] () { timeout = true; });
+    while(!s.ready && !timeout)
         qApp->processEvents();
 
+    if(s.decoder.error() != QAudioDecoder::NoError)
+        qDebug() << s.decoder.errorString();
+    else if(timeout)
+        qDebug() << s.decoder.errorString() << s.decoder.state();
+
+    qDebug() << "decoded..." << dat.size() << dat[0].size();
     return dat;
 }
 
@@ -23,6 +33,7 @@ template<>
 struct ConvertToFloat<QAudioFormat::SignedInt, 16>
 {
         using base_type = int16_t;
+        static const constexpr int multiplier = 1;
         constexpr float operator()(int16_t i) const
         { return (i + .5) / (0x7FFF + .5); }
 };
@@ -30,15 +41,24 @@ struct ConvertToFloat<QAudioFormat::SignedInt, 16>
 template<>
 struct ConvertToFloat<QAudioFormat::SignedInt, 24>
 {
-        using base_type = int32_t;
-        constexpr float operator()(int32_t i) const
-        { return i / (float)(std::numeric_limits<int32_t>::max() - 256); }
+        using base_type = const unsigned char;
+        static const constexpr int multiplier = 3;
+        constexpr float operator()(const unsigned char& src_r) const
+        {
+            return impl(&src_r);
+        }
+
+        constexpr static float impl(const unsigned char* src)
+        {
+            return int32_t(src[2] << 24 | src[1] << 16 | src[0] << 8) / (float)(std::numeric_limits<int32_t>::max() - 256);
+        }
 };
 
 template<>
 struct ConvertToFloat<QAudioFormat::SignedInt, 32>
 {
         using base_type = int32_t;
+        static const constexpr int multiplier = 1;
         constexpr float operator()(int32_t i) const
         { return i / (float)(std::numeric_limits<int32_t>::max()); }
 };
@@ -47,6 +67,7 @@ template<>
 struct ConvertToFloat<QAudioFormat::Float, 32>
 {
         using base_type = float;
+        static const constexpr int multiplier = 1;
         constexpr float operator()(float i) const
         { return i; }
 };
@@ -66,7 +87,27 @@ struct Decoder<1, SampleFormat, SampleSize>
             data[0].reserve(data[0].size() + buf.frameCount());
             for(int j = 0; j < n; j++)
             {
-                data[0].push_back(converter_t{}(dat[j]));
+                data[0].push_back(converter_t{}(dat[j * converter_t::multiplier]));
+            }
+        }
+};
+
+template<>
+struct Decoder<2, QAudioFormat::SignedInt, 24>
+{
+        using converter_t = ConvertToFloat<QAudioFormat::SignedInt, 24>;
+        void operator()(AudioArray& data, const QAudioBuffer& buf)
+        {
+            int n = buf.frameCount();
+            auto dat = buf.data<const unsigned char>();
+            data[0].reserve(data[0].size() + buf.frameCount());
+            data[1].reserve(data[1].size() + buf.frameCount());
+            for(int j = 0; j < 2 * n; )
+            {
+                data[0].push_back(converter_t{}(dat[j * 3]));
+                j++;
+                data[1].push_back(converter_t{}(dat[j * 3]));
+                j++;
             }
         }
 };
@@ -83,14 +124,13 @@ struct Decoder<2, SampleFormat, SampleSize>
             data[1].reserve(data[1].size() + buf.frameCount());
             for(int j = 0; j < 2 * n; )
             {
-                data[0].push_back(converter_t{}(dat[j]));
+                data[0].push_back(converter_t{}(dat[j * converter_t::multiplier]));
                 j++;
-                data[1].push_back(converter_t{}(dat[j]));
+                data[1].push_back(converter_t{}(dat[j * converter_t::multiplier]));
                 j++;
             }
         }
 };
-
 struct decode_visitor
 {
         AudioArray& data;
@@ -170,6 +210,7 @@ AudioDecoder::AudioDecoder(AudioArray& p_data, const QString& path):
     desiredFormat.setSampleRate(44100);
     desiredFormat.setSampleSize(16);
     desiredFormat.setSampleType(QAudioFormat::SignedInt);
+    desiredFormat.setByteOrder(QAudioFormat::LittleEndian);
 
     data.resize(2);
     decoder.setAudioFormat(desiredFormat);
@@ -217,6 +258,12 @@ AudioDecoder::AudioDecoder(AudioArray& p_data, const QString& path):
     });
 
     decoder.start();
+    if(decoder.error() != QAudioDecoder::NoError)
+    {
+        qDebug() << decoder.errorString();
+        ready = true;
+        return;
+    }
 }
 
 }
