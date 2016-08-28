@@ -46,8 +46,10 @@ AUDIOAPI AudioStream MakeReturn(AudioStream s);
 AUDIOAPI AudioStream MakeChannelSound(AudioStream s, double const * volume);
 AUDIOAPI AudioStream MakeFixedLoopSound(AudioStream s, long maxlength);
 AUDIOAPI AudioStream MakeSimpleBufferSound(float **buffer, long length, long channels);
-AUDIOAPI AudioEffect MakeLV2AudioEffect(const LilvPlugin* p, LilvWorld* w);
 
+#if defined(LILV_SHARED)
+AUDIOAPI AudioEffect MakeLV2AudioEffect(const LilvPlugin* p, LilvWorld* w);
+#endif
 void CloseAudioPlayer(AudioPlayerPtr ext_player); // In libaudiostreammc
 
 #if defined(__cplusplus) && !defined(_MSC_VER)
