@@ -26,6 +26,7 @@ void Visitor<Writer<DataStream>>::writeTo(Audio::Effect::ProcessModel& proc)
         proc.insertEffect(fx, i++);
     }
 
+    proc.m_effectOrder.clear();
     m_stream >> proc.m_effectOrder;
 
     checkDelimiter();
@@ -52,5 +53,6 @@ void Visitor<Writer<JSONObject>>::writeTo(Audio::Effect::ProcessModel& proc)
         proc.insertEffect(fx, i++);
     }
 
+    proc.m_effectOrder.clear();
     fromJsonValueArray(m_obj["Order"].toArray(), proc.m_effectOrder);
 }

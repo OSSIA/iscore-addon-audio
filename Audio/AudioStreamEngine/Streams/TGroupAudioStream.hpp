@@ -30,6 +30,7 @@ struct LV2Data
             node_ptr output_class{lilv_new_uri(&world, LILV_URI_OUTPUT_PORT)};
             node_ptr control_class{lilv_new_uri(&world, LILV_URI_CONTROL_PORT)};
             node_ptr audio_class{lilv_new_uri(&world, LILV_URI_AUDIO_PORT)};
+            node_ptr cv_class{lilv_new_uri(&world, LV2_CORE__CVPort)};
 
             int32_t numports = plugin.get_num_ports();
             for(int32_t i = 0; i < numports; i++)
@@ -47,8 +48,13 @@ struct LV2Data
                     }
                     else
                     {
+                        cv_ports.push_back(i);
                         qDebug() << "Audio port not input or output";
                     }
+                }
+                else if(port.is_a(cv_class))
+                {
+                    cv_ports.push_back(i);
                 }
                 else if(port.is_a(control_class))
                 {
@@ -56,10 +62,14 @@ struct LV2Data
                     {
                         control_in_ports.push_back(i);
                     }
-                    else if(port.is_a(output_class))
+                    else
                     {
-                        control_out_ports.push_back(i);
+                        other_control_ports.push_back(i);
                     }
+                }
+                else
+                {
+                    other_control_ports.push_back(i);
                 }
             }
         }
@@ -71,21 +81,28 @@ struct LV2Data
 
         Lilv::Plugin plugin;
         LilvWorld& world;
-        std::vector<int> in_ports, out_ports, control_in_ports, control_out_ports;
+        std::vector<int> in_ports, out_ports, control_in_ports, other_control_ports, cv_ports;
 };
 
 class LV2AudioEffect : public TAudioEffectInterface
 {
     protected:
         LV2Data data;
-        std::vector<float> fInData, fOutData, fParamMin, fParamMax, fParamInit;
-        std::unordered_map<std::string, int> mLabelsMap;
+        std::vector<float> fInData, fParamMin, fParamMax, fParamInit, fParamOther;
+        std::unordered_map<std::string, int> fLabelsMap;
+        std::vector<std::vector<float>> fCVs;
     public:
         LV2AudioEffect(LV2Data dat):
             data{dat}
         {
             const int in_size = data.control_in_ports.size();
             fInData.resize(in_size);
+            fParamOther.resize(dat.other_control_ports.size());
+            fCVs.resize(dat.cv_ports.size());
+            for(int i = 0; i < fCVs.size(); i++)
+            {
+                fCVs[i].resize(TAudioGlobals::fBufferSize);
+            }
 
             const int num_ports = data.plugin.get_num_ports();
             fParamMin.resize(num_ports);
@@ -94,14 +111,11 @@ class LV2AudioEffect : public TAudioEffectInterface
 
             data.plugin.get_port_ranges_float(fParamMin.data(), fParamMax.data(), fParamInit.data());
 
-            const int out_size = data.control_out_ports.size();
-            fOutData.resize(out_size);
-
             for(int i = 0; i < in_size; i++)
             {
                 Lilv::Port p{data.plugin.get_port_by_index(data.control_in_ports[i])};
                 Lilv::Node n = p.get_name();
-                mLabelsMap.emplace(n.as_string(), i);
+                fLabelsMap.emplace(n.as_string(), i);
             }
         }
 
@@ -144,8 +158,8 @@ class LV2AudioEffect : public TAudioEffectInterface
         }
         void SetControlValue(const char* label, float value) final override
         {
-            auto it = mLabelsMap.find(label);
-            if(it != mLabelsMap.end())
+            auto it = fLabelsMap.find(label);
+            if(it != fLabelsMap.end())
                 SetControlValue(it->second, value);
         }
 
@@ -157,8 +171,8 @@ class LV2AudioEffect : public TAudioEffectInterface
         }
         float GetControlValue(const char* label) final override
         {
-            auto it = mLabelsMap.find(label);
-            if(it != mLabelsMap.end())
+            auto it = fLabelsMap.find(label);
+            if(it != fLabelsMap.end())
                 return GetControlValue(it->second);
             return {};
         }
@@ -186,12 +200,17 @@ class StereoLV2AudioEffect final : public LV2AudioEffect
                 lilv_instance_connect_port(fInstance, data.control_in_ports[i], &fInData[i]);
             }
 
-            const int out_size = data.control_out_ports.size();
-            for(int i = 0; i < out_size; i++)
+            const int cv_size = data.cv_ports.size();
+            for(int i = 0; i < cv_size; i++)
             {
-                lilv_instance_connect_port(fInstance, data.control_out_ports[i], &fOutData[i]);
+                lilv_instance_connect_port(fInstance, data.cv_ports[i], fCVs[i].data());
             }
 
+            const int other_size = data.other_control_ports.size();
+            for(int i = 0; i < other_size; i++)
+            {
+                lilv_instance_connect_port(fInstance, data.other_control_ports[i], &fParamOther[i]);
+            }
             lilv_instance_activate(fInstance);
         }
 
@@ -241,11 +260,18 @@ class MonoLV2AudioEffect final : public LV2AudioEffect
                 lilv_instance_connect_port(fRight, data.control_in_ports[i], &fInData[i]);
             }
 
-            const int out_size = data.control_out_ports.size();
-            for(int i = 0; i < out_size; i++)
+            const int cv_size = data.cv_ports.size();
+            for(int i = 0; i < cv_size; i++)
             {
-                lilv_instance_connect_port(fLeft, data.control_out_ports[i], &fOutData[i]);
-                lilv_instance_connect_port(fRight, data.control_out_ports[i], &fOutData[i]);
+                lilv_instance_connect_port(fLeft, data.cv_ports[i], fCVs[i].data());
+                lilv_instance_connect_port(fRight, data.cv_ports[i], fCVs[i].data());
+            }
+
+            const int other_size = data.other_control_ports.size();
+            for(int i = 0; i < other_size; i++)
+            {
+                lilv_instance_connect_port(fLeft, data.other_control_ports[i], &fParamOther[i]);
+                lilv_instance_connect_port(fRight, data.other_control_ports[i], &fParamOther[i]);
             }
 
             lilv_instance_activate(fLeft);

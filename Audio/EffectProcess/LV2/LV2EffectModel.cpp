@@ -50,16 +50,16 @@ void LV2EffectModel::init()
     while(!plugs.is_end(it))
     {
         auto plug = plugs.get(it);
-        if(isFile && QString(plug.get_bundle_uri().as_string()) == path)
+        if((isFile && QString(plug.get_bundle_uri().as_string()) == path) || (!isFile && QString(plug.get_name().as_string()) == path))
         {
             plugin = plug.me;
+            metadata.setName(QString(plug.get_name().as_string()).replace(' ', '_'));
             m_effect = MakeLV2AudioEffect(plug.me, world.me);
             return;
         }
         else if(!isFile && QString(plug.get_name().as_string()) == path)
         {
             plugin = plug.me;
-            metadata.setName(plug.get_name().as_string());
             m_effect = MakeLV2AudioEffect(plug.me, world.me);
             return;
         }

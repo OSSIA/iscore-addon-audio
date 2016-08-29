@@ -20,7 +20,8 @@ class EffectSlider;
  * Show a list of sliders for each declared parameter.
  */
 class EffectWidget :
-        public QFrame
+        public QFrame,
+        public Nano::Observer
 {
         Q_OBJECT
     public:
@@ -55,6 +56,7 @@ class EffectWidget :
 
         void reflow();
 
+        void componentAdded(const iscore::Component &);
         EffectModel& m_effect;
         const iscore::DocumentContext& m_context;
         QGridLayout* m_layout{};

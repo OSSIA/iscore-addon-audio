@@ -36,7 +36,11 @@ ProcessModel::ProcessModel(
         source.duration(),
         id,
         Metadata<ObjectKey_k, ProcessModel>::get(),
-        parent}
+        parent},
+    m_routings{source.m_routings},
+    m_dataProcesses{source.m_dataProcesses},
+    m_fxProcesses{source.m_fxProcesses},
+    m_sendProcesses{source.m_sendProcesses}
 {
 }
 

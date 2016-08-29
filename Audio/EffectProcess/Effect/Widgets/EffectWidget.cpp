@@ -72,13 +72,14 @@ EffectWidget::EffectWidget(
 
     auto comp = iscore::findComponent<LocalTree::EffectComponent>(m_effect.components);
     if(!comp)
+    {
+        m_effect.components.added.connect<EffectWidget, &EffectWidget::componentAdded>(this);
         return;
-
-    connect(comp, &LocalTree::EffectComponent::effectTreeChanged,
-            this, &EffectWidget::setup, Qt::QueuedConnection);
-
-    // Create the actual widget
-    setup();
+    }
+    else
+    {
+        componentAdded(*comp);
+    }
 
     // Setup drag'n'drop
     setAcceptDrops(true);
@@ -200,6 +201,21 @@ void EffectWidget::reflow()
 
         cur_row++;
     }
+}
+
+void EffectWidget::componentAdded(const iscore::Component& c)
+{
+    auto comp = dynamic_cast<const LocalTree::EffectComponent*>(&c);
+    if(!comp)
+    {
+        return;
+    }
+
+    connect(comp, &LocalTree::EffectComponent::effectTreeChanged,
+            this, &EffectWidget::setup, Qt::QueuedConnection);
+
+    // Create the actual widget
+    setup();
 }
 
 

@@ -259,6 +259,7 @@ void Constraint::makeStream(const Context& player)
                         &m_shift,
                         &m_stretch);
         }
+        m_stream = MakeFadeSound(m_stream, 100, 100);
     }
 
     // Look for all the "contents" process :

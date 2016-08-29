@@ -30,13 +30,18 @@ ProcessModel::ProcessModel(
         Metadata<ObjectKey_k, ProcessModel>::get(),
         parent}
 {
-    ISCORE_TODO;
+    for(const auto& fx : source.effects())
+    {
+        auto eff = fx.clone(fx.id(), this);
+        m_effects.add(eff);
+    }
+
+    m_effectOrder = source.m_effectOrder;
 }
 
 ProcessModel::~ProcessModel()
 {
     // TODO delete components
-
 }
 
 void ProcessModel::insertEffect(
