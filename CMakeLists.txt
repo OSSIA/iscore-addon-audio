@@ -79,6 +79,7 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/EffectInspector.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/ReturnInspector.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/MixInspector.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/PressableWidget.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsFactory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsModel.hpp"

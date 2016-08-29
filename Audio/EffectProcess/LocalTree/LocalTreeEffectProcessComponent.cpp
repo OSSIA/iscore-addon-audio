@@ -3,6 +3,7 @@
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
 #include <iscore/tools/SettableIdentifierGeneration.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp>
+#include <ossia/editor/state/state_element.hpp>
 
 namespace Audio
 {

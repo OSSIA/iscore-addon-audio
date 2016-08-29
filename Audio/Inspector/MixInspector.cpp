@@ -9,27 +9,7 @@
 #include <QTableWidget>
 #include <QVBoxLayout>
 #include <QFormLayout>
-#include <wobjectdefs.h>
-#include <wobjectimpl.h>
-
-template<typename T>
-class PressableWidget : public T
-{
-    public:
-        W_OBJECT(PressableWidget)
-        using T::T;
-
-    public:
-        void pressed() W_SIGNAL(pressed)
-
-    private:
-        void mousePressEvent(QMouseEvent* e) override
-        {
-            emit pressed();
-            return T::mousePressEvent(e);
-        }
-};
-W_OBJECT_IMPL(PressableWidget<T>, template <typename T>)
+#include <Audio/Inspector/PressableWidget.hpp>
 namespace Audio
 {
 namespace Mix
@@ -179,9 +159,9 @@ MixWidget::MixWidget(
     this->setLayout(lay);
 
 
-    auto table = new PressableWidget<QTableWidget>{this};
+    auto table = new PressableWidget{this};
     m_table = table;
-    connect(table, &PressableWidget<QTableWidget>::pressed,
+    connect(table, &PressableWidget::pressed,
             this, &MixWidget::pressed);
 
     m_table->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
