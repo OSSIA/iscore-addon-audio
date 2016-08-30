@@ -5,7 +5,6 @@ project(iscore_plugin_audio LANGUAGES CXX)
 if(NOT TARGET iscore_plugin_engine)
     return()
 endif()
-
 find_package(Faust REQUIRED)
 
 set(LIBAUDIOSTREAM_FRAMEWORK OFF)

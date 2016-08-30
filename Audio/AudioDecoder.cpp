@@ -2,10 +2,44 @@
 #include <QApplication>
 #include <QTimer>
 #include <eggs/variant.hpp>
+#include <sndfile.hh>
 namespace Audio
 {
+static AudioArray readAudioSndfile(const std::string& path)
+{
+    AudioArray deint;
+
+    SndfileHandle file{path.c_str()} ;
+
+    std::vector<float> data;
+    data.resize(file.channels() * file.frames());
+
+    file.read (data.data(), data.size()) ;
+    deint.resize(file.channels());
+    for(auto& v : deint)
+      v.resize(file.frames());
+
+    const int nchans = file.channels();
+    int i = 0;
+    int n = 0;
+    for(float val : data)
+    {
+      deint[i][n] = val;
+      i++;
+      if(i % nchans == 0)
+      {
+        i = 0;
+        n++;
+      }
+    }
+    return deint;
+}
+
 AudioArray AudioDecoder::readAudio(const QString& path)
 {
+#if defined(__APPLE__)
+  return readAudioSndfile(path.toStdString());
+#else
     qDebug() << "decoding...";
     AudioArray dat;
     AudioDecoder s{dat, path};
@@ -22,6 +56,8 @@ AudioArray AudioDecoder::readAudio(const QString& path)
 
     qDebug() << "decoded..." << dat.size() << dat[0].size();
     return dat;
+
+#endif
 }
 
 namespace
