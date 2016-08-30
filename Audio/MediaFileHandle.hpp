@@ -5,6 +5,8 @@
 #include <Audio/AudioArray.hpp>
 namespace Audio
 {
+// TODO store them in an application-wide cache to prevent loading / unloading
+// TODO memmap
 struct MediaFileHandle
 {
     public:
