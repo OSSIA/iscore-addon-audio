@@ -67,7 +67,12 @@ class EffectProcessComponent final :
         public iscore::ComponentHierarchy<EffectProcessComponentBase>
 {
     public:
-        using iscore::ComponentHierarchy<EffectProcessComponentBase>::ComponentHierarchyManager;
+        template<typename... Args>
+        EffectProcessComponent(Args&&... args):
+            iscore::ComponentHierarchy<EffectProcessComponentBase>(std::forward<Args>(args)...)
+        {
+
+        }
 };
 
 using EffectProcessComponentFactory = Engine::LocalTree::ProcessComponentFactory_T<EffectProcessComponent>;

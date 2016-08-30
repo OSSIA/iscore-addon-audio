@@ -2,6 +2,8 @@
 #include <iscore/component/Component.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 
+#include <ossia/editor/state/state_element.hpp>
+
 namespace Audio
 {
 namespace AudioStreamEngine

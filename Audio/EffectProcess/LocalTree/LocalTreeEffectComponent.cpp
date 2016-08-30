@@ -3,6 +3,7 @@
 #include <boost/algorithm/string/find.hpp>
 #include <boost/algorithm/string/erase.hpp>
 #include <ossia/network/domain/domain.hpp>
+#include <ossia/editor/state/state_element.hpp>
 
 
 namespace Audio

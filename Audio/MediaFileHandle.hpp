@@ -1,6 +1,7 @@
 #pragma once
 #include <QFile>
 #include <QAudioDecoder>
+#include <array>
 #include <Audio/AudioArray.hpp>
 namespace Audio
 {
