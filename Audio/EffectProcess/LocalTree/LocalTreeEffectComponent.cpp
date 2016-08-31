@@ -69,9 +69,14 @@ void EffectComponent::recreate()
                 return;
 
             auto current_val = val.get<ossia::Float>().value;
-            fx->SetControlValue(num, current_val);
+            SetControlValueEffect(fx, num, current_val);
         });
-        param_addr->pushValue(ossia::Float{parameter.init});
+
+        auto& p = effect().savedParams();
+        if(p.size() > parameter.id)
+            param_addr->pushValue(ossia::Float{p[parameter.id]});
+        else
+            param_addr->pushValue(ossia::Float{parameter.init});
 
     }
     emit effectTreeChanged();

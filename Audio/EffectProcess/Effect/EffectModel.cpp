@@ -34,7 +34,9 @@ std::vector<float> EffectModel::getParams() const
         int n = GetControlCountEffect(m_effect);
         p.reserve(n);
         for(int i = 0; i < n; i++)
+        {
             p.push_back(GetControlValueEffect(m_effect, i));
+        }
     }
     return p;
 

@@ -60,6 +60,8 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
         { return m_effect; }
 
         std::vector<float> getParams() const;
+        std::vector<float>& savedParams() const
+        { return m_params; }
 
     signals:
         void effectChanged() const;
