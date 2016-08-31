@@ -36,6 +36,10 @@ void FaustEffectModel::init()
     // We have to reload the faust FX whenever
     // some soundcard settings changes
     auto& ctx = iscore::AppContext().components.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>();
+    con(ctx, &AudioStreamEngine::ApplicationPlugin::audioEngineRestarting,
+        this, [this] () {
+        saveParams();
+    });
     con(ctx, &AudioStreamEngine::ApplicationPlugin::audioEngineRestarted,
             this, [this] () {
         reload();
@@ -50,7 +54,7 @@ void FaustEffectModel::reload()
 
     if(m_effect)
     {
-        auto json = GetJsonEffect(m_effect);
+        auto json = GetNameEffect(m_effect);
         QJsonParseError err;
         auto qjs = QJsonDocument::fromJson(json, &err);
         if(err.error == QJsonParseError::NoError)
@@ -61,6 +65,8 @@ void FaustEffectModel::reload()
         {
             qDebug() << err.errorString();
         }
+
+        restoreParams();
     }
     else
     {
@@ -69,6 +75,7 @@ void FaustEffectModel::reload()
 
     emit effectChanged();
 }
+
 
 }
 }

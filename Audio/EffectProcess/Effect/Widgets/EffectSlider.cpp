@@ -23,11 +23,11 @@ namespace Effect
 // TODO move me
 class AddressLabel : public QLabel
 {
-        Device::FullAddressSettings m_data;
+        const ossia::net::node_base& m_node;
     public:
-        AddressLabel(Device::FullAddressSettings data, QString str, QWidget* parent):
+        AddressLabel(const ossia::net::node_base& node, QString str, QWidget* parent):
             QLabel{std::move(str), parent},
-            m_data{std::move(data)}
+            m_node{node}
         {
 
         }
@@ -37,15 +37,17 @@ class AddressLabel : public QLabel
         {
             if (event->button() == Qt::LeftButton)
             {
+                auto as = Engine::ossia_to_iscore::ToFullAddressSettings(m_node);
+
                 auto drag = new QDrag(this);
                 auto mimeData = new QMimeData;
                 {
                     Mime<Device::FullAddressSettings>::Serializer s{*mimeData};
-                    s.serialize(m_data);
+                    s.serialize(as);
                 }
                 {
                     Mime<State::MessageList>::Serializer s{*mimeData};
-                    s.serialize({State::Message{m_data.address, m_data.value}});
+                    s.serialize({State::Message{as.address, as.value}});
                 }
                 drag->setMimeData(mimeData);
 
@@ -63,6 +65,7 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
   m_param{fx}
 {
   auto addr = m_param.getAddress();
+
   auto dom = addr->getDomain();
 
   if(auto f = ossia::net::min(dom).try_get<ossia::Float>()) m_min = f->value;
@@ -70,8 +73,8 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
 
   auto lay = new iscore::MarginLess<QVBoxLayout>;
   lay->addWidget(new AddressLabel{
-                     Engine::ossia_to_iscore::ToFullAddressSettings(m_param),
-                     QString::fromStdString(m_param.getName()),
+                     m_param,
+                     QString::fromStdString(addr->getDescription()),
                      this});
   m_slider = new iscore::DoubleSlider{this};
   lay->addWidget(m_slider);
@@ -83,6 +86,7 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
   connect(m_slider, &iscore::DoubleSlider::valueChanged,
           this, [=] (double v)
   {
+    // TODO undo ???
     // v is between 0 - 1
     auto cur = m_param.getAddress()->cloneValue();
     auto exp = float(m_min + (m_max - m_min) * v);
@@ -90,17 +94,17 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
       m_param.getAddress()->pushValue(ossia::Float{exp});
 
   });
-/*
+
   m_callback = addr->add_callback([=] (const ossia::value& val)
   {
     if(auto v = val.try_get<ossia::Float>())
     {
-      auto scaled = (v - m_min) / (m_max - m_min)
+      auto scaled = (v->value - m_min) / (m_max - m_min);
       if(scaled != m_slider->value()) // TODO qFuzzyCompare instead
         m_slider->setValue(scaled);
     }
   });
-*/
+
   m_addAutomAction = new QAction{tr("Add automation"), this};
   connect(m_addAutomAction, &QAction::triggered,
           this, [=] () {
@@ -112,6 +116,7 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
     {
       auto min = ossia::convert<double>(ossia::net::min(dom));
       auto max = ossia::convert<double>(ossia::net::max(dom));
+
       emit createAutomation(std::move(*addr), min, max);
     }
   });
@@ -119,12 +124,11 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
 }
 
 EffectSlider::~EffectSlider()
-{/*
+{
   if(auto addr = m_param.getAddress())
   {
     addr->remove_callback(m_callback);
   }
-  */
 }
 
 void EffectSlider::contextMenuEvent(QContextMenuEvent* event)

@@ -36,6 +36,7 @@ class EffectComponent :
 
     signals:
         void effectTreeChanged();
+        void aboutToBeDestroyed();
 
     protected:
         ossia::net::node_base& m_parametersNode;

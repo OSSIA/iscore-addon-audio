@@ -55,6 +55,7 @@ class EffectWidget :
         void flow();
 
         void reflow();
+        void clear();
 
         void componentAdded(const iscore::Component &);
         EffectModel& m_effect;

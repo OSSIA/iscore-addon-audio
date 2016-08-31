@@ -4,6 +4,7 @@
 #include <boost/algorithm/string/erase.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/editor/state/state_element.hpp>
+#include <Audio/EffectProcess/Effect/EffectParameters.hpp>
 
 
 namespace Audio
@@ -31,6 +32,7 @@ EffectComponent::EffectComponent(
 
 EffectComponent::~EffectComponent()
 {
+    emit aboutToBeDestroyed();
 }
 
 void EffectComponent::recreate()
@@ -41,27 +43,25 @@ void EffectComponent::recreate()
     if(!fx)
         return;
 
-    auto count = GetControlCountEffect(fx);
-    for(int i = 0; i < count; i++)
+    // TODO separate "address segment" and "name".
+    for(EffectParameter parameter : AudioEffectParameterAdaptor{fx})
     {
-        char label[512];
-        float min, max, init;
-
-        GetControlParamEffect(fx, i, label, &min, &max, &init);
-
-        std::string label_s{label};
-        auto idx = label_s.find_last_of('/');
-        if(idx != std::string::npos)
+        auto idx = parameter.label.lastIndexOf('/');
+        if(idx != -1)
         {
-            label_s = label_s.substr(idx + 1, label_s.size());
+            parameter.label = parameter.label.mid(idx);
         }
-        auto param_node = m_parametersNode.createChild(label_s);
+
+        auto str_label = parameter.label.toStdString();
+        // Create the node
+        auto param_node = m_parametersNode.createChild(str_label);
         auto param_addr = param_node->createAddress(ossia::val_type::FLOAT);
         param_addr->setAccessMode(ossia::access_mode::BI);
-        param_addr->setDomain(ossia::net::make_domain(ossia::Float{min}, ossia::Float{max}));
+        param_addr->setDomain(ossia::net::make_domain(ossia::Float{parameter.min}, ossia::Float{parameter.max}));
+        param_addr->setDescription(str_label);
 
         // Set value to current value of fx
-        param_addr->add_callback([=] (const ossia::value& val) {
+        param_addr->add_callback([=,num=parameter.id] (const ossia::value& val) {
             if(val.getType() != ossia::val_type::FLOAT)
                 return;
             auto fx = effect().effect();
@@ -69,9 +69,10 @@ void EffectComponent::recreate()
                 return;
 
             auto current_val = val.get<ossia::Float>().value;
-            SetControlValueEffect(fx, i, current_val);
+            fx->SetControlValue(num, current_val);
         });
-        param_addr->pushValue(ossia::Float{init});
+        param_addr->pushValue(ossia::Float{parameter.init});
+
     }
     emit effectTreeChanged();
 

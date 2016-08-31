@@ -28,6 +28,7 @@ class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPl
 #endif
 
     signals:
+        void audioEngineRestarting();
         void audioEngineRestarted();
 
     private:

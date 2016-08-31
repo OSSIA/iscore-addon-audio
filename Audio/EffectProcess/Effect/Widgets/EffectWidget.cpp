@@ -203,6 +203,12 @@ void EffectWidget::reflow()
     }
 }
 
+void EffectWidget::clear()
+{
+    iscore::clearLayout(m_layout);
+    m_sliders.clear();
+}
+
 void EffectWidget::componentAdded(const iscore::Component& c)
 {
     auto comp = dynamic_cast<const LocalTree::EffectComponent*>(&c);
@@ -210,6 +216,10 @@ void EffectWidget::componentAdded(const iscore::Component& c)
     {
         return;
     }
+
+    m_effect.components.added.disconnect<EffectWidget, &EffectWidget::componentAdded>(this);
+    connect(comp, &LocalTree::EffectComponent::aboutToBeDestroyed,
+            this, &EffectWidget::clear);
 
     connect(comp, &LocalTree::EffectComponent::effectTreeChanged,
             this, &EffectWidget::setup, Qt::QueuedConnection);

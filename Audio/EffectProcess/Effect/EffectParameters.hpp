@@ -48,7 +48,7 @@ struct EffectParameterIterator final :
         explicit EffectParameterIterator(
                 AudioEffectParameterAdaptor p,
                 int64_t n = 0) :
-            effect{p}, num{n}
+            effect{p}, num{n}, param{readEffect()}
         {
 
         }
@@ -67,12 +67,12 @@ struct EffectParameterIterator final :
             return retval;
         }
 
-        bool operator==(EffectParameterIterator other) const
+        bool operator==(const EffectParameterIterator& other) const
         {
             return num == other.num;
         }
 
-        bool operator!=(EffectParameterIterator other) const
+        bool operator!=(const EffectParameterIterator& other) const
         {
             return !(*this == other);
         }
@@ -86,23 +86,24 @@ struct EffectParameterIterator final :
         EffectParameter readEffect()
         {
             EffectParameter e;
-            if(num < effect.effect->GetControlCount())
+            if(num < GetControlCountEffect(effect.effect))
             {
                 char buf[512]{};
-                effect.effect->GetControlParam(num, buf, &e.min, &e.max, &e.init);
+                GetControlParamEffect(effect.effect, num, buf, &e.min, &e.max, &e.init);
                 e.label = buf;
+                e.id = num;
             }
             return e;
         }
 };
 
-inline EffectParameterIterator begin(AudioEffectParameterAdaptor fx)
+inline EffectParameterIterator begin(const AudioEffectParameterAdaptor& fx)
 {
     return EffectParameterIterator(fx, 0);
 }
-inline EffectParameterIterator end(AudioEffectParameterAdaptor fx)
+inline EffectParameterIterator end(const AudioEffectParameterAdaptor& fx)
 {
-    return EffectParameterIterator(fx, fx.effect->GetControlCount());
+    return EffectParameterIterator(fx, GetControlCountEffect(fx.effect));
 }
 }
 }

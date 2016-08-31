@@ -59,10 +59,15 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
         AudioEffect effect() const
         { return m_effect; }
 
+        std::vector<float> getParams() const;
+
     signals:
         void effectChanged() const;
 
     protected:
+        void saveParams() const;
+        void restoreParams();
+        mutable std::vector<float> m_params;
         AudioEffect m_effect;
 };
 }

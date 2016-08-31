@@ -16,7 +16,7 @@ LV2EffectModel::LV2EffectModel(
     EffectModel{id, parent},
     m_effectPath{path}
 {
-    init();
+    reload();
 }
 
 LV2EffectModel::LV2EffectModel(
@@ -26,10 +26,10 @@ LV2EffectModel::LV2EffectModel(
     EffectModel{id, parent},
     m_effectPath{source.effect()}
 {
-    init();
+    reload();
 }
 
-void LV2EffectModel::init()
+void LV2EffectModel::reload()
 {
     plugin = nullptr;
     auto path = m_effectPath;
@@ -53,7 +53,7 @@ void LV2EffectModel::init()
         if((isFile && QString(plug.get_bundle_uri().as_string()) == path) || (!isFile && QString(plug.get_name().as_string()) == path))
         {
             plugin = plug.me;
-            metadata.setName(QString(plug.get_name().as_string()).replace(' ', '_'));
+            metadata.setName(QString(plug.get_name().as_string()));
             m_effect = MakeLV2AudioEffect(plug.me, world.me);
             return;
         }
@@ -61,6 +61,7 @@ void LV2EffectModel::init()
         {
             plugin = plug.me;
             m_effect = MakeLV2AudioEffect(plug.me, world.me);
+            metadata.setName(QString(plug.get_name().as_string()));
             return;
         }
         else
@@ -68,6 +69,9 @@ void LV2EffectModel::init()
             it = plugs.next(it);
         }
     }
+
+    restoreParams();
+
 }
 }
 }

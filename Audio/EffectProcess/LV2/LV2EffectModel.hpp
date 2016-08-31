@@ -48,7 +48,7 @@ class LV2EffectModel :
             EffectModel{vis, parent}
         {
             vis.writeTo(*this);
-            init();
+            reload();
         }
 
         const QString& effect() const
@@ -59,7 +59,7 @@ class LV2EffectModel :
 
         const LilvPlugin* plugin{};
     private:
-        void init();
+        void reload();
         QString m_effectPath;
 };
 using LV2EffectFactory = EffectFactory_T<LV2EffectModel>;

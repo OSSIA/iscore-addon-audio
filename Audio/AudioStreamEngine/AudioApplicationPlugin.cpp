@@ -105,6 +105,7 @@ void ApplicationPlugin::startEngine()
 
 void ApplicationPlugin::stopEngine()
 {
+    emit audioEngineRestarting();
     if(m_ctx.player)
     {
         StopAudioPlayer(m_ctx.player);
