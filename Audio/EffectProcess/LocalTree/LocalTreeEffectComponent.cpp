@@ -49,7 +49,7 @@ void EffectComponent::recreate()
         auto idx = parameter.label.lastIndexOf('/');
         if(idx != -1)
         {
-            parameter.label = parameter.label.mid(idx);
+            parameter.label = parameter.label.mid(idx + 1);
         }
 
         auto str_label = parameter.label.toStdString();

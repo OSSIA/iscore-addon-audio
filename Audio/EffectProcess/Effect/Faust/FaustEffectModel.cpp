@@ -54,7 +54,7 @@ void FaustEffectModel::reload()
 
     if(m_effect)
     {
-        auto json = GetNameEffect(m_effect);
+        auto json = GetJsonEffect(m_effect);
         QJsonParseError err;
         auto qjs = QJsonDocument::fromJson(json, &err);
         if(err.error == QJsonParseError::NoError)
