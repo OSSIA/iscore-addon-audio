@@ -62,6 +62,7 @@ void EffectComponent::recreate()
 
         // Set value to current value of fx
         param_addr->add_callback([=,num=parameter.id] (const ossia::value& val) {
+
             if(val.getType() != ossia::val_type::FLOAT)
                 return;
             auto fx = effect().effect();

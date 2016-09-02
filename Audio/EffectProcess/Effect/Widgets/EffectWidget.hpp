@@ -3,6 +3,7 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QSlider>
+#include <QTimer>
 #include <State/Address.hpp>
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
 #include <iscore/widgets/ClearLayout.hpp>
@@ -58,10 +59,12 @@ class EffectWidget :
         void clear();
 
         void componentAdded(const iscore::Component &);
+        void updateSliders();
         EffectModel& m_effect;
         const iscore::DocumentContext& m_context;
         QGridLayout* m_layout{};
         std::vector<EffectSlider*> m_sliders;
+        QTimer m_timer;
 };
 }
 }

@@ -26,6 +26,8 @@ class EffectSlider : public QWidget
 
         ~EffectSlider();
 
+        double scaledValue;
+        iscore::DoubleSlider* m_slider{};
     signals:
         void createAutomation(const State::Address&, double min, double max);
 
@@ -37,7 +39,6 @@ class EffectSlider : public QWidget
         float m_min{0.};
         float m_max{1.};
 
-        iscore::DoubleSlider* m_slider{};
         QAction* m_addAutomAction{};
 };
 }

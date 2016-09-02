@@ -5,7 +5,9 @@
 #include <QMouseEvent>
 #include <QMimeData>
 #include <QDrag>
+#include <QTimer>
 
+#include <iscore/widgets/DoubleSlider.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp>
 #include <Scenario/Commands/Constraint/AddLayerInNewSlot.hpp>
 #include <Scenario/Commands/Constraint/AddProcessToConstraint.hpp>
@@ -55,7 +57,9 @@ EffectWidget::EffectWidget(
                     "border-radius: 15px;}");
         connect(rm_but, &QPushButton::clicked,
                 this, [&] () {
-            iscore::clearLayout(m_layout);
+            this->m_timer.stop();
+
+            iscore::clearLayout(this->m_layout);
             m_sliders.clear();
             emit removeRequested();
         });
@@ -118,6 +122,7 @@ void EffectWidget::on_createAutomation(const State::Address& addr, double min, d
 
 void EffectWidget::setup()
 {
+    m_timer.stop();
     iscore::clearLayout(m_layout);
     m_sliders.clear();
 
@@ -138,6 +143,10 @@ void EffectWidget::setup()
         }
     }
 
+    m_timer.setInterval(50);
+    connect(&m_timer, &QTimer::timeout,
+            this, &EffectWidget::updateSliders, Qt::UniqueConnection);
+    m_timer.start();
     flow();
 }
 
@@ -226,6 +235,15 @@ void EffectWidget::componentAdded(const iscore::Component& c)
 
     // Create the actual widget
     setup();
+}
+
+void EffectWidget::updateSliders()
+{
+  for(EffectSlider* widg : m_sliders)
+  {
+    if(widg->scaledValue != widg->m_slider->value()) // TODO qFuzzyCompare instead
+       widg->m_slider->setValue(widg->scaledValue);
+  }
 }
 
 

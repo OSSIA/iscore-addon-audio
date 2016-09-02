@@ -81,7 +81,8 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
   this->setLayout(lay);
 
   auto cur_val = ossia::convert<float>(m_param.getAddress()->cloneValue());
-  m_slider->setValue((cur_val - m_min) / (m_max - m_min));
+  scaledValue = (cur_val - m_min) / (m_max - m_min);
+  m_slider->setValue(scaledValue);
 
   connect(m_slider, &iscore::DoubleSlider::valueChanged,
           this, [=] (double v)
@@ -99,9 +100,9 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
   {
     if(auto v = val.try_get<ossia::Float>())
     {
-      auto scaled = (v->value - m_min) / (m_max - m_min);
-      if(scaled != m_slider->value()) // TODO qFuzzyCompare instead
-        m_slider->setValue(scaled);
+      scaledValue = (v->value - m_min) / (m_max - m_min);
+     // if(scaled != m_slider->value()) // TODO qFuzzyCompare instead
+     //   m_slider->setValue(scaled);
     }
   });
 
