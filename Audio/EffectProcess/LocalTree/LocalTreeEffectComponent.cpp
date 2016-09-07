@@ -21,7 +21,7 @@ EffectComponent::EffectComponent(
         const Id<iscore::Component>& id,
         const QString& name,
         QObject* parent):
-    parent_t{n, model.metadata, model, doc, id, "EffectComponent", parent},
+    parent_t{n, model.metadata(), model, doc, id, "EffectComponent", parent},
     m_parametersNode{*node().createChild("parameters")}
 {
     con(model, &EffectModel::effectChanged,

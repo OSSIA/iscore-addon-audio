@@ -43,7 +43,7 @@ EffectWidget::EffectWidget(
         auto title_lay = new iscore::MarginLess<QHBoxLayout>;
         title->setLayout(title_lay);
 
-        auto label = new iscore::ReactiveLabel<ModelMetadataNameParameter>(fx.metadata, this);
+        auto label = new iscore::ReactiveLabel<iscore::ModelMetadataNameParameter>(fx.metadata(), this);
         label->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
         title_lay->addWidget(label);
         title_lay->addStretch();
@@ -74,10 +74,10 @@ EffectWidget::EffectWidget(
     this->setLayout(lay);
     lay->addStretch();
 
-    auto comp = iscore::findComponent<LocalTree::EffectComponent>(m_effect.components);
+    auto comp = iscore::findComponent<LocalTree::EffectComponent>(m_effect.components());
     if(!comp)
     {
-        m_effect.components.added.connect<EffectWidget, &EffectWidget::componentAdded>(this);
+        m_effect.components().added.connect<EffectWidget, &EffectWidget::componentAdded>(this);
         return;
     }
     else
@@ -126,7 +126,7 @@ void EffectWidget::setup()
     iscore::clearLayout(m_layout);
     m_sliders.clear();
 
-    auto comp = iscore::findComponent<LocalTree::EffectComponent>(m_effect.components);
+    auto comp = iscore::findComponent<LocalTree::EffectComponent>(m_effect.components());
     if(!comp)
         return;
 
@@ -226,7 +226,7 @@ void EffectWidget::componentAdded(const iscore::Component& c)
         return;
     }
 
-    m_effect.components.added.disconnect<EffectWidget, &EffectWidget::componentAdded>(this);
+    m_effect.components().added.disconnect<EffectWidget, &EffectWidget::componentAdded>(this);
     connect(comp, &LocalTree::EffectComponent::aboutToBeDestroyed,
             this, &EffectWidget::clear);
 
@@ -258,7 +258,7 @@ void EffectWidget::mousePressEvent(QMouseEvent* event)
         mimeData->setData("application/x-iscore-effectdrag",
                           marshall<DataStream>(make_path(m_effect)));
         drag->setMimeData(mimeData);
-        QLabel label{m_effect.metadata.getName()};
+        QLabel label{m_effect.metadata().getName()};
         drag->setPixmap(label.grab());
         drag->setHotSpot(label.rect().center());
 

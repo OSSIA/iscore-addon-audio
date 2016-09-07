@@ -55,7 +55,7 @@ AudioGraphBuilder::AudioGraphBuilder(Constraint &root)
                 return;
 
 
-            auto& cst_comp = iscore::component<Constraint>(send_parent->components);
+            auto& cst_comp = iscore::component<Constraint>(send_parent->components());
 
             // Then find the corresponding send
             for(auto it_k = vertices.first; it_k != vertices.second; ++it_k)

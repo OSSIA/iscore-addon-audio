@@ -23,7 +23,7 @@ ProcessComponent::~ProcessComponent()
 
 QString ProcessComponent::prettyName() const
 {
-    return process().metadata.getName() % " " % QString::number(process().id_val());
+    return process().metadata().getName() % " " % QString::number(process().id_val());
 }
 
 ProcessComponentFactory::~ProcessComponentFactory()

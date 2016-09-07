@@ -25,7 +25,7 @@ ProcessModel::ProcessModel(
 {
     // TODO connect the removing() signal of the process to here.
     init();
-    metadata.setName(Metadata<PrettyName_k, ProcessModel>::get() + QString(".%1").arg(*this->id().val()));
+    metadata().setName(Metadata<PrettyName_k, ProcessModel>::get() + QString(".%1").arg(*this->id().val()));
 }
 
 ProcessModel::ProcessModel(

@@ -35,9 +35,9 @@ AudioStream DocumentPlugin::makeStream()
     m_comp = new Constraint(
                 doc->baseConstraint(),
                 *this,
-                getStrongId(doc->baseConstraint().components),
+                getStrongId(doc->baseConstraint().components()),
                 this);
-    doc->baseConstraint().components.add(m_comp);
+    doc->baseConstraint().components().add(m_comp);
     AudioGraphBuilder graph{*m_comp};
     if(auto sorted_vertices = graph.check())
     {
@@ -74,7 +74,7 @@ void DocumentPlugin::stop()
     {
         if(m_comp)
         {
-            doc->baseConstraint().components.remove(m_comp->id());
+            doc->baseConstraint().components().remove(m_comp->id());
             m_comp = nullptr;
         }
     }

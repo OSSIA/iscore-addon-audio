@@ -1,6 +1,6 @@
 #pragma once
 #include <Audio/EffectProcess/Effect/EffectFactory.hpp>
-#include <Process/ModelMetadata.hpp>
+#include <iscore/model/Entity.hpp>
 
 #include <iscore/component/Component.hpp>
 #include <iscore/tools/IdentifiedObject.hpp>
@@ -22,16 +22,13 @@ namespace Effect
  * reverb, distorsion, etc.)
  */
 class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
-        public IdentifiedObject<EffectModel>,
+        public iscore::Entity<EffectModel>,
         public iscore::SerializableInterface<EffectFactory>
 {
         Q_OBJECT
         ISCORE_SERIALIZE_FRIENDS(Audio::Effect::EffectModel, DataStream)
         ISCORE_SERIALIZE_FRIENDS(Audio::Effect::EffectModel, JSONObject)
     public:
-        iscore::Components components;
-        ModelMetadata metadata;
-
         EffectModel(
                 const Id<EffectModel>&,
                 QObject* parent);
@@ -45,7 +42,7 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
         EffectModel(
                 Deserializer<Impl>& vis,
                 QObject* parent) :
-            IdentifiedObject<EffectModel>{vis, parent}
+            Entity{vis, parent}
         {
             vis.writeTo(*this);
         }

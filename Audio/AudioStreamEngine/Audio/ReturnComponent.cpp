@@ -39,7 +39,7 @@ void ReturnComponent::makeStream(const Context& ctx)
     // Create stream from send
     m_stream = MakeSend(
                    MakeReturn(
-                       iscore::component<SendComponent>(send->components).getStream()));
+                       iscore::component<SendComponent>(send->components()).getStream()));
 }
 
 }

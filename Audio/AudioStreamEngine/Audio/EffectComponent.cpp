@@ -36,7 +36,7 @@ void EffectProcessComponent::makeStream(const Context& ctx)
     auto parent_cst = safe_cast<Scenario::ConstraintModel*>(process().parent());
 
     // Get its audio component
-    auto& cst_comp = iscore::component<Constraint>(parent_cst->components);
+    auto& cst_comp = iscore::component<Constraint>(parent_cst->components());
 
     // The constraint has the mix information, hence we request it to create
     // the mix.

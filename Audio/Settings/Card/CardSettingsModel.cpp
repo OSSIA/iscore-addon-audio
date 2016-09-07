@@ -3,7 +3,7 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <LibAudioStreamMC++.h>
-#include <Process/Style/Skin.hpp>
+#include <iscore/model/Skin.hpp>
 
 namespace Audio
 {

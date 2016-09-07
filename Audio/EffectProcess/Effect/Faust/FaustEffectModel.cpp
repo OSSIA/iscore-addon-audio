@@ -59,7 +59,7 @@ void FaustEffectModel::reload()
         auto qjs = QJsonDocument::fromJson(json, &err);
         if(err.error == QJsonParseError::NoError)
         {
-            metadata.setName(qjs.object()["name"].toString());
+            metadata().setName(qjs.object()["name"].toString());
         }
         else
         {
