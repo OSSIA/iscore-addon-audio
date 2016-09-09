@@ -6,6 +6,7 @@
 #include <Audio/SoundProcess/SoundProcessMetadata.hpp>
 #include <Process/LayerModel.hpp>
 #include <Audio/MediaFileHandle.hpp>
+#include <iscore_plugin_audio_export.h>
 
 
 namespace Audio
@@ -14,7 +15,7 @@ namespace Sound
 {
 class ProcessModel;
 
-class ProcessModel final : public Process::ProcessModel
+class ISCORE_PLUGIN_AUDIO_EXPORT ProcessModel final : public Process::ProcessModel
 {
         ISCORE_SERIALIZE_FRIENDS(Audio::Sound::ProcessModel, DataStream)
         ISCORE_SERIALIZE_FRIENDS(Audio::Sound::ProcessModel, JSONObject)
