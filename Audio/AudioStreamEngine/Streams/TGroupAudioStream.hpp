@@ -13,6 +13,7 @@
 
 #include <iscore/tools/Todo.hpp>
 
+// TODO rename this file
 
 #if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
 #include <lilv/lilvmm.hpp>
