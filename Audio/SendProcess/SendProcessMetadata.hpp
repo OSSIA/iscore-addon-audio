@@ -2,11 +2,6 @@
 #include <Process/ProcessMetadata.hpp>
 #include <iscore_plugin_audio_export.h>
 
-namespace Process
-{
-class ProcessFactory;
-}
-
 namespace Audio
 {
 namespace Send

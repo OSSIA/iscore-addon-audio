@@ -1,6 +1,7 @@
 #pragma once
 #include <Process/GenericProcessFactory.hpp>
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
+#include <Audio/SoundProcess/SoundProcessLayer.hpp>
 #include <Audio/SoundProcess/SoundProcessMetadata.hpp>
 #include <Audio/SoundProcess/SoundProcessPresenter.hpp>
 #include <Audio/SoundProcess/SoundProcessView.hpp>
@@ -10,9 +11,10 @@ namespace Audio
 {
 namespace Sound
 {
-using ProcessFactory = Process::GenericProcessFactory<
+using ProcessFactory = Process::GenericProcessModelFactory<Sound::ProcessModel>;
+using LayerFactory = Process::GenericLayerFactory<
     Sound::ProcessModel,
-    Process::LayerModel_T<Sound::ProcessModel>,
+    Sound::Layer,
     Sound::LayerPresenter,
     Sound::LayerView,
     Process::GraphicsViewLayerModelPanelProxy>;

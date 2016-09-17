@@ -62,13 +62,21 @@ std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::
     return instantiate_factories<
             iscore::ApplicationContext,
     TL<
-        FW<Process::ProcessFactory,
+        FW<Process::ProcessModelFactory,
             Audio::Sound::ProcessFactory,
             Audio::Effect::ProcessFactory,
             Audio::Mix::ProcessFactory,
             Audio::Send::ProcessFactory,
             Audio::Return::ProcessFactory,
             Audio::Input::ProcessFactory
+            >,
+        FW<Process::LayerFactory,
+            Audio::Sound::LayerFactory,
+            Audio::Effect::LayerFactory,
+            Audio::Mix::LayerFactory,
+            Audio::Send::LayerFactory,
+            Audio::Return::LayerFactory,
+            Audio::Input::LayerFactory
             >,
         FW<Audio::AudioStreamEngine::ProcessComponentFactory,
             Audio::AudioStreamEngine::EffectProcessComponentFactory,

@@ -7,6 +7,7 @@
 #include <QAction>
 #include <Audio/Settings/Card/CardSettingsModel.hpp>
 #include <LibAudioStreamMC++.h>
+#include <iscore/tools/SettableIdentifierGeneration.hpp>
 //#include <faust/dsp/llvm-dsp.h>
 namespace Audio
 {
@@ -47,7 +48,7 @@ ApplicationPlugin::~ApplicationPlugin()
 
 void ApplicationPlugin::on_createdDocument(iscore::Document& doc)
 {
-    doc.model().addPluginModel(new DocumentPlugin{m_ctx, doc, &doc.model()});
+    doc.model().addPluginModel(new DocumentPlugin{m_ctx, doc, getStrongId(doc.model().pluginModels()), &doc.model()});
 }
 
 static int CardIdFromString(int api, const QString& str);

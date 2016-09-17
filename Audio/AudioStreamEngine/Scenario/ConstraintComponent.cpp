@@ -112,9 +112,7 @@ optional<AudioGraphVertice> Constraint::visit(AudioGraph& graph)
                     auto in_ptr = safe_cast<ProcessComponent*>(graph[input]);
 
                     auto gen_id = gen_ptr->process().id();
-                    ISCORE_ASSERT(bool(gen_id));
                     auto in_id = in_ptr->process().id();
-                    ISCORE_ASSERT(bool(in_id));
 
                     auto routing_it = mix->routings().find(Mix::Routing{gen_id, in_id});
                     if(routing_it == mix->routings().end())
