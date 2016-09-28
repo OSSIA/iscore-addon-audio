@@ -104,6 +104,9 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectFactoryList final :
 {
     public:
         using object_type = Audio::Effect::EffectModel;
+        object_type* loadMissing(
+                const VisitorVariant& vis,
+                QObject* parent) const;
 
 };
 }

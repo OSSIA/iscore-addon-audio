@@ -8,5 +8,14 @@ EffectFactory::~EffectFactory()
 {
 
 }
+
+EffectFactoryList::object_type*EffectFactoryList::loadMissing(
+        const VisitorVariant& vis,
+        QObject* parent) const
+{
+    ISCORE_TODO;
+    return nullptr;
+}
+
 }
 }
