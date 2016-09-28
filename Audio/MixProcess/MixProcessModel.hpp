@@ -102,14 +102,14 @@ class ProcessModel final :
         template<typename This_T>
         static auto findDirectMix_impl(This_T& self, const DirectMix& dmx)
         {
-            auto it = find(self.m_dataProcesses, dmx.process);
+            auto it = ossia::find(self.m_dataProcesses, dmx.process);
             if(it != self.m_dataProcesses.end())
             {
                 return it;
             }
             else
             {
-                auto it_2 = find(self.m_fxProcesses, dmx.process);
+                auto it_2 = ossia::find(self.m_fxProcesses, dmx.process);
                 if(it_2 != self.m_fxProcesses.end())
                 {
                     return it_2;

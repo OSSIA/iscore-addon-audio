@@ -66,7 +66,7 @@ RemoveEffect::RemoveEffect(
     m_savedEffect{marshall<DataStream>(effect)}
 {
     auto& order = model.effectsOrder();
-    m_pos = std::distance(order.begin(), find(order,m_id));
+    m_pos = std::distance(order.begin(), ossia::find(order,m_id));
 }
 
 void RemoveEffect::undo() const
@@ -114,7 +114,7 @@ MoveEffect::MoveEffect(
     m_newPos{new_pos}
 {
     auto& order = model.effectsOrder();
-    m_oldPos = std::distance(order.begin(), find(order, m_id));
+    m_oldPos = std::distance(order.begin(), ossia::find(order, m_id));
 }
 
 void MoveEffect::undo() const

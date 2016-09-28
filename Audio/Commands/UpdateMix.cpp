@@ -47,14 +47,14 @@ UpdateDirect::UpdateDirect(
     m_model{model},
     m_new{newmix}
 {
-    auto it = find(model.directData(), newmix);
+    auto it = ossia::find(model.directData(), newmix);
     if(it != model.directData().end())
     {
         m_old = *it;
     }
     else
     {
-        auto it2 = find(model.directFx(), newmix);
+        auto it2 = ossia::find(model.directFx(), newmix);
         if(it2 != model.directFx().end())
         {
             m_old = *it;

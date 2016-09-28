@@ -42,7 +42,7 @@ EffectListWidget::EffectListWidget(
 
 void EffectListWidget::on_effectRemoved(const EffectModel &fx)
 {
-    auto it = find_if(m_widgets, [&] (auto ptr) { return &ptr->effect() == &fx; });
+    auto it = ossia::find_if(m_widgets, [&] (auto ptr) { return &ptr->effect() == &fx; });
     if(it == m_widgets.end())
         return;
 

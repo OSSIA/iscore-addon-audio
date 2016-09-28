@@ -192,19 +192,19 @@ void ProcessModel::on_processRemoved(const Process::ProcessModel & proc)
     bool out = fac->hasOutput();
     if(!in && out)
     {
-        auto it = find(m_dataProcesses, proc_id);
+        auto it = ossia::find(m_dataProcesses, proc_id);
         if(it != m_dataProcesses.end())
             m_dataProcesses.erase(it);
     }
     else if(in && out)
     {
-        auto it = find(m_fxProcesses, proc_id);
+        auto it = ossia::find(m_fxProcesses, proc_id);
         if(it != m_fxProcesses.end())
             m_fxProcesses.erase(it);
     }
     else if(in && !out)
     {
-        auto it = find(m_sendProcesses, proc_id);
+        auto it = ossia::find(m_sendProcesses, proc_id);
         if(it != m_sendProcesses.end())
             m_sendProcesses.erase(it);
     }

@@ -329,7 +329,7 @@ AudioStream Constraint::makeInputMix(
             // the better way would be to automatically get a mix component on "audio" constraints...
             // but this needs serializable components...
             // Find target
-            auto target_proc_it = find_if(children(),
+            auto target_proc_it = ossia::find_if(children(),
                                           [=] (const auto& p) {
                 return p.model->id() == target;
             });
@@ -373,7 +373,7 @@ void ConstraintBase::removing(
 Mix::ProcessModel* Constraint::findMix() const
 {
     auto& procs = constraint().processes;
-    auto it = find_if(procs, [] (auto& val) {
+    auto it = ossia::find_if(procs, [] (auto& val) {
         return dynamic_cast<Mix::ProcessModel*>(&val);
     });
     return it != procs.end() ? static_cast<Mix::ProcessModel*>(&(*it)) : nullptr;

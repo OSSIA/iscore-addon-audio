@@ -118,7 +118,7 @@ void ScenarioComponent::makeStream(const Context& ctx)
     {
         auto& start_node_id = process().startTimeNode().id();
 
-        auto it = find_if(timeNodes(), [=] (auto& p) { return p.element.id() == start_node_id; });
+        auto it = ossia::find_if(timeNodes(), [=] (auto& p) { return p.element.id() == start_node_id; });
         ISCORE_ASSERT(it != timeNodes().end());
         onDateFixed(it->component, audio_frame_t{0}, true);
 
@@ -170,7 +170,7 @@ void ScenarioComponent::onDateFixed(
         Scenario::StateModel& st = process().states.at(st_id);
         if(auto& prev_cst_id = st.previousConstraint())
         {
-            auto it = find_if(constraints(),
+            auto it = ossia::find_if(constraints(),
                               [=] (auto& e) { return e.element.id() == prev_cst_id; });
             ISCORE_ASSERT(it != constraints().end());
             it->component.onStopDateFixed(time);
@@ -178,7 +178,7 @@ void ScenarioComponent::onDateFixed(
 
         if(auto& next_cst_id = st.nextConstraint())
         {
-            auto it = find_if(constraints(),
+            auto it = ossia::find_if(constraints(),
                               [=] (auto& e) { return e.element.id() == next_cst_id; });
             ISCORE_ASSERT(it != constraints().end());
             it->component.onStartDateFixed(time + 1, force_update); // ** pay attention to the +1 **
@@ -213,7 +213,7 @@ void ScenarioComponent::onStartDateFixed(
 
     auto& end_tn_id = end_tn.id();
 
-    auto it = find_if(timeNodes(),
+    auto it = ossia::find_if(timeNodes(),
                       [=] (auto& e) { return e.element.id() == end_tn_id; });
     ISCORE_ASSERT(it != timeNodes().end());
     it->component.onDateFixed(end_date, force_update);
@@ -248,7 +248,7 @@ void ScenarioComponent::onSpeedChanged(const Constraint& c, double speed)
 
     auto& end_tn_id = end_tn.id();
 
-    auto it = find_if(timeNodes(),
+    auto it = ossia::find_if(timeNodes(),
                       [=] (auto& e) { return e.element.id() == end_tn_id; });
     ISCORE_ASSERT(it != timeNodes().end());
     it->component.onDateFixed(end_date, true);
@@ -282,7 +282,7 @@ void ScenarioComponent::onDateFixed(
         Scenario::EventModel& ev = process().events.at(ev_id);
         if(!ev.condition().hasChildren())
         {
-            auto it = find_if(events(), [=] (auto& e) { return e.element.id() == ev_id; });
+            auto it = ossia::find_if(events(), [=] (auto& e) { return e.element.id() == ev_id; });
             ISCORE_ASSERT(it != events().end());
             it->component.onDateFixed(time, force_update);
         }
