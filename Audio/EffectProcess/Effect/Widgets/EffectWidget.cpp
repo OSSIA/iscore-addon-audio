@@ -258,7 +258,7 @@ void EffectWidget::mousePressEvent(QMouseEvent* event)
         mimeData->setData("application/x-iscore-effectdrag",
                           marshall<DataStream>(make_path(m_effect)));
         drag->setMimeData(mimeData);
-        QLabel label{m_effect.metadata().getName()};
+        QLabel label{m_effect.metadata().getLabel()};
         drag->setPixmap(label.grab());
         drag->setHotSpot(label.rect().center());
 

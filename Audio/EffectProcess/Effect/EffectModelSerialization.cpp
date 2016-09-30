@@ -15,7 +15,6 @@ template<>
 void Visitor<Writer<DataStream>>::writeTo(
         Audio::Effect::EffectModel& eff)
 {
-    writeTo(eff.metadata());
     m_stream >> eff.m_params;
 }
 

@@ -76,3 +76,5 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
     MODEL_METADATA(Export, Audio::Effect::EffectFactory, Model, Uuid, ObjectKey, PrettyName)
 
 Q_DECLARE_METATYPE(Id<Audio::Effect::EffectModel>)
+
+TR_TEXT_METADATA(, Audio::Effect::EffectModel, PrettyName_k, "Effect")

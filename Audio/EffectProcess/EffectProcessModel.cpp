@@ -17,7 +17,7 @@ ProcessModel::ProcessModel(
         QObject* parent):
     Process::ProcessModel{duration, id, Metadata<ObjectKey_k, ProcessModel>::get(), parent}
 {
-    metadata().setName(Metadata<PrettyName_k, ProcessModel>::get() + QString(".%1").arg(this->id().val()));
+  metadata().setInstanceName(*this);
 }
 
 ProcessModel::ProcessModel(
@@ -25,11 +25,12 @@ ProcessModel::ProcessModel(
         const Id<Process::ProcessModel>& id,
         QObject* parent):
     Process::ProcessModel{
-        source.duration(),
+        source,
         id,
         Metadata<ObjectKey_k, ProcessModel>::get(),
         parent}
 {
+    metadata().setInstanceName(*this);
     for(const auto& fx : source.effects())
     {
         auto eff = fx.clone(fx.id(), this);

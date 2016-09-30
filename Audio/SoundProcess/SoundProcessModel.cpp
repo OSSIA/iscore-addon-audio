@@ -17,6 +17,7 @@ ProcessModel::ProcessModel(
         QObject* parent):
     Process::ProcessModel{duration, id, Metadata<ObjectKey_k, ProcessModel>::get(), parent}
 {
+    metadata().setInstanceName(*this);
     setFile("/tmp/bass.aif");
 }
 
@@ -25,12 +26,13 @@ ProcessModel::ProcessModel(
         const Id<Process::ProcessModel>& id,
         QObject* parent):
     Process::ProcessModel{
-        source.duration(),
+        source,
         id,
         Metadata<ObjectKey_k, ProcessModel>::get(),
         parent},
     m_file{source.m_file}
 {
+    metadata().setInstanceName(*this);
 }
 
 ProcessModel::~ProcessModel()

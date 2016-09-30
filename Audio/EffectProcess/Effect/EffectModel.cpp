@@ -9,7 +9,7 @@ EffectModel::EffectModel(
         QObject* parent):
     Entity{id, staticMetaObject.className(), parent}
 {
-    metadata().setName(QString("Effect.%1").arg(this->id().val()));
+    metadata().setInstanceName(*this);
 }
 
 EffectModel::EffectModel(
@@ -19,6 +19,7 @@ EffectModel::EffectModel(
     Entity{source, id, staticMetaObject.className(), parent},
     m_params{source.getParams()}
 {
+  metadata().setInstanceName(*this);
 }
 
 EffectModel::~EffectModel()

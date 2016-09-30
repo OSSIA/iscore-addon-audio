@@ -168,10 +168,10 @@ void InspectorWidget::recreate()
     for(const auto& fx_id : process().effectsOrder())
     {
         EffectModel& fx = process().effects().at(fx_id);
-        auto item = new ListWidgetItem(fx.metadata().getName(), m_list);
+        auto item = new ListWidgetItem(fx.metadata().getLabel(), m_list);
 
-        con(fx.metadata(), &iscore::ModelMetadata::NameChanged,
-            item, [=] (const auto& name) { item->setText(name); });
+        con(fx.metadata(), &iscore::ModelMetadata::LabelChanged,
+            item, [=] (const auto& txt) { item->setText(txt); });
         item->setData(Qt::UserRole, QVariant::fromValue(fx_id));
         m_list->addItem(item);
     }

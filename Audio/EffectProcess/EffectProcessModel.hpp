@@ -6,7 +6,7 @@
 #include <Audio/EffectProcess/EffectProcessMetadata.hpp>
 #include <Process/LayerModel.hpp>
 #include <Audio/MediaFileHandle.hpp>
-#include <iscore/tools/NotifyingMap.hpp>
+#include <iscore/tools/EntityMap.hpp>
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
 namespace Audio
 {
@@ -55,7 +55,7 @@ class ProcessModel final : public Process::ProcessModel
             vis.writeTo(*this);
         }
 
-        const NotifyingMap<EffectModel>& effects() const
+        const EntityMap<EffectModel>& effects() const
         { return m_effects; }
         const auto& effectsOrder() const
         { return m_effectOrder; }
@@ -71,7 +71,7 @@ class ProcessModel final : public Process::ProcessModel
 
     private:
         // The actual effect instances
-        NotifyingMap<EffectModel> m_effects;
+        EntityMap<EffectModel> m_effects;
 
         // The effect chain.
         QList<Id<EffectModel>> m_effectOrder;

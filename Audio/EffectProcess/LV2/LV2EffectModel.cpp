@@ -53,7 +53,7 @@ void LV2EffectModel::reload()
         if((isFile && QString(plug.get_bundle_uri().as_string()) == path) || (!isFile && QString(plug.get_name().as_string()) == path))
         {
             plugin = plug.me;
-            metadata().setName(QString(plug.get_name().as_string()));
+            metadata().setLabel(QString(plug.get_name().as_string()));
             m_effect = MakeLV2AudioEffect(plug.me, world.me);
             return;
         }
@@ -61,7 +61,7 @@ void LV2EffectModel::reload()
         {
             plugin = plug.me;
             m_effect = MakeLV2AudioEffect(plug.me, world.me);
-            metadata().setName(QString(plug.get_name().as_string()));
+            metadata().setLabel(QString(plug.get_name().as_string()));
             return;
         }
         else

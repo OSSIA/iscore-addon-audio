@@ -25,7 +25,7 @@ ProcessModel::ProcessModel(
 {
     // TODO connect the removing() signal of the process to here.
     init();
-    metadata().setName(Metadata<PrettyName_k, ProcessModel>::get() + QString(".%1").arg(this->id().val()));
+    metadata().setInstanceName(*this);
 }
 
 ProcessModel::ProcessModel(
@@ -33,7 +33,7 @@ ProcessModel::ProcessModel(
         const Id<Process::ProcessModel>& id,
         QObject* parent):
     Process::ProcessModel{
-        source.duration(),
+        source,
         id,
         Metadata<ObjectKey_k, ProcessModel>::get(),
         parent},
@@ -42,6 +42,7 @@ ProcessModel::ProcessModel(
     m_fxProcesses{source.m_fxProcesses},
     m_sendProcesses{source.m_sendProcesses}
 {
+    metadata().setInstanceName(*this);
 }
 
 ProcessModel::~ProcessModel()
