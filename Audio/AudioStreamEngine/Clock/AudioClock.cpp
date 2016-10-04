@@ -32,7 +32,7 @@ AudioClock::AudioClock(
 
     ossia_cst.setDriveMode(ossia::clock::DriveMode::EXTERNAL);
     // Number of milliseconds in each step -> we tick once per buffer
-    ossia_cst.setGranularity(1000 * audio.getBufferSize() / audio.getRate() );
+    ossia_cst.setGranularity(ossia::time_value(1000 * audio.getBufferSize() / audio.getRate()) );
 }
 
 void AudioClock::play_impl(
