@@ -85,12 +85,14 @@ InspectorWidget::InspectorWidget(
                 m_dispatcher.submitCommand(new Commands::EditFaustEffect{*faust, edit.text()});
             }
         }
+        /*
 #if defined(LILV_SHARED)
         else if(auto lv2 = dynamic_cast<LV2EffectModel*>(proc))
         {
             // One can take inspiration from Qtractor, and cry a lot.
         }
 #endif
+        */
     }, Qt::QueuedConnection);
 
     recreate();

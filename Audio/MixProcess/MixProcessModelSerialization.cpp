@@ -140,7 +140,7 @@ QJsonArray toJsonIdArray(const T& array)
 }
 
 
-QJsonArray toJsonRoutingArray(const Audio::Mix::RoutingMap& orig)
+static QJsonArray toJsonRoutingArray(const Audio::Mix::RoutingMap& orig)
 {
     QJsonArray arr;
     for(const Audio::Mix::Routing& obj : orig)
@@ -179,7 +179,7 @@ void fromJsonToIdList(QJsonArray&& json_arr, List_T& arr)
     });
 }
 
-void fromJsonRoutingArray(QJsonArray&& json_arr, Audio::Mix::RoutingMap& arr)
+static void fromJsonRoutingArray(QJsonArray&& json_arr, Audio::Mix::RoutingMap& arr)
 {
     arr.reserve(json_arr.size());
     Foreach(json_arr, [&] (auto elt)
