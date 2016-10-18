@@ -108,7 +108,7 @@ void EffectWidget::on_createAutomation(const State::Address& addr, double min, d
             macro.submitCommand(lay_cmd);
 
             auto& autom = safe_cast<Automation::ProcessModel&>(cst->processes.at(make_cmd->processId()));
-            macro.submitCommand(new Automation::InitAutomation{autom, addr, min, max});
+            macro.submitCommand(new Automation::InitAutomation{autom, State::AddressAccessor{addr}, min, max});
 
             macro.commit();
             return;

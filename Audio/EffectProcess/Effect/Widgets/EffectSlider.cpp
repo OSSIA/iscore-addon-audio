@@ -47,7 +47,7 @@ class AddressLabel : public QLabel
                 }
                 {
                     Mime<State::MessageList>::Serializer s{*mimeData};
-                    s.serialize({State::Message{as.address, as.value}});
+                    s.serialize({State::Message{State::AddressAccessor{as.address}, as.value}});
                 }
                 drag->setMimeData(mimeData);
 
