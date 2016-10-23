@@ -68,8 +68,8 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
 
   auto dom = addr->getDomain();
 
-  if(auto f = ossia::net::get_min(dom).target<ossia::Float>()) m_min = *f;
-  if(auto f = ossia::net::get_max(dom).target<ossia::Float>()) m_max = *f;
+  if(auto f = dom.maybe_min<ossia::Float>()) m_min = *f;
+  if(auto f = dom.maybe_max<ossia::Float>()) m_max = *f;
 
   auto lay = new iscore::MarginLess<QVBoxLayout>;
   lay->addWidget(new AddressLabel{
@@ -115,9 +115,8 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
 
     if(addr)
     {
-      auto min = ossia::convert<double>(ossia::net::get_min(dom));
-      auto max = ossia::convert<double>(ossia::net::get_max(dom));
-
+      auto min = dom.convert_min<double>();
+      auto max = dom.convert_max<double>();
       emit createAutomation(std::move(*addr), min, max);
     }
   });
