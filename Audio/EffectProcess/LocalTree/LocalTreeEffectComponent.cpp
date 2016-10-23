@@ -69,7 +69,7 @@ void EffectComponent::recreate()
             if(!fx)
                 return;
 
-            auto current_val = val.get<ossia::Float>().value;
+            auto current_val = val.get<ossia::Float>();
             SetControlValueEffect(fx, num, current_val);
         });
 
