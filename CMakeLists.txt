@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.1)
 project(iscore_plugin_audio LANGUAGES CXX)
 
 # Dependencies
+# Disabled due to LLVMc
+if(ISCORE_SANITIZE)
+    return()
+endif()
+
 if(NOT TARGET iscore_plugin_engine)
     return()
 endif()
