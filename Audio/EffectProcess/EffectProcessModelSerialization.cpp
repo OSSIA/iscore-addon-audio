@@ -22,8 +22,10 @@ void Visitor<Writer<DataStream>>::writeTo(Audio::Effect::ProcessModel& proc)
     for(int i = 0; i < n ; i++)
     {
         auto fx = deserialize_interface(fxs, *this, &proc);
-        ISCORE_ASSERT(fx);
-        proc.insertEffect(fx, i++);
+        if(fx)
+            proc.insertEffect(fx, i++);
+        else
+            ISCORE_TODO;
     }
 
     proc.m_effectOrder.clear();
@@ -49,8 +51,10 @@ void Visitor<Writer<JSONObject>>::writeTo(Audio::Effect::ProcessModel& proc)
     {
         Deserializer<JSONObject> deserializer{json_vref.toObject()};
         auto fx = deserialize_interface(fxs, deserializer, &proc);
-        ISCORE_ASSERT(fx);
-        proc.insertEffect(fx, i++);
+        if(fx)
+            proc.insertEffect(fx, i++);
+        else
+            ISCORE_TODO;
     }
 
     proc.m_effectOrder.clear();
