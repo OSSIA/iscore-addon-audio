@@ -2,9 +2,12 @@
 #include <QApplication>
 #include <QTimer>
 #include <eggs/variant.hpp>
+#if defined(__APPLE__)
 #include <sndfile.hh>
+#endif
 namespace Audio
 {
+#if defined(__APPLE__)
 static AudioArray readAudioSndfile(const std::string& path)
 {
     AudioArray deint;
@@ -34,7 +37,7 @@ static AudioArray readAudioSndfile(const std::string& path)
     }
     return deint;
 }
-
+#endif
 AudioArray AudioDecoder::readAudio(const QString& path)
 {
 #if defined(__APPLE__)
