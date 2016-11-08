@@ -1,5 +1,5 @@
 #include <Audio/SendProcess/SendProcessModel.hpp>
-#include <Process/Dummy/DummyLayerModel.hpp>
+
 #include <Explorer/DocumentPlugin/DeviceDocumentPlugin.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 #include <Scenario/Document/Constraint/ConstraintModel.hpp>

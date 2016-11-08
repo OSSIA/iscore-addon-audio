@@ -1,5 +1,5 @@
 #include "ConstraintComponent.hpp"
-#include <iscore/tools/std/Algorithms.hpp>
+#include <ossia/detail/algorithms.hpp>
 #include <Scenario/Process/ScenarioModel.hpp>
 #include <Loop/LoopProcessModel.hpp>
 #include <boost/multi_index_container.hpp>
