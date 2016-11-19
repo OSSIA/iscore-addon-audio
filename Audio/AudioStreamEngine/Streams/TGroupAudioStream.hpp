@@ -16,27 +16,39 @@
 // TODO rename this file
 
 #if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
-#include <lilv/lilvmm.hpp>
-struct LV2PluginInfo
-{
-};
-
+#include "LV2Context.hpp"
 struct LV2Data
 {
-        LV2Data(const LilvPlugin& plug, LilvWorld& w):
-            plugin{&plug}, world{w}
+        LV2Data(const LV2EffectContext& ctx): context{ctx}
         {
             using node_ptr = Lilv::Node;
-            node_ptr input_class{lilv_new_uri(&world, LILV_URI_INPUT_PORT)};
-            node_ptr output_class{lilv_new_uri(&world, LILV_URI_OUTPUT_PORT)};
-            node_ptr control_class{lilv_new_uri(&world, LILV_URI_CONTROL_PORT)};
-            node_ptr audio_class{lilv_new_uri(&world, LILV_URI_AUDIO_PORT)};
-            node_ptr cv_class{lilv_new_uri(&world, LV2_CORE__CVPort)};
+            node_ptr input_class{lilv_new_uri(&context.host.world, LILV_URI_INPUT_PORT)};
+            node_ptr output_class{lilv_new_uri(&context.host.world, LILV_URI_OUTPUT_PORT)};
+            node_ptr control_class{lilv_new_uri(&context.host.world, LILV_URI_CONTROL_PORT)};
+            node_ptr audio_class{lilv_new_uri(&context.host.world, LILV_URI_AUDIO_PORT)};
+            node_ptr event_class{lilv_new_uri(&context.host.world, LILV_URI_EVENT_PORT)};
+            node_ptr midi_class{lilv_new_uri(&context.host.world, LILV_URI_MIDI_EVENT)};
+            node_ptr cv_class{lilv_new_uri(&context.host.world, LV2_CORE__CVPort)};
 
-            int32_t numports = plugin.get_num_ports();
+
+            for(auto res : {context.plugin.get_required_features(), context.plugin.get_optional_features()})
+            {
+                std::cerr << context.plugin.get_name().as_string() << " requires " << std::endl;
+                auto it = res.begin();
+                while(it)
+                {
+                    auto node = res.get(it);
+                    if(node.is_uri())
+                        std::cerr << "Required uri: " << node.as_uri() << std::endl;
+                    it = res.next(it);
+                }
+                std::cerr << std::endl << std::endl;
+            }
+
+            int32_t numports = context.plugin.get_num_ports();
             for(int32_t i = 0; i < numports; i++)
             {
-                auto port = plugin.get_port_by_index(i);
+                auto port = context.plugin.get_port_by_index(i);
                 if(port.is_a(audio_class))
                 {
                     if(port.is_a(input_class))
@@ -80,8 +92,7 @@ struct LV2Data
 
         }
 
-        Lilv::Plugin plugin;
-        LilvWorld& world;
+        LV2EffectContext context;
         std::vector<int> in_ports, out_ports, control_in_ports, other_control_ports, cv_ports;
 };
 
@@ -105,16 +116,16 @@ class LV2AudioEffect : public TAudioEffectInterface
                 fCVs[i].resize(TAudioGlobals::fBufferSize);
             }
 
-            const int num_ports = data.plugin.get_num_ports();
+            const int num_ports = data.context.plugin.get_num_ports();
             fParamMin.resize(num_ports);
             fParamMax.resize(num_ports);
             fParamInit.resize(num_ports);
 
-            data.plugin.get_port_ranges_float(fParamMin.data(), fParamMax.data(), fParamInit.data());
+            data.context.plugin.get_port_ranges_float(fParamMin.data(), fParamMax.data(), fParamInit.data());
 
             for(int i = 0; i < in_size; i++)
             {
-                Lilv::Port p{data.plugin.get_port_by_index(data.control_in_ports[i])};
+                Lilv::Port p{data.context.plugin.get_port_by_index(data.control_in_ports[i])};
                 Lilv::Node n = p.get_name();
                 fLabelsMap.emplace(n.as_string(), i);
             }
@@ -132,7 +143,7 @@ class LV2AudioEffect : public TAudioEffectInterface
         {
             if(param >= 0 && param < (int64_t)data.control_in_ports.size())
             {
-                Lilv::Port p = data.plugin.get_port_by_index(data.control_in_ports[param]);
+                Lilv::Port p = data.context.plugin.get_port_by_index(data.control_in_ports[param]);
                 Lilv::Node n = p.get_name();
                 strcpy(label, n.as_string());
                 *min = fParamMin[param];
@@ -148,7 +159,7 @@ class LV2AudioEffect : public TAudioEffectInterface
 
         std::string GetName() final override
         {
-            return data.plugin.get_name().as_string();
+            return data.context.plugin.get_name().as_string();
         }
 
 
@@ -190,7 +201,7 @@ class StereoLV2AudioEffect final : public LV2AudioEffect
 
         StereoLV2AudioEffect(LV2Data dat):
             LV2AudioEffect{std::move(dat)},
-            fInstance{lilv_plugin_instantiate(data.plugin.me, 44100, nullptr)}
+            fInstance{lilv_plugin_instantiate(data.context.plugin.me, TAudioGlobals::fSampleRate, data.context.host.features)}
         {
             if(!fInstance)
                 throw std::runtime_error("Error while creating a LV2 plug-in");
@@ -248,8 +259,8 @@ class MonoLV2AudioEffect final : public LV2AudioEffect
 
         MonoLV2AudioEffect(LV2Data dat):
             LV2AudioEffect{std::move(dat)},
-            fLeft{lilv_plugin_instantiate(data.plugin.me, 44100, nullptr)},
-            fRight{lilv_plugin_instantiate(data.plugin.me, 44100, nullptr)}
+            fLeft{lilv_plugin_instantiate(data.context.plugin.me, TAudioGlobals::fSampleRate, data.context.host.features)},
+            fRight{lilv_plugin_instantiate(data.context.plugin.me, TAudioGlobals::fSampleRate, data.context.host.features)}
         {
             if(!fLeft || !fRight)
                 throw std::runtime_error("Error while creating a LV2 plug-in");

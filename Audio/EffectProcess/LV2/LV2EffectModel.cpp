@@ -1,6 +1,7 @@
 #include "LV2EffectModel.hpp"
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
 #include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
+#include <Audio/AudioStreamEngine/Streams/LV2Context.hpp>
 #include <QUrl>
 #include <QFile>
 
@@ -43,7 +44,8 @@ void LV2EffectModel::reload()
             path.append('/');
     }
 
-    auto& world = iscore::AppContext().components.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().lilv;
+    auto& app_plug = iscore::AppContext().components.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>();
+    auto& world = app_plug.lilv;
 
     auto plugs = world.get_all_plugins();
     auto it = plugs.begin();
@@ -54,13 +56,15 @@ void LV2EffectModel::reload()
         {
             plugin = plug.me;
             metadata().setLabel(QString(plug.get_name().as_string()));
-            m_effect = MakeLV2AudioEffect(plug.me, world.me);
+            LV2EffectContext ctx{app_plug.lv2_host_context, plug.me};
+            m_effect = MakeLV2AudioEffect(&ctx);
             return;
         }
         else if(!isFile && QString(plug.get_name().as_string()) == path)
         {
             plugin = plug.me;
-            m_effect = MakeLV2AudioEffect(plug.me, world.me);
+            LV2EffectContext ctx{app_plug.lv2_host_context, plug.me};
+            m_effect = MakeLV2AudioEffect(&ctx);
             metadata().setLabel(QString(plug.get_name().as_string()));
             return;
         }

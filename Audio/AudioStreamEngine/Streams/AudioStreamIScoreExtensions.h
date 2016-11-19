@@ -32,7 +32,8 @@ AudioStream MakeIScoreExecutor(AudioStream s, ossia::time_constraint& t);
 AudioStream MakeFixedLoopSound(AudioStream s, long maxlength);
 SymbolicDate GenPriorisedSymbolicDate(AudioPlayerPtr /*player*/, int64_t prio);
 #if defined(LILV_SHARED)
-AudioEffect MakeLV2AudioEffect(const LilvPlugin*, LilvWorld*);
+struct LV2EffectContext;
+AudioEffect MakeLV2AudioEffect(LV2EffectContext*);
 #endif
 
 #if defined(__cplusplus) && !defined(_MSC_VER)

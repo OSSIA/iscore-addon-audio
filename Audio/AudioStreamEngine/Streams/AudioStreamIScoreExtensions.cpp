@@ -49,7 +49,7 @@ AUDIOAPI AudioStream MakeSimpleBufferSound(float **buffer, long length, long cha
 AUDIOAPI SymbolicDate GenPriorisedSymbolicDate(AudioPlayerPtr /*player*/, int64_t prio);
 
 #if defined(LILV_SHARED)
-AUDIOAPI AudioEffect MakeLV2AudioEffect(const LilvPlugin* p, LilvWorld* w);
+AUDIOAPI AudioEffect MakeLV2AudioEffect(LV2EffectContext*);
 #endif
 void CloseAudioPlayer(AudioPlayerPtr ext_player); // In libaudiostreammc
 
@@ -175,24 +175,35 @@ AUDIOAPI SymbolicDate GenPriorisedSymbolicDate(AudioPlayerPtr /*player*/, int64_
 }
 
 #if defined(LILV_SHARED)
-AUDIOAPI AudioEffect MakeLV2AudioEffect(const LilvPlugin* p, LilvWorld* w)
+AUDIOAPI AudioEffect MakeLV2AudioEffect(LV2EffectContext* c)
 {
-    if(p && w)
+    try
     {
-        LV2Data dat{*p, *w};
-        if(dat.in_ports.size() == 2 && dat.out_ports.size() == 2)
+        if(c)
         {
-            return new StereoLV2AudioEffect{std::move(dat)};
-        }
-        else if(dat.in_ports.size() == 1 && dat.out_ports.size() == 1)
-        {
-            return new MonoLV2AudioEffect{std::move(dat)};
-        }
-        else
-        {
-            return nullptr;
+            LV2Data dat{*c};
+            if(dat.in_ports.size() == 2 && dat.out_ports.size() == 2)
+            {
+                return new StereoLV2AudioEffect{std::move(dat)};
+            }
+            else if(dat.in_ports.size() == 1 && dat.out_ports.size() == 1)
+            {
+                return new MonoLV2AudioEffect{std::move(dat)};
+            }
         }
     }
+    catch(const std::exception& e)
+    {
+        std::string s("Could not load LV2 plug-in: ");
+        s += e.what();
+        TAudioGlobals::AddLibError(s.c_str());
+        return nullptr;
+    }
+    catch(...)
+    {
+    }
+
+    TAudioGlobals::AddLibError("Could not load LV2 plug-in");
     return nullptr;
 }
 #endif
