@@ -40,7 +40,8 @@ void EffectComponent::recreate()
 {
     m_parametersNode.clearChildren();
 
-    AudioEffect fx = effect().effect();
+    EffectModel& effect = this->effect();
+    AudioEffect fx = effect.effect();
     if(!fx)
         return;
 
@@ -63,10 +64,9 @@ void EffectComponent::recreate()
 
         // Set value to current value of fx
         param_addr->add_callback([=,num=parameter.id] (const ossia::value& val) {
-
             if(val.getType() != ossia::val_type::FLOAT)
                 return;
-            auto fx = effect().effect();
+            auto fx = this->effect().effect();
             if(!fx)
                 return;
 
@@ -74,48 +74,51 @@ void EffectComponent::recreate()
             SetControlValueEffect(fx, num, current_val);
         });
 
-        auto& p = effect().savedParams();
-        if(p.size() > parameter.id)
+        const auto& p = effect.savedParams();
+        if(parameter.id < p.size())
             param_addr->pushValue(ossia::Float{p[parameter.id]});
         else
             param_addr->pushValue(ossia::Float{parameter.init});
+
+        m_inAddresses.push_back(std::make_pair(parameter.id, param_addr));
+
     }
 
-    if(auto lv2_fx = dynamic_cast<LV2EffectModel*>(&effect()))
+    if(auto lv2_fx = dynamic_cast<LV2EffectModel*>(&effect))
     {
-    for(EffectParameter parameter : AudioEffectParameterAdaptor<OutParameter>{fx})
-    {
-        auto idx = parameter.label.lastIndexOf('/');
-        if(idx != -1)
+        for(EffectParameter parameter : AudioEffectParameterAdaptor<OutParameter>{fx})
         {
-            parameter.label = parameter.label.mid(idx + 1);
+            auto idx = parameter.label.lastIndexOf('/');
+            if(idx != -1)
+            {
+                parameter.label = parameter.label.mid(idx + 1);
+            }
+
+            auto str_label = parameter.label.toStdString();
+            // Create the node
+            auto param_node = m_parametersNode.createChild(str_label);
+            auto param_addr = param_node->createAddress(ossia::val_type::FLOAT);
+            param_addr->setAccessMode(ossia::access_mode::GET);
+            param_addr->setDomain(ossia::net::make_domain(ossia::Float{parameter.min}, ossia::Float{parameter.max}));
+            param_addr->setDescription(str_label);
+
+            param_addr->pushValue(ossia::Float{GetLV2ControlOutValue(fx, parameter.id)});
+            m_outAddresses.push_back(std::make_pair(parameter.id, param_addr));
         }
 
-        auto str_label = parameter.label.toStdString();
-        // Create the node
-        auto param_node = m_parametersNode.createChild(str_label);
-        auto param_addr = param_node->createAddress(ossia::val_type::FLOAT);
-        param_addr->setAccessMode(ossia::access_mode::GET);
-        param_addr->setDomain(ossia::net::make_domain(ossia::Float{parameter.min}, ossia::Float{parameter.max}));
-        param_addr->setDescription(str_label);
+        if(GetLV2ControlOutCount(fx) > 0)
+        {
+            lv2_fx->effectContext.on_outControlsChanged = [&] {
+                auto fx = effect.effect();
+                if(!fx)
+                    return;
 
-        param_addr->pushValue(ossia::Float{GetLV2ControlOutValue(fx, parameter.id)});
-        m_outAddresses.push_back(std::make_pair(parameter.id, param_addr));
-    }
-
-    if(GetLV2ControlOutCount(fx) > 0)
-    {
-        lv2_fx->effectContext.on_outControlsChanged = [&] {
-            auto fx = effect().effect();
-            if(!fx)
-                return;
-
-            for(auto p : m_outAddresses)
-            {
-                p.second->pushValue(ossia::Float{GetLV2ControlOutValue(fx, p.first)});
-            }
-        };
-    }
+                for(auto p : m_outAddresses)
+                {
+                    p.second->pushValue(ossia::Float{GetLV2ControlOutValue(fx, p.first)});
+                }
+            };
+        }
     }
     emit effectTreeChanged();
 

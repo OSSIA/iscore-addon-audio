@@ -10,7 +10,7 @@
 #include <memory>
 #include <cmath>
 #include <unordered_map>
-
+#include <ossia/detail/math.hpp>
 #include <iscore/tools/Todo.hpp>
 
 // TODO rename this file
@@ -40,7 +40,9 @@ struct LV2Data
             const auto numports = effect.plugin.get_num_ports();
             for(int32_t i = 0; i < numports; i++)
             {
-                auto port = effect.plugin.get_port_by_index(i);
+                Lilv::Port port = effect.plugin.get_port_by_index(i);
+
+                std::cerr << "Port : " << lilv_node_as_string(port.get_name())<< std::endl;
                 if(port.is_a(host.audio_class))
                 {
                     if(port.is_a(host.input_class))
@@ -139,6 +141,7 @@ class LV2AudioEffect : public TAudioEffectInterface
                         data.effect.plugin.me,
                         TAudioGlobals::fSampleRate,
                         data.host.features);
+            data.effect.instance = fInstance;
 
             if(!fInstance)
                 throw std::runtime_error("Error while creating a LV2 plug-in");
@@ -155,7 +158,10 @@ class LV2AudioEffect : public TAudioEffectInterface
 
             for(int i = 0; i < in_size; i++)
             {
-                lilv_instance_connect_port(fInstance, data.control_in_ports[i], &fInControls[i]);
+                auto port_i = data.control_in_ports[i];
+                std::cerr << port_i << ": " << fParamMin[port_i] << " " << fParamMax[port_i] << std::endl;
+                fInControls[i] = fParamInit[port_i];
+                lilv_instance_connect_port(fInstance, port_i, &fInControls[i]);
             }
 
             for(int i = 0; i < out_size; i++)
@@ -192,12 +198,13 @@ class LV2AudioEffect : public TAudioEffectInterface
         {
             if(param >= 0 && param < v.size())
             {
-                Lilv::Port p = data.effect.plugin.get_port_by_index(v[param]);
+                auto port_i = v[param];
+                Lilv::Port p = data.effect.plugin.get_port_by_index(port_i);
                 Lilv::Node n = p.get_name();
                 strcpy(label, n.as_string());
-                *min = fParamMin[param];
-                *max = fParamMax[param];
-                *init = fParamInit[param];
+                *min = fParamMin[port_i];
+                *max = fParamMax[port_i];
+                *init = fParamInit[port_i];
             }
         }
 
@@ -225,7 +232,10 @@ class LV2AudioEffect : public TAudioEffectInterface
         void SetControlValue(long param, float value) final override
         {
             if(param >= 0 && param < (int64_t)data.control_in_ports.size())
-                fInControls[param] = value;
+            {
+                auto param_i = data.control_in_ports[param];
+                fInControls[param] = ossia::clamp(value, fParamMin[param_i], fParamMax[param_i]);
+            }
         }
 
         void SetControlValue(const char* label, float value) final override
@@ -260,11 +270,29 @@ class LV2AudioEffect : public TAudioEffectInterface
         {
         }
 
+        void preProcess()
+        {
+        }
+
         void postProcess()
         {
+            if(data.effect.worker && data.effect.worker_response && data.effect.worker->work_response )
+            {
+                data.effect.worker->work_response(
+                            data.effect.instance->lv2_handle,
+                            data.effect.worker_data.size(),
+                            data.effect.worker_data.data());
+                data.effect.worker_response = false;
+            }
+
             if(data.effect.on_outControlsChanged && !fOutControls.empty())
             {
                 data.effect.on_outControlsChanged();
+            }
+
+            if(data.effect.worker && data.effect.worker->end_run)
+            {
+                data.effect.worker->end_run(data.effect.instance->lv2_handle);
             }
         }
 
@@ -290,6 +318,8 @@ class StereoLV2AudioEffect final : public LV2AudioEffect
                 return;
 
             data.host.current = &data.effect;
+            preProcess();
+
             lilv_instance_connect_port(fInstance, data.in_ports[0], input[0]);
             lilv_instance_connect_port(fInstance, data.in_ports[1], input[1]);
             lilv_instance_connect_port(fInstance, data.out_ports[0], output[0]);
@@ -322,14 +352,15 @@ class MonoLV2AudioEffect final : public LV2AudioEffect
                 return;
 
             data.host.current = &data.effect;
+            preProcess();
+
             lilv_instance_connect_port(fInstance, data.in_ports[0], input[0]);
             lilv_instance_connect_port(fInstance, data.out_ports[0], output[0]);
 
             lilv_instance_run(fInstance, framesNum);
 
-            std::copy_n(output[0], framesNum, output[1]);
-
             postProcess();
+            std::copy_n(output[0], framesNum, output[1]);
         }
 
         TAudioEffectInterface* Copy() override

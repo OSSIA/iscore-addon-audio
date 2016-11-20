@@ -26,18 +26,20 @@ class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPl
         const AudioContext& context() const
         { return m_ctx; }
 
-#if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
-        Lilv::World lilv;
-        std::unique_ptr<LV2GlobalContext> lv2_context;
-        LV2HostContext lv2_host_context;
-#endif
-
     signals:
         void audioEngineRestarting();
         void audioEngineRestarted();
 
     private:
         AudioContext m_ctx;
+
+#if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
+    public:
+        Lilv::World lilv;
+        std::unique_ptr<LV2GlobalContext> lv2_context;
+        LV2HostContext lv2_host_context;
+    private:
+#endif
 
         void initialize() override;
 

@@ -34,12 +34,15 @@ class EffectComponent :
         ossia::net::node_base& parameters() const
         { return m_parametersNode; }
 
+        const auto& inAddresses() const { return m_inAddresses; }
+        const auto& outAddresses() const { return m_outAddresses; }
     signals:
         void effectTreeChanged();
         void aboutToBeDestroyed();
 
     protected:
         ossia::net::node_base& m_parametersNode;
+        std::vector<std::pair<int32_t, ossia::net::address_base*>> m_inAddresses;
         std::vector<std::pair<int32_t, ossia::net::address_base*>> m_outAddresses;
 };
 

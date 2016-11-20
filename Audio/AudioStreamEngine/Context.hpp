@@ -27,7 +27,8 @@ struct AudioContext
         DeviceInfo device_info{};
         RendererInfo renderer_info{};
 
-        int sample_rate = 0;
+        double sample_rate = 0;
+        int32_t buffer_size = 0;
 };
 
 struct Context

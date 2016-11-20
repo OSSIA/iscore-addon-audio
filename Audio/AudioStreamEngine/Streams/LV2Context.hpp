@@ -4,6 +4,8 @@
 #include <lv2/lv2plug.in/ns/ext/worker/worker.h>
 #include <lv2/lv2plug.in/ns/ext/data-access/data-access.h>
 #include <functional>
+#include <atomic>
+#include <vector>
 
 struct LV2EffectContext;
 
@@ -44,4 +46,6 @@ struct LV2EffectContext
         LV2_Extension_Data_Feature data{};
 
         std::function<void()> on_outControlsChanged;
+        std::atomic_bool worker_response{false};
+        std::vector<char> worker_data;
 };

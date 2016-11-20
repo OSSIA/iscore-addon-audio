@@ -126,21 +126,26 @@ void EffectWidget::setup()
     iscore::clearLayout(m_layout);
     m_sliders.clear();
 
-    auto comp = iscore::findComponent<LocalTree::EffectComponent>(m_effect.components());
+    LocalTree::EffectComponent* comp = iscore::findComponent<LocalTree::EffectComponent>(m_effect.components());
     if(!comp)
         return;
 
-    auto& params = comp->parameters();
-    for(auto& param_node : params.children())
+    for(auto& param_addr : comp->inAddresses())
     {
-        if(param_node->getAddress())
-        {
-            auto slider = new EffectSlider{*param_node, this};
+            auto slider = new EffectSlider{param_addr.second->getNode(), false, this};
             m_sliders.push_back(slider);
             connect(slider, &EffectSlider::createAutomation,
                     this, &EffectWidget::on_createAutomation,
                     Qt::QueuedConnection);
-        }
+    }
+
+    for(auto& param_addr : comp->outAddresses())
+    {
+        auto slider = new EffectSlider{param_addr.second->getNode(), true, this};
+        m_sliders.push_back(slider);
+        connect(slider, &EffectSlider::createAutomation,
+                this, &EffectWidget::on_createAutomation,
+                Qt::QueuedConnection);
     }
 
     m_timer.setInterval(50);

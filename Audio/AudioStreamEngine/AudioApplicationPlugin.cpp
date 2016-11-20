@@ -33,6 +33,8 @@
 #include <lv2/lv2plug.in/ns/ext/worker/worker.h>
 
 #include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
+#include <readerwriterqueue.h>
+
 #include <cstdio>
 #include <cstdarg>
 #include <boost/bimap.hpp>
@@ -52,16 +54,21 @@ int lv2_printf(LV2_Log_Handle handle, LV2_URID type, const char* format, ...)
     va_end(args);
     return r;
 }
+struct WorkerData
+{
+        LV2EffectContext& effect;
+
+        uint32_t size;
+        const void* data;
+};
 
 struct LV2GlobalContext
 {
         using urid_map_t = boost::bimap<std::string, LV2_URID>;
+        AudioContext& audio;
+        LV2HostContext& host;
 
         std::vector<LV2_Options_Option> options;
-
-        int32_t block = 512;
-
-        double srt = 44100;
 
         LV2_URID urid_map_cur = 1;
         urid_map_t urid_map;
@@ -121,8 +128,31 @@ struct LV2GlobalContext
 
 
         LV2_Worker_Schedule worker{this,
-            [ ] (auto ptr, auto, auto)
+            [ ] (auto ptr, uint32_t s, const void* data)
             {
+                auto& c = *static_cast<LV2GlobalContext*>(ptr);
+                LV2EffectContext* cur = c.host.current;
+                if(cur->worker && !cur->worker_response)
+                {
+                    auto& w = *cur->worker;
+                    if(w.work)
+                    {
+                        w.work(
+                            cur->instance->lv2_handle,
+                            [] (LV2_Worker_Respond_Handle sub_h, uint32_t sub_s, const void* sub_d)
+                            {
+                            return LV2_WORKER_ERR_UNKNOWN;
+                                auto sub_c = static_cast<LV2EffectContext*>(sub_h);
+                                sub_c->worker_data.resize(sub_s);
+                                std::copy_n((const char*) sub_d, sub_s, sub_c->worker_data.data());
+
+                                sub_c->worker_response = true;
+                                return LV2_WORKER_SUCCESS;
+                            }
+                            , cur, s, data);
+                        return LV2_WORKER_SUCCESS;
+                    }
+                }
                 return LV2_WORKER_ERR_UNKNOWN;
             }
         };
@@ -177,7 +207,9 @@ struct LV2GlobalContext
 
         std::vector<LV2_Feature*> lv2_features;
 
-        LV2GlobalContext()
+        LV2GlobalContext(AudioContext& a, LV2HostContext& host):
+            audio{a},
+            host{host}
         {
             options.reserve(8);
 
@@ -185,33 +217,25 @@ struct LV2GlobalContext
                         LV2_OPTIONS_INSTANCE,
                         0,
                         map.map(map.handle, LV2_BUF_SIZE__minBlockLength),
-                        sizeof(block),
+                        sizeof(a.buffer_size),
                         map.map(map.handle, LV2_ATOM__Int),
-                        &block
+                        &a.buffer_size
                         });
             options.push_back(LV2_Options_Option{
                         LV2_OPTIONS_INSTANCE,
                         0,
                         map.map(map.handle, LV2_BUF_SIZE__maxBlockLength),
-                        sizeof(block),
+                        sizeof(a.buffer_size),
                         map.map(map.handle, LV2_ATOM__Int),
-                        &block
-                        });
-            options.push_back(LV2_Options_Option{
-                        LV2_OPTIONS_INSTANCE,
-                        0,
-                        map.map(map.handle, LV2_BUF_SIZE__boundedBlockLength),
-                        sizeof(block),
-                        map.map(map.handle, LV2_ATOM__Int),
-                        &block
+                        &a.buffer_size
                         });
             options.push_back(LV2_Options_Option{
                         LV2_OPTIONS_INSTANCE,
                         0,
                         map.map(map.handle, LV2_CORE__sampleRate),
-                        sizeof(srt),
+                        sizeof(audio.sample_rate),
                         map.map(map.handle, LV2_ATOM__Double),
-                        &srt
+                        &audio.sample_rate
                         });
 
             options.push_back(LV2_Options_Option{
@@ -232,11 +256,11 @@ struct LV2GlobalContext
             lv2_features.push_back(&options_feature);
             lv2_features.push_back(&worker_feature);
             lv2_features.push_back(&logger_feature);
-            lv2_features.push_back(&ext_data_feature);
-            lv2_features.push_back(&ext_port_resize_feature);
-            lv2_features.push_back(&state_make_path_feature);
-            lv2_features.push_back(&state_load_default_feature);
-            lv2_features.push_back(&state_thread_safe_restore_feature);
+            // lv2_features.push_back(&ext_data_feature);
+            // lv2_features.push_back(&ext_port_resize_feature);
+            // lv2_features.push_back(&state_make_path_feature);
+            // lv2_features.push_back(&state_load_default_feature);
+            // lv2_features.push_back(&state_thread_safe_restore_feature);
             lv2_features.push_back(&bounded);
             lv2_features.push_back(&pow2);
             lv2_features.push_back(nullptr); // must be a null-terminated array per LV2 API.
@@ -247,7 +271,7 @@ ApplicationPlugin::ApplicationPlugin(const iscore::GUIApplicationContext& app):
     iscore::GUIApplicationContextPlugin{app},
     m_ctx{*this}
   #if defined(LILV_SHARED)
-  , lv2_context{std::make_unique<LV2GlobalContext>()}
+  , lv2_context{std::make_unique<LV2GlobalContext>(m_ctx, lv2_host_context)}
   , lv2_host_context{nullptr, lv2_context->lv2_features.data(), *lilv.me}
   #endif
 {
@@ -331,6 +355,7 @@ void ApplicationPlugin::startEngine()
 
     m_ctx.renderer = MakeAudioRenderer(api);
     m_ctx.sample_rate = stngs.getRate();
+    m_ctx.buffer_size = stngs.getBufferSize();
     GetAudioRendererInfo(m_ctx.renderer, &m_ctx.renderer_info);
     OpenAudioRenderer(m_ctx.renderer, card, card, 2, 2, stngs.getBufferSize(), stngs.getRate());
 

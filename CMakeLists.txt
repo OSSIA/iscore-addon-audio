@@ -281,6 +281,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 if(TARGET Lilv)
     target_link_libraries(${PROJECT_NAME} PRIVATE Lilv)
+    target_include_directories(${PROJECT_NAME} PRIVATE 3rdparty/readerwriterqueue)
 endif()
 
 target_link_libraries(${PROJECT_NAME}  PUBLIC ${FAUST_LIBRARIES})

@@ -60,7 +60,7 @@ class AddressLabel : public QLabel
 
 };
 
-EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
+EffectSlider::EffectSlider(const ossia::net::node_base& fx, bool is_output, QWidget* parent):
   QWidget{parent},
   m_param{fx}
 {
@@ -77,6 +77,8 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
                      QString::fromStdString(addr->getDescription()),
                      this});
   m_slider = new iscore::DoubleSlider{this};
+  m_slider->setEnabled(!is_output);
+  m_slider->setForegroundRole(QPalette::AlternateBase);
   lay->addWidget(m_slider);
   this->setLayout(lay);
 
@@ -84,18 +86,20 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, QWidget* parent):
   scaledValue = (cur_val - m_min) / (m_max - m_min);
   m_slider->setValue(scaledValue);
 
-  connect(m_slider, &iscore::DoubleSlider::valueChanged,
-          this, [=] (double v)
+  if(!is_output)
   {
-    // TODO undo ???
-    // v is between 0 - 1
-    auto cur = m_param.getAddress()->cloneValue();
-    auto exp = float(m_min + (m_max - m_min) * v);
-    if(ossia::convert<float>(cur) != exp)
-      m_param.getAddress()->pushValue(ossia::Float{exp});
+      connect(m_slider, &iscore::DoubleSlider::valueChanged,
+              this, [=] (double v)
+      {
+          // TODO undo ???
+          // v is between 0 - 1
+          auto cur = m_param.getAddress()->cloneValue();
+          auto exp = float(m_min + (m_max - m_min) * v);
+          if(ossia::convert<float>(cur) != exp)
+              m_param.getAddress()->pushValue(ossia::Float{exp});
 
-  });
-
+      });
+  }
   m_callback = addr->add_callback([=] (const ossia::value& val)
   {
     if(auto v = val.target<ossia::Float>())

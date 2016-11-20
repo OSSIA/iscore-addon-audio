@@ -22,7 +22,7 @@ class EffectSlider : public QWidget
 {
     Q_OBJECT
     public:
-        EffectSlider(const ossia::net::node_base& fx, QWidget* parent);
+        EffectSlider(const ossia::net::node_base& fx, bool is_output, QWidget* parent);
 
         ~EffectSlider();
 
