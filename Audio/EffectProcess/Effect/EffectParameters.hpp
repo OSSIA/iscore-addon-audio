@@ -2,11 +2,24 @@
 #include <QString>
 #include <iterator>
 #include <LibAudioStreamMC++.h>
+#include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
 
 namespace Audio
 {
 namespace Effect
 {
+struct InParameter
+{
+        static auto getControlCount() { return GetControlCountEffect; }
+        static auto getControlParam() { return GetControlParamEffect; }
+};
+
+struct OutParameter
+{
+        static auto getControlCount() { return GetLV2ControlOutCount; }
+        static auto getControlParam() { return GetLV2ControlOutParam; }
+};
+
 struct EffectParameter
 {
         EffectParameter() = default;
@@ -22,11 +35,13 @@ struct EffectParameter
         QString label{};
 };
 
+template<typename T>
 struct AudioEffectParameterAdaptor
 {
         AudioEffect effect;
 };
 
+template<typename T>
 struct EffectParameterIterator final :
     public std::iterator<
         std::input_iterator_tag,
@@ -35,7 +50,7 @@ struct EffectParameterIterator final :
         const EffectParameter*,
         EffectParameter>
 {
-        AudioEffectParameterAdaptor effect;
+        AudioEffectParameterAdaptor<T> effect;
         int64_t num = 0;
         EffectParameter param;
 
@@ -46,7 +61,7 @@ struct EffectParameterIterator final :
         EffectParameterIterator& operator=(EffectParameterIterator&& other) = default;
 
         explicit EffectParameterIterator(
-                AudioEffectParameterAdaptor p,
+                AudioEffectParameterAdaptor<T> p,
                 int64_t n = 0) :
             effect{p}, num{n}, param{readEffect()}
         {
@@ -86,10 +101,10 @@ struct EffectParameterIterator final :
         EffectParameter readEffect()
         {
             EffectParameter e;
-            if(num < GetControlCountEffect(effect.effect))
+            if(num < T::getControlCount()(effect.effect))
             {
                 char buf[512]{};
-                GetControlParamEffect(effect.effect, num, buf, &e.min, &e.max, &e.init);
+                T::getControlParam()(effect.effect, num, buf, &e.min, &e.max, &e.init);
                 e.label = buf;
                 e.id = num;
             }
@@ -97,13 +112,16 @@ struct EffectParameterIterator final :
         }
 };
 
-inline EffectParameterIterator begin(const AudioEffectParameterAdaptor& fx)
+template<typename T>
+auto begin(const AudioEffectParameterAdaptor<T>& fx)
 {
-    return EffectParameterIterator(fx, 0);
+    return EffectParameterIterator<T>(fx, 0);
 }
-inline EffectParameterIterator end(const AudioEffectParameterAdaptor& fx)
+
+template<typename T>
+auto end(const AudioEffectParameterAdaptor<T>& fx)
 {
-    return EffectParameterIterator(fx, GetControlCountEffect(fx.effect));
+    return EffectParameterIterator<T>(fx, T::getControlCount()(fx.effect));
 }
 }
 }

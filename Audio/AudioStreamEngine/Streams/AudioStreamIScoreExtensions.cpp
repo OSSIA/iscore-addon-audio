@@ -49,7 +49,11 @@ AUDIOAPI AudioStream MakeSimpleBufferSound(float **buffer, long length, long cha
 AUDIOAPI SymbolicDate GenPriorisedSymbolicDate(AudioPlayerPtr /*player*/, int64_t prio);
 
 #if defined(LILV_SHARED)
-AUDIOAPI AudioEffect MakeLV2AudioEffect(LV2EffectContext*);
+AUDIOAPI long GetLV2ControlOutCount(AudioEffect effect);
+AUDIOAPI void GetLV2ControlOutParam(AudioEffect effect, long control, char* label, float* min, float* max, float* init);
+AUDIOAPI float GetLV2ControlOutValue(AudioEffect effect, long control);
+
+AUDIOAPI AudioEffect MakeLV2AudioEffect(LV2HostContext* h, LV2EffectContext*);
 #endif
 void CloseAudioPlayer(AudioPlayerPtr ext_player); // In libaudiostreammc
 
@@ -175,13 +179,34 @@ AUDIOAPI SymbolicDate GenPriorisedSymbolicDate(AudioPlayerPtr /*player*/, int64_
 }
 
 #if defined(LILV_SHARED)
-AUDIOAPI AudioEffect MakeLV2AudioEffect(LV2EffectContext* c)
+LV2AudioEffect& get_lv2_fx(const AudioEffect& effect)
+{
+    return *static_cast<LV2AudioEffect*>(static_cast<TAudioEffectInterfacePtr>(effect).getPointer());
+}
+
+AUDIOAPI long GetLV2ControlOutCount(AudioEffect effect)
+{
+    return get_lv2_fx(effect).GetControlOutCount();
+}
+
+AUDIOAPI void GetLV2ControlOutParam(AudioEffect effect, long control, char* label, float* min, float* max, float* init)
+{
+    get_lv2_fx(effect).GetControlOutParam(control, label, min, max, init);
+}
+
+AUDIOAPI float GetLV2ControlOutValue(AudioEffect effect, long control)
+{
+    return get_lv2_fx(effect).GetControlOutValue(control);
+}
+
+
+AUDIOAPI AudioEffect MakeLV2AudioEffect(LV2HostContext* h, LV2EffectContext* c)
 {
     try
     {
-        if(c)
+        if(h && c)
         {
-            LV2Data dat{*c};
+            LV2Data dat{*h, *c};
             if(dat.in_ports.size() == 2 && dat.out_ports.size() == 2)
             {
                 return new StereoLV2AudioEffect{std::move(dat)};

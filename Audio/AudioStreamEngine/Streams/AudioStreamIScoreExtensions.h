@@ -32,8 +32,13 @@ AudioStream MakeIScoreExecutor(AudioStream s, ossia::time_constraint& t);
 AudioStream MakeFixedLoopSound(AudioStream s, long maxlength);
 SymbolicDate GenPriorisedSymbolicDate(AudioPlayerPtr /*player*/, int64_t prio);
 #if defined(LILV_SHARED)
+struct LV2HostContext;
 struct LV2EffectContext;
-AudioEffect MakeLV2AudioEffect(LV2EffectContext*);
+AudioEffect MakeLV2AudioEffect(LV2HostContext* h, LV2EffectContext*);
+long GetLV2ControlOutCount(AudioEffect effect);
+void GetLV2ControlOutParam(AudioEffect effect, long control, char* label, float* min, float* max, float* init);
+float GetLV2ControlOutValue(AudioEffect effect, long control);
+
 #endif
 
 #if defined(__cplusplus) && !defined(_MSC_VER)

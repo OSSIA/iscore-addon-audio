@@ -1,3 +1,6 @@
 [submodule "libaudiostream"]
 	path = 3rdparty/libaudiostream
 	url = https://github.com/jcelerier/libaudiostream
+[submodule "3rdparty/readerwriterqueue"]
+	path = 3rdparty/readerwriterqueue
+	url = https://github.com/cameron314/readerwriterqueue

@@ -1,7 +1,6 @@
 #include "LV2EffectModel.hpp"
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
 #include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
-#include <Audio/AudioStreamEngine/Streams/LV2Context.hpp>
 #include <QUrl>
 #include <QFile>
 
@@ -56,15 +55,15 @@ void LV2EffectModel::reload()
         {
             plugin = plug.me;
             metadata().setLabel(QString(plug.get_name().as_string()));
-            LV2EffectContext ctx{app_plug.lv2_host_context, plug.me};
-            m_effect = MakeLV2AudioEffect(&ctx);
+            effectContext.plugin.me = plug;
+            m_effect = MakeLV2AudioEffect(&app_plug.lv2_host_context, &effectContext);
             return;
         }
         else if(!isFile && QString(plug.get_name().as_string()) == path)
         {
             plugin = plug.me;
-            LV2EffectContext ctx{app_plug.lv2_host_context, plug.me};
-            m_effect = MakeLV2AudioEffect(&ctx);
+            effectContext.plugin.me = plug;
+            m_effect = MakeLV2AudioEffect(&app_plug.lv2_host_context, &effectContext);
             metadata().setLabel(QString(plug.get_name().as_string()));
             return;
         }

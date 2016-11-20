@@ -1,6 +1,7 @@
 #pragma once
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
 #include <lilv/lilvmm.hpp>
+#include <Audio/AudioStreamEngine/Streams/LV2Context.hpp>
 #include <QJsonDocument>
 
 namespace Audio
@@ -58,6 +59,7 @@ class LV2EffectModel :
         { m_effectPath = s; }
 
         const LilvPlugin* plugin{};
+        LV2EffectContext effectContext;
     private:
         void reload();
         QString m_effectPath;

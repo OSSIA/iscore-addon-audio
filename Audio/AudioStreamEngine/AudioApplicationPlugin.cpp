@@ -1,4 +1,4 @@
-#include "AudioApplicationPlugin.hpp"
+﻿#include "AudioApplicationPlugin.hpp"
 #include "AudioDocumentPlugin.hpp"
 #include <core/document/Document.hpp>
 #include <core/document/DocumentModel.hpp>
@@ -56,9 +56,19 @@ int lv2_printf(LV2_Log_Handle handle, LV2_URID type, const char* format, ...)
 struct LV2GlobalContext
 {
         using urid_map_t = boost::bimap<std::string, LV2_URID>;
+
+        std::vector<LV2_Options_Option> options;
+
+        int32_t block = 512;
+
+        double srt = 44100;
+
         LV2_URID urid_map_cur = 1;
         urid_map_t urid_map;
-        LV2_URID_Map map{this, [] (auto ptr, auto val) {
+
+        LV2_URID_Map map{this,
+            [] (auto ptr, auto val)
+            {
                 auto& c = *static_cast<LV2GlobalContext*>(ptr);
                 auto& map = c.urid_map.left;
 
@@ -75,8 +85,12 @@ struct LV2GlobalContext
                     c.urid_map_cur++;
                     return n;
                 }
-            }};
-        LV2_URID_Unmap unmap{this, [] (auto ptr, auto val) {
+            }
+        };
+
+        LV2_URID_Unmap unmap{this,
+            [] (auto ptr, auto val)
+            {
                 auto& c = *static_cast<LV2GlobalContext*>(ptr);
                 auto& map = c.urid_map.right;
 
@@ -89,34 +103,77 @@ struct LV2GlobalContext
                 {
                     return (const char*) nullptr;
                 }
-            }};
+            }
+        };
 
         LV2_Event_Feature event{this,
-                                [] (auto ptr, auto cb) -> uint32_t { ISCORE_TODO; return 0; },
-                                [] (auto ptr, auto cb) -> uint32_t { ISCORE_TODO; return 0; }
-                               };
-        std::vector<LV2_Options_Option> options;
+            [] (auto ptr, auto cb) -> uint32_t
+            {
+                ISCORE_TODO;
+                return 0;
+            },
+            [] (auto ptr, auto cb) -> uint32_t
+            {
+                ISCORE_TODO;
+                return 0;
+            }
+        };
 
-        int32_t block = 512;
 
-        double srt = 44100;
+        LV2_Worker_Schedule worker{this,
+            [ ] (auto ptr, auto, auto)
+            {
+                return LV2_WORKER_ERR_UNKNOWN;
+            }
+        };
+        LV2_Worker_Schedule worker_state{this,
+            [ ] (auto ptr, auto, auto)
+            {
+                return LV2_WORKER_ERR_UNKNOWN;
+            }
+        };
 
-        LV2_Worker_Schedule worker{this, [ ] (auto ptr, auto, auto) { return LV2_WORKER_ERR_UNKNOWN; }};
+        LV2_Log_Log logger{this, lv2_printf,
+            [] (auto h, auto t, auto fmt, auto lst)
+            {
+                return std::vprintf(fmt, lst);
+            }
+        };
 
-        LV2_Log_Log logger{this, lv2_printf, [] (auto h, auto t, auto fmt, auto lst) { return std::vprintf(fmt, lst); } };
+        LV2_Extension_Data_Feature ext_data{nullptr};
 
-        LV2_Extension_Data_Feature ext_data{[] (auto dat) -> const void* { return nullptr; }};
 
-        LV2_Resize_Port_Resize ext_port_resize{this, [] (LV2_Resize_Port_Feature_Data data, uint32_t index, size_t size) { return LV2_RESIZE_PORT_ERR_UNKNOWN; }};
+        LV2_Resize_Port_Resize ext_port_resize{this,
+            [] (LV2_Resize_Port_Feature_Data data, uint32_t index, size_t size)
+            {
+                return LV2_RESIZE_PORT_ERR_UNKNOWN;
+            }
+        };
+
+        LV2_State_Make_Path state_make_path{this,
+            [] (LV2_State_Make_Path_Handle, const char*) -> char*
+            {
+                ISCORE_TODO;
+                return nullptr;
+            }
+        };
 
         LV2_Feature map_feature{LV2_URID__map, &map};
         LV2_Feature unmap_feature{LV2_URID__unmap, &unmap};
         LV2_Feature event_feature{LV2_EVENT_URI, &event};
         LV2_Feature options_feature{LV2_OPTIONS__options, nullptr};
         LV2_Feature worker_feature{LV2_WORKER__schedule, &worker};
+        LV2_Feature worker_state_feature{LV2_WORKER__schedule, &worker};
         LV2_Feature logger_feature{LV2_LOG__log, &logger};
         LV2_Feature ext_data_feature{LV2_DATA_ACCESS_URI, &ext_data};
         LV2_Feature ext_port_resize_feature{LV2_RESIZE_PORT_URI, &ext_port_resize};
+        LV2_Feature state_make_path_feature{LV2_STATE__makePath, &state_make_path};
+
+        LV2_Feature state_load_default_feature{LV2_STATE__loadDefaultState, nullptr};
+        LV2_Feature state_thread_safe_restore_feature{LV2_STATE__threadSafeRestore, nullptr};
+
+        LV2_Feature bounded{LV2_BUF_SIZE__boundedBlockLength, nullptr};
+        LV2_Feature pow2{LV2_BUF_SIZE__powerOf2BlockLength, nullptr};
 
         std::vector<LV2_Feature*> lv2_features;
 
@@ -177,6 +234,11 @@ struct LV2GlobalContext
             lv2_features.push_back(&logger_feature);
             lv2_features.push_back(&ext_data_feature);
             lv2_features.push_back(&ext_port_resize_feature);
+            lv2_features.push_back(&state_make_path_feature);
+            lv2_features.push_back(&state_load_default_feature);
+            lv2_features.push_back(&state_thread_safe_restore_feature);
+            lv2_features.push_back(&bounded);
+            lv2_features.push_back(&pow2);
             lv2_features.push_back(nullptr); // must be a null-terminated array per LV2 API.
         }
 };
