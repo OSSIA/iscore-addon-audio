@@ -59,7 +59,7 @@ void EffectComponent::recreate()
         auto param_node = m_parametersNode.createChild(str_label);
         auto param_addr = param_node->createAddress(ossia::val_type::FLOAT);
         param_addr->setAccessMode(ossia::access_mode::BI);
-        param_addr->setDomain(ossia::net::make_domain(ossia::Float{parameter.min}, ossia::Float{parameter.max}));
+        param_addr->setDomain(ossia::net::make_domain(float{parameter.min}, float{parameter.max}));
         param_addr->setDescription(str_label);
 
         // Set value to current value of fx
@@ -70,15 +70,15 @@ void EffectComponent::recreate()
             if(!fx)
                 return;
 
-            auto current_val = val.get<ossia::Float>();
+            auto current_val = val.get<float>();
             SetControlValueEffect(fx, num, current_val);
         });
 
         const auto& p = effect.savedParams();
         if(parameter.id < p.size())
-            param_addr->pushValue(ossia::Float{p[parameter.id]});
+            param_addr->pushValue(float{p[parameter.id]});
         else
-            param_addr->pushValue(ossia::Float{parameter.init});
+            param_addr->pushValue(float{parameter.init});
 
         m_inAddresses.push_back(std::make_pair(parameter.id, param_addr));
 
@@ -99,10 +99,10 @@ void EffectComponent::recreate()
             auto param_node = m_parametersNode.createChild(str_label);
             auto param_addr = param_node->createAddress(ossia::val_type::FLOAT);
             param_addr->setAccessMode(ossia::access_mode::GET);
-            param_addr->setDomain(ossia::net::make_domain(ossia::Float{parameter.min}, ossia::Float{parameter.max}));
+            param_addr->setDomain(ossia::net::make_domain(float{parameter.min}, float{parameter.max}));
             param_addr->setDescription(str_label);
 
-            param_addr->pushValue(ossia::Float{GetLV2ControlOutValue(fx, parameter.id)});
+            param_addr->pushValue(float{GetLV2ControlOutValue(fx, parameter.id)});
             m_outAddresses.push_back(std::make_pair(parameter.id, param_addr));
         }
 
@@ -115,7 +115,7 @@ void EffectComponent::recreate()
 
                 for(auto p : m_outAddresses)
                 {
-                    p.second->pushValue(ossia::Float{GetLV2ControlOutValue(fx, p.first)});
+                    p.second->pushValue(float{GetLV2ControlOutValue(fx, p.first)});
                 }
             };
         }

@@ -68,8 +68,8 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, bool is_output, QWid
 
   auto dom = addr->getDomain();
 
-  if(auto f = dom.maybe_min<ossia::Float>()) m_min = *f;
-  if(auto f = dom.maybe_max<ossia::Float>()) m_max = *f;
+  if(auto f = dom.maybe_min<float>()) m_min = *f;
+  if(auto f = dom.maybe_max<float>()) m_max = *f;
 
   auto lay = new iscore::MarginLess<QVBoxLayout>;
   lay->addWidget(new AddressLabel{
@@ -96,13 +96,13 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, bool is_output, QWid
           auto cur = m_param.getAddress()->cloneValue();
           auto exp = float(m_min + (m_max - m_min) * v);
           if(ossia::convert<float>(cur) != exp)
-              m_param.getAddress()->pushValue(ossia::Float{exp});
+              m_param.getAddress()->pushValue(float{exp});
 
       });
   }
   m_callback = addr->add_callback([=] (const ossia::value& val)
   {
-    if(auto v = val.target<ossia::Float>())
+    if(auto v = val.target<float>())
     {
       scaledValue = (*v - m_min) / (m_max - m_min);
      // if(scaled != m_slider->value()) // TODO qFuzzyCompare instead

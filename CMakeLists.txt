@@ -267,6 +267,7 @@ if(TARGET Lilv)
 endif()
 add_library(${PROJECT_NAME} ${SRCS} ${HDRS} ${QRCS} ${LV2_SRCS})
 set_property(TARGET ${PROJECT_NAME}  PROPERTY COTIRE_ADD_UNITY_BUILD FALSE)
+set_property(TARGET ${PROJECT_NAME}  PROPERTY ISCORE_TARGET_NO_LTO TRUE)
 
 
 iscore_generate_command_list_file(${PROJECT_NAME} "${HDRS}")

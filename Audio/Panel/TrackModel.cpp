@@ -43,7 +43,7 @@ bool TrackModel::removeRows(int row, int count, const QModelIndex &parent) {
 
 QVariant TrackModel::data(const QModelIndex &index, int role) const {
     int i = index.row();
-    if (i < m_data.size() && i >= 0) {
+    if (i < (int)m_data.size() && i >= 0) {
         Track t = m_data[i];
         switch (role) {
         case VolRole:

@@ -8,7 +8,7 @@
 namespace Audio {
 namespace Panel {
 
-class TrackModel : public QAbstractListModel {
+class TrackModel final : public QAbstractListModel {
     Q_OBJECT
 public:
     TrackModel(QObject* parent = 0);
