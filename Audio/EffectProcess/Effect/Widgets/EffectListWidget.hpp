@@ -18,7 +18,7 @@ namespace Effect
 class EffectWidget;
 class ProcessModel;
 class EffectModel;
-class EffectListWidget :
+class EffectListWidget final :
         public QWidget,
         public Nano::Observer
 {

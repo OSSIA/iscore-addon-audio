@@ -20,7 +20,7 @@ class EffectSlider;
  * Controls for a single effect.
  * Show a list of sliders for each declared parameter.
  */
-class EffectWidget :
+class EffectWidget final :
         public QFrame,
         public Nano::Observer
 {
