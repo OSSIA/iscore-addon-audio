@@ -41,9 +41,11 @@ class EffectComponent :
         void aboutToBeDestroyed();
 
     protected:
+        void on_nodeDeleted(const ossia::net::node_base&);
+
         ossia::net::node_base& m_parametersNode;
-        std::vector<std::pair<int32_t, ossia::net::address_base*>> m_inAddresses;
-        std::vector<std::pair<int32_t, ossia::net::address_base*>> m_outAddresses;
+        std::vector<std::tuple<int32_t, ossia::net::address_base*, ossia::net::node_base*>> m_inAddresses;
+        std::vector<std::tuple<int32_t, ossia::net::address_base*, ossia::net::node_base*>> m_outAddresses;
 };
 
 }

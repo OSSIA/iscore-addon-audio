@@ -6,7 +6,7 @@
 #include <QMimeData>
 #include <QDrag>
 #include <QTimer>
-
+#include <QApplication>
 #include <iscore/widgets/DoubleSlider.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp>
 #include <Scenario/Commands/Constraint/AddLayerInNewSlot.hpp>
@@ -123,6 +123,8 @@ void EffectWidget::on_createAutomation(const State::Address& addr, double min, d
 void EffectWidget::setup()
 {
     m_timer.stop();
+    QApplication::processEvents();
+
     iscore::clearLayout(m_layout);
     m_sliders.clear();
 
@@ -132,16 +134,16 @@ void EffectWidget::setup()
 
     for(auto& param_addr : comp->inAddresses())
     {
-            auto slider = new EffectSlider{param_addr.second->getNode(), false, this};
-            m_sliders.push_back(slider);
-            connect(slider, &EffectSlider::createAutomation,
-                    this, &EffectWidget::on_createAutomation,
-                    Qt::QueuedConnection);
+        auto slider = new EffectSlider{*std::get<2>(param_addr), false, this};
+        m_sliders.push_back(slider);
+        connect(slider, &EffectSlider::createAutomation,
+                this, &EffectWidget::on_createAutomation,
+                Qt::QueuedConnection);
     }
 
     for(auto& param_addr : comp->outAddresses())
     {
-        auto slider = new EffectSlider{param_addr.second->getNode(), true, this};
+        auto slider = new EffectSlider{*std::get<2>(param_addr), true, this};
         m_sliders.push_back(slider);
         connect(slider, &EffectSlider::createAutomation,
                 this, &EffectWidget::on_createAutomation,

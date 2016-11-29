@@ -64,6 +64,8 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, bool is_output, QWid
   QWidget{parent},
   m_param{fx}
 {
+  m_param.aboutToBeDeleted.connect<EffectSlider, &EffectSlider::on_paramDeleted>(this);
+
   auto addr = m_param.getAddress();
 
   auto dom = addr->getDomain();
@@ -91,6 +93,7 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, bool is_output, QWid
       connect(m_slider, &iscore::DoubleSlider::valueChanged,
               this, [=] (double v)
       {
+          ISCORE_ASSERT(!m_paramIsDead);
           // TODO undo ???
           // v is between 0 - 1
           auto cur = m_param.getAddress()->cloneValue();
@@ -113,6 +116,7 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, bool is_output, QWid
   m_addAutomAction = new QAction{tr("Add automation"), this};
   connect(m_addAutomAction, &QAction::triggered,
           this, [=] () {
+    ISCORE_ASSERT(!m_paramIsDead);
     auto& ossia_addr = *m_param.getAddress();
     auto& dom = ossia_addr.getDomain();
     auto addr = State::parseAddress(QString::fromStdString(ossia::net::address_string_from_node(ossia_addr)));
@@ -129,10 +133,13 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, bool is_output, QWid
 
 EffectSlider::~EffectSlider()
 {
-  if(auto addr = m_param.getAddress())
-  {
-    addr->remove_callback(m_callback);
-  }
+    if(!m_paramIsDead)
+    {
+        if(auto addr = m_param.getAddress())
+        {
+          addr->remove_callback(m_callback);
+        }
+    }
 }
 
 void EffectSlider::contextMenuEvent(QContextMenuEvent* event)
@@ -143,6 +150,16 @@ void EffectSlider::contextMenuEvent(QContextMenuEvent* event)
   contextMenu->exec(event->globalPos());
 
   contextMenu->deleteLater();
+}
+
+void EffectSlider::on_paramDeleted(const ossia::net::node_base&)
+{
+    if(auto addr = m_param.getAddress())
+    {
+      addr->remove_callback(m_callback);
+    }
+
+    m_paramIsDead = true;
 }
 
 }

@@ -18,7 +18,9 @@ namespace Audio
 {
 namespace Effect
 {
-class EffectSlider : public QWidget
+class EffectSlider :
+        public QWidget,
+        public Nano::Observer
 {
     Q_OBJECT
     public:
@@ -33,6 +35,7 @@ class EffectSlider : public QWidget
 
     private:
         void contextMenuEvent(QContextMenuEvent* event) override;
+        void on_paramDeleted(const ossia::net::node_base&);
 
         const ossia::net::node_base& m_param;
         ossia::net::address_base::callback_index m_callback;
@@ -40,6 +43,7 @@ class EffectSlider : public QWidget
         float m_max{1.};
 
         QAction* m_addAutomAction{};
+        bool m_paramIsDead{false};
 };
 }
 }

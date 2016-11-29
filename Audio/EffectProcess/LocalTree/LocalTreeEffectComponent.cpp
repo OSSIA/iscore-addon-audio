@@ -57,6 +57,8 @@ void EffectComponent::recreate()
         auto str_label = parameter.label.toStdString();
         // Create the node
         auto param_node = m_parametersNode.createChild(str_label);
+
+        param_node->aboutToBeDeleted.connect<EffectComponent, &EffectComponent::on_nodeDeleted>(this);
         auto param_addr = param_node->createAddress(ossia::val_type::FLOAT);
         param_addr->setAccessMode(ossia::access_mode::BI);
         param_addr->setDomain(ossia::net::make_domain(float{parameter.min}, float{parameter.max}));
@@ -80,7 +82,7 @@ void EffectComponent::recreate()
         else
             param_addr->pushValue(float{parameter.init});
 
-        m_inAddresses.push_back(std::make_pair(parameter.id, param_addr));
+        m_inAddresses.push_back(std::make_tuple(parameter.id, param_addr, param_node));
 
     }
 
@@ -97,13 +99,14 @@ void EffectComponent::recreate()
             auto str_label = parameter.label.toStdString();
             // Create the node
             auto param_node = m_parametersNode.createChild(str_label);
+            param_node->aboutToBeDeleted.connect<EffectComponent, &EffectComponent::on_nodeDeleted>(this);
             auto param_addr = param_node->createAddress(ossia::val_type::FLOAT);
             param_addr->setAccessMode(ossia::access_mode::GET);
             param_addr->setDomain(ossia::net::make_domain(float{parameter.min}, float{parameter.max}));
             param_addr->setDescription(str_label);
 
             param_addr->pushValue(float{GetLV2ControlOutValue(fx, parameter.id)});
-            m_outAddresses.push_back(std::make_pair(parameter.id, param_addr));
+            m_outAddresses.push_back(std::make_tuple(parameter.id, param_addr, param_node));
         }
 
         if(GetLV2ControlOutCount(fx) > 0)
@@ -115,13 +118,36 @@ void EffectComponent::recreate()
 
                 for(auto p : m_outAddresses)
                 {
-                    p.second->pushValue(float{GetLV2ControlOutValue(fx, p.first)});
+                    std::get<1>(p)->pushValue(float{GetLV2ControlOutValue(fx, std::get<0>(p))});
                 }
             };
         }
     }
     emit effectTreeChanged();
 
+}
+
+void EffectComponent::on_nodeDeleted(const ossia::net::node_base& n)
+{
+    auto finder = [&] (const auto& pair) {
+        return std::get<2>(pair)== &n;
+    };
+
+    auto in_it = ossia::find_if(m_inAddresses, finder);
+
+    if(in_it != m_inAddresses.end())
+    {
+        m_inAddresses.erase(in_it);
+    }
+    else
+    {
+        auto out_it = ossia::find_if(m_outAddresses, finder);
+
+        if(out_it != m_outAddresses.end())
+        {
+            m_outAddresses.erase(out_it);
+        }
+    }
 }
 
 }
