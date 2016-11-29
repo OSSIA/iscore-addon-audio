@@ -33,6 +33,14 @@ EffectComponent::EffectComponent(
 
 EffectComponent::~EffectComponent()
 {
+    for(const auto& tpl : m_inAddresses)
+    {
+        std::get<2>(tpl)->aboutToBeDeleted.disconnect<EffectComponent, &EffectComponent::on_nodeDeleted>(this);
+    }
+    for(const auto& tpl : m_outAddresses)
+    {
+        std::get<2>(tpl)->aboutToBeDeleted.disconnect<EffectComponent, &EffectComponent::on_nodeDeleted>(this);
+    }
     emit aboutToBeDestroyed();
 }
 

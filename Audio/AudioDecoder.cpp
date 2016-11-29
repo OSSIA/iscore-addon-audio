@@ -50,7 +50,7 @@ AudioArray AudioDecoder::readAudio(const QString& path)
     std::atomic_bool timeout{false};
     QTimer::singleShot(5000, [&] () { timeout = true; });
     while(!s.ready && !timeout)
-        qApp->processEvents();
+        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 
     if(s.decoder.error() != QAudioDecoder::NoError)
         qDebug() << s.decoder.errorString();

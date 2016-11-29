@@ -2,10 +2,6 @@ cmake_minimum_required(VERSION 3.1)
 project(iscore_plugin_audio LANGUAGES CXX)
 
 # Dependencies
-# Disabled due to LLVMc
-if(ISCORE_SANITIZE)
-    return()
-endif()
 
 if(NOT TARGET iscore_plugin_engine)
     return()
@@ -268,6 +264,7 @@ endif()
 add_library(${PROJECT_NAME} ${SRCS} ${HDRS} ${QRCS} ${LV2_SRCS})
 set_property(TARGET ${PROJECT_NAME}  PROPERTY COTIRE_ADD_UNITY_BUILD FALSE)
 set_property(TARGET ${PROJECT_NAME}  PROPERTY ISCORE_TARGET_NO_LTO TRUE)
+set_property(TARGET ${PROJECT_NAME}  PROPERTY ISCORE_TARGET_NO_SANITIZE TRUE)
 
 
 iscore_generate_command_list_file(${PROJECT_NAME} "${HDRS}")

@@ -123,7 +123,6 @@ void EffectWidget::on_createAutomation(const State::Address& addr, double min, d
 void EffectWidget::setup()
 {
     m_timer.stop();
-    QApplication::processEvents();
 
     iscore::clearLayout(m_layout);
     m_sliders.clear();
