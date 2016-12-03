@@ -38,8 +38,8 @@ class MixWidget : public QWidget
 
         const iscore::CommandStackFacade& m_dispatcher;
 
-        std::unordered_map<Routing, RoutingTableWidget*> m_routings;
-        std::unordered_map<DirectMix, DirectMixTableWidget*> m_directs;
+        iscore::hash_map<Routing, RoutingTableWidget*> m_routings;
+        iscore::hash_map<DirectMix, DirectMixTableWidget*> m_directs;
 
 };
 
