@@ -1,5 +1,5 @@
 #pragma once
-#include <iscore/plugins/documentdelegate/plugin/DocumentDelegatePluginModel.hpp>
+#include <iscore/plugins/documentdelegate/plugin/DocumentPlugin.hpp>
 #include <core/document/Document.hpp>
 #include <Audio/AudioStreamEngine/Context.hpp>
 #include <Process/TimeValue.hpp>
