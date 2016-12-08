@@ -116,7 +116,7 @@ void ProcessModel::init()
 
 void ProcessModel::on_processAdded(const Process::ProcessModel & proc)
 {
-    auto fac = iscore::AppContext().components.factory<Audio::AudioStreamEngine::ProcessComponentFactoryList>().factory(proc);
+    auto fac = iscore::AppContext().interfaces<Audio::AudioStreamEngine::ProcessComponentFactoryList>().factory(proc);
     if(!fac)
         return;
 
@@ -185,7 +185,7 @@ void ProcessModel::on_processAdded(const Process::ProcessModel & proc)
 void ProcessModel::on_processRemoved(const Process::ProcessModel & proc)
 {
     auto proc_id = proc.id();
-    auto fac = iscore::AppContext().components.factory<Audio::AudioStreamEngine::ProcessComponentFactoryList>().factory(proc);
+    auto fac = iscore::AppContext().interfaces<Audio::AudioStreamEngine::ProcessComponentFactoryList>().factory(proc);
     if(!fac)
         return;
 

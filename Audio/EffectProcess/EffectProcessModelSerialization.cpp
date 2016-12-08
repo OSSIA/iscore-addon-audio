@@ -18,7 +18,7 @@ void Visitor<Writer<DataStream>>::writeTo(Audio::Effect::ProcessModel& proc)
     int32_t n = 0;
     m_stream >> n;
 
-    auto& fxs = components.factory<Audio::Effect::EffectFactoryList>();
+    auto& fxs = components.interfaces<Audio::Effect::EffectFactoryList>();
     for(int i = 0; i < n ; i++)
     {
         auto fx = deserialize_interface(fxs, *this, &proc);
@@ -45,7 +45,7 @@ template<>
 void Visitor<Writer<JSONObject>>::writeTo(Audio::Effect::ProcessModel& proc)
 {
     QJsonArray fx_array = m_obj["Effects"].toArray();
-    auto& fxs = components.factory<Audio::Effect::EffectFactoryList>();
+    auto& fxs = components.interfaces<Audio::Effect::EffectFactoryList>();
     int i = 0;
     for(const auto& json_vref : fx_array)
     {

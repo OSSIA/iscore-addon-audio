@@ -35,7 +35,7 @@ static void createSoundProcesses(
         // Create sound process
         auto process_cmd = new Scenario::Command::AddOnlyProcessToConstraint{
                     constraint,
-                    Metadata<ConcreteFactoryKey_k, Audio::Sound::ProcessModel>::get()};
+                    Metadata<ConcreteKey_k, Audio::Sound::ProcessModel>::get()};
         m.submitCommand(process_cmd);
 
         // Set process file

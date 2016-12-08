@@ -55,9 +55,9 @@ std::pair<const CommandParentFactoryKey, CommandGeneratorMap> iscore_plugin_audi
     return cmds;
 }
 
-std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> iscore_plugin_audio::factories(
+std::vector<std::unique_ptr<iscore::InterfaceBase>> iscore_plugin_audio::factories(
         const iscore::ApplicationContext& ctx,
-        const iscore::AbstractFactoryKey& key) const
+        const iscore::InterfaceKey& key) const
 {
     return instantiate_factories<
             iscore::ApplicationContext,
@@ -130,9 +130,9 @@ iscore::GUIApplicationContextPlugin*iscore_plugin_audio::make_applicationPlugin(
     return new Audio::AudioStreamEngine::ApplicationPlugin{app};
 }
 
-std::vector<std::unique_ptr<iscore::FactoryListInterface> > iscore_plugin_audio::factoryFamilies()
+std::vector<std::unique_ptr<iscore::InterfaceListBase> > iscore_plugin_audio::factoryFamilies()
 {
-    return make_ptr_vector<iscore::FactoryListInterface,
+    return make_ptr_vector<iscore::InterfaceListBase,
             Audio::AudioStreamEngine::ProcessComponentFactoryList,
             Audio::Effect::EffectFactoryList>();
 }

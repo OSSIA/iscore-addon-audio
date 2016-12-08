@@ -43,7 +43,7 @@ void LV2EffectModel::reload()
             path.append('/');
     }
 
-    auto& app_plug = iscore::AppContext().components.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>();
+    auto& app_plug = iscore::AppContext().applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>();
     auto& world = app_plug.lilv;
 
     auto plugs = world.get_all_plugins();
