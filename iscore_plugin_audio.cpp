@@ -42,10 +42,10 @@
 #if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
 #include <Audio/EffectProcess/LV2/LV2EffectModel.hpp>
 #endif
-std::pair<const CommandParentFactoryKey, CommandGeneratorMap> iscore_plugin_audio::make_commands()
+std::pair<const CommandGroupKey, CommandGeneratorMap> iscore_plugin_audio::make_commands()
 {
     using namespace Audio::Commands;
-    std::pair<const CommandParentFactoryKey, CommandGeneratorMap> cmds{Audio::CommandFactoryName(), CommandGeneratorMap{}};
+    std::pair<const CommandGroupKey, CommandGeneratorMap> cmds{Audio::CommandFactoryName(), CommandGeneratorMap{}};
 
     using Types = TypeList<
 #include <iscore_plugin_audio_commands.hpp>

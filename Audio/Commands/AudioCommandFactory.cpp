@@ -1,8 +1,8 @@
 #include "AudioCommandFactory.hpp"
 namespace Audio
 {
-const CommandParentFactoryKey& CommandFactoryName() {
-    static const CommandParentFactoryKey key{"Audio"};
+const CommandGroupKey& CommandFactoryName() {
+    static const CommandGroupKey key{"Audio"};
     return key;
 }
 }

@@ -3,6 +3,6 @@
 #include <iscore_plugin_scenario_export.h>
 
 namespace Audio {
-const CommandParentFactoryKey& CommandFactoryName();
+const CommandGroupKey& CommandFactoryName();
 
 }
