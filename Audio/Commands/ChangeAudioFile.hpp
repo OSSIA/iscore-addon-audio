@@ -1,5 +1,5 @@
 #pragma once
-#include <iscore/command/SerializableCommand.hpp>
+#include <iscore/command/Command.hpp>
 #include <Audio/Commands/AudioCommandFactory.hpp>
 #include <Audio/MediaFileHandle.hpp>
 #include <iscore/tools/ModelPath.hpp>
@@ -11,7 +11,7 @@ class ProcessModel;
 
 namespace Commands
 {
-class ChangeAudioFile final : public iscore::SerializableCommand
+class ChangeAudioFile final : public iscore::Command
 {
            ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), ChangeAudioFile, "Change audio file")
     public:

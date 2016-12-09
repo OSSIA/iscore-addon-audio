@@ -1,7 +1,7 @@
 #include "CardSettingsPresenter.hpp"
 #include "CardSettingsModel.hpp"
 #include "CardSettingsView.hpp"
-#include <iscore/command/SerializableCommand.hpp>
+#include <iscore/command/Command.hpp>
 #include <iscore/command/Dispatchers/ICommandDispatcher.hpp>
 #include <QApplication>
 #include <QStyle>
