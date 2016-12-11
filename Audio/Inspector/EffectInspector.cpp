@@ -115,7 +115,7 @@ InspectorWidget::InspectorWidget(
     auto add_lv2 = new QPushButton{tr("Add (LV2)")};
     connect(add_lv2, &QPushButton::pressed,
             this, [=] () {
-        auto& world = iscore::AppContext().applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().lilv;
+        auto& world = iscore::AppComponents().applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().lilv;
 
         auto plugs = world.get_all_plugins();
 

@@ -14,7 +14,7 @@ class Track;
 class TrackListPanel final: public iscore::PanelDelegate
 {
     public:
-        TrackListPanel(const iscore::ApplicationContext &ctx);
+        TrackListPanel(const iscore::GUIApplicationContext &ctx);
 
     private:
         QWidget* widget() override;

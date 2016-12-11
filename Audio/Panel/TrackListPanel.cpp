@@ -10,7 +10,7 @@
 namespace Audio {
 namespace Panel {
 
-TrackListPanel::TrackListPanel(const iscore::ApplicationContext &ctx):
+TrackListPanel::TrackListPanel(const iscore::GUIApplicationContext &ctx):
     iscore::PanelDelegate{ctx},
     m_widget{new QWidget},
     m_trackModel(new TrackModel),

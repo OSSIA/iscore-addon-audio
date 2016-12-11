@@ -10,7 +10,7 @@ class TrackListPanelFactory final :
     ISCORE_CONCRETE("51fb68e6-d7ed-48df-95c5-09c7482da61f")
 
     std::unique_ptr<iscore::PanelDelegate> make(
-            const iscore::ApplicationContext& ctx) override;
+            const iscore::GUIApplicationContext& ctx) override;
 };
 
 }
