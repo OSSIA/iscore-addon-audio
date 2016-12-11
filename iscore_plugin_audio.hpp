@@ -32,14 +32,14 @@ class iscore_plugin_audio final:
                 const iscore::GUIApplicationContext& app) override;
 
 
-        std::vector<std::unique_ptr<iscore::FactoryListInterface>> factoryFamilies() override;
+        std::vector<std::unique_ptr<iscore::InterfaceListBase>> factoryFamilies() override;
 
-        std::vector<std::unique_ptr<iscore::FactoryInterfaceBase>> factories(
+        std::vector<std::unique_ptr<iscore::InterfaceBase>> factories(
                 const iscore::ApplicationContext& ctx,
-                const iscore::AbstractFactoryKey& factoryName) const override;
+                const iscore::InterfaceKey& factoryName) const override;
 
         // CommandFactory_QtInterface interface
-        std::pair<const CommandParentFactoryKey, CommandGeneratorMap> make_commands() override;
+        std::pair<const CommandGroupKey, CommandGeneratorMap> make_commands() override;
 
         iscore::Version version() const override;
         UuidKey<iscore::Plugin> key() const override;

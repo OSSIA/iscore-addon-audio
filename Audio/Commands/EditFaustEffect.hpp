@@ -1,5 +1,5 @@
 #pragma once
-#include <iscore/command/SerializableCommand.hpp>
+#include <iscore/command/Command.hpp>
 #include <Audio/Commands/AudioCommandFactory.hpp>
 #include <iscore/tools/ModelPath.hpp>
 
@@ -11,7 +11,7 @@ class FaustEffectModel;
 
 namespace Commands
 {
-class EditFaustEffect final : public iscore::SerializableCommand
+class EditFaustEffect final : public iscore::Command
 {
            ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), EditFaustEffect, "Edit Faust effect")
     public:

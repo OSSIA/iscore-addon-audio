@@ -27,7 +27,7 @@ struct DroppedAudioFiles
 class DropHandler final :
         public Scenario::DropHandler
 {
-        ISCORE_CONCRETE_FACTORY("bc57983b-c29e-4b12-8afe-9d6ffbcb7a94")
+        ISCORE_CONCRETE("bc57983b-c29e-4b12-8afe-9d6ffbcb7a94")
 
         bool handle(
                  const Scenario::TemporalScenarioPresenter &,
@@ -48,7 +48,7 @@ class DropHandler final :
 class ConstraintDropHandler final :
         public Scenario::ConstraintDropHandler
 {
-        ISCORE_CONCRETE_FACTORY("edbc884b-96cc-4b59-998c-2f48941a7b6a")
+        ISCORE_CONCRETE("edbc884b-96cc-4b59-998c-2f48941a7b6a")
 
         bool handle(
                  const Scenario::ConstraintModel&,

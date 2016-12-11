@@ -1,5 +1,5 @@
 #pragma once
-#include <iscore/command/SerializableCommand.hpp>
+#include <iscore/command/Command.hpp>
 #include <Audio/Commands/AudioCommandFactory.hpp>
 #include <iscore/tools/ModelPath.hpp>
 
@@ -13,7 +13,7 @@ class EffectFactory;
 
 namespace Commands
 {
-class InsertEffect final : public iscore::SerializableCommand
+class InsertEffect final : public iscore::Command
 {
            ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), InsertEffect, "Insert effect")
     public:
@@ -40,7 +40,7 @@ class InsertEffect final : public iscore::SerializableCommand
 
 
 // MOVEME
-class RemoveEffect final : public iscore::SerializableCommand
+class RemoveEffect final : public iscore::Command
 {
            ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), RemoveEffect, "Remove effect")
     public:
@@ -63,7 +63,7 @@ class RemoveEffect final : public iscore::SerializableCommand
 };
 
 
-class MoveEffect final : public iscore::SerializableCommand
+class MoveEffect final : public iscore::Command
 {
            ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), MoveEffect, "Move effect")
     public:

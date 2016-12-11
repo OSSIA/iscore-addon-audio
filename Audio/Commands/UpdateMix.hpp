@@ -1,5 +1,5 @@
 #pragma once
-#include <iscore/command/SerializableCommand.hpp>
+#include <iscore/command/Command.hpp>
 #include <Audio/Commands/AudioCommandFactory.hpp>
 #include <iscore/tools/ModelPath.hpp>
 #include <Audio/MixProcess/Mix.hpp>
@@ -18,7 +18,7 @@ class ProcessModel;
 
 namespace Commands
 {
-class UpdateRouting final : public iscore::SerializableCommand
+class UpdateRouting final : public iscore::Command
 {
            ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), UpdateRouting, "Update routing")
     public:
@@ -45,7 +45,7 @@ class UpdateRouting final : public iscore::SerializableCommand
         Mix::Routing m_old, m_new;
 };
 
-class UpdateDirect final : public iscore::SerializableCommand
+class UpdateDirect final : public iscore::Command
 {
            ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), UpdateDirect, "Update direct")
     public:

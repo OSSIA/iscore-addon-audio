@@ -101,7 +101,7 @@ void EffectWidget::on_createAutomation(const State::Address& addr, double min, d
             RedoMacroCommandDispatcher<Commands::CreateEffectAutomation> macro{m_context.commandStack};
             auto make_cmd = new Scenario::Command::AddOnlyProcessToConstraint{
                         *cst,
-                        Metadata<ConcreteFactoryKey_k, Automation::ProcessModel>::get()};
+                        Metadata<ConcreteKey_k, Automation::ProcessModel>::get()};
             macro.submitCommand(make_cmd);
 
             auto lay_cmd = new Scenario::Command::AddLayerInNewSlot{*cst, make_cmd->processId()};

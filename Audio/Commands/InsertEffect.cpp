@@ -31,7 +31,7 @@ void InsertEffect::undo() const
 void InsertEffect::redo() const
 {
     auto& process = m_model.find();
-    auto& fact_list = context.components.factory<Effect::EffectFactoryList>();
+    auto& fact_list = context.interfaces<Effect::EffectFactoryList>();
 
     if(Effect::EffectFactory* fact = fact_list.get(m_effectKind))
     {
@@ -72,7 +72,7 @@ RemoveEffect::RemoveEffect(
 void RemoveEffect::undo() const
 {
     auto& process = m_model.find();
-    auto& fact_list = context.components.factory<Effect::EffectFactoryList>();
+    auto& fact_list = context.interfaces<Effect::EffectFactoryList>();
 
 
     Deserializer<DataStream> des{m_savedEffect};

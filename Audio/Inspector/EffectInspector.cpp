@@ -104,7 +104,7 @@ InspectorWidget::InspectorWidget(
         m_dispatcher.submitCommand(
                     new Commands::InsertEffect{
                         process(),
-                        FaustEffectFactory::static_concreteFactoryKey(),
+                        FaustEffectFactory::static_concreteKey(),
                         "",
                         0});
     });
@@ -115,7 +115,7 @@ InspectorWidget::InspectorWidget(
     auto add_lv2 = new QPushButton{tr("Add (LV2)")};
     connect(add_lv2, &QPushButton::pressed,
             this, [=] () {
-        auto& world = iscore::AppContext().components.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().lilv;
+        auto& world = iscore::AppComponents().applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().lilv;
 
         auto plugs = world.get_all_plugins();
 
@@ -139,7 +139,7 @@ InspectorWidget::InspectorWidget(
             m_dispatcher.submitCommand(
                         new Commands::InsertEffect{
                             process(),
-                            LV2EffectFactory::static_concreteFactoryKey(),
+                            LV2EffectFactory::static_concreteKey(),
                             res,
                             (int)process().effects().size()});
         }

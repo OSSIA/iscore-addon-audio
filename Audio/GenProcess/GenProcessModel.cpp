@@ -48,7 +48,7 @@ void ProcessModel::init()
 {
     // We have to reload the faust FX whenever
     // some soundcard settings changes
-    auto& ctx = iscore::AppContext().components.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>();
+    auto& ctx = iscore::AppComponents().applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>();
     con(ctx, &AudioStreamEngine::ApplicationPlugin::audioEngineRestarted,
             this, [this] () {
         reload();

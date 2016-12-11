@@ -120,7 +120,7 @@ void EffectListWidget::dropEvent(QDropEvent *event)
                         QString dat = f.readAll();
                         auto cmd = new Commands::InsertEffect{
                                 m_effects,
-                                FaustEffectFactory::static_concreteFactoryKey(),
+                                FaustEffectFactory::static_concreteKey(),
                                 dat,
                                 pos};
                         m_dispatcher.submitCommand(cmd);
@@ -137,7 +137,7 @@ void EffectListWidget::dropEvent(QDropEvent *event)
                 { // TODO factory instead.
                     auto cmd = new Commands::InsertEffect{
                             m_effects,
-                            LV2EffectFactory::static_concreteFactoryKey(),
+                            LV2EffectFactory::static_concreteKey(),
                             url.toString(),
                             pos};
                     m_dispatcher.submitCommand(cmd);
