@@ -17,7 +17,7 @@ namespace Audio
 namespace AudioStreamEngine
 {
 
-AudioStream DocumentPlugin::makeStream()
+AudioStream DocumentPlugin::makeStream(Scenario::ConstraintModel& cst)
 {
     // First find the root constraint
     auto doc = dynamic_cast<Scenario::ScenarioDocumentModel*>(&audioContext.doc.document.model().modelDelegate());
@@ -32,12 +32,9 @@ AudioStream DocumentPlugin::makeStream()
     openPlayer();
 
     // Create our tree
-    m_comp = new Constraint(
-                doc->baseConstraint(),
-                *this,
-                getStrongId(doc->baseConstraint().components()),
-                this);
-    doc->baseConstraint().components().add(m_comp);
+    m_comp = new Constraint{cst, *this, getStrongId(cst.components()), this};
+    cst.components().add(m_comp);
+
     AudioGraphBuilder graph{*m_comp};
     if(auto sorted_vertices = graph.check())
     {
@@ -74,7 +71,7 @@ void DocumentPlugin::stop()
     {
         if(m_comp)
         {
-            doc->baseConstraint().components().remove(m_comp->id());
+            m_comp->constraint().components().remove(m_comp->id());
             m_comp = nullptr;
         }
     }

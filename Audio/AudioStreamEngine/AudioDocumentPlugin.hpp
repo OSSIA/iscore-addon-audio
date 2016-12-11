@@ -4,6 +4,10 @@
 #include <Audio/AudioStreamEngine/Context.hpp>
 #include <Process/TimeValue.hpp>
 #include <Audio/AudioStreamEngine/AudioGraphNode.hpp>
+namespace Scenario
+{
+class ConstraintModel;
+}
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -31,7 +35,7 @@ class DocumentPlugin : public iscore::DocumentPlugin
         }
 
 
-        AudioStream makeStream();
+        AudioStream makeStream(Scenario::ConstraintModel& cst);
         void stop();
 
     private:

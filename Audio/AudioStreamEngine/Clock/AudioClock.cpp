@@ -39,7 +39,7 @@ void AudioClock::play_impl(
         const TimeValue& t,
         Engine::Execution::BaseScenarioElement& bs)
 {
-    auto stream = m_audioPlug.makeStream();
+    auto stream = m_audioPlug.makeStream(bs.baseConstraint()->iscoreConstraint());
     if(!stream)
     {
         qDebug("No stream!");
