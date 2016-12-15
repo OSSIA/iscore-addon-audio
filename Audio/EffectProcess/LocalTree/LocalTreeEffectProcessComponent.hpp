@@ -8,8 +8,8 @@
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp>
 
 #include <Audio/AudioStreamEngine/Audio/EffectComponent.hpp>
-#include <iscore/tools/SettableIdentifierGeneration.hpp>
-#include <iscore/component/ComponentHierarchy.hpp>
+#include <iscore/tools/IdentifierGeneration.hpp>
+#include <iscore/model/ComponentHierarchy.hpp>
 
 namespace Audio
 {

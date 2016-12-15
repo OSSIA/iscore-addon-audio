@@ -1,7 +1,7 @@
 #include "UpdateMix.hpp"
 #include <Audio/MixProcess/MixProcessModel.hpp>
-#include <iscore/tools/SettableIdentifierGeneration.hpp>
-#include <iscore/tools/ModelPathSerialization.hpp>
+#include <iscore/tools/IdentifierGeneration.hpp>
+#include <iscore/model/path/PathSerialization.hpp>
 namespace Audio
 {
 namespace Commands

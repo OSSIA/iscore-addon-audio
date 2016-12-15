@@ -1,7 +1,7 @@
 #include "InsertEffect.hpp"
 
-#include <iscore/tools/SettableIdentifierGeneration.hpp>
-#include <iscore/tools/ModelPathSerialization.hpp>
+#include <iscore/tools/IdentifierGeneration.hpp>
+#include <iscore/model/path/PathSerialization.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
 #include <Audio/EffectProcess/Effect/EffectFactory.hpp>
 namespace Audio

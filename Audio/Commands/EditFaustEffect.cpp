@@ -1,7 +1,7 @@
 #include "EditFaustEffect.hpp"
 
-#include <iscore/tools/SettableIdentifierGeneration.hpp>
-#include <iscore/tools/ModelPathSerialization.hpp>
+#include <iscore/tools/IdentifierGeneration.hpp>
+#include <iscore/model/path/PathSerialization.hpp>
 #include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
 namespace Audio
 {

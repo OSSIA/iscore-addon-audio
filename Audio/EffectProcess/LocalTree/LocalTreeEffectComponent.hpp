@@ -2,7 +2,7 @@
 #include <Engine/LocalTree/LocalTreeComponent.hpp>
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
 #include <Audio/EffectProcess/Effect/EffectComponent.hpp>
-#include <iscore/component/ComponentFactory.hpp>
+#include <iscore/model/ComponentFactory.hpp>
 #include <iscore/plugins/customfactory/ModelFactory.hpp>
 
 namespace Audio

@@ -1,6 +1,6 @@
 #include "ChangeAudioFile.hpp"
 
-#include <iscore/tools/ModelPathSerialization.hpp>
+#include <iscore/model/path/PathSerialization.hpp>
 #include <Audio/SoundProcess/SoundProcessModel.hpp>
 namespace Audio
 {

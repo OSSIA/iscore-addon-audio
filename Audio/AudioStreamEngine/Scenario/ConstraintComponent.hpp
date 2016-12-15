@@ -3,7 +3,7 @@
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 #include <Audio/AudioStreamEngine/AudioComponent.hpp>
 #include <Scenario/Document/Components/ConstraintComponent.hpp>
-#include <iscore/component/ComponentHierarchy.hpp>
+#include <iscore/model/ComponentHierarchy.hpp>
 #include <functional>
 
 namespace Audio

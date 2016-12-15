@@ -61,7 +61,6 @@ std::vector<std::unique_ptr<iscore::InterfaceBase>> iscore_plugin_audio::factori
 {
     return instantiate_factories<
             iscore::ApplicationContext,
-    TL<
         FW<Process::ProcessModelFactory,
             Audio::Sound::ProcessFactory,
             Audio::Effect::ProcessFactory,
@@ -111,7 +110,7 @@ std::vector<std::unique_ptr<iscore::InterfaceBase>> iscore_plugin_audio::factori
             Audio::Sound::DropHandler>,
         FW<Scenario::ConstraintDropHandler,
             Audio::Sound::ConstraintDropHandler>
-    >>(ctx, key);
+    >(ctx, key);
 }
 
 iscore_plugin_audio::iscore_plugin_audio()

@@ -7,7 +7,7 @@
 #include <QAction>
 #include <Audio/Settings/Card/CardSettingsModel.hpp>
 #include <LibAudioStreamMC++.h>
-#include <iscore/tools/SettableIdentifierGeneration.hpp>
+#include <iscore/tools/IdentifierGeneration.hpp>
 #if defined(LILV_SHARED)
 
 #include <lv2/lv2plug.in/ns/ext/atom/atom.h>

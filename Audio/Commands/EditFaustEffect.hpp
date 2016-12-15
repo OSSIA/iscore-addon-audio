@@ -1,7 +1,7 @@
 #pragma once
 #include <iscore/command/Command.hpp>
 #include <Audio/Commands/AudioCommandFactory.hpp>
-#include <iscore/tools/ModelPath.hpp>
+#include <iscore/model/path/Path.hpp>
 
 namespace Audio
 {

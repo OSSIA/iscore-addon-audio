@@ -6,7 +6,7 @@
 #include <Audio/EffectProcess/EffectProcessMetadata.hpp>
 #include <Process/LayerModel.hpp>
 #include <Audio/MediaFileHandle.hpp>
-#include <iscore/tools/EntityMap.hpp>
+#include <iscore/model/EntityMap.hpp>
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
 namespace Audio
 {

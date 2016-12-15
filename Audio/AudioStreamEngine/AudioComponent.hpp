@@ -1,5 +1,5 @@
 #pragma once
-#include <iscore/component/Component.hpp>
+#include <iscore/model/Component.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 
 #include <ossia/editor/state/state_element.hpp>

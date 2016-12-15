@@ -2,7 +2,7 @@
 #include <QWidget>
 #include <iscore/command/Dispatchers/CommandDispatcher.hpp>
 #include <nano_observer.hpp>
-#include <iscore/tools/ModelPath.hpp>
+#include <iscore/model/path/Path.hpp>
 namespace Scenario
 {
 }

@@ -1,7 +1,7 @@
 #include "LocalTreeEffectProcessComponent.hpp"
 #include <Engine/LocalTree/Scenario/MetadataParameters.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
-#include <iscore/tools/SettableIdentifierGeneration.hpp>
+#include <iscore/tools/IdentifierGeneration.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp>
 #include <ossia/editor/state/state_element.hpp>
 

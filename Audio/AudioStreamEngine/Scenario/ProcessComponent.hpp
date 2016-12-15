@@ -2,8 +2,8 @@
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 #include <Audio/AudioStreamEngine/AudioComponent.hpp>
 #include <Process/Process.hpp>
-#include <iscore/component/Component.hpp>
-#include <iscore/component/ComponentFactory.hpp>
+#include <iscore/model/Component.hpp>
+#include <iscore/model/ComponentFactory.hpp>
 #include <iscore_plugin_audio_export.h>
 #include <Scenario/Document/Components/ProcessComponent.hpp>
 #include <iscore/plugins/customfactory/ModelFactory.hpp>

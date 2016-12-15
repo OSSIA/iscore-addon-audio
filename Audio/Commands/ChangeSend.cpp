@@ -1,6 +1,6 @@
 #include "ChangeSend.hpp"
 
-#include <iscore/tools/ModelPathSerialization.hpp>
+#include <iscore/model/path/PathSerialization.hpp>
 #include <Audio/SendProcess/SendProcessModel.hpp>
 #include <Audio/ReturnProcess/ReturnProcessModel.hpp>
 namespace Audio

@@ -2,8 +2,8 @@
 #include <Audio/EffectProcess/Effect/EffectFactory.hpp>
 #include <iscore/model/Entity.hpp>
 
-#include <iscore/component/Component.hpp>
-#include <iscore/tools/IdentifiedObject.hpp>
+#include <iscore/model/Component.hpp>
+#include <iscore/model/IdentifiedObject.hpp>
 #include <iscore/plugins/customfactory/SerializableInterface.hpp>
 #include <iscore_plugin_audio_export.h>
 
