@@ -23,6 +23,7 @@ class iscore_plugin_audio final:
                 iscore::FactoryList_QtInterface
                 iscore::CommandFactory_QtInterface
                 )
+  ISCORE_PLUGIN_METADATA(1, "f07abe79-1b83-4abd-b002-958c878755c1")
 
     public:
         iscore_plugin_audio();
@@ -41,6 +42,4 @@ class iscore_plugin_audio final:
         // CommandFactory_QtInterface interface
         std::pair<const CommandGroupKey, CommandGeneratorMap> make_commands() override;
 
-        iscore::Version version() const override;
-        UuidKey<iscore::Plugin> key() const override;
 };

@@ -135,13 +135,3 @@ std::vector<std::unique_ptr<iscore::InterfaceListBase> > iscore_plugin_audio::fa
             Audio::AudioStreamEngine::ProcessComponentFactoryList,
             Audio::Effect::EffectFactoryList>();
 }
-
-iscore::Version iscore_plugin_audio::version() const
-{
-    return iscore::Version{1};
-}
-
-UuidKey<iscore::Plugin> iscore_plugin_audio::key() const
-{
-    return_uuid("f07abe79-1b83-4abd-b002-958c878755c1");
-}
