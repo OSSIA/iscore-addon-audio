@@ -1,8 +1,8 @@
 #include "AudioClock.hpp"
 #include <Engine/Executor/ExecutorContext.hpp>
 #include <Engine/Executor/DocumentPlugin.hpp>
-#include <Engine/Executor/BaseScenarioElement.hpp>
-#include <Engine/Executor/ConstraintElement.hpp>
+#include <Engine/Executor/BaseScenarioComponent.hpp>
+#include <Engine/Executor/ConstraintComponent.hpp>
 #include <Engine/Executor/Settings/ExecutorModel.hpp>
 
 #include <Audio/Settings/Card/CardSettingsModel.hpp>
