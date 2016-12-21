@@ -4,6 +4,7 @@
 #include <iscore/model/path/PathSerialization.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
 #include <Audio/EffectProcess/Effect/EffectFactory.hpp>
+#include <iscore/application/ApplicationContext.hpp>
 namespace Audio
 {
 namespace Commands
