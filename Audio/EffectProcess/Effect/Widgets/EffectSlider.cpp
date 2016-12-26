@@ -76,7 +76,8 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, bool is_output, QWid
   auto lay = new iscore::MarginLess<QVBoxLayout>;
   lay->addWidget(new AddressLabel{
                      m_param,
-                     QString::fromStdString(addr->getDescription()),
+                     QString::fromStdString(
+                      ossia::get_value_or(ossia::net::get_description(m_param), "nothing")),
                      this});
   m_slider = new iscore::DoubleSlider{this};
   m_slider->setEnabled(!is_output);
