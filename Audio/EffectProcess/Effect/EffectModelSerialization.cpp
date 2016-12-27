@@ -1,37 +1,31 @@
 #include "EffectModel.hpp"
 
-template<>
-void Visitor<Reader<DataStream>>::readFrom_impl(
+template <>
+void DataStreamReader::read(
         const Audio::Effect::EffectModel& eff)
 {
-    // Save the parent class
-    readFrom(static_cast<const iscore::Entity<Audio::Effect::EffectModel>&>(eff));
-
     eff.saveParams();
     m_stream << eff.m_params;
 }
 
-template<>
-void Visitor<Writer<DataStream>>::writeTo(
+template <>
+void DataStreamWriter::writeTo(
         Audio::Effect::EffectModel& eff)
 {
     m_stream >> eff.m_params;
 }
 
-template<>
-void Visitor<Reader<JSONObject>>::readFrom_impl(
+template <>
+void JSONObjectReader::read(
         const Audio::Effect::EffectModel& eff)
 {
-    // Save the parent class
-    readFrom(static_cast<const iscore::Entity<Audio::Effect::EffectModel>&>(eff));
-
     eff.saveParams();
-    m_obj["Parameters"] = toJsonValueArray(eff.m_params);
+    obj["Parameters"] = toJsonValueArray(eff.m_params);
 }
 
-template<>
-void Visitor<Writer<JSONObject>>::writeTo(
+template <>
+void JSONObjectWriter::writeTo(
         Audio::Effect::EffectModel& eff)
 {
-    fromJsonArray(m_obj["Parameters"].toArray(), eff.m_params);
+    fromJsonArray(obj["Parameters"].toArray(), eff.m_params);
 }

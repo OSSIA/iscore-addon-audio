@@ -1,15 +1,15 @@
 #include "FaustEffectModel.hpp"
 
-template<>
-void Visitor<Reader<DataStream>>::readFrom_impl(
+template <>
+void DataStreamReader::read(
         const Audio::Effect::FaustEffectModel& eff)
 {
     m_stream << eff.text();
     insertDelimiter();
 }
 
-template<>
-void Visitor<Writer<DataStream>>::writeTo(
+template <>
+void DataStreamWriter::writeTo(
         Audio::Effect::FaustEffectModel& eff)
 {
     QString txt;
@@ -18,16 +18,16 @@ void Visitor<Writer<DataStream>>::writeTo(
     checkDelimiter();
 }
 
-template<>
-void Visitor<Reader<JSONObject>>::readFrom_impl(
+template <>
+void JSONObjectReader::read(
         const Audio::Effect::FaustEffectModel& eff)
 {
-    m_obj["Effect"] = eff.text();
+    obj["Effect"] = eff.text();
 }
 
-template<>
-void Visitor<Writer<JSONObject>>::writeTo(
+template <>
+void JSONObjectWriter::writeTo(
         Audio::Effect::FaustEffectModel& eff)
 {
-    eff.setText(m_obj["Effect"].toString());
+    eff.setText(obj["Effect"].toString());
 }

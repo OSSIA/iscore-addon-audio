@@ -24,8 +24,7 @@ class FaustEffectModel :
         public EffectModel
 {
         Q_OBJECT
-        ISCORE_SERIALIZE_FRIENDS(FaustEffectModel, DataStream)
-        ISCORE_SERIALIZE_FRIENDS(FaustEffectModel, JSONObject)
+        ISCORE_SERIALIZE_FRIENDS
         MODEL_METADATA_IMPL(FaustEffectModel)
 
     public:
@@ -41,7 +40,7 @@ class FaustEffectModel :
 
         template<typename Impl>
         FaustEffectModel(
-                Deserializer<Impl>& vis,
+                Impl& vis,
                 QObject* parent) :
             EffectModel{vis, parent}
         {

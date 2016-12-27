@@ -79,32 +79,32 @@ void LV2EffectModel::reload()
 }
 }
 
-template<>
-void Visitor<Reader<DataStream>>::readFrom_impl(
+template <>
+void DataStreamReader::read(
         const Audio::Effect::LV2EffectModel& eff)
 {
     m_stream << eff.effect();
     insertDelimiter();
 }
 
-template<>
-void Visitor<Writer<DataStream>>::writeTo(
+template <>
+void DataStreamWriter::writeTo(
         Audio::Effect::LV2EffectModel& eff)
 {
     m_stream >> eff.m_effectPath;
     checkDelimiter();
 }
 
-template<>
-void Visitor<Reader<JSONObject>>::readFrom_impl(
+template <>
+void JSONObjectReader::read(
         const Audio::Effect::LV2EffectModel& eff)
 {
-    m_obj["Effect"] = eff.effect();
+    obj["Effect"] = eff.effect();
 }
 
-template<>
-void Visitor<Writer<JSONObject>>::writeTo(
+template <>
+void JSONObjectWriter::writeTo(
         Audio::Effect::LV2EffectModel& eff)
 {
-    eff.m_effectPath = m_obj["Effect"].toString();
+    eff.m_effectPath = obj["Effect"].toString();
 }

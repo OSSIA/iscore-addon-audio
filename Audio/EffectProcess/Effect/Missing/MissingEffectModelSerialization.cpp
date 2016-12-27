@@ -1,28 +1,28 @@
 #include "MissingEffectModel.hpp"
 
-template<>
-void Visitor<Reader<DataStream>>::readFrom_impl(
+template <>
+void DataStreamReader::read(
         const Audio::Effect::MissingEffectModel& eff)
 {
     ISCORE_TODO;
 }
 
-template<>
-void Visitor<Writer<DataStream>>::writeTo(
+template <>
+void DataStreamWriter::writeTo(
         Audio::Effect::MissingEffectModel& eff)
 {
     ISCORE_TODO;
 }
 
-template<>
-void Visitor<Reader<JSONObject>>::readFrom_impl(
+template <>
+void JSONObjectReader::read(
         const Audio::Effect::MissingEffectModel& area)
 {
     ISCORE_TODO;
 }
 
-template<>
-void Visitor<Writer<JSONObject>>::writeTo(
+template <>
+void JSONObjectWriter::writeTo(
         Audio::Effect::MissingEffectModel& area)
 {
     ISCORE_TODO;

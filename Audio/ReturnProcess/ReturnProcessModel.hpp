@@ -22,8 +22,7 @@ class ProcessModel final :
         public Process::ProcessModel,
         public Nano::Observer
 {
-        ISCORE_SERIALIZE_FRIENDS(Audio::Return::ProcessModel, DataStream)
-        ISCORE_SERIALIZE_FRIENDS(Audio::Return::ProcessModel, JSONObject)
+        ISCORE_SERIALIZE_FRIENDS
         MODEL_METADATA_IMPL(Audio::Return::ProcessModel)
 
         Q_OBJECT
@@ -42,7 +41,7 @@ class ProcessModel final :
 
         template<typename Impl>
         explicit ProcessModel(
-                Deserializer<Impl>& vis,
+                Impl& vis,
                 QObject* parent) :
             Process::ProcessModel{vis, parent}
         {

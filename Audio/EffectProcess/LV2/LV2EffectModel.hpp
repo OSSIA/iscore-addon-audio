@@ -28,8 +28,7 @@ class LV2EffectModel :
         public EffectModel
 {
         Q_OBJECT
-        ISCORE_SERIALIZE_FRIENDS(LV2EffectModel, DataStream)
-        ISCORE_SERIALIZE_FRIENDS(LV2EffectModel, JSONObject)
+        ISCORE_SERIALIZE_FRIENDS
         MODEL_METADATA_IMPL(LV2EffectModel)
     public:
         LV2EffectModel(
@@ -44,7 +43,7 @@ class LV2EffectModel :
 
         template<typename Impl>
         LV2EffectModel(
-                Deserializer<Impl>& vis,
+                Impl& vis,
                 QObject* parent) :
             EffectModel{vis, parent}
         {

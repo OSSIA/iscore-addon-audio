@@ -4,15 +4,15 @@
 #include <Audio/AudioDecoder.hpp>
 
 
-template<>
-void Visitor<Reader<DataStream>>::readFrom(
+template <>
+void DataStreamReader::read(
         const Audio::MediaFileHandle& lm)
 {
     m_stream << lm.name();
 }
 
-template<>
-void Visitor<Writer<DataStream>>::writeTo(
+template <>
+void DataStreamWriter::writeTo(
         Audio::MediaFileHandle& lm)
 {
     QString name;
@@ -22,18 +22,18 @@ void Visitor<Writer<DataStream>>::writeTo(
 
 
 
-template<>
-void Visitor<Reader<JSONObject>>::readFrom(
+template <>
+void JSONObjectReader::read(
         const Audio::MediaFileHandle& lm)
 {
-    m_obj["File"] = lm.name();
+    obj["File"] = lm.name();
 }
 
-template<>
-void Visitor<Writer<JSONObject>>::writeTo(
+template <>
+void JSONObjectWriter::writeTo(
         Audio::MediaFileHandle& lm)
 {
-    lm = Audio::MediaFileHandle(m_obj["File"].toString());
+    lm = Audio::MediaFileHandle(obj["File"].toString());
 }
 
 

@@ -76,7 +76,7 @@ void RemoveEffect::undo() const
     auto& fact_list = context.interfaces<Effect::EffectFactoryList>();
 
 
-    Deserializer<DataStream> des{m_savedEffect};
+    DataStream::Deserializer des{m_savedEffect};
     if(auto fx = deserialize_interface(fact_list, des, &process))
     {
         process.insertEffect(fx, m_pos);

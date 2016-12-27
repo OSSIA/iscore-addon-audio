@@ -1,75 +1,75 @@
 #include "MixProcessModel.hpp"
 
 
-template<>
-void Visitor<Reader<DataStream>>::readFrom(const Audio::Mix::Routing& proc)
+template <>
+void DataStreamReader::read(const Audio::Mix::Routing& proc)
 {
     m_stream << proc.in << proc.out << proc.mix << proc.enabled;
 
     insertDelimiter();
 }
 
-template<>
-void Visitor<Writer<DataStream>>::writeTo(Audio::Mix::Routing& proc)
+template <>
+void DataStreamWriter::writeTo(Audio::Mix::Routing& proc)
 {
     m_stream >> proc.in >> proc.out >> proc.mix >> proc.enabled;
 
     checkDelimiter();
 }
 
-template<>
-void Visitor<Reader<JSONObject>>::readFrom(const Audio::Mix::Routing& proc)
+template <>
+void JSONObjectReader::read(const Audio::Mix::Routing& proc)
 {
-    m_obj["In"] = toJsonValue(proc.in);
-    m_obj["Out"] = toJsonValue(proc.out);
-    m_obj["Mix"] = proc.mix;
-    m_obj["Enabled"] = proc.enabled;
+    obj["In"] = toJsonValue(proc.in);
+    obj["Out"] = toJsonValue(proc.out);
+    obj["Mix"] = proc.mix;
+    obj["Enabled"] = proc.enabled;
 }
 
-template<>
-void Visitor<Writer<JSONObject>>::writeTo(Audio::Mix::Routing& proc)
+template <>
+void JSONObjectWriter::writeTo(Audio::Mix::Routing& proc)
 {
-    proc.in = fromJsonValue<Id<Process::ProcessModel>>(m_obj["In"]);
-    proc.out = fromJsonValue<Id<Process::ProcessModel>>(m_obj["Out"]);
-    proc.mix = m_obj["Mix"].toDouble();
-    proc.enabled = m_obj["Enabled"].toBool();
+    proc.in = fromJsonValue<Id<Process::ProcessModel>>(obj["In"]);
+    proc.out = fromJsonValue<Id<Process::ProcessModel>>(obj["Out"]);
+    proc.mix = obj["Mix"].toDouble();
+    proc.enabled = obj["Enabled"].toBool();
 }
 
-template<>
-void Visitor<Reader<DataStream>>::readFrom(const Audio::Mix::DirectMix& proc)
+template <>
+void DataStreamReader::read(const Audio::Mix::DirectMix& proc)
 {
     m_stream << proc.process << proc.mix;
 
     insertDelimiter();
 }
 
-template<>
-void Visitor<Writer<DataStream>>::writeTo(Audio::Mix::DirectMix& proc)
+template <>
+void DataStreamWriter::writeTo(Audio::Mix::DirectMix& proc)
 {
     m_stream >> proc.process >> proc.mix;
 
     checkDelimiter();
 }
 
-template<>
-void Visitor<Reader<JSONObject>>::readFrom(const Audio::Mix::DirectMix& proc)
+template <>
+void JSONObjectReader::read(const Audio::Mix::DirectMix& proc)
 {
-    m_obj["Process"] = toJsonValue(proc.process);
-    m_obj["Mix"] = proc.mix;
+    obj["Process"] = toJsonValue(proc.process);
+    obj["Mix"] = proc.mix;
 }
 
-template<>
-void Visitor<Writer<JSONObject>>::writeTo(Audio::Mix::DirectMix& proc)
+template <>
+void JSONObjectWriter::writeTo(Audio::Mix::DirectMix& proc)
 {
-    proc.process = fromJsonValue<Id<Process::ProcessModel>>(m_obj["Process"]);
-    proc.mix = m_obj["Mix"].toDouble();
+    proc.process = fromJsonValue<Id<Process::ProcessModel>>(obj["Process"]);
+    proc.mix = obj["Mix"].toDouble();
 }
 
 
 
 // MOVEME <!>
 template<typename T, typename U>
-struct TSerializer<DataStream, void, std::list<T, U>>
+struct TSerializer<DataStream, std::list<T, U>>
 {
         static void readFrom(
                 DataStream::Serializer& s,
@@ -99,8 +99,8 @@ struct TSerializer<DataStream, void, std::list<T, U>>
         }
 };
 
-template<>
-void Visitor<Reader<DataStream>>::readFrom_impl(const Audio::Mix::ProcessModel& proc)
+template <>
+void DataStreamReader::read(const Audio::Mix::ProcessModel& proc)
 {
     m_stream << (int32_t) proc.m_routings.size();
     for(auto& elt : proc.m_routings)
@@ -110,8 +110,8 @@ void Visitor<Reader<DataStream>>::readFrom_impl(const Audio::Mix::ProcessModel& 
     insertDelimiter();
 }
 
-template<>
-void Visitor<Writer<DataStream>>::writeTo(Audio::Mix::ProcessModel& proc)
+template <>
+void DataStreamWriter::writeTo(Audio::Mix::ProcessModel& proc)
 {
     int32_t nroutings = 0;
     m_stream >> nroutings;
@@ -149,13 +149,14 @@ static QJsonArray toJsonRoutingArray(const Audio::Mix::RoutingMap& orig)
     }
     return arr;
 }
-template<>
-void Visitor<Reader<JSONObject>>::readFrom_impl(const Audio::Mix::ProcessModel& proc)
+
+template <>
+void JSONObjectReader::read(const Audio::Mix::ProcessModel& proc)
 {
-    m_obj["Routings"] = toJsonRoutingArray(proc.m_routings);
-    m_obj["DataProcesses"] = toJsonArray(proc.m_dataProcesses);
-    m_obj["FxProcesses"] = toJsonArray(proc.m_fxProcesses);
-    m_obj["SendProcesses"] = toJsonIdArray(proc.m_sendProcesses);
+    obj["Routings"] = toJsonRoutingArray(proc.m_routings);
+    obj["DataProcesses"] = toJsonArray(proc.m_dataProcesses);
+    obj["FxProcesses"] = toJsonArray(proc.m_fxProcesses);
+    obj["SendProcesses"] = toJsonIdArray(proc.m_sendProcesses);
 }
 
 // MOVEME
@@ -190,11 +191,11 @@ static void fromJsonRoutingArray(QJsonArray&& json_arr, Audio::Mix::RoutingMap& 
     });
 }
 
-template<>
-void Visitor<Writer<JSONObject>>::writeTo(Audio::Mix::ProcessModel& proc)
+template <>
+void JSONObjectWriter::writeTo(Audio::Mix::ProcessModel& proc)
 {
-    fromJsonRoutingArray(m_obj["Routings"].toArray(), proc.m_routings);
-    fromJsonToList(m_obj["DataProcesses"].toArray(), proc.m_dataProcesses);
-    fromJsonToList(m_obj["FxProcesses"].toArray(), proc.m_fxProcesses);
-    fromJsonToIdList(m_obj["SendProcesses"].toArray(), proc.m_sendProcesses);
+    fromJsonRoutingArray(obj["Routings"].toArray(), proc.m_routings);
+    fromJsonToList(obj["DataProcesses"].toArray(), proc.m_dataProcesses);
+    fromJsonToList(obj["FxProcesses"].toArray(), proc.m_fxProcesses);
+    fromJsonToIdList(obj["SendProcesses"].toArray(), proc.m_sendProcesses);
 }

@@ -17,8 +17,7 @@ class ProcessModel;
 
 class ISCORE_PLUGIN_AUDIO_EXPORT ProcessModel final : public Process::ProcessModel
 {
-        ISCORE_SERIALIZE_FRIENDS(Audio::Sound::ProcessModel, DataStream)
-        ISCORE_SERIALIZE_FRIENDS(Audio::Sound::ProcessModel, JSONObject)
+        ISCORE_SERIALIZE_FRIENDS
         MODEL_METADATA_IMPL(Audio::Sound::ProcessModel)
 
         Q_OBJECT
@@ -37,7 +36,7 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessModel final : public Process::ProcessMod
 
         template<typename Impl>
         explicit ProcessModel(
-                Deserializer<Impl>& vis,
+                Impl& vis,
                 QObject* parent) :
             Process::ProcessModel{vis, parent}
         {

@@ -26,8 +26,7 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
         public iscore::SerializableInterface<EffectFactory>
 {
         Q_OBJECT
-        ISCORE_SERIALIZE_FRIENDS(Audio::Effect::EffectModel, DataStream)
-        ISCORE_SERIALIZE_FRIENDS(Audio::Effect::EffectModel, JSONObject)
+        ISCORE_SERIALIZE_FRIENDS
     public:
         EffectModel(
                 const Id<EffectModel>&,
@@ -40,7 +39,7 @@ class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
 
         template<typename Impl>
         EffectModel(
-                Deserializer<Impl>& vis,
+                Impl& vis,
                 QObject* parent) :
             Entity{vis, parent}
         {

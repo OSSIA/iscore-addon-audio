@@ -19,8 +19,7 @@ class MissingEffectModel :
         public EffectModel
 {
         Q_OBJECT
-        ISCORE_SERIALIZE_FRIENDS(MissingEffectModel, DataStream)
-        ISCORE_SERIALIZE_FRIENDS(MissingEffectModel, JSONObject)
+        ISCORE_SERIALIZE_FRIENDS
     public:
         MissingEffectModel(
                 const QByteArray& data,
@@ -34,7 +33,7 @@ class MissingEffectModel :
 
         template<typename Impl>
         MissingEffectModel(
-                Deserializer<Impl>& vis,
+                Impl& vis,
                 QObject* parent) :
             EffectModel{vis, parent}
         {
