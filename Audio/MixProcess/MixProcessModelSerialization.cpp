@@ -10,7 +10,7 @@ void DataStreamReader::read(const Audio::Mix::Routing& proc)
 }
 
 template <>
-void DataStreamWriter::writeTo(Audio::Mix::Routing& proc)
+void DataStreamWriter::write(Audio::Mix::Routing& proc)
 {
     m_stream >> proc.in >> proc.out >> proc.mix >> proc.enabled;
 
@@ -27,7 +27,7 @@ void JSONObjectReader::read(const Audio::Mix::Routing& proc)
 }
 
 template <>
-void JSONObjectWriter::writeTo(Audio::Mix::Routing& proc)
+void JSONObjectWriter::write(Audio::Mix::Routing& proc)
 {
     proc.in = fromJsonValue<Id<Process::ProcessModel>>(obj["In"]);
     proc.out = fromJsonValue<Id<Process::ProcessModel>>(obj["Out"]);
@@ -44,7 +44,7 @@ void DataStreamReader::read(const Audio::Mix::DirectMix& proc)
 }
 
 template <>
-void DataStreamWriter::writeTo(Audio::Mix::DirectMix& proc)
+void DataStreamWriter::write(Audio::Mix::DirectMix& proc)
 {
     m_stream >> proc.process >> proc.mix;
 
@@ -59,7 +59,7 @@ void JSONObjectReader::read(const Audio::Mix::DirectMix& proc)
 }
 
 template <>
-void JSONObjectWriter::writeTo(Audio::Mix::DirectMix& proc)
+void JSONObjectWriter::write(Audio::Mix::DirectMix& proc)
 {
     proc.process = fromJsonValue<Id<Process::ProcessModel>>(obj["Process"]);
     proc.mix = obj["Mix"].toDouble();
@@ -111,7 +111,7 @@ void DataStreamReader::read(const Audio::Mix::ProcessModel& proc)
 }
 
 template <>
-void DataStreamWriter::writeTo(Audio::Mix::ProcessModel& proc)
+void DataStreamWriter::write(Audio::Mix::ProcessModel& proc)
 {
     int32_t nroutings = 0;
     m_stream >> nroutings;
@@ -192,7 +192,7 @@ static void fromJsonRoutingArray(QJsonArray&& json_arr, Audio::Mix::RoutingMap& 
 }
 
 template <>
-void JSONObjectWriter::writeTo(Audio::Mix::ProcessModel& proc)
+void JSONObjectWriter::write(Audio::Mix::ProcessModel& proc)
 {
     fromJsonRoutingArray(obj["Routings"].toArray(), proc.m_routings);
     fromJsonToList(obj["DataProcesses"].toArray(), proc.m_dataProcesses);

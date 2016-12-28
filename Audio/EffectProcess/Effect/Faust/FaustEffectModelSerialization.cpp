@@ -9,7 +9,7 @@ void DataStreamReader::read(
 }
 
 template <>
-void DataStreamWriter::writeTo(
+void DataStreamWriter::write(
         Audio::Effect::FaustEffectModel& eff)
 {
     QString txt;
@@ -26,7 +26,7 @@ void JSONObjectReader::read(
 }
 
 template <>
-void JSONObjectWriter::writeTo(
+void JSONObjectWriter::write(
         Audio::Effect::FaustEffectModel& eff)
 {
     eff.setText(obj["Effect"].toString());

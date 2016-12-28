@@ -10,7 +10,7 @@ void DataStreamReader::read(const Audio::Return::ProcessModel& proc)
 }
 
 template <>
-void DataStreamWriter::writeTo(Audio::Return::ProcessModel& proc)
+void DataStreamWriter::write(Audio::Return::ProcessModel& proc)
 {
     m_stream >> proc.m_sendPath;
     checkDelimiter();
@@ -23,7 +23,7 @@ void JSONObjectReader::read(const Audio::Return::ProcessModel& proc)
 }
 
 template <>
-void JSONObjectWriter::writeTo(Audio::Return::ProcessModel& proc)
+void JSONObjectWriter::write(Audio::Return::ProcessModel& proc)
 {
     ObjectPath p = fromJsonObject<ObjectPath>(obj["Send"]);
     using path_t = Path<Audio::Send::ProcessModel>;

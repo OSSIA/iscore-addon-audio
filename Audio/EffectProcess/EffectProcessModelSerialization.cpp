@@ -13,7 +13,7 @@ void DataStreamReader::read(const Audio::Effect::ProcessModel& proc)
 }
 
 template <>
-void DataStreamWriter::writeTo(Audio::Effect::ProcessModel& proc)
+void DataStreamWriter::write(Audio::Effect::ProcessModel& proc)
 {
     int32_t n = 0;
     m_stream >> n;
@@ -42,7 +42,7 @@ void JSONObjectReader::read(const Audio::Effect::ProcessModel& proc)
 }
 
 template <>
-void JSONObjectWriter::writeTo(Audio::Effect::ProcessModel& proc)
+void JSONObjectWriter::write(Audio::Effect::ProcessModel& proc)
 {
     QJsonArray fx_array = obj["Effects"].toArray();
     auto& fxs = components.interfaces<Audio::Effect::EffectFactoryList>();

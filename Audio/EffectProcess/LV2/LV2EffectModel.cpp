@@ -88,7 +88,7 @@ void DataStreamReader::read(
 }
 
 template <>
-void DataStreamWriter::writeTo(
+void DataStreamWriter::write(
         Audio::Effect::LV2EffectModel& eff)
 {
     m_stream >> eff.m_effectPath;
@@ -103,7 +103,7 @@ void JSONObjectReader::read(
 }
 
 template <>
-void JSONObjectWriter::writeTo(
+void JSONObjectWriter::write(
         Audio::Effect::LV2EffectModel& eff)
 {
     eff.m_effectPath = obj["Effect"].toString();

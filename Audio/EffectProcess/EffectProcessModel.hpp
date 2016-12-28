@@ -54,7 +54,7 @@ class ProcessModel final : public Process::ProcessModel
             vis.writeTo(*this);
         }
 
-        const EntityMap<EffectModel>& effects() const
+        const iscore::EntityMap<EffectModel>& effects() const
         { return m_effects; }
         const auto& effectsOrder() const
         { return m_effectOrder; }
@@ -70,7 +70,7 @@ class ProcessModel final : public Process::ProcessModel
 
     private:
         // The actual effect instances
-        EntityMap<EffectModel> m_effects;
+        iscore::EntityMap<EffectModel> m_effects;
 
         // The effect chain.
         QList<Id<EffectModel>> m_effectOrder;

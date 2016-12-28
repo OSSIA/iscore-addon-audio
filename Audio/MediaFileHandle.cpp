@@ -12,7 +12,7 @@ void DataStreamReader::read(
 }
 
 template <>
-void DataStreamWriter::writeTo(
+void DataStreamWriter::write(
         Audio::MediaFileHandle& lm)
 {
     QString name;
@@ -30,7 +30,7 @@ void JSONObjectReader::read(
 }
 
 template <>
-void JSONObjectWriter::writeTo(
+void JSONObjectWriter::write(
         Audio::MediaFileHandle& lm)
 {
     lm = Audio::MediaFileHandle(obj["File"].toString());

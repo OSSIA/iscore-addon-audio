@@ -9,7 +9,7 @@ void DataStreamReader::read(
 }
 
 template <>
-void DataStreamWriter::writeTo(
+void DataStreamWriter::write(
         Audio::Effect::EffectModel& eff)
 {
     m_stream >> eff.m_params;
@@ -24,7 +24,7 @@ void JSONObjectReader::read(
 }
 
 template <>
-void JSONObjectWriter::writeTo(
+void JSONObjectWriter::write(
         Audio::Effect::EffectModel& eff)
 {
     fromJsonArray(obj["Parameters"].toArray(), eff.m_params);

@@ -8,7 +8,7 @@ void DataStreamReader::read(
 }
 
 template <>
-void DataStreamWriter::writeTo(
+void DataStreamWriter::write(
         Audio::Effect::MissingEffectModel& eff)
 {
     ISCORE_TODO;
@@ -22,7 +22,7 @@ void JSONObjectReader::read(
 }
 
 template <>
-void JSONObjectWriter::writeTo(
+void JSONObjectWriter::write(
         Audio::Effect::MissingEffectModel& area)
 {
     ISCORE_TODO;

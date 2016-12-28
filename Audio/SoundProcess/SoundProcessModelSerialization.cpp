@@ -9,7 +9,7 @@ void DataStreamReader::read(const Audio::Sound::ProcessModel& proc)
 }
 
 template <>
-void DataStreamWriter::writeTo(Audio::Sound::ProcessModel& proc)
+void DataStreamWriter::write(Audio::Sound::ProcessModel& proc)
 {
     m_stream >> proc.m_file;
 
@@ -23,7 +23,7 @@ void JSONObjectReader::read(const Audio::Sound::ProcessModel& proc)
 }
 
 template <>
-void JSONObjectWriter::writeTo(Audio::Sound::ProcessModel& proc)
+void JSONObjectWriter::write(Audio::Sound::ProcessModel& proc)
 {
     proc.m_file = fromJsonObject<Audio::MediaFileHandle>(obj["File"]);
 }

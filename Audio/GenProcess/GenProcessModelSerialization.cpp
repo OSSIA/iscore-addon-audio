@@ -7,7 +7,7 @@ void DataStreamReader::read(const Audio::Gen::ProcessModel& proc)
 }
 
 template <>
-void DataStreamWriter::writeTo(Audio::Gen::ProcessModel& proc)
+void DataStreamWriter::write(Audio::Gen::ProcessModel& proc)
 {
     checkDelimiter();
 }
@@ -18,6 +18,6 @@ void JSONObjectReader::read(const Audio::Gen::ProcessModel& proc)
 }
 
 template <>
-void JSONObjectWriter::writeTo(Audio::Gen::ProcessModel& proc)
+void JSONObjectWriter::write(Audio::Gen::ProcessModel& proc)
 {
 }
