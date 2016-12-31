@@ -39,7 +39,11 @@ class ConstraintBase :
                 ProcessComponentFactory& factory,
                 Process::ProcessModel &process);
 
-        void removing(const Process::ProcessModel& cst, const ProcessComponent& comp);
+        bool removing(const Process::ProcessModel& cst, const ProcessComponent& comp);
+        template <typename... Args>
+        void removed(Args&&...)
+        {
+        }
 };
 
 class Constraint final :

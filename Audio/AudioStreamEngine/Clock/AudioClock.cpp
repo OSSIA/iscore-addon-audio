@@ -28,7 +28,7 @@ AudioClock::AudioClock(
 
     auto& audio = context.doc.app.settings<Audio::Settings::Model>();
 
-    ossia::time_constraint& ossia_cst = *bs->baseConstraint()->OSSIAConstraint();
+    ossia::time_constraint& ossia_cst = *bs->baseConstraint().OSSIAConstraint();
 
     ossia_cst.setDriveMode(ossia::clock::DriveMode::EXTERNAL);
     // Number of milliseconds in each step -> we tick once per buffer
@@ -39,7 +39,7 @@ void AudioClock::play_impl(
         const TimeValue& t,
         Engine::Execution::BaseScenarioElement& bs)
 {
-    auto stream = m_audioPlug.makeStream(bs.baseConstraint()->iscoreConstraint());
+    auto stream = m_audioPlug.makeStream(bs.baseConstraint().iscoreConstraint());
     if(!stream)
     {
         qDebug("No stream!");
@@ -47,7 +47,7 @@ void AudioClock::play_impl(
     }
 
     m_default.play(t);
-    AudioStream finals = MakeIScoreExecutor(stream, *bs.baseConstraint()->OSSIAConstraint());
+    AudioStream finals = MakeIScoreExecutor(stream, *bs.baseConstraint().OSSIAConstraint());
     auto& player = m_audioPlug.audioContext.audio.player;
 
 

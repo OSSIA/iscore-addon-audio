@@ -27,7 +27,9 @@ class ScenarioComponentBase :
                Element& elt);
 
        template<typename... Args>
-       void removing(Args&&...) { }
+       bool removing(Args&&...) { return true; }
+       template<typename... Args>
+       void removed(Args&&...) { }
 };
 
 
