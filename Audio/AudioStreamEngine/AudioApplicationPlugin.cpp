@@ -268,7 +268,7 @@ struct LV2GlobalContext
 };
 
 ApplicationPlugin::ApplicationPlugin(const iscore::GUIApplicationContext& app):
-    iscore::GUIApplicationContextPlugin{app},
+    iscore::GUIApplicationPlugin{app},
     m_ctx{*this}
   #if defined(LILV_SHARED)
   , lv2_context{std::make_unique<LV2GlobalContext>(m_ctx, lv2_host_context)}
@@ -283,7 +283,7 @@ ApplicationPlugin::ApplicationPlugin(const iscore::GUIApplicationContext& app):
 void ApplicationPlugin::initialize()
 {
     // Restart everything if audio settings change.
-    auto& set = GUIApplicationContextPlugin::context.settings<Settings::Model>();
+    auto& set = GUIApplicationPlugin::context.settings<Settings::Model>();
     con(set, &Settings::Model::BufferSizeChanged,
         this, &ApplicationPlugin::startEngine);
     con(set, &Settings::Model::CardChanged,
@@ -328,7 +328,7 @@ void ApplicationPlugin::startEngine()
 {
     stopEngine();
 
-    auto& stngs = iscore::GUIApplicationContextPlugin::context.settings<Audio::Settings::Model>();
+    auto& stngs = iscore::GUIApplicationPlugin::context.settings<Audio::Settings::Model>();
     auto api = stngs.getDriverId();
     if(api == -1)
         return;

@@ -32,7 +32,7 @@
 
 #include <Audio/AudioStreamEngine/Clock/AudioClock.hpp>
 
-#include <iscore/plugins/application/GUIApplicationContextPlugin.hpp>
+#include <iscore/plugins/application/GUIApplicationPlugin.hpp>
 #include <iscore/plugins/customfactory/FactoryFamily.hpp>
 #include <iscore/plugins/customfactory/FactorySetup.hpp>
 #include <core/document/Document.hpp>
@@ -123,7 +123,7 @@ iscore_plugin_audio::~iscore_plugin_audio()
 
 }
 
-iscore::GUIApplicationContextPlugin*iscore_plugin_audio::make_applicationPlugin(
+iscore::GUIApplicationPlugin*iscore_plugin_audio::make_applicationPlugin(
         const iscore::GUIApplicationContext& app)
 {
     return new Audio::AudioStreamEngine::ApplicationPlugin{app};

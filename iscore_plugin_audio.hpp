@@ -3,13 +3,13 @@
 #include <iscore/plugins/qt_interfaces/PluginRequirements_QtInterface.hpp>
 #include <iscore/plugins/qt_interfaces/FactoryInterface_QtInterface.hpp>
 #include <iscore/plugins/qt_interfaces/FactoryFamily_QtInterface.hpp>
-#include <iscore/plugins/qt_interfaces/GUIApplicationContextPlugin_QtInterface.hpp>
+#include <iscore/plugins/qt_interfaces/GUIApplicationPlugin_QtInterface.hpp>
 #include <iscore/plugins/qt_interfaces/CommandFactory_QtInterface.hpp>
 
 class iscore_plugin_audio final:
         public QObject,
         public iscore::Plugin_QtInterface,
-        public iscore::GUIApplicationContextPlugin_QtInterface,
+        public iscore::GUIApplicationPlugin_QtInterface,
         public iscore::FactoryInterface_QtInterface,
         public iscore::FactoryList_QtInterface,
         public iscore::CommandFactory_QtInterface
@@ -18,7 +18,7 @@ class iscore_plugin_audio final:
         Q_PLUGIN_METADATA(IID FactoryInterface_QtInterface_iid)
         Q_INTERFACES(
                 iscore::Plugin_QtInterface
-                iscore::GUIApplicationContextPlugin_QtInterface
+                iscore::GUIApplicationPlugin_QtInterface
                 iscore::FactoryInterface_QtInterface
                 iscore::FactoryList_QtInterface
                 iscore::CommandFactory_QtInterface
@@ -29,7 +29,7 @@ class iscore_plugin_audio final:
         iscore_plugin_audio();
         ~iscore_plugin_audio();
 
-        iscore::GUIApplicationContextPlugin* make_applicationPlugin(
+        iscore::GUIApplicationPlugin* make_applicationPlugin(
                 const iscore::GUIApplicationContext& app) override;
 
 

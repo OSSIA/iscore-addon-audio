@@ -1,5 +1,5 @@
 #pragma once
-#include <iscore/plugins/application/GUIApplicationContextPlugin.hpp>
+#include <iscore/plugins/application/GUIApplicationPlugin.hpp>
 #include <Audio/AudioStreamEngine/Context.hpp>
 
 #if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
@@ -12,7 +12,7 @@ namespace Audio
 namespace AudioStreamEngine
 {
 struct LV2GlobalContext;
-class ApplicationPlugin : public QObject, public iscore::GUIApplicationContextPlugin
+class ApplicationPlugin : public QObject, public iscore::GUIApplicationPlugin
 {
         Q_OBJECT
     public:
