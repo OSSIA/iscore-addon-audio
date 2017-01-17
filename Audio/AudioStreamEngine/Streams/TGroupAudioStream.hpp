@@ -4,7 +4,9 @@
 #include <3rdparty/libaudiostream/src/renderer/TAudioRenderer.h>
 #include "TExpAudioMixer.h"
 #include "TEffectAudioStream.h"
+#include "lv2_atom_helpers.hpp"
 
+#include <ModernMIDI/midi_message.h>
 #include <set>
 #include <iostream>
 #include <memory>
@@ -43,6 +45,15 @@ struct LV2Data
                 Lilv::Port port = effect.plugin.get_port_by_index(i);
 
                 std::cerr << "Port : " << lilv_node_as_string(port.get_name())<< std::endl;
+                auto cl = port.get_classes();
+                auto beg = lilv_nodes_begin(cl);
+                while(!lilv_nodes_is_end(cl, beg))
+                {
+                  auto node = lilv_nodes_get(cl, beg);
+                  std::cerr << " --> " << lilv_node_as_string(node) << std::endl;
+                  beg = lilv_nodes_next(cl, beg);
+                }
+
                 if(port.is_a(host.audio_class))
                 {
                     if(port.is_a(host.input_class))
@@ -58,6 +69,22 @@ struct LV2Data
                         cv_ports.push_back(i);
                         qDebug() << "Audio port not input or output";
                     }
+                }
+                else if(port.is_a(host.atom_class))
+                {
+                  // TODO use  atom:supports midi:MidiEvent
+                  if(port.is_a(host.input_class))
+                  {
+                      midi_in_ports.push_back(i);
+                  }
+                  else if(port.is_a(host.output_class))
+                  {
+                      midi_out_ports.push_back(i);
+                  }
+                  else
+                  {
+                      midi_other_ports.push_back(i);
+                  }
                 }
                 else if(port.is_a(host.cv_class))
                 {
@@ -75,12 +102,12 @@ struct LV2Data
                     }
                     else
                     {
-                        other_control_ports.push_back(i);
+                        control_other_ports.push_back(i);
                     }
                 }
                 else
                 {
-                    other_control_ports.push_back(i);
+                    control_other_ports.push_back(i);
                 }
             }
         }
@@ -92,7 +119,11 @@ struct LV2Data
 
         LV2HostContext& host;
         LV2EffectContext& effect;
-        std::vector<int> in_ports, out_ports, control_in_ports, control_out_ports, other_control_ports, cv_ports;
+        std::vector<int>
+          in_ports, out_ports,
+          control_in_ports, control_out_ports, control_other_ports,
+          midi_in_ports, midi_out_ports, midi_other_ports,
+          cv_ports;
 };
 
 class LV2AudioEffect : public TAudioEffectInterface
@@ -102,6 +133,7 @@ class LV2AudioEffect : public TAudioEffectInterface
         std::vector<float> fInControls, fOutControls, fParamMin, fParamMax, fParamInit, fOtherControls;
         std::unordered_map<std::string, int> fLabelsMap;
         std::vector<std::vector<float>> fCVs;
+        std::vector<AtomBuffer> fMidiIns, fMidiOuts;
 
         LilvInstance* fInstance;
 
@@ -111,9 +143,17 @@ class LV2AudioEffect : public TAudioEffectInterface
         {
             const int in_size = data.control_in_ports.size();
             const int out_size = data.control_out_ports.size();
+            const int midi_in_size = data.midi_in_ports.size();
+            const int midi_out_size = data.midi_out_ports.size();
             const int cv_size = data.cv_ports.size();
-            const int other_size = data.other_control_ports.size();
+            const int other_size = data.control_other_ports.size();
             const int num_ports = data.effect.plugin.get_num_ports();
+
+            qDebug() << "in\t" << in_size << "\n"
+                     << "out\t" << out_size << "\n"
+                     << "min\t" << midi_in_size << "\n"
+                     << "mout\t" << midi_out_size << "\n"
+                     << "np\t" << num_ports;
 
             fInControls.resize(in_size);
             fOutControls.resize(out_size);
@@ -148,6 +188,19 @@ class LV2AudioEffect : public TAudioEffectInterface
 
             data.effect.data.data_access = lilv_instance_get_descriptor(fInstance)->extension_data;
 
+            // MIDI
+            fMidiIns.reserve(midi_in_size);
+            for(int i = 0; i < midi_in_size; i++)
+            {
+              fMidiIns.emplace_back(2048, data.host.atom_chunk_id, data.host.midi_event_id, true);
+            }
+
+            fMidiOuts.reserve(midi_out_size);
+            for(int i = 0; i < midi_out_size; i++)
+            {
+              fMidiOuts.emplace_back(2048, data.host.atom_chunk_id, data.host.midi_event_id, false);
+            }
+            // Worker
             if(lilv_plugin_has_feature(data.effect.plugin.me, data.host.work_schedule)
             && lilv_plugin_has_extension_data(data.effect.plugin.me, data.host.work_interface))
             {
@@ -176,12 +229,23 @@ class LV2AudioEffect : public TAudioEffectInterface
 
             for(int i = 0; i < other_size; i++)
             {
-                lilv_instance_connect_port(fInstance, data.other_control_ports[i], &fOtherControls[i]);
+                lilv_instance_connect_port(fInstance, data.control_other_ports[i], &fOtherControls[i]);
             }
+
+            for(int i = 0; i < midi_in_size; i++)
+            {
+              lilv_instance_connect_port(fInstance, data.midi_in_ports[i], &fMidiIns[i].buf->atoms);
+            }
+
+            for(int i = 0; i < midi_out_size; i++)
+            {
+              lilv_instance_connect_port(fInstance, data.midi_out_ports[i], &fMidiOuts[i].buf->atoms);
+            }
+
             lilv_instance_activate(fInstance);
         }
 
-        long Inputs() final override { return 2; }
+        long Inputs() override { return 2; }
         long Outputs() final override { return 2; }
 
         long GetControlCount() final override
@@ -272,6 +336,14 @@ class LV2AudioEffect : public TAudioEffectInterface
 
         void preProcess()
         {
+          auto on = mm::MakeNoteOn(0, 64, 120);
+          auto off = mm::MakeNoteOff(0, 64, 120);
+          for(AtomBuffer& port : fMidiIns)
+          {
+            Iterator it{port.buf};
+            it.write(0, 0, data.host.midi_event_id, 3, on.data.data());
+            it.write(512, 0, data.host.midi_event_id, 3, off.data.data());
+          }
         }
 
         void postProcess()
@@ -293,6 +365,16 @@ class LV2AudioEffect : public TAudioEffectInterface
             if(data.effect.worker && data.effect.worker->end_run)
             {
                 data.effect.worker->end_run(data.effect.instance->lv2_handle);
+            }
+
+
+            for(AtomBuffer& port : fMidiIns)
+            {
+              port.buf->reset(true);
+            }
+            for(AtomBuffer& port : fMidiOuts)
+            {
+              port.buf->reset(false);
             }
         }
 
@@ -370,6 +452,70 @@ class MonoLV2AudioEffect final : public LV2AudioEffect
 };
 
 
+class StereoLV2AudioInstrument final : public LV2AudioEffect
+{
+    public:
+        StereoLV2AudioInstrument(LV2Data dat):
+            LV2AudioEffect{std::move(dat)}
+        {
+        }
+
+    private:
+        long Inputs() final override { return 0; }
+        void Process(float** input, float** output, long framesNum) override
+        {
+            if(framesNum <= 0)
+                return;
+
+            data.host.current = &data.effect;
+            preProcess();
+
+            lilv_instance_connect_port(fInstance, data.out_ports[0], output[0]);
+            lilv_instance_connect_port(fInstance, data.out_ports[1], output[1]);
+
+            lilv_instance_run(fInstance, framesNum);
+
+            postProcess();
+        }
+
+        TAudioEffectInterface* Copy() override
+        {
+            return nullptr;
+        }
+};
+
+class MonoLV2AudioInstrument final : public LV2AudioEffect
+{
+    public:
+
+        MonoLV2AudioInstrument(LV2Data dat):
+            LV2AudioEffect{std::move(dat)}
+        {
+        }
+
+    private:
+        long Inputs() final override { return 0; }
+        void Process(float** input, float** output, long framesNum) override
+        {
+            if(framesNum <= 0)
+                return;
+
+            data.host.current = &data.effect;
+            preProcess();
+
+            lilv_instance_connect_port(fInstance, data.out_ports[0], output[0]);
+
+            lilv_instance_run(fInstance, framesNum);
+
+            postProcess();
+            std::copy_n(output[0], framesNum, output[1]);
+        }
+
+        TAudioEffectInterface* Copy() override
+        {
+            return nullptr;
+        }
+};
 #endif
 /**/
 /**

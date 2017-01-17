@@ -1,55 +1,44 @@
 #pragma once
 #include <ossia/editor/scenario/time_constraint.hpp>
 #include <ossia/editor/scenario/time_node.hpp>
-#include <TAudioEffectInterface.h>
+#include <TAudioStream.h>
 #include <iscore/tools/Todo.hpp>
 
-class ExecutorAudioEffect final : public TAudioEffectInterface
+
+class TExecutorAudioStream : public TDecoratedAudioStream
 {
+private:
+  ossia::time_constraint& m_root;
 public:
-  ExecutorAudioEffect(ossia::time_constraint& cst):
+  TExecutorAudioStream(TAudioStreamPtr stream, ossia::time_constraint& cst):
     m_root{cst}
   {
-
+    fStream = stream;
   }
 
-private:
-
-  ossia::time_constraint& m_root;
-  void Process(float** input, float** output, long framesNum) override
+  long Read(FLOAT_BUFFER buffer, long framesNum, long framePos) override
   {
     try { m_root.tick(); } catch(...) { ISCORE_TODO; }
-    for(int i = 0; i < Channels(); i++)
-    {
-      std::copy_n(input[i], framesNum, output[i]);
-    }
+    return fStream->Read(buffer, framesNum, framePos);
   }
 
-  TAudioEffectInterface* Copy() override
+  long Write(FLOAT_BUFFER buffer, long framesNum, long framePos) override
   {
-    return nullptr;
+    return 0;
+  }
+
+  TAudioStreamPtr CutBegin(long frames) override
+  {
+    return {};
   }
 
   void Reset() override
   {
-
+    fStream->Reset();
   }
 
-  long Inputs() override { return Channels(); }
-  long Outputs() override { return Channels(); }
-  long Channels()
+  TAudioStreamPtr Copy() override
   {
-    return 2;
+    return {};
   }
-
-  long GetControlCount() override { return {}; }
-  void GetControlParam(long param, char* label, float* min, float* max, float* init) override { }
-  void SetControlValue(long param, float value) override { }
-  void SetControlValue(const char* label, float value) override { }
-  float GetControlValue(long param) override { return {}; }
-  float GetControlValue(const char* labe) override { return {}; }
-
-  void SetName(const std::string& name) override { }
-  std::string GetName() override { return {}; }
-
 };

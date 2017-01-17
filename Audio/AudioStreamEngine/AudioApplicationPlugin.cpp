@@ -11,6 +11,7 @@
 #if defined(LILV_SHARED)
 
 #include <lv2/lv2plug.in/ns/ext/atom/atom.h>
+#include <lv2/lv2plug.in/ns/ext/atom/forge.h>
 #include <lv2/lv2plug.in/ns/ext/buf-size/buf-size.h>
 #include <lv2/lv2plug.in/ns/ext/data-access/data-access.h>
 #include <lv2/lv2plug.in/ns/ext/dynmanifest/dynmanifest.h>
@@ -237,6 +238,14 @@ struct LV2GlobalContext
                         map.map(map.handle, LV2_ATOM__Double),
                         &audio.sample_rate
                         });
+            options.push_back(LV2_Options_Option{
+                        LV2_OPTIONS_INSTANCE,
+                        0,
+                        map.map(map.handle, LV2_BUF_SIZE__sequenceSize),
+                        sizeof(host.midi_buffer_size),
+                        map.map(map.handle, LV2_ATOM__Int),
+                        &host.midi_buffer_size
+                        });
 
             options.push_back(LV2_Options_Option{
                         LV2_OPTIONS_INSTANCE,
@@ -264,6 +273,7 @@ struct LV2GlobalContext
             lv2_features.push_back(&bounded);
             lv2_features.push_back(&pow2);
             lv2_features.push_back(nullptr); // must be a null-terminated array per LV2 API.
+
         }
 };
 
@@ -277,6 +287,14 @@ ApplicationPlugin::ApplicationPlugin(const iscore::GUIApplicationContext& app):
 {
 #if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
     lilv.load_all();
+
+    auto& map = lv2_context->map;
+    // Atom stuff
+    lv2_host_context.null_id = map.map(map.handle, "");
+    lv2_host_context.midi_event_id = map.map(map.handle, LILV_URI_MIDI_EVENT);
+    lv2_host_context.atom_sequence_id = map.map(map.handle, LV2_ATOM__Sequence);
+    lv2_host_context.atom_chunk_id = map.map(map.handle, LV2_ATOM__Chunk);
+    lv2_atom_forge_init(&lv2_host_context.forge, &map);
 #endif
 }
 

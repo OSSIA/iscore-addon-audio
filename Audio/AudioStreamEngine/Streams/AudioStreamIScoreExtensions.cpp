@@ -134,7 +134,7 @@ AUDIOAPI AudioStream MakeChannelSound(AudioStream s, double const * volume)
 
 AUDIOAPI AudioStream MakeIScoreExecutor(AudioStream s, ossia::time_constraint& t)
 {
-    return new TEffectAudioStream{s, new ExecutorAudioEffect{t}};
+    return new TExecutorAudioStream{s, t};
 }
 
 AUDIOAPI AudioStream MakeFixedLoopSound(
@@ -207,13 +207,23 @@ AUDIOAPI AudioEffect MakeLV2AudioEffect(LV2HostContext* h, LV2EffectContext* c)
         if(h && c)
         {
             LV2Data dat{*h, *c};
-            if(dat.in_ports.size() == 2 && dat.out_ports.size() == 2)
+            const auto ins = dat.in_ports.size();
+            const auto outs = dat.out_ports.size();
+            if(ins == 2 && outs == 2)
             {
                 return new StereoLV2AudioEffect{std::move(dat)};
             }
-            else if(dat.in_ports.size() == 1 && dat.out_ports.size() == 1)
+            else if(ins == 1 && outs == 1)
             {
                 return new MonoLV2AudioEffect{std::move(dat)};
+            }
+            else if(ins == 0 && outs == 2)
+            {
+              return new StereoLV2AudioInstrument{std::move(dat)};
+            }
+            else if(ins == 0 && outs == 1)
+            {
+              return new MonoLV2AudioInstrument{std::move(dat)};
             }
         }
     }
@@ -232,3 +242,6 @@ AUDIOAPI AudioEffect MakeLV2AudioEffect(LV2HostContext* h, LV2EffectContext* c)
     return nullptr;
 }
 #endif
+
+uint32_t LV2_Atom_Buffer::chunk_type;
+uint32_t LV2_Atom_Buffer::sequence_type;
