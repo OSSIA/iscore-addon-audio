@@ -52,6 +52,7 @@ AUDIOAPI SymbolicDate GenPriorisedSymbolicDate(AudioPlayerPtr /*player*/, int64_
 AUDIOAPI long GetLV2ControlOutCount(AudioEffect effect);
 AUDIOAPI void GetLV2ControlOutParam(AudioEffect effect, long control, char* label, float* min, float* max, float* init);
 AUDIOAPI float GetLV2ControlOutValue(AudioEffect effect, long control);
+AUDIOAPI void SetLV2MidiSource(AudioEffect effect, Midi::Executor::ProcessExecutor*);
 
 AUDIOAPI AudioEffect MakeLV2AudioEffect(LV2HostContext* h, LV2EffectContext*);
 #endif
@@ -199,6 +200,11 @@ AUDIOAPI float GetLV2ControlOutValue(AudioEffect effect, long control)
     return get_lv2_fx(effect).GetControlOutValue(control);
 }
 
+
+AUDIOAPI void SetLV2MidiSource(AudioEffect effect, Midi::Executor::ProcessExecutor* ex)
+{
+  get_lv2_fx(effect).SetMidiSource(ex);
+}
 
 AUDIOAPI AudioEffect MakeLV2AudioEffect(LV2HostContext* h, LV2EffectContext* c)
 {

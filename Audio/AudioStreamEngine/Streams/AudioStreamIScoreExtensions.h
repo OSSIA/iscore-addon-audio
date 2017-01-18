@@ -9,6 +9,7 @@
 // This file provides a C-like API to allow use with the other
 // functions in the C API of the LibAudioStream.
 namespace ossia { class time_constraint; }
+namespace Midi { namespace Executor { class ProcessExecutor; } }
 
 #if defined(__cplusplus) && !defined(_MSC_VER)
 extern "C"
@@ -38,6 +39,8 @@ AudioEffect MakeLV2AudioEffect(LV2HostContext* h, LV2EffectContext*);
 long GetLV2ControlOutCount(AudioEffect effect);
 void GetLV2ControlOutParam(AudioEffect effect, long control, char* label, float* min, float* max, float* init);
 float GetLV2ControlOutValue(AudioEffect effect, long control);
+
+void SetLV2MidiSource(AudioEffect effect, Midi::Executor::ProcessExecutor*);
 
 #endif
 

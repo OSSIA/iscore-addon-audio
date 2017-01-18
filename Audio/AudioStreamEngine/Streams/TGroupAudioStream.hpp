@@ -6,6 +6,8 @@
 #include "TEffectAudioStream.h"
 #include "lv2_atom_helpers.hpp"
 
+#include <Midi/MidiExecutor.hpp>
+#include <Midi/MidiProcess.hpp>
 #include <ModernMIDI/midi_message.h>
 #include <set>
 #include <iostream>
@@ -135,8 +137,8 @@ class LV2AudioEffect : public TAudioEffectInterface
         std::vector<std::vector<float>> fCVs;
         std::vector<AtomBuffer> fMidiIns, fMidiOuts;
 
-        LilvInstance* fInstance;
-
+        LilvInstance* fInstance{};
+        Midi::Executor::ProcessExecutor* fMidiSource{};
     public:
         LV2AudioEffect(LV2Data dat):
             data{dat}
@@ -245,6 +247,11 @@ class LV2AudioEffect : public TAudioEffectInterface
             lilv_instance_activate(fInstance);
         }
 
+        void SetMidiSource(Midi::Executor::ProcessExecutor* proc)
+        {
+          fMidiSource = proc;
+        }
+
         long Inputs() override { return 2; }
         long Outputs() final override { return 2; }
 
@@ -336,13 +343,23 @@ class LV2AudioEffect : public TAudioEffectInterface
 
         void preProcess()
         {
-          auto on = mm::MakeNoteOn(0, 64, 120);
-          auto off = mm::MakeNoteOff(0, 64, 120);
-          for(AtomBuffer& port : fMidiIns)
+          if(fMidiSource)
           {
-            Iterator it{port.buf};
-            it.write(0, 0, data.host.midi_event_id, 3, on.data.data());
-            it.write(512, 0, data.host.midi_event_id, 3, off.data.data());
+            for(AtomBuffer& port : fMidiIns)
+            {
+              Iterator it{port.buf};
+              for(auto& note : fMidiSource->timedState.currentAudioStart)
+              {
+                auto on = mm::MakeNoteOn(fMidiSource->process().channel(), note.first.pitch(), note.first.velocity());
+                it.write(note.second, 0, data.host.midi_event_id, 3, on.data.data());
+              }
+
+              for(auto& note : fMidiSource->timedState.currentAudioStop)
+              {
+                auto off = mm::MakeNoteOff(fMidiSource->process().channel(), note.first.pitch(), note.first.velocity());
+                it.write(note.second, 0, data.host.midi_event_id, 3, off.data.data());
+              }
+            }
           }
         }
 

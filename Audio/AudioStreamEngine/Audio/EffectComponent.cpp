@@ -13,6 +13,8 @@
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeFaustEffectComponent.hpp>
 
+#include <Midi/MidiExecutor.hpp>
+#include <Midi/MidiProcess.hpp>
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -36,7 +38,7 @@ void EffectProcessComponent::makeStream(const Context& ctx)
     auto parent_cst = safe_cast<Scenario::ConstraintModel*>(process().parent());
 
     // Get its audio component
-    auto& cst_comp = iscore::component<Constraint>(parent_cst->components());
+    Constraint& cst_comp = iscore::component<Constraint>(parent_cst->components());
 
     // The constraint has the mix information, hence we request it to create
     // the mix.
@@ -49,15 +51,42 @@ void EffectProcessComponent::makeStream(const Context& ctx)
         sound = MakeNullSound(LONG_MAX);
     }
 
+    // Berk, moveme, refactorme, whatever
+    Midi::Executor::ProcessExecutor* midi_source{};
+    auto& procs = cst_comp.constraint().processes;
+    for(auto& proc : procs)
+    {
+      if(auto ptr = dynamic_cast<Midi::ProcessModel*>(&proc))
+      {
+        auto comp = iscore::findComponent<Midi::Executor::Component>(ptr->components());
+        if(comp)
+        {
+          midi_source = &comp->OSSIAProcess();
+          break;
+        }
+      }
+    }
+    int i = 0;
     for(auto& fx : process().effects())
     {
         auto compiled_fx = fx.effect();
-        if(!compiled_fx)
-            continue;
+        if(compiled_fx)
+        {
+          sound = MakeEffectSound(sound, compiled_fx, 0, 0);
+          if(sound)
+          {
+            if(i == 0 && midi_source)
+            {
+              SetLV2MidiSource(compiled_fx, midi_source);
+            }
+          }
+          else
+          {
+            // TODO maybe mark it as not working or something...
+          }
+        }
 
-        sound = MakeEffectSound(sound, compiled_fx, 0, 0);
-        if(!sound)
-            continue; // TODO maybe mark it as not working or something...
+        i++;
     }
 
     if(sound)
