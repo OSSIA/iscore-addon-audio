@@ -127,10 +127,16 @@ void ScenarioComponent::makeStream(const Context& ctx)
     m_stream = MakeSend(MakeGroupStream(m_groupPlayer));
 }
 
+void ScenarioComponent::stop()
+{
+  for(auto& constraint : constraints_pairs())
+    constraint.component.stop();
+}
+
 template<>
 Constraint* ScenarioComponentBase::make<Constraint, Scenario::ConstraintModel>(
-        const Id<iscore::Component>& id,
-        Scenario::ConstraintModel& elt)
+    const Id<iscore::Component>& id,
+    Scenario::ConstraintModel& elt)
 {
     return new Constraint{elt, system(), id, this};
 }

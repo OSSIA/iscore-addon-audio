@@ -71,6 +71,7 @@ void DocumentPlugin::stop()
     {
         if(m_comp)
         {
+            m_comp->stop();
             m_comp->constraint().components().remove(m_comp->id());
             m_comp = nullptr;
         }

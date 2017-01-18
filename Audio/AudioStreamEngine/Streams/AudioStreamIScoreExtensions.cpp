@@ -53,7 +53,7 @@ AUDIOAPI long GetLV2ControlOutCount(AudioEffect effect);
 AUDIOAPI void GetLV2ControlOutParam(AudioEffect effect, long control, char* label, float* min, float* max, float* init);
 AUDIOAPI float GetLV2ControlOutValue(AudioEffect effect, long control);
 AUDIOAPI void SetLV2MidiSource(AudioEffect effect, Midi::Executor::ProcessExecutor*);
-
+AUDIOAPI void LV2MidiNotesOff(AudioEffect effect);
 AUDIOAPI AudioEffect MakeLV2AudioEffect(LV2HostContext* h, LV2EffectContext*);
 #endif
 void CloseAudioPlayer(AudioPlayerPtr ext_player); // In libaudiostreammc
@@ -205,6 +205,12 @@ AUDIOAPI void SetLV2MidiSource(AudioEffect effect, Midi::Executor::ProcessExecut
 {
   get_lv2_fx(effect).SetMidiSource(ex);
 }
+
+AUDIOAPI void LV2MidiNotesOff(AudioEffect effect)
+{
+  get_lv2_fx(effect).AllNotesOff();
+}
+
 
 AUDIOAPI AudioEffect MakeLV2AudioEffect(LV2HostContext* h, LV2EffectContext* c)
 {

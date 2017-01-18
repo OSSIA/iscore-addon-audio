@@ -379,5 +379,13 @@ Mix::ProcessModel* Constraint::findMix() const
     });
     return it != procs.end() ? static_cast<Mix::ProcessModel*>(&(*it)) : nullptr;
 }
+
+void Constraint::stop()
+{
+  for(auto& proc : children())
+  {
+    proc.component->stop();
+  }
+}
 }
 }

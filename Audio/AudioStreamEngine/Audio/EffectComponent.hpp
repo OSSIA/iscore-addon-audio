@@ -23,6 +23,8 @@ class EffectProcessComponent final :
                QObject* parent_obj);
 
        void makeStream(const Context& ctx) override;
+
+       void stop() override;
 };
 
 using EffectProcessComponentFactory = ProcessComponentFactory_T<EffectProcessComponent>;

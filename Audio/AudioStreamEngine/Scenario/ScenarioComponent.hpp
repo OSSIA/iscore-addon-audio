@@ -55,6 +55,7 @@ class ScenarioComponent final : public HierarchicalScenarioComponent<
 
         void makeStream(const Context& ctx) override;
 
+        void stop() override;
     private:
         void onDateFixed(const TimeNode& t, audio_frame_t time, bool force_update);
         void onDateFixed(const Event& t, audio_frame_t time, bool force_update);

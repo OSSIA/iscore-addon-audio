@@ -39,6 +39,9 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent :
         virtual QString prettyName() const override;
         virtual bool hasInput() const = 0;
         virtual bool hasOutput() const = 0;
+
+        //! Called when stopping.
+        virtual void stop() {}
 };
 
 /// Utility class

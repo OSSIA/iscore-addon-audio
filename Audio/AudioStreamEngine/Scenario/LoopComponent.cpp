@@ -94,6 +94,12 @@ void LoopComponent::makeStream(const Context& ctx)
     }
 }
 
+void LoopComponent::stop()
+{
+  for(auto& constraint : constraints())
+    constraint.component.stop();
+}
+
 template<>
 Constraint* LoopComponentBase::make<Constraint, Scenario::ConstraintModel>(
         const Id<iscore::Component>& id,

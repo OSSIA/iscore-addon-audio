@@ -98,5 +98,16 @@ void EffectProcessComponent::makeStream(const Context& ctx)
     }
 }
 
+void EffectProcessComponent::stop()
+{
+
+  for(auto& fx : process().effects())
+  {
+      auto compiled_fx = fx.effect();
+      if(compiled_fx)
+        LV2MidiNotesOff(compiled_fx);
+  }
+}
+
 }
 }

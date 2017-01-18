@@ -41,6 +41,7 @@ void GetLV2ControlOutParam(AudioEffect effect, long control, char* label, float*
 float GetLV2ControlOutValue(AudioEffect effect, long control);
 
 void SetLV2MidiSource(AudioEffect effect, Midi::Executor::ProcessExecutor*);
+void LV2MidiNotesOff(AudioEffect effect);
 
 #endif
 

@@ -65,6 +65,8 @@ class Constraint final :
         AudioStream makeInputMix(const Id<Process::ProcessModel>& target);
         Mix::ProcessModel* findMix() const;
 
+        void stop();
+
         std::function<void(audio_frame_t, bool)> onStartDateFixed;
         std::function<void(audio_frame_t)> onStopDateFixed;
 

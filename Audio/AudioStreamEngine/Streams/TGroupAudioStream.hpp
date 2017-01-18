@@ -5,6 +5,7 @@
 #include "TExpAudioMixer.h"
 #include "TEffectAudioStream.h"
 #include "lv2_atom_helpers.hpp"
+#include <lv2/lv2plug.in/ns/ext/midi/midi.h>
 
 #include <Midi/MidiExecutor.hpp>
 #include <Midi/MidiProcess.hpp>
@@ -16,7 +17,7 @@
 #include <unordered_map>
 #include <ossia/detail/math.hpp>
 #include <iscore/tools/Todo.hpp>
-
+#include <ossia/detail/logger.hpp>
 // TODO rename this file
 
 #if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
@@ -341,6 +342,26 @@ class LV2AudioEffect : public TAudioEffectInterface
         {
         }
 
+        void AllNotesOff()
+        {
+          if(fMidiSource)
+          {
+            for(AtomBuffer& port : fMidiIns)
+            {
+              static float stopbuf_[1];
+              static float* stopbuf[2] = { +stopbuf_, +stopbuf_ };
+              Iterator it{port.buf};
+              for(int i = 0; i < 127; i++)
+              {
+                auto off = mm::MakeNoteOff(fMidiSource->process().channel(), i, 0);
+                it.write(0, 0, data.host.midi_event_id, 3, off.data.data());
+              }
+
+              Process(+stopbuf, +stopbuf, 0);
+            }
+          }
+        }
+
         void preProcess()
         {
           if(fMidiSource)
@@ -360,6 +381,8 @@ class LV2AudioEffect : public TAudioEffectInterface
                 it.write(note.second, 0, data.host.midi_event_id, 3, off.data.data());
               }
             }
+            fMidiSource->timedState.currentAudioStart.clear();
+            fMidiSource->timedState.currentAudioStop.clear();
           }
         }
 

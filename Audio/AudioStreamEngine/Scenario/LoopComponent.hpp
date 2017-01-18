@@ -51,6 +51,7 @@ class LoopComponent final : public HierarchicalBaseScenario<
         optional<AudioGraphVertice> visit(AudioGraph& graph) override;
 
         void makeStream(const Context& ctx) override;
+        void stop() override;
 
     private:
         std::vector<QMetaObject::Connection> m_connections;
