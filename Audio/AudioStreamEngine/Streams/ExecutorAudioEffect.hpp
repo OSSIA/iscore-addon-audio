@@ -18,7 +18,14 @@ public:
 
   long Read(FLOAT_BUFFER buffer, long framesNum, long framePos) override
   {
-    try { m_root.tick(); } catch(...) { ISCORE_TODO; }
+    try {
+      const ossia::time_value rate{1000000. * (double)TAudioGlobals::fBufferSize / (double)TAudioGlobals::fSampleRate};
+      m_root.tick(rate);
+    }
+    catch(...)
+    {
+      ISCORE_TODO;
+    }
     return fStream->Read(buffer, framesNum, framePos);
   }
 
