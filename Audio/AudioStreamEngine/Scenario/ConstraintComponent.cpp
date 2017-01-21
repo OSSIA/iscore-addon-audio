@@ -192,8 +192,8 @@ void Constraint::makeStream(const Context& player)
                 auto& cst_dur = constraint().duration;
 
                 AudioStream extended_stream;
-                TimeValue def = cst_dur.defaultDuration();
-                TimeValue maxdur = cst_dur.maxDuration();
+                TimeVal def = cst_dur.defaultDuration();
+                TimeVal maxdur = cst_dur.maxDuration();
 
                 audio_frame_t parent_max_dur =
                     cst_dur.isMaxInfinite()

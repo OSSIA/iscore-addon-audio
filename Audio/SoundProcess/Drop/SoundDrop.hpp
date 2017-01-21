@@ -13,7 +13,7 @@ struct DroppedAudioFiles
         bool valid() const
         { return !files.empty() && maxDuration != 0; }
 
-        TimeValue dropMaxDuration() const;
+        TimeVal dropMaxDuration() const;
         double maxDuration = 0;
         double maxSampleRate = 0;
         std::vector<MediaFileHandle> files;

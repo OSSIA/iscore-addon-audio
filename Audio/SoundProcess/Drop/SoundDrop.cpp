@@ -75,10 +75,10 @@ DroppedAudioFiles::DroppedAudioFiles(const QMimeData &mime)
     }
 }
 
-TimeValue DroppedAudioFiles::dropMaxDuration() const
+TimeVal DroppedAudioFiles::dropMaxDuration() const
 {
     // TODO what about resampling.
-    return TimeValue::fromMsecs(maxDuration / (maxSampleRate / 1000.0));
+    return TimeVal::fromMsecs(maxDuration / (maxSampleRate / 1000.0));
 }
 
 
@@ -126,7 +126,7 @@ bool DropHandler::createInParallel(
     const Scenario::ProcessModel& scenar = pres.processModel();
     Scenario::Point pt = pres.toScenarioPoint(pos);
 
-    TimeValue t = drop.dropMaxDuration();
+    TimeVal t = drop.dropMaxDuration();
 
     // Create the beginning
     auto start_cmd = new Scenario::Command::CreateTimeNode_Event_State{scenar, pt.date, pt.y};

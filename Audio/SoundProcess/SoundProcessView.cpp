@@ -154,7 +154,7 @@ void LayerView::drawWaveForms(ZoomRatio ratio) {
    }
 }
 
-void LayerView::recompute(const TimeValue& dur, ZoomRatio ratio)
+void LayerView::recompute(const TimeVal& dur, ZoomRatio ratio)
 {
     m_zoom = ratio;
     m_paths = QList<QPainterPath> ();
@@ -230,7 +230,7 @@ void LayerView::paint_impl(QPainter* painter) const
 }
 
 void LayerView::scrollValueChanged(int sbvalue) {
-    recompute(TimeValue(), m_zoom);
+    recompute(TimeVal(), m_zoom);
 }
 
 void LayerView::mousePressEvent(QGraphicsSceneMouseEvent*)

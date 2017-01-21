@@ -36,7 +36,7 @@ AudioClock::AudioClock(
 }
 
 void AudioClock::play_impl(
-        const TimeValue& t,
+        const TimeVal& t,
         Engine::Execution::BaseScenarioElement& bs)
 {
     auto stream = m_audioPlug.makeStream(bs.baseConstraint().iscoreConstraint());

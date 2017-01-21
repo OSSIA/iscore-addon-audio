@@ -15,7 +15,7 @@ namespace Send
 {
 
 ProcessModel::ProcessModel(
-        const TimeValue& duration,
+        const TimeVal& duration,
         const Id<Process::ProcessModel>& id,
         QObject* parent):
     Process::ProcessModel{duration, id, Metadata<ObjectKey_k, ProcessModel>::get(), parent}

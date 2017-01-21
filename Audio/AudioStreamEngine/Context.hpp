@@ -43,7 +43,7 @@ struct Context
         const iscore::DocumentContext& doc;
         AudioContext& audio;
 
-        long time(const TimeValue& t)
+        long time(const TimeVal& t)
         {
             return t.msec() * time_factor;
         }

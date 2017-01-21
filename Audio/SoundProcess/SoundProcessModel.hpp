@@ -23,7 +23,7 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessModel final : public Process::ProcessMod
         Q_OBJECT
     public:
         explicit ProcessModel(
-                const TimeValue& duration,
+                const TimeVal& duration,
                 const Id<Process::ProcessModel>& id,
                 QObject* parent);
 

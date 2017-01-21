@@ -16,7 +16,7 @@ class LayerView final : public Process::LayerView
         explicit LayerView(QGraphicsItem* parent);
 
         void setData(const MediaFileHandle& data);
-        void recompute(const TimeValue& dur, ZoomRatio ratio);
+        void recompute(const TimeVal& dur, ZoomRatio ratio);
     signals:
         void pressed();
 

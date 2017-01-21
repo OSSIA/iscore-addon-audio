@@ -18,7 +18,7 @@ class AudioClock final :
     private:
         // Clock interface
         void play_impl(
-                const TimeValue& t,
+                const TimeVal& t,
                 Engine::Execution::BaseScenarioElement&) override;
         void pause_impl(Engine::Execution::BaseScenarioElement&) override;
         void resume_impl(Engine::Execution::BaseScenarioElement&) override;

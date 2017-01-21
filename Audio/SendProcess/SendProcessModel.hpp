@@ -24,7 +24,7 @@ class ProcessModel final :
         Q_OBJECT
     public:
         explicit ProcessModel(
-                const TimeValue& duration,
+                const TimeVal& duration,
                 const Id<Process::ProcessModel>& id,
                 QObject* parent);
 
