@@ -22,7 +22,7 @@ struct LV2HostContext
         LV2_Feature const * const * features{};
         LilvWorld& world;
 
-        LV2_Atom_Forge forge;
+        LV2_Atom_Forge forge{};
 
         Lilv::Node make_node(const char* desc) {
             Lilv::Node n{nullptr};
