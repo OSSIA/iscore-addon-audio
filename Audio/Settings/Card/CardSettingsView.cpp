@@ -61,7 +61,7 @@ View::View(AudioStreamEngine::ApplicationPlugin * p) :
     driversMapping.insert(std::pair<long, int> (kCoreAudioRenderer, -1));
     driversMapping.insert(std::pair<long, int> (kOffLineAudioRenderer, -1));
 
-    populateDrivers();
+    // TODO do this async populateDrivers();
     displayLatency();
 }
 
@@ -239,14 +239,11 @@ void View::displayInfos() {
         DeviceInfo devinfo;
         GetDeviceInfo(ren, m_cardb->currentIndex(), &devinfo);
 
-        std::stringstream ss;
-        ss << "<i>"<< tr("Default buffer size").toStdString() << ": </i>" << devinfo.fDefaultBufferSize << "<br>";
-        ss << "<i>" << tr("Default sample rate").toStdString() << ": </i>" << devinfo.fDefaultSampleRate << "<br>";
-        ss << "<i>" << tr("Max input channels").toStdString() << ": </i>" << devinfo.fMaxInputChannels << "<br>";
-        ss << "<i>" << tr("Max output channels").toStdString() << ": </i>" << devinfo.fMaxOutputChannels << "<br>";
-
-        info = QString(ss.str().c_str());
-
+        QTextStream ss{&info};
+        ss << "<i>"<< tr("Default buffer size") << ": </i>" << devinfo.fDefaultBufferSize << "<br>";
+        ss << "<i>" << tr("Default sample rate") << ": </i>" << devinfo.fDefaultSampleRate << "<br>";
+        ss << "<i>" << tr("Max input channels") << ": </i>" << devinfo.fMaxInputChannels << "<br>";
+        ss << "<i>" << tr("Max output channels") << ": </i>" << devinfo.fMaxOutputChannels << "<br>";
     }
 
     m_infol->setText(info);

@@ -8,7 +8,6 @@ class QLabel;
 
 namespace Audio {
 namespace Settings {
-
 class View : public iscore::SettingsDelegateView {
     Q_OBJECT
 public:
