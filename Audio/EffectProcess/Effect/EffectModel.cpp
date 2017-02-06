@@ -53,7 +53,7 @@ void EffectModel::restoreParams()
     if(!m_effect)
         return;
 
-    int n = GetControlCountEffect(m_effect);
+    std::size_t n = GetControlCountEffect(m_effect);
     if(m_params.size() != n)
         return;
 
