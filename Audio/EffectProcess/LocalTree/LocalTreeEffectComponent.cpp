@@ -69,7 +69,7 @@ void EffectComponent::recreate()
         param_node->aboutToBeDeleted.connect<EffectComponent, &EffectComponent::on_nodeDeleted>(this);
         auto param_addr = param_node->createAddress(ossia::val_type::FLOAT);
         param_addr->setAccessMode(ossia::access_mode::BI);
-        param_addr->setDomain(ossia::net::make_domain(float{parameter.min}, float{parameter.max}));
+        param_addr->setDomain(ossia::make_domain(float{parameter.min}, float{parameter.max}));
         if(!str_label.empty())
           ossia::net::set_description(*param_node, str_label);
         else
@@ -113,7 +113,7 @@ void EffectComponent::recreate()
             param_node->aboutToBeDeleted.connect<EffectComponent, &EffectComponent::on_nodeDeleted>(this);
             auto param_addr = param_node->createAddress(ossia::val_type::FLOAT);
             param_addr->setAccessMode(ossia::access_mode::GET);
-            param_addr->setDomain(ossia::net::make_domain(float{parameter.min}, float{parameter.max}));
+            param_addr->setDomain(ossia::make_domain(float{parameter.min}, float{parameter.max}));
             if(!str_label.empty())
               ossia::net::set_description(*param_node, str_label);
             else
