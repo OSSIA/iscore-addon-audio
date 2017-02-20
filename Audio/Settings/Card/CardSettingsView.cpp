@@ -61,7 +61,8 @@ View::View(AudioStreamEngine::ApplicationPlugin * p) :
     driversMapping.insert(std::pair<long, int> (kCoreAudioRenderer, -1));
     driversMapping.insert(std::pair<long, int> (kOffLineAudioRenderer, -1));
 
-    // TODO do this async populateDrivers();
+    // TODO do this async
+    populateDrivers();
     displayLatency();
 }
 

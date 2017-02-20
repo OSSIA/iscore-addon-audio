@@ -29,7 +29,7 @@ class DropHandler final :
 {
         ISCORE_CONCRETE("bc57983b-c29e-4b12-8afe-9d6ffbcb7a94")
 
-        bool handle(
+        bool drop(
                  const Scenario::TemporalScenarioPresenter &,
                  QPointF pos,
                  const QMimeData *mime) override;
@@ -50,7 +50,7 @@ class ConstraintDropHandler final :
 {
         ISCORE_CONCRETE("edbc884b-96cc-4b59-998c-2f48941a7b6a")
 
-        bool handle(
+        bool drop(
                  const Scenario::ConstraintModel&,
                  const QMimeData *mime) override;
 };

@@ -82,7 +82,7 @@ TimeVal DroppedAudioFiles::dropMaxDuration() const
 }
 
 
-bool DropHandler::handle(
+bool DropHandler::drop(
         const Scenario::TemporalScenarioPresenter& pres,
         QPointF pos,
         const QMimeData *mime)
@@ -174,7 +174,7 @@ static bool constraintHasNoFollowers(
 }
 
 
-bool ConstraintDropHandler::handle(
+bool ConstraintDropHandler::drop(
         const Scenario::ConstraintModel& constraint,
         const QMimeData *mime)
 {
