@@ -12,7 +12,6 @@ namespace Sound
 LayerView::LayerView(QGraphicsItem* parent):
     Process::LayerView{parent}
 {
-    this->setFlag(QGraphicsItem::ItemClipsToShape, true);
     auto view = scene()->views().first();
     connect(view->horizontalScrollBar(), &QScrollBar::valueChanged, this, &Audio::Sound::LayerView::scrollValueChanged);
 }
