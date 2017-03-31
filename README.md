@@ -21,8 +21,18 @@ Audio effect formats supported :
 * Unless you're on OS X, either jack or portaudio
 * libsamplerate
 * librubberband
+* lv2 (version >= 1.14.0)
 
 #### Procedure
+You may need to build `lv2` yourself to get 1.14.0 (Ubuntu 16.10 provides 1.12.x) :
+    
+    git clone http://lv2plug.in/git/lv2.git
+    cd lv2
+    git checkout v1.14.0 
+    ./waf configure
+    ./waf 
+    sudo ./waf install
+    
 Clone this repository inside the addons folder of i-score : https://github.com/OSSIA/i-score/tree/master/base/addons
 
 (Re-)run CMake
