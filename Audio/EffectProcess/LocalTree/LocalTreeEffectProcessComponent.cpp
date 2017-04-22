@@ -19,7 +19,7 @@ EffectProcessComponentBase::EffectProcessComponentBase(
         Engine::LocalTree::DocumentPlugin& doc,
         QObject* parent_obj):
     Engine::LocalTree::ProcessComponent_T<ProcessModel>{parent, scenario, doc, id, "EffectProcessComponent", parent_obj},
-    m_effectsNode{*node().createChild("effects")}
+    m_effectsNode{*node().create_child("effects")}
 {
 }
 

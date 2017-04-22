@@ -23,7 +23,7 @@ EffectComponent::EffectComponent(
         const QString& name,
         QObject* parent):
     parent_t{n, model.metadata(), model, doc, id, "EffectComponent", parent},
-    m_parametersNode{*node().createChild("parameters")}
+    m_parametersNode{*node().create_child("parameters")}
 {
     con(model, &EffectModel::effectChanged,
         this, &EffectComponent::recreate);
@@ -35,18 +35,18 @@ EffectComponent::~EffectComponent()
 {
     for(const auto& tpl : m_inAddresses)
     {
-        std::get<2>(tpl)->aboutToBeDeleted.disconnect<EffectComponent, &EffectComponent::on_nodeDeleted>(this);
+        std::get<2>(tpl)->about_to_be_deleted.disconnect<EffectComponent, &EffectComponent::on_nodeDeleted>(this);
     }
     for(const auto& tpl : m_outAddresses)
     {
-        std::get<2>(tpl)->aboutToBeDeleted.disconnect<EffectComponent, &EffectComponent::on_nodeDeleted>(this);
+        std::get<2>(tpl)->about_to_be_deleted.disconnect<EffectComponent, &EffectComponent::on_nodeDeleted>(this);
     }
     emit aboutToBeDestroyed();
 }
 
 void EffectComponent::recreate()
 {
-    m_parametersNode.clearChildren();
+    m_parametersNode.clear_children();
 
     EffectModel& effect = this->effect();
     AudioEffect fx = effect.effect();
@@ -64,12 +64,12 @@ void EffectComponent::recreate()
 
         auto str_label = parameter.label.toStdString();
         // Create the node
-        auto param_node = m_parametersNode.createChild(str_label);
+        auto param_node = m_parametersNode.create_child(str_label);
 
-        param_node->aboutToBeDeleted.connect<EffectComponent, &EffectComponent::on_nodeDeleted>(this);
-        auto param_addr = param_node->createAddress(ossia::val_type::FLOAT);
-        param_addr->setAccessMode(ossia::access_mode::BI);
-        param_addr->setDomain(ossia::make_domain(float{parameter.min}, float{parameter.max}));
+        param_node->about_to_be_deleted.connect<EffectComponent, &EffectComponent::on_nodeDeleted>(this);
+        auto param_addr = param_node->create_address(ossia::val_type::FLOAT);
+        param_addr->set_access(ossia::access_mode::BI);
+        param_addr->set_domain(ossia::make_domain(float{parameter.min}, float{parameter.max}));
         if(!str_label.empty())
           ossia::net::set_description(*param_node, str_label);
         else
@@ -89,9 +89,9 @@ void EffectComponent::recreate()
 
         const auto& p = effect.savedParams();
         if(parameter.id < p.size())
-            param_addr->pushValue(float{p[parameter.id]});
+            param_addr->push_value(float{p[parameter.id]});
         else
-            param_addr->pushValue(float{parameter.init});
+            param_addr->push_value(float{parameter.init});
 
         m_inAddresses.push_back(std::make_tuple(parameter.id, param_addr, param_node));
 
@@ -109,17 +109,17 @@ void EffectComponent::recreate()
 
             auto str_label = parameter.label.toStdString();
             // Create the node
-            auto param_node = m_parametersNode.createChild(str_label);
-            param_node->aboutToBeDeleted.connect<EffectComponent, &EffectComponent::on_nodeDeleted>(this);
-            auto param_addr = param_node->createAddress(ossia::val_type::FLOAT);
-            param_addr->setAccessMode(ossia::access_mode::GET);
-            param_addr->setDomain(ossia::make_domain(float{parameter.min}, float{parameter.max}));
+            auto param_node = m_parametersNode.create_child(str_label);
+            param_node->about_to_be_deleted.connect<EffectComponent, &EffectComponent::on_nodeDeleted>(this);
+            auto param_addr = param_node->create_address(ossia::val_type::FLOAT);
+            param_addr->set_access(ossia::access_mode::GET);
+            param_addr->set_domain(ossia::make_domain(float{parameter.min}, float{parameter.max}));
             if(!str_label.empty())
               ossia::net::set_description(*param_node, str_label);
             else
               ossia::net::set_description(*param_node, ossia::none);
 
-            param_addr->pushValue(float{GetLV2ControlOutValue(fx, parameter.id)});
+            param_addr->push_value(float{GetLV2ControlOutValue(fx, parameter.id)});
             m_outAddresses.push_back(std::make_tuple(parameter.id, param_addr, param_node));
         }
 
@@ -132,7 +132,7 @@ void EffectComponent::recreate()
 
                 for(auto p : m_outAddresses)
                 {
-                    std::get<1>(p)->pushValue(float{GetLV2ControlOutValue(fx, std::get<0>(p))});
+                    std::get<1>(p)->push_value(float{GetLV2ControlOutValue(fx, std::get<0>(p))});
                 }
             };
         }

@@ -582,7 +582,7 @@ class MonoLV2AudioInstrument final : public LV2AudioEffect
 //                audio_frame_t cur_frame,
 //                long frames)
 //        {
-//            auto timenode_time = fStartDate->getDate();
+//            auto timenode_time = fStartDate->get_date();
 //            if (InBuffer(timenode_time, cur_frame, frames))
 //            {
 //                m_audio_parent.onDateFixed(cur_frame);

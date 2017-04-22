@@ -41,8 +41,8 @@ struct TLoopCommand : public TControlCommand
                 audio_frame_t cur_frame,
                 long frames)
         {
-            auto loop_time = fStopDate->getDate();
-            auto loop_dur = fStopDate->getDate() - fStartDate->getDate();
+            auto loop_time = fStopDate->get_date();
+            auto loop_dur = fStopDate->get_date() - fStartDate->get_date();
             qDebug() << loop_time << loop_dur << InBuffer(loop_time, cur_frame, frames);
             if (InBuffer(loop_time, cur_frame, frames))
             {
