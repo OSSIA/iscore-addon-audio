@@ -4,7 +4,6 @@
 #include <iscore/serialization/JSONVisitor.hpp>
 #include <iscore/serialization/VisitorCommon.hpp>
 #include <Audio/MixProcess/MixProcessMetadata.hpp>
-#include <Process/LayerModel.hpp>
 #include <Audio/MediaFileHandle.hpp>
 #include <unordered_set>
 
@@ -32,7 +31,7 @@ class ProcessModel final :
         public Nano::Observer
 {
         ISCORE_SERIALIZE_FRIENDS
-        MODEL_METADATA_IMPL(Audio::Mix::ProcessModel)
+        PROCESS_METADATA_IMPL(Audio::Mix::ProcessModel)
         Q_OBJECT
     public:
         explicit ProcessModel(

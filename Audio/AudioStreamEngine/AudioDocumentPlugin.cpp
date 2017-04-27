@@ -46,12 +46,6 @@ AudioStream DocumentPlugin::makeStream(Scenario::ConstraintModel& cst)
         return nullptr;
     }
 
-    con(audioContext.doc.document, &iscore::Document::aboutToClose,
-        this, [=] () {
-        // Stop and clean
-        stop();
-    });
-
     return m_comp->getStream();
 }
 
@@ -76,6 +70,12 @@ void DocumentPlugin::stop()
             m_comp = nullptr;
         }
     }
+}
+
+void DocumentPlugin::on_documentClosing()
+{
+  // Stop and clean
+  stop();
 }
 
 void DocumentPlugin::openPlayer()

@@ -38,6 +38,7 @@ class DocumentPlugin : public iscore::DocumentPlugin
         AudioStream makeStream(Scenario::ConstraintModel& cst);
         void stop();
 
+        void on_documentClosing() override;
     private:
         void openPlayer();
 

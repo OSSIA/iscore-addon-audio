@@ -9,10 +9,8 @@
 #include <Scenario/Commands/Constraint/AddProcessToConstraint.hpp>
 #include <iscore/command/Dispatchers/MacroCommandDispatcher.hpp>
 #include <Scenario/Commands/Scenario/Creations/CreateTimeNode_Event_State.hpp>
-#include <Scenario/Commands/Constraint/AddRackToConstraint.hpp>
 #include <Scenario/Commands/Constraint/Rack/AddSlotToRack.hpp>
 #include <Scenario/Commands/Constraint/AddLayerInNewSlot.hpp>
-#include <Scenario/Commands/Constraint/Rack/Slot/AddLayerModelToSlot.hpp>
 
 
 #include <Loop/LoopProcessModel.hpp>
@@ -27,7 +25,6 @@ namespace Sound
 static void createSoundProcesses(
         RedoMacroCommandDispatcher<Audio::Commands::CreateSoundBoxMacro>& m,
         const Scenario::ConstraintModel& constraint,
-        const Scenario::RackModel& rack,
         DroppedAudioFiles& drop)
 {
     for(auto&& file : drop.files)
@@ -44,14 +41,8 @@ static void createSoundProcesses(
         m.submitCommand(file_cmd);
 
         // Create a new slot
-        auto slot_cmd = new Scenario::Command::AddSlotToRack{rack};
+        auto slot_cmd = new Scenario::Command::AddLayerInNewSlot{constraint, process_cmd->processId()};
         m.submitCommand(slot_cmd);
-
-        // Add a new layer in this slot.
-        auto& slot = rack.slotmodels.at(slot_cmd->createdSlot());
-
-        auto layer_cmd = new Scenario::Command::AddLayerModelToSlot{slot, proc};
-        m.submitCommand(layer_cmd);
     }
 }
 
@@ -123,7 +114,7 @@ bool DropHandler::createInParallel(
         pres.context().context.commandStack};
 
     // Create a box.
-    const Scenario::ProcessModel& scenar = pres.processModel();
+    const Scenario::ProcessModel& scenar = pres.model();
     Scenario::Point pt = pres.toScenarioPoint(pos);
 
     TimeVal t = drop.dropMaxDuration();
@@ -138,16 +129,11 @@ bool DropHandler::createInParallel(
     m.submitCommand(box_cmd);
     auto& constraint = scenar.constraint(box_cmd->createdConstraint());
 
-    auto cmd3 = new Scenario::Command::AddRackToConstraint{constraint};
-    m.submitCommand(cmd3);
-
-    auto& rack = constraint.racks.at(cmd3->createdRack());
-
     // Add sound processes as fit.
-    createSoundProcesses(m, constraint, rack, drop);
+    createSoundProcesses(m, constraint, drop);
 
     // Finally we show the newly created rack
-    auto show_cmd = new Scenario::Command::ShowRackInAllViewModels{constraint, rack.id()};
+    auto show_cmd = new Scenario::Command::ShowRack{constraint};
     m.submitCommand(show_cmd);
     m.commit();
 
@@ -224,25 +210,11 @@ bool ConstraintDropHandler::drop(
         }
     }
 
-    auto& rack = [&] () -> Scenario::RackModel& {
-        if(constraint.racks.empty())
-        {
-            auto rack_cmd = new Scenario::Command::AddRackToConstraint{constraint};
-            m.submitCommand(rack_cmd);
-            return constraint.racks.at(rack_cmd->createdRack());
-        }
-        else
-        {
-            return *constraint.racks.begin();
-        }
-    }();
-
-
     // Add the processes
-    createSoundProcesses(m, constraint, rack, drop);
+    createSoundProcesses(m, constraint,  drop);
 
     // Show the rack
-    auto show_cmd = new Scenario::Command::ShowRackInAllViewModels{constraint, rack.id()};
+    auto show_cmd = new Scenario::Command::ShowRack{constraint};
     m.submitCommand(show_cmd);
     m.commit();
 

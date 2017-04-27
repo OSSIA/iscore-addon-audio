@@ -4,7 +4,6 @@
 #include <iscore/serialization/JSONVisitor.hpp>
 #include <iscore/serialization/VisitorCommon.hpp>
 #include <Audio/SoundProcess/SoundProcessMetadata.hpp>
-#include <Process/LayerModel.hpp>
 #include <Audio/MediaFileHandle.hpp>
 #include <iscore_plugin_audio_export.h>
 
@@ -18,7 +17,7 @@ class ProcessModel;
 class ISCORE_PLUGIN_AUDIO_EXPORT ProcessModel final : public Process::ProcessModel
 {
         ISCORE_SERIALIZE_FRIENDS
-        MODEL_METADATA_IMPL(Audio::Sound::ProcessModel)
+        PROCESS_METADATA_IMPL(Audio::Sound::ProcessModel)
 
         Q_OBJECT
     public:

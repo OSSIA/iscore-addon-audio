@@ -123,7 +123,7 @@ iscore_plugin_audio::~iscore_plugin_audio()
 
 }
 
-iscore::GUIApplicationPlugin*iscore_plugin_audio::make_applicationPlugin(
+iscore::GUIApplicationPlugin*iscore_plugin_audio::make_guiApplicationPlugin(
         const iscore::GUIApplicationContext& app)
 {
     return new Audio::AudioStreamEngine::ApplicationPlugin{app};

@@ -6,7 +6,7 @@ namespace Audio
 namespace Sound
 {
 LayerPresenter::LayerPresenter(
-        const Layer& layer,
+        const ProcessModel& layer,
         LayerView* view,
         const Process::ProcessPresenterContext& ctx,
         QObject* parent):
@@ -19,32 +19,31 @@ LayerPresenter::LayerPresenter(
         m_context.context.focusDispatcher.focus(this);
     });
 
-    auto& pm = processModel();
-    con(pm, &ProcessModel::fileChanged,
+    con(layer, &ProcessModel::fileChanged,
         this, [&] () {
-        m_view->setData(model(*this).file());
-        m_view->recompute(model(*this).duration(), m_ratio);
+        m_view->setData(m_layer.file());
+        m_view->recompute(m_layer.duration(), m_ratio);
     });
 
-    m_view->setData(model(*this).file());
-    m_view->recompute(model(*this).duration(), m_ratio);
+    m_view->setData(m_layer.file());
+    m_view->recompute(m_layer.duration(), m_ratio);
 }
 
 void LayerPresenter::setWidth(qreal val)
 {
     m_view->setWidth(val);
-    m_view->recompute(processModel().duration(), m_ratio);
+    m_view->recompute(m_layer.duration(), m_ratio);
 }
 
 void LayerPresenter::setHeight(qreal val)
 {
     m_view->setHeight(val);
-    m_view->recompute(processModel().duration(), m_ratio);
+    m_view->recompute(m_layer.duration(), m_ratio);
 }
 
 void LayerPresenter::putToFront()
 {
-    m_view->recompute(processModel().duration(), m_ratio);
+    m_view->recompute(m_layer.duration(), m_ratio);
     m_view->show();
 }
 
@@ -56,22 +55,22 @@ void LayerPresenter::putBehind()
 void LayerPresenter::on_zoomRatioChanged(ZoomRatio r)
 {
     m_ratio = r;
-    m_view->recompute(processModel().duration(), m_ratio);
+    m_view->recompute(m_layer.duration(), m_ratio);
 }
 
 void LayerPresenter::parentGeometryChanged()
 {
-    m_view->recompute(processModel().duration(), m_ratio);
+    m_view->recompute(m_layer.duration(), m_ratio);
 }
 
-const Layer& LayerPresenter::layerModel() const
+const ProcessModel& LayerPresenter::model() const
 {
     return m_layer;
 }
 
 const Id<Process::ProcessModel>& LayerPresenter::modelId() const
 {
-    return processModel().id();
+    return m_layer.id();
 }
 }
 }

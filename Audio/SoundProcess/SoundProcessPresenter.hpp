@@ -15,7 +15,7 @@ class LayerPresenter final :
     public:
         using model_type = const Audio::Sound::ProcessModel;
         explicit LayerPresenter(
-                const Layer& model,
+                const ProcessModel& model,
                 LayerView* view,
                 const Process::ProcessPresenterContext& ctx,
                 QObject* parent);
@@ -30,13 +30,11 @@ class LayerPresenter final :
 
         void parentGeometryChanged() override;
 
-        const Layer& layerModel() const override;
-        const ProcessModel& processModel() const
-        { return static_cast<ProcessModel&>(m_layer.processModel()); }
+        const ProcessModel& model() const override;
         const Id<Process::ProcessModel>& modelId() const override;
 
     private:
-        const Layer& m_layer;
+        const ProcessModel& m_layer;
         LayerView* m_view{};
         ZoomRatio m_ratio{1};
 };

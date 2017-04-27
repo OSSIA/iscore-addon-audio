@@ -29,7 +29,7 @@ class iscore_plugin_audio final:
         iscore_plugin_audio();
         ~iscore_plugin_audio();
 
-        iscore::GUIApplicationPlugin* make_applicationPlugin(
+        iscore::GUIApplicationPlugin* make_guiApplicationPlugin(
                 const iscore::GUIApplicationContext& app) override;
 
 
