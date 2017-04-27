@@ -9,7 +9,7 @@
 class iscore_plugin_audio final:
         public QObject,
         public iscore::Plugin_QtInterface,
-        public iscore::GUIApplicationPlugin_QtInterface,
+        public iscore::ApplicationPlugin_QtInterface,
         public iscore::FactoryInterface_QtInterface,
         public iscore::FactoryList_QtInterface,
         public iscore::CommandFactory_QtInterface
@@ -18,7 +18,7 @@ class iscore_plugin_audio final:
         Q_PLUGIN_METADATA(IID FactoryInterface_QtInterface_iid)
         Q_INTERFACES(
                 iscore::Plugin_QtInterface
-                iscore::GUIApplicationPlugin_QtInterface
+                iscore::ApplicationPlugin_QtInterface
                 iscore::FactoryInterface_QtInterface
                 iscore::FactoryList_QtInterface
                 iscore::CommandFactory_QtInterface
