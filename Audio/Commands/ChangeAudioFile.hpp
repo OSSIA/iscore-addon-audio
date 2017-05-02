@@ -18,9 +18,6 @@ class ChangeAudioFile final : public iscore::Command
         ChangeAudioFile(
                 Path<Sound::ProcessModel>&& model,
                 const QString& text);
-       ChangeAudioFile(
-                Path<Sound::ProcessModel>&& model,
-                MediaFileHandle&& newfile);
 
         void undo() const override;
 
@@ -33,7 +30,7 @@ class ChangeAudioFile final : public iscore::Command
 
     private:
         Path<Sound::ProcessModel> m_model;
-        MediaFileHandle m_old, m_new;
+        QString m_old, m_new;
 };
 }
 }

@@ -7,16 +7,13 @@ namespace Audio
 {
 // TODO store them in an application-wide cache to prevent loading / unloading
 // TODO memmap
-struct MediaFileHandle
+struct MediaFileHandle : public QObject
 {
+  Q_OBJECT
     public:
         MediaFileHandle() = default;
-        MediaFileHandle(const MediaFileHandle& other) = default;
-        MediaFileHandle(MediaFileHandle&& other) = default;
-        MediaFileHandle& operator=(const MediaFileHandle& other) = default;
-        MediaFileHandle& operator=(MediaFileHandle&& other) = default;
 
-        MediaFileHandle(const QString& filename);
+        void load(const QString& filename);
 
         QString name() const
         { return m_file; }
@@ -38,6 +35,8 @@ struct MediaFileHandle
         bool empty() const
         { return channels() == 0 || samples() == 0; }
 
+    signals:
+        void mediaChanged();
     private:
         QString m_file;
         AudioArray m_array;
@@ -45,5 +44,3 @@ struct MediaFileHandle
         int m_sampleRate;
 };
 }
-
-Q_DECLARE_METATYPE(Audio::MediaFileHandle)

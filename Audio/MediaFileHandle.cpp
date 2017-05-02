@@ -17,7 +17,7 @@ void DataStreamWriter::write(
 {
     QString name;
     m_stream >> name;
-    lm = Audio::MediaFileHandle{name};
+    lm.load(name);
 }
 
 
@@ -33,24 +33,45 @@ template <>
 void JSONObjectWriter::write(
         Audio::MediaFileHandle& lm)
 {
-    lm = Audio::MediaFileHandle(obj["File"].toString());
+    lm.load(obj["File"].toString());
 }
 
 
 namespace Audio
 {
-MediaFileHandle::MediaFileHandle(const QString &filename):
-    m_file{filename}
+void MediaFileHandle::load(const QString &filename)
 {
-    if(isAudioFile(QFile(m_file)))
-    {
-        m_array = AudioDecoder::readAudio(m_file);
-        m_sampleRate = 44100;
+  m_file = filename;
+  if(isAudioFile(QFile(m_file)))
+  {
+    auto decoder = new AudioDecoder;
 
-        m_data[0] = m_array[0].data();
-        if(m_array.size() == 2)
-            m_data[1] = m_array[1].data();
-    }
+    connect(decoder, &AudioDecoder::finished,
+            this, [=] {
+      m_array = std::move(decoder->data);
+
+
+      m_sampleRate = 44100;
+
+      if(m_array.size() == 2)
+        if(m_array[1].empty())
+          m_array.resize(1);
+
+      m_data[0] = m_array[0].data();
+      if(m_array.size() == 2)
+        m_data[1] = m_array[1].data();
+      decoder->deleteLater();
+      emit mediaChanged();
+    } );
+    connect(decoder, &AudioDecoder::failed,
+            this, [=] {
+      m_array.clear();
+      decoder->deleteLater();
+      emit mediaChanged();
+    });
+
+    decoder->decode(m_file);
+  }
 }
 
 float**MediaFileHandle::audioData() const

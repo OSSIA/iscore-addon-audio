@@ -38,31 +38,6 @@ static AudioArray readAudioSndfile(const std::string& path)
     return deint;
 }
 #endif
-AudioArray AudioDecoder::readAudio(const QString& path)
-{
-#if defined(__APPLE__)
-  return readAudioSndfile(path.toStdString());
-#else
-    qDebug() << "decoding...";
-    AudioArray dat;
-    AudioDecoder s{dat, path};
-
-    std::atomic_bool timeout{false};
-    QTimer::singleShot(5000, [&] () { timeout = true; });
-    while(!s.ready && !timeout)
-        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-
-    if(s.decoder.error() != QAudioDecoder::NoError)
-        qDebug() << s.decoder.errorString();
-    else if(timeout)
-        qDebug() << s.decoder.errorString() << s.decoder.state();
-
-    qDebug() << "decoded..." << dat.size() << dat[0].size();
-    return dat;
-
-#endif
-}
-
 namespace
 {
 template<QAudioFormat::SampleType SampleFormat, int N>
@@ -240,9 +215,21 @@ struct decode_visitor
     }
 }
 }
-AudioDecoder::AudioDecoder(AudioArray& p_data, const QString& path):
-    data{p_data}
+
+
+
+AudioDecoder::AudioDecoder()
 {
+
+}
+
+void AudioDecoder::decode(const QString& path)
+{
+#if defined(__APPLE__)
+    data = readAudioSndfile(path.toStdString());
+    emit finished();
+    return;
+#endif
     QAudioFormat desiredFormat;
     desiredFormat.setChannelCount(-1);
     desiredFormat.setCodec("audio/x-raw");
@@ -259,6 +246,7 @@ AudioDecoder::AudioDecoder(AudioArray& p_data, const QString& path):
     {
         qDebug() << decoder.errorString();
         ready = true;
+        emit failed();
         return;
     }
 
@@ -289,10 +277,22 @@ AudioDecoder::AudioDecoder(AudioArray& p_data, const QString& path):
             [=] (QAudioDecoder::State s) {
         if(s == QAudioDecoder::StoppedState)
         {
-            if(data[1].empty())
-                data.resize(1);
+          if(decoder.error() != QAudioDecoder::Error::NoError)
+          {
+            ready.store(true);
+            emit failed();
+          }
+          else
+          {
+            if(data.size() > 1)
+            {
+              if(data[1].empty())
+                  data.resize(1);
+            }
 
             ready.store(true);
+            emit finished();
+          }
         }
     });
 

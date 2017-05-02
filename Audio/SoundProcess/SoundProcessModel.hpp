@@ -40,6 +40,7 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessModel final : public Process::ProcessMod
             Process::ProcessModel{vis, parent}
         {
             vis.writeTo(*this);
+            init();
         }
 
         void setFile(const QString& file);
@@ -54,7 +55,10 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessModel final : public Process::ProcessMod
         void fileChanged();
 
     private:
+        void init();
+
         MediaFileHandle m_file;
 };
+
 }
 }

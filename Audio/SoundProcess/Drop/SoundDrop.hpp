@@ -16,7 +16,7 @@ struct DroppedAudioFiles
         TimeVal dropMaxDuration() const;
         double maxDuration = 0;
         double maxSampleRate = 0;
-        std::vector<MediaFileHandle> files;
+        std::vector<QString> files;
 };
 
 /**

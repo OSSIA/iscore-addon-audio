@@ -19,6 +19,7 @@ ProcessModel::ProcessModel(
 {
     metadata().setInstanceName(*this);
     setFile("/tmp/bass.aif");
+    init();
 }
 
 ProcessModel::ProcessModel(
@@ -29,10 +30,11 @@ ProcessModel::ProcessModel(
         source,
         id,
         Metadata<ObjectKey_k, ProcessModel>::get(),
-        parent},
-    m_file{source.m_file}
+        parent}
 {
+    m_file.load(source.m_file.name());
     metadata().setInstanceName(*this);
+    init();
 }
 
 ProcessModel::~ProcessModel()
@@ -44,16 +46,17 @@ void ProcessModel::setFile(const QString &file)
 {
     if(file != m_file.name())
     {
-        m_file = MediaFileHandle(file);
+        m_file.load(file);
         emit fileChanged();
     }
 }
 
-void ProcessModel::setFile(const MediaFileHandle &file)
+void ProcessModel::init()
 {
-    m_file = file;
-    emit fileChanged();
+  connect(&m_file, &MediaFileHandle::mediaChanged,
+          this, &ProcessModel::fileChanged);
 }
+
 }
 
 }

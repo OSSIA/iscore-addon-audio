@@ -272,7 +272,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
                      Qt5::Core Qt5::Widgets Qt5::Multimedia
                      iscore_lib_base iscore_plugin_engine iscore_plugin_midi
                      ${SNDFILE_LIBRARIES}
-                     LibAudioStream)
+                     LibAudioStream mediainfo)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
                      ${SNDFILE_INCLUDE_DIR})

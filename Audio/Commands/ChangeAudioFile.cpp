@@ -13,16 +13,7 @@ ChangeAudioFile::ChangeAudioFile(
     m_model{std::move(model)},
     m_new{text}
 {
-    m_old = m_model.find().file();
-}
-
-ChangeAudioFile::ChangeAudioFile(
-        Path<Sound::ProcessModel>&& model,
-        MediaFileHandle&& newfile):
-    m_model{std::move(model)},
-    m_new{std::move(newfile)}
-{
-    m_old = m_model.find().file();
+    m_old = m_model.find().file().name();
 }
 
 void ChangeAudioFile::undo() const

@@ -9,16 +9,18 @@ namespace Audio
 class AudioDecoder :
         public QObject
 {
+  Q_OBJECT
     public:
-        static AudioArray readAudio(const QString& path);
-
-    private:
-        AudioDecoder(
-                AudioArray& p_data,
-                const QString& path);
+        AudioDecoder();
+        void decode(const QString& path);
 
         QAudioDecoder decoder;
-        AudioArray& data;
+        AudioArray data;
         std::atomic_bool ready{false};
+
+    signals:
+        void finished();
+        void failed();
 };
+
 }

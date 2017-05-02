@@ -14,6 +14,8 @@
 
 
 #include <Loop/LoopProcessModel.hpp>
+#define UNICODE 1
+#include <MediaInfo/MediaInfo.h>
 #include <QMimeData>
 #include <QUrl>
 #include <QApplication>
@@ -56,12 +58,29 @@ DroppedAudioFiles::DroppedAudioFiles(const QMimeData &mime)
 
         files.emplace_back(filename);
 
+        MediaInfoLib::MediaInfo m;
+        m.Open(filename.toStdWString());
+        auto sr = m.Get(MediaInfoLib::stream_t::Stream_Audio, 0, L"SamplingRate");
+        auto cl = m.Get(MediaInfoLib::stream_t::Stream_Audio, 0, L"Channels");
+        auto sc = m.Get(MediaInfoLib::stream_t::Stream_Audio, 0, L"SamplingCount");
+        auto dur = m.Get(MediaInfoLib::stream_t::Stream_Audio, 0, L"Duration");
+
+        // Only for uncompressed
+        auto bd = m.Get(MediaInfoLib::stream_t::Stream_Audio, 0, L"BitDepth");
+        m.Close();
+
         // TODO what if 0 channels
-        auto samples = files.back().samples();
+
+        int sample_rate = sr.empty() ? 0 : std::stoi(sr);
+        int channels = cl.empty() ? 0 : std::stoi(cl);
+        int bitdepth = bd.empty() ? 16 : std::stoi(bd);
+        auto samples = sc.empty() ? 0LL : std::stoll(sc);
+        auto duration = dur.empty() ? 0LL : std::stoll(dur);
+
         if(samples > maxDuration)
         {
             maxDuration = samples;
-            maxSampleRate = files.back().sampleRate();
+            maxSampleRate = sample_rate;
         }
     }
 }
