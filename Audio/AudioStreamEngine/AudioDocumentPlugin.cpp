@@ -17,14 +17,26 @@ namespace Audio
 namespace AudioStreamEngine
 {
 
+DocumentPlugin::DocumentPlugin(AudioContext& ctx, const iscore::DocumentContext& doc, Id<iscore::DocumentPlugin> id, QObject* parent):
+  iscore::DocumentPlugin{doc, std::move(id), "AudioDocumentPlugin", parent},
+  audioContext{doc, ctx}
+{
+
+}
+
+DocumentPlugin::~DocumentPlugin()
+{
+
+}
+
 AudioStream DocumentPlugin::makeStream(Scenario::ConstraintModel& cst)
 {
-    // First find the root constraint
-    auto doc = dynamic_cast<Scenario::ScenarioDocumentModel*>(&audioContext.doc.document.model().modelDelegate());
-    if(!doc)
-        return nullptr;
+  // First find the root constraint
+  auto doc = dynamic_cast<Scenario::ScenarioDocumentModel*>(&audioContext.doc.document.model().modelDelegate());
+  if(!doc)
+    return nullptr;
 
-    if(!audioContext.audio.plugin.engineStatus())
+  if(!audioContext.audio.plugin.engineStatus())
         return nullptr;
 
     // Reset the player

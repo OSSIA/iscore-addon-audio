@@ -1,12 +1,12 @@
 #pragma once
 #include <iscore/plugins/settingsdelegate/SettingsDelegateModel.hpp>
-
+#include <iscore_plugin_audio_export.h>
 namespace Audio
 {
 namespace Settings
 {
 
-class Model : public iscore::SettingsDelegateModel{
+class ISCORE_PLUGIN_AUDIO_EXPORT Model : public iscore::SettingsDelegateModel{
         Q_OBJECT
 
     public:

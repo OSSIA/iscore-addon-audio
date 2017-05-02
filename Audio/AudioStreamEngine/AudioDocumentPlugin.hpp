@@ -4,6 +4,7 @@
 #include <Audio/AudioStreamEngine/Context.hpp>
 #include <Process/TimeValue.hpp>
 #include <Audio/AudioStreamEngine/AudioGraphNode.hpp>
+#include <iscore_plugin_audio_export.h>
 namespace Scenario
 {
 class ConstraintModel;
@@ -13,19 +14,15 @@ namespace Audio
 namespace AudioStreamEngine
 {
 class Constraint;
-class DocumentPlugin : public iscore::DocumentPlugin
+class ISCORE_PLUGIN_AUDIO_EXPORT DocumentPlugin : public iscore::DocumentPlugin
 {
     public:
         DocumentPlugin(
                 AudioContext& ctx,
-                iscore::Document& doc,
+                const iscore::DocumentContext& doc,
                 Id<iscore::DocumentPlugin> id,
-                QObject* parent):
-            iscore::DocumentPlugin{doc.context(), std::move(id), "AudioDocumentPlugin", parent},
-            audioContext{doc.context(), ctx}
-        {
-
-        }
+                QObject* parent);
+        ~DocumentPlugin();
 
         Context audioContext;
 

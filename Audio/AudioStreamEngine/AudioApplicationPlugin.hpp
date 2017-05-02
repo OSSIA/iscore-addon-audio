@@ -6,13 +6,14 @@
 #include <lilv/lilvmm.hpp>
 #include <Audio/AudioStreamEngine/Streams/LV2Context.hpp>
 #endif
+#include <iscore_plugin_audio_export.h>
 struct LV2HostContext;
 namespace Audio
 {
 namespace AudioStreamEngine
 {
 struct LV2GlobalContext;
-class ApplicationPlugin : public QObject, public iscore::ApplicationPlugin
+class ISCORE_PLUGIN_AUDIO_EXPORT ApplicationPlugin : public QObject, public iscore::ApplicationPlugin
 {
         Q_OBJECT
     public:

@@ -349,7 +349,12 @@ void ApplicationPlugin::startEngine()
     // Initialize libaudiostream structures
     auto card = CardIdFromString(api, stngs.getCard());
     if(card == -1)
+    {
+      int n = GetDeviceCount(api);
+      if(n == 0)
         return;
+      card = 0;
+    }
 
     GetDeviceInfo(api, card, &m_ctx.device_info);
     auto& dev = m_ctx.device_info;
@@ -411,7 +416,7 @@ GUIApplicationPlugin::GUIApplicationPlugin(const iscore::GUIApplicationContext& 
 void GUIApplicationPlugin::on_createdDocument(iscore::Document& doc)
 {
     auto& audio_ctx = iscore::GUIApplicationPlugin::context.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().context() ;
-    doc.model().addPluginModel(new DocumentPlugin{audio_ctx, doc, getStrongId(doc.model().pluginModels()), &doc.model()});
+    doc.model().addPluginModel(new DocumentPlugin{audio_ctx, doc.context(), getStrongId(doc.model().pluginModels()), &doc.model()});
 }
 
 }
