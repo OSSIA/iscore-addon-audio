@@ -277,8 +277,8 @@ struct LV2GlobalContext
         }
 };
 
-ApplicationPlugin::ApplicationPlugin(const iscore::GUIApplicationContext& app):
-    iscore::GUIApplicationPlugin{app},
+ApplicationPlugin::ApplicationPlugin(const iscore::ApplicationContext& app):
+    iscore::ApplicationPlugin{app},
     m_ctx{*this}
   #if defined(LILV_SHARED)
   , lv2_context{std::make_unique<LV2GlobalContext>(m_ctx, lv2_host_context)}
@@ -301,7 +301,7 @@ ApplicationPlugin::ApplicationPlugin(const iscore::GUIApplicationContext& app):
 void ApplicationPlugin::initialize()
 {
     // Restart everything if audio settings change.
-    auto& set = GUIApplicationPlugin::context.settings<Settings::Model>();
+    auto& set = iscore::ApplicationPlugin::context.settings<Settings::Model>();
     con(set, &Settings::Model::BufferSizeChanged,
         this, &ApplicationPlugin::startEngine);
     con(set, &Settings::Model::CardChanged,
@@ -319,11 +319,6 @@ ApplicationPlugin::~ApplicationPlugin()
 {
     stopEngine();
     //stopMTDSPFactories();
-}
-
-void ApplicationPlugin::on_createdDocument(iscore::Document& doc)
-{
-    doc.model().addPluginModel(new DocumentPlugin{m_ctx, doc, getStrongId(doc.model().pluginModels()), &doc.model()});
 }
 
 static int CardIdFromString(int api, const QString& str);
@@ -346,7 +341,7 @@ void ApplicationPlugin::startEngine()
 {
     stopEngine();
 
-    auto& stngs = iscore::GUIApplicationPlugin::context.settings<Audio::Settings::Model>();
+    auto& stngs = iscore::ApplicationPlugin::context.settings<Audio::Settings::Model>();
     auto api = stngs.getDriverId();
     if(api == -1)
         return;
@@ -404,6 +399,19 @@ void ApplicationPlugin::stopEngine()
 bool ApplicationPlugin::engineStatus() const
 {
     return m_ctx.renderer;
+}
+
+
+GUIApplicationPlugin::GUIApplicationPlugin(const iscore::GUIApplicationContext& app):
+  iscore::GUIApplicationPlugin{app}
+{
+
+}
+
+void GUIApplicationPlugin::on_createdDocument(iscore::Document& doc)
+{
+    auto& audio_ctx = iscore::GUIApplicationPlugin::context.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().context() ;
+    doc.model().addPluginModel(new DocumentPlugin{audio_ctx, doc, getStrongId(doc.model().pluginModels()), &doc.model()});
 }
 
 }

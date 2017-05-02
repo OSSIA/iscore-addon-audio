@@ -123,10 +123,15 @@ iscore_plugin_audio::~iscore_plugin_audio()
 
 }
 
+iscore::ApplicationPlugin*iscore_plugin_audio::make_applicationPlugin(
+    const iscore::ApplicationContext& app)
+{
+  return new Audio::AudioStreamEngine::ApplicationPlugin{app};
+}
 iscore::GUIApplicationPlugin*iscore_plugin_audio::make_guiApplicationPlugin(
         const iscore::GUIApplicationContext& app)
 {
-    return new Audio::AudioStreamEngine::ApplicationPlugin{app};
+    return new Audio::AudioStreamEngine::GUIApplicationPlugin{app};
 }
 
 std::vector<std::unique_ptr<iscore::InterfaceListBase> > iscore_plugin_audio::factoryFamilies()
