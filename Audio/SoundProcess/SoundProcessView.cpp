@@ -3,6 +3,7 @@
 #include <QGraphicsView>
 #include <QScrollBar>
 #include <cmath>
+#include <QGraphicsSceneContextMenuEvent>
 
 namespace Audio
 {
@@ -195,6 +196,13 @@ void LayerView::recompute(const TimeVal& dur, ZoomRatio ratio)
     drawWaveForms(ratio);
 
     update();
+}
+
+void LayerView::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+    emit askContextMenu(event->screenPos(), event->scenePos());
+
+    event->accept();
 }
 
 void LayerView::paint_impl(QPainter* painter) const

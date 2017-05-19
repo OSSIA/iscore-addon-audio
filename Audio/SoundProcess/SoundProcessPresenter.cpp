@@ -27,6 +27,10 @@ LayerPresenter::LayerPresenter(
 
     m_view->setData(m_layer.file());
     m_view->recompute(m_layer.duration(), m_ratio);
+
+    connect(
+          m_view, &LayerView::askContextMenu, this,
+          &LayerPresenter::contextMenuRequested);
 }
 
 void LayerPresenter::setWidth(qreal val)

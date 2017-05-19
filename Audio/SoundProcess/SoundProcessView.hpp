@@ -19,8 +19,11 @@ class LayerView final : public Process::LayerView
         void recompute(const TimeVal& dur, ZoomRatio ratio);
     signals:
         void pressed();
-
+        void askContextMenu(QPoint, QPointF);
     private:
+
+        void contextMenuEvent(
+            QGraphicsSceneContextMenuEvent* event);
         void paint_impl(QPainter*) const override;
         void mousePressEvent(QGraphicsSceneMouseEvent*) override;
 
