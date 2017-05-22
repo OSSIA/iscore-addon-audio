@@ -76,6 +76,7 @@ InspectorWidget::InspectorWidget(
         auto id = item->data(Qt::UserRole).value<Id<EffectModel>>();
 
         auto proc = &process().effects().at(id);
+#if defined(HAS_FAUST)
         if(auto faust = dynamic_cast<FaustEffectModel*>(proc))
         {
             FaustEditDialog edit{*faust};
@@ -85,9 +86,10 @@ InspectorWidget::InspectorWidget(
                 m_dispatcher.submitCommand(new Commands::EditFaustEffect{*faust, edit.text()});
             }
         }
+#endif
         /*
 #if defined(LILV_SHARED)
-        else if(auto lv2 = dynamic_cast<LV2EffectModel*>(proc))
+        if(auto lv2 = dynamic_cast<LV2EffectModel*>(proc))
         {
             // One can take inspiration from Qtractor, and cry a lot.
         }

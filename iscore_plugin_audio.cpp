@@ -96,8 +96,10 @@ std::vector<std::unique_ptr<iscore::InterfaceBase>> iscore_plugin_audio::factori
             Audio::Settings::Factory>,/*
         FW<iscore::PanelDelegateFactory,
             Audio::Panel::TrackListPanelFactory>,*/
-        FW<Audio::Effect::EffectFactory,
-            Audio::Effect::FaustEffectFactory
+        FW<Audio::Effect::EffectFactory
+#if defined(HAS_FAUST)
+          , Audio::Effect::FaustEffectFactory
+# endif
 #if defined(LILV_SHARED)
             , Audio::Effect::LV2EffectFactory
 #endif

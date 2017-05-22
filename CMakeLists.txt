@@ -6,7 +6,6 @@ project(iscore_plugin_audio LANGUAGES CXX)
 if(NOT TARGET iscore_plugin_engine)
     return()
 endif()
-find_package(Faust REQUIRED)
 
 set(LIBAUDIOSTREAM_FRAMEWORK OFF)
 set(LIBAUDIOSTREAM_SHARED OFF)
@@ -71,7 +70,6 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/AudioCommandFactory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/InsertEffect.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/UpdateMix.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/CreateEffectAutomation.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.hpp"
@@ -107,13 +105,11 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Widgets/EffectWidget.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Widgets/EffectListWidget.hpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Missing/MissingEffectModel.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeFaustEffectComponent.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/Mix.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessFactory.hpp"
@@ -150,7 +146,6 @@ set(HDRS ${HDRS}
 set(SRCS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectModelSerialization.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModelSerialization.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Missing/MissingEffectModelSerialization.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessModelSerialization.cpp"
@@ -203,7 +198,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/AudioCommandFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/InsertEffect.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/UpdateMix.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/EffectInspector.cpp"
@@ -226,12 +220,10 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Widgets/EffectWidget.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Widgets/EffectListWidget.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Missing/MissingEffectModel.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeFaustEffectComponent.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MixProcess/MixProcessModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/InputProcess/InputProcessModel.cpp"
@@ -249,6 +241,19 @@ set(SRCS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.cpp"
 )
+# Faust support
+find_package(Faust)
+if(${Faust_FOUND})
+    set(FAUST_SRCS
+        "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeFaustEffectComponent.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModelSerialization.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModel.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeFaustEffectComponent.cpp"
+        )
+endif()
 
 # LV2 support
 find_package(Lilv)
@@ -261,10 +266,10 @@ if(TARGET Lilv)
         "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LV2/LV2EffectFactory.cpp"
     )
 endif()
-add_library(${PROJECT_NAME} ${SRCS} ${HDRS} ${QRCS} ${LV2_SRCS})
-set_property(TARGET ${PROJECT_NAME}  PROPERTY COTIRE_ADD_UNITY_BUILD FALSE)
-set_property(TARGET ${PROJECT_NAME}  PROPERTY ISCORE_TARGET_NO_LTO TRUE)
-set_property(TARGET ${PROJECT_NAME}  PROPERTY ISCORE_TARGET_NO_SANITIZE TRUE)
+add_library(${PROJECT_NAME} ${SRCS} ${HDRS} ${QRCS} ${LV2_SRCS} ${FAUST_SRCS})
+set_property(TARGET ${PROJECT_NAME} PROPERTY COTIRE_ADD_UNITY_BUILD FALSE)
+set_property(TARGET ${PROJECT_NAME} PROPERTY ISCORE_TARGET_NO_LTO TRUE)
+set_property(TARGET ${PROJECT_NAME} PROPERTY ISCORE_TARGET_NO_SANITIZE TRUE)
 
 
 iscore_generate_command_list_file(${PROJECT_NAME} "${HDRS}")
@@ -274,16 +279,24 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
                      ${SNDFILE_LIBRARIES}
                      LibAudioStream mediainfo)
 
-target_include_directories(${PROJECT_NAME} PRIVATE
-                     ${SNDFILE_INCLUDE_DIR})
+if(${SNDFILE_FOUND})
+    target_include_directories(${PROJECT_NAME} PRIVATE
+                               ${SNDFILE_INCLUDE_DIR})
+endif()
+
+if(${Faust_FOUND})
+    target_compile_definitions(${PROJECT_NAME} PRIVATE HAS_FAUST)
+endif()
 
 if(TARGET Lilv)
     target_link_libraries(${PROJECT_NAME} PRIVATE Lilv)
     target_include_directories(${PROJECT_NAME} PRIVATE 3rdparty/readerwriterqueue)
 endif()
 
-target_link_libraries(${PROJECT_NAME}  PUBLIC ${FAUST_LIBRARIES})
-target_include_directories(${PROJECT_NAME}  PRIVATE ${FAUST_INCLUDE_DIR})
+if(${Faust_FOUND})
+  target_link_libraries(${PROJECT_NAME}  PUBLIC ${FAUST_LIBRARIES})
+  target_include_directories(${PROJECT_NAME}  PRIVATE ${FAUST_INCLUDE_DIR})
+endif()
 setup_iscore_plugin(${PROJECT_NAME})
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-error=return-type-c-linkage")
