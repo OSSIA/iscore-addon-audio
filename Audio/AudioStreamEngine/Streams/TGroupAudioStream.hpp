@@ -1,5 +1,6 @@
 #pragma once
 
+#if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
 #include <3rdparty/libaudiostream/src/TAudioStream.h>
 #include <3rdparty/libaudiostream/src/renderer/TAudioRenderer.h>
 #include "TExpAudioMixer.h"
@@ -20,7 +21,6 @@
 #include <ossia/detail/logger.hpp>
 // TODO rename this file
 
-#if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
 #include "LV2Context.hpp"
 struct LV2Data
 {

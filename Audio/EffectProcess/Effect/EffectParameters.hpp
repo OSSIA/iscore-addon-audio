@@ -14,11 +14,13 @@ struct InParameter
         static auto getControlParam() { return GetControlParamEffect; }
 };
 
+#if defined(LILV_SHARED)
 struct OutParameter
 {
         static auto getControlCount() { return GetLV2ControlOutCount; }
         static auto getControlParam() { return GetLV2ControlOutParam; }
 };
+#endif
 
 struct EffectParameter
 {

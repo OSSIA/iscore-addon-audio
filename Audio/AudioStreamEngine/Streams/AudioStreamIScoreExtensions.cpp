@@ -253,7 +253,8 @@ AUDIOAPI AudioEffect MakeLV2AudioEffect(LV2HostContext* h, LV2EffectContext* c)
     TAudioGlobals::AddLibError("Could not load LV2 plug-in");
     return nullptr;
 }
-#endif
 
 uint32_t LV2_Atom_Buffer::chunk_type;
 uint32_t LV2_Atom_Buffer::sequence_type;
+
+#endif

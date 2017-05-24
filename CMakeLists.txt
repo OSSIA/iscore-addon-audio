@@ -275,10 +275,14 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY ISCORE_TARGET_NO_SANITIZE TRUE)
 iscore_generate_command_list_file(${PROJECT_NAME} "${HDRS}")
 target_link_libraries(${PROJECT_NAME} PUBLIC
                      Qt5::Core Qt5::Widgets Qt5::Multimedia
-                     iscore_lib_base iscore_plugin_engine iscore_plugin_midi
-                     ${SNDFILE_LIBRARIES}
-                     LibAudioStream mediainfo)
-
+                     iscore_lib_base iscore_plugin_engine LibAudioStream
+)
+if(NOT ANDROID)
+target_link_libraries(${PROJECT_NAME} PUBLIC
+            iscore_plugin_midi
+            ${SNDFILE_LIBRARIES}
+            mediainfo)
+endif()
 if(${SNDFILE_FOUND})
     target_include_directories(${PROJECT_NAME} PRIVATE
                                ${SNDFILE_INCLUDE_DIR})

@@ -47,6 +47,8 @@ namespace Audio
 namespace AudioStreamEngine
 {
 
+#if defined(LILV_SHARED)
+
 int lv2_printf(LV2_Log_Handle handle, LV2_URID type, const char* format, ...)
 {
     va_list args;
@@ -276,6 +278,7 @@ struct LV2GlobalContext
 
         }
 };
+#endif
 
 ApplicationPlugin::ApplicationPlugin(const iscore::ApplicationContext& app):
     iscore::ApplicationPlugin{app},

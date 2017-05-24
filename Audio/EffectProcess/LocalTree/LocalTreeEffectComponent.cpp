@@ -5,8 +5,9 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/editor/state/state_element.hpp>
 #include <Audio/EffectProcess/Effect/EffectParameters.hpp>
+#if defined(LILV_SHARED)
 #include <Audio/EffectProcess/LV2/LV2EffectModel.hpp>
-
+#endif
 
 namespace Audio
 {
@@ -97,6 +98,7 @@ void EffectComponent::recreate()
 
     }
 
+#if defined(LILV_SHARED)
     if(auto lv2_fx = dynamic_cast<LV2EffectModel*>(&effect))
     {
         for(EffectParameter parameter : AudioEffectParameterAdaptor<OutParameter>{fx})
@@ -137,6 +139,7 @@ void EffectComponent::recreate()
             };
         }
     }
+#endif
     emit effectTreeChanged();
 
 }

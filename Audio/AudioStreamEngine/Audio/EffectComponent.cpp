@@ -12,9 +12,10 @@
 #include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeFaustEffectComponent.hpp>
-
+#if defined(LILV_SHARED)
 #include <Midi/MidiExecutor.hpp>
 #include <Midi/MidiProcess.hpp>
+#endif
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -51,6 +52,7 @@ void EffectProcessComponent::makeStream(const Context& ctx)
         sound = MakeNullSound(LONG_MAX);
     }
 
+#if defined(LILV_SHARED)
     // Berk, moveme, refactorme, whatever
     Midi::Executor::ProcessExecutor* midi_source{};
     auto& procs = cst_comp.constraint().processes;
@@ -66,6 +68,7 @@ void EffectProcessComponent::makeStream(const Context& ctx)
         }
       }
     }
+#endif
     int i = 0;
     for(auto& fx : process().effects())
     {
@@ -75,10 +78,12 @@ void EffectProcessComponent::makeStream(const Context& ctx)
           sound = MakeEffectSound(sound, compiled_fx, 0, 0);
           if(sound)
           {
+#if defined(LILV_SHARED)
             if(i == 0 && midi_source)
             {
               SetLV2MidiSource(compiled_fx, midi_source);
             }
+#endif
           }
           else
           {
@@ -100,13 +105,14 @@ void EffectProcessComponent::makeStream(const Context& ctx)
 
 void EffectProcessComponent::stop()
 {
-
+#if defined(LILV_SHARED)
   for(auto& fx : process().effects())
   {
       auto compiled_fx = fx.effect();
       if(compiled_fx)
         LV2MidiNotesOff(compiled_fx);
   }
+#endif
 }
 
 }

@@ -15,7 +15,9 @@
 
 #include <Loop/LoopProcessModel.hpp>
 #define UNICODE 1
+#if !defined(__ANDROID__)
 #include <MediaInfo/MediaInfo.h>
+#endif
 #include <QMimeData>
 #include <QUrl>
 #include <QApplication>
@@ -50,6 +52,7 @@ static void createSoundProcesses(
 
 DroppedAudioFiles::DroppedAudioFiles(const QMimeData &mime)
 {
+#if !defined(__ANDROID__)
     for(auto url : mime.urls())
     {
         QString filename = url.toLocalFile();
@@ -83,6 +86,7 @@ DroppedAudioFiles::DroppedAudioFiles(const QMimeData &mime)
             maxSampleRate = sample_rate;
         }
     }
+#endif
 }
 
 TimeVal DroppedAudioFiles::dropMaxDuration() const
