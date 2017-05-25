@@ -23,7 +23,7 @@ class LayerView final : public Process::LayerView
     private:
 
         void contextMenuEvent(
-            QGraphicsSceneContextMenuEvent* event);
+            QGraphicsSceneContextMenuEvent* event) override;
         void paint_impl(QPainter*) const override;
         void mousePressEvent(QGraphicsSceneMouseEvent*) override;
 
