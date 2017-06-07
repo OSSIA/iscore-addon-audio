@@ -10,6 +10,7 @@
 #include <Audio/AudioStreamEngine/Utility.hpp>
 
 #include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
+#include <Audio/EffectProcess/LV2/LV2EffectModel.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeFaustEffectComponent.hpp>
 #if defined(LILV_SHARED)
@@ -79,9 +80,12 @@ void EffectProcessComponent::makeStream(const Context& ctx)
           if(sound)
           {
 #if defined(LILV_SHARED)
-            if(i == 0 && midi_source)
+            if(dynamic_cast<Effect::LV2EffectModel*>(&fx))
             {
-              SetLV2MidiSource(compiled_fx, midi_source);
+              if(i == 0 && midi_source)
+              {
+                SetLV2MidiSource(compiled_fx, midi_source);
+              }
             }
 #endif
           }
@@ -106,10 +110,10 @@ void EffectProcessComponent::makeStream(const Context& ctx)
 void EffectProcessComponent::stop()
 {
 #if defined(LILV_SHARED)
-  for(auto& fx : process().effects())
+  for(const auto& fx : process().effects())
   {
       auto compiled_fx = fx.effect();
-      if(compiled_fx)
+      if(dynamic_cast<const Effect::LV2EffectModel*>(&fx))
         LV2MidiNotesOff(compiled_fx);
   }
 #endif

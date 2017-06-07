@@ -244,11 +244,13 @@ set(SRCS
 # Faust support
 find_package(Faust)
 if(${Faust_FOUND})
-    set(FAUST_SRCS
+    set(FAUST_HDRS
         "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.hpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeFaustEffectComponent.hpp"
+        )
+    set(FAUST_SRCS
+        "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModelSerialization.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Faust/FaustEffectModel.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LocalTree/LocalTreeFaustEffectComponent.cpp"
@@ -258,21 +260,23 @@ endif()
 # LV2 support
 find_package(Lilv)
 if(TARGET Lilv)
-    set(LV2_SRCS
+    set(LV2_HDRS
         "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LV2/LV2EffectModel.hpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LV2/LV2EffectFactory.hpp"
+        )
+    set(LV2_SRCS
         "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LV2/LV2EffectModelSerialization.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LV2/LV2EffectModel.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LV2/LV2EffectFactory.cpp"
     )
 endif()
-add_library(${PROJECT_NAME} ${SRCS} ${HDRS} ${QRCS} ${LV2_SRCS} ${FAUST_SRCS})
+add_library(${PROJECT_NAME} ${SRCS} ${HDRS} ${QRCS} ${LV2_SRCS} ${LV2_HDRS} ${FAUST_HDRS} ${FAUST_SRCS})
 set_property(TARGET ${PROJECT_NAME} PROPERTY COTIRE_ADD_UNITY_BUILD FALSE)
 set_property(TARGET ${PROJECT_NAME} PROPERTY ISCORE_TARGET_NO_LTO TRUE)
 set_property(TARGET ${PROJECT_NAME} PROPERTY ISCORE_TARGET_NO_SANITIZE TRUE)
 
 
-iscore_generate_command_list_file(${PROJECT_NAME} "${HDRS}")
+iscore_generate_command_list_file(${PROJECT_NAME} "${HDRS};${LV2_HDRS};${FAUST_HDRS}")
 target_link_libraries(${PROJECT_NAME} PUBLIC
                      Qt5::Core Qt5::Widgets Qt5::Multimedia
                      iscore_lib_base iscore_plugin_engine LibAudioStream
