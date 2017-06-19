@@ -13,7 +13,7 @@ struct AudioGraphBuilder
         AudioGraph m_graph;
 
     public:
-        AudioGraphBuilder(Constraint& root);
+        AudioGraphBuilder(const iscore::DocumentContext& ctx, Constraint& root);
 
         boost::optional<std::deque<int>> check() const;
         void apply(const std::deque<int>&, Context& ctx);

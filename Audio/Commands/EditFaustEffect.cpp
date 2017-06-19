@@ -17,14 +17,14 @@ EditFaustEffect::EditFaustEffect(
 {
 }
 
-void EditFaustEffect::undo() const
+void EditFaustEffect::undo(const iscore::DocumentContext& ctx) const
 {
-    m_model.find().setText(m_old);
+    m_model.find(ctx).setText(m_old);
 }
 
-void EditFaustEffect::redo() const
+void EditFaustEffect::redo(const iscore::DocumentContext& ctx) const
 {
-    m_model.find().setText(m_new);
+    m_model.find(ctx).setText(m_new);
 }
 
 void EditFaustEffect::serializeImpl(DataStreamInput& s) const

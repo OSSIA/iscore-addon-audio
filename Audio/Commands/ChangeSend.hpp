@@ -18,11 +18,11 @@ class ChangeSend final : public iscore::Command
            ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), ChangeSend, "Change send")
     public:
         ChangeSend(
-                Path<Return::ProcessModel>&& model,
+               const Return::ProcessModel& model,
                 const Path<Send::ProcessModel>& text);
 
-        void undo() const override;
-        void redo() const override;
+        void undo(const iscore::DocumentContext& ctx) const override;
+        void redo(const iscore::DocumentContext& ctx) const override;
 
     protected:
         void serializeImpl(DataStreamInput & s) const override;

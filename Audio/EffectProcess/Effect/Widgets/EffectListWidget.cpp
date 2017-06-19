@@ -71,8 +71,8 @@ void EffectListWidget::setup()
                 const Path<Effect::EffectModel>& fx2_p,
                 bool after)
         {
-            auto& fx1 = fx1_p.find();
-            auto& fx2 = fx2_p.find();
+            auto& fx1 = fx1_p.find(m_context);
+            auto& fx2 = fx2_p.find(m_context);
             if(fx1.parent() == fx2.parent() && fx1.parent() == &m_effects)
             {
                 int new_pos = m_effects.effectPosition(fx2.id());

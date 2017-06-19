@@ -84,14 +84,14 @@ InspectorWidget::InspectorWidget(
     auto but = new QPushButton{tr("Select send")};
     lay->addRow(but);
 
-    if(auto res = object.send_ptr())
+    if(auto res = object.send_ptr(doc))
     {
         lbl->setText(res->metadata().getName());
     }
 
     con(object, &Return::ProcessModel::sendChanged,
-        this, [=,&object] () {
-        auto res = object.send_ptr();
+        this, [=,&doc,&object] () {
+        auto res = object.send_ptr(doc);
         lbl->setText(res ? res->metadata().getName() : "");
     });
 

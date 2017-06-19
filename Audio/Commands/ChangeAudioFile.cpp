@@ -8,22 +8,22 @@ namespace Commands
 {
 
 ChangeAudioFile::ChangeAudioFile(
-        Path<Sound::ProcessModel>&& model,
+        const Sound::ProcessModel& model,
         const QString& text):
-    m_model{std::move(model)},
+    m_model{model},
     m_new{text}
 {
-    m_old = m_model.find().file().name();
+    m_old = model.file().name();
 }
 
-void ChangeAudioFile::undo() const
+void ChangeAudioFile::undo(const iscore::DocumentContext& ctx) const
 {
-    m_model.find().setFile(m_old);
+    m_model.find(ctx).setFile(m_old);
 }
 
-void ChangeAudioFile::redo() const
+void ChangeAudioFile::redo(const iscore::DocumentContext& ctx) const
 {
-    m_model.find().setFile(m_new);
+    m_model.find(ctx).setFile(m_new);
 }
 
 void ChangeAudioFile::serializeImpl(DataStreamInput& s) const

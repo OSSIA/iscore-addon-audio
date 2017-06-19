@@ -16,13 +16,11 @@ class ChangeAudioFile final : public iscore::Command
            ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), ChangeAudioFile, "Change audio file")
     public:
         ChangeAudioFile(
-                Path<Sound::ProcessModel>&& model,
-                const QString& text);
+               const Sound::ProcessModel&,
+               const QString& text);
 
-        void undo() const override;
-
-        void redo() const override;
-
+        void undo(const iscore::DocumentContext& ctx) const override;
+        void redo(const iscore::DocumentContext& ctx) const override;
 
     protected:
         void serializeImpl(DataStreamInput & s) const override;

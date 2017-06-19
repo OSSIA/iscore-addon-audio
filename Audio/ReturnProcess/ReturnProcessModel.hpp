@@ -47,12 +47,12 @@ class ProcessModel final :
             vis.writeTo(*this);
         }
 
-        const Path<Process::ProcessModel>& send() const
+        const Path<Send::ProcessModel>& send() const
         { return m_sendPath; }
 
-        const Send::ProcessModel* send_ptr() const;
+        const Send::ProcessModel* send_ptr(const iscore::DocumentContext& ctx) const;
 
-        void setSend(const Path<Process::ProcessModel>& send)
+        void setSend(const Path<Send::ProcessModel>& send)
         {
             if(send != m_sendPath)
             {
@@ -66,7 +66,7 @@ class ProcessModel final :
         void sendChanged();
 
     private:
-        Path<Process::ProcessModel> m_sendPath; // TODO ought to be able to work with downcast Id / Path
+        Path<Send::ProcessModel> m_sendPath; // TODO ought to be able to work with downcast Id / Path
 
 };
 }

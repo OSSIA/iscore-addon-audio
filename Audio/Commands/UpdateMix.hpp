@@ -26,8 +26,8 @@ class UpdateRouting final : public iscore::Command
                 const Mix::ProcessModel& model,
                 Mix::Routing newmix);
 
-        void undo() const override;
-        void redo() const override;
+        void undo(const iscore::DocumentContext& ctx) const override;
+        void redo(const iscore::DocumentContext& ctx) const override;
 
         void update(
                 const Mix::ProcessModel&,
@@ -53,8 +53,8 @@ class UpdateDirect final : public iscore::Command
                 const Mix::ProcessModel& model,
                 Mix::DirectMix newmix);
 
-        void undo() const override;
-        void redo() const override;
+        void undo(const iscore::DocumentContext& ctx) const override;
+        void redo(const iscore::DocumentContext& ctx) const override;
 
         void update(
                 const Mix::ProcessModel&,

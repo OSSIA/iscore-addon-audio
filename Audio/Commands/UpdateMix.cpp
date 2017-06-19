@@ -18,15 +18,15 @@ UpdateRouting::UpdateRouting(
     m_old = *it;
 }
 
-void UpdateRouting::undo() const
+void UpdateRouting::undo(const iscore::DocumentContext& ctx) const
 {
-    Mix::ProcessModel& process = m_model.find();
+    Mix::ProcessModel& process = m_model.find(ctx);
     process.updateRouting(m_old);
 }
 
-void UpdateRouting::redo() const
+void UpdateRouting::redo(const iscore::DocumentContext& ctx) const
 {
-    Mix::ProcessModel& process = m_model.find();
+    Mix::ProcessModel& process = m_model.find(ctx);
     process.updateRouting(m_new);
 }
 
@@ -66,15 +66,15 @@ UpdateDirect::UpdateDirect(
     }
 }
 
-void UpdateDirect::undo() const
+void UpdateDirect::undo(const iscore::DocumentContext& ctx) const
 {
-    Mix::ProcessModel& process = m_model.find();
+    Mix::ProcessModel& process = m_model.find(ctx);
     process.updateDirectMix(m_old);
 }
 
-void UpdateDirect::redo() const
+void UpdateDirect::redo(const iscore::DocumentContext& ctx) const
 {
-    Mix::ProcessModel& process = m_model.find();
+    Mix::ProcessModel& process = m_model.find(ctx);
     process.updateDirectMix(m_new);
 }
 

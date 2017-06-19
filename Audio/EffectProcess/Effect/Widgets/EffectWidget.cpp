@@ -278,7 +278,7 @@ void EffectWidget::dragEnterEvent(QDragEnterEvent* event)
         return;
 
     auto path = unmarshall<Path<EffectModel>>(event->mimeData()->data("application/x-iscore-effectdrag"));
-    EffectModel* res = path.try_find();
+    EffectModel* res = path.try_find(m_context);
     if(!res)
         return;
 

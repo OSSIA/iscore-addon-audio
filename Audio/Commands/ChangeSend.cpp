@@ -9,22 +9,22 @@ namespace Commands
 {
 
 ChangeSend::ChangeSend(
-        Path<Return::ProcessModel>&& model,
-        const Path<Send::ProcessModel>& text):
-    m_model{std::move(model)},
+    const Return::ProcessModel& model,
+    const Path<Send::ProcessModel>& text):
+    m_model{model},
     m_new{text}
 {
-    m_old = m_model.find().send();
+    m_old = model.send();
 }
 
-void ChangeSend::undo() const
+void ChangeSend::undo(const iscore::DocumentContext& ctx) const
 {
-    m_model.find().setSend(m_old);
+    m_model.find(ctx).setSend(m_old);
 }
 
-void ChangeSend::redo() const
+void ChangeSend::redo(const iscore::DocumentContext& ctx) const
 {
-    m_model.find().setSend(m_new);
+    m_model.find(ctx).setSend(m_new);
 }
 
 void ChangeSend::serializeImpl(DataStreamInput& s) const

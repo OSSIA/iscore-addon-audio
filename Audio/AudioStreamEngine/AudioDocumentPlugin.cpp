@@ -47,7 +47,7 @@ AudioStream DocumentPlugin::makeStream(Scenario::ConstraintModel& cst)
     m_comp = new Constraint{cst, *this, getStrongId(cst.components()), this};
     cst.components().add(m_comp);
 
-    AudioGraphBuilder graph{*m_comp};
+    AudioGraphBuilder graph{m_context, *m_comp};
     if(auto sorted_vertices = graph.check())
     {
         graph.apply(*sorted_vertices, audioContext);

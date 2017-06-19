@@ -23,8 +23,8 @@ class InsertEffect final : public iscore::Command
                 const QString& text,
                 int effectPos);
 
-        void undo() const override;
-        void redo() const override;
+        void undo(const iscore::DocumentContext& ctx) const override;
+        void redo(const iscore::DocumentContext& ctx) const override;
 
     protected:
         void serializeImpl(DataStreamInput & s) const override;
@@ -48,8 +48,8 @@ class RemoveEffect final : public iscore::Command
                 const Effect::ProcessModel& model,
                 const Effect::EffectModel& effect);
 
-        void undo() const override;
-        void redo() const override;
+        void undo(const iscore::DocumentContext& ctx) const override;
+        void redo(const iscore::DocumentContext& ctx) const override;
 
     protected:
         void serializeImpl(DataStreamInput & s) const override;
@@ -72,8 +72,8 @@ class MoveEffect final : public iscore::Command
                  Id<Effect::EffectModel> id,
                  int new_pos);
 
-        void undo() const override;
-        void redo() const override;
+        void undo(const iscore::DocumentContext& ctx) const override;
+        void redo(const iscore::DocumentContext& ctx) const override;
 
     protected:
         void serializeImpl(DataStreamInput & s) const override;

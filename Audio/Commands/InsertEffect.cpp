@@ -23,15 +23,15 @@ InsertEffect::InsertEffect(
 {
 }
 
-void InsertEffect::undo() const
+void InsertEffect::undo(const iscore::DocumentContext& ctx) const
 {
-    auto& process = m_model.find();
+    auto& process = m_model.find(ctx);
     process.removeEffect(m_id);
 }
 
-void InsertEffect::redo() const
+void InsertEffect::redo(const iscore::DocumentContext& ctx) const
 {
-    auto& process = m_model.find();
+    auto& process = m_model.find(ctx);
     auto& fact_list = context.interfaces<Effect::EffectFactoryList>();
 
     if(Effect::EffectFactory* fact = fact_list.get(m_effectKind))
@@ -70,9 +70,9 @@ RemoveEffect::RemoveEffect(
     m_pos = std::distance(order.begin(), ossia::find(order,m_id));
 }
 
-void RemoveEffect::undo() const
+void RemoveEffect::undo(const iscore::DocumentContext& ctx) const
 {
-    auto& process = m_model.find();
+    auto& process = m_model.find(ctx);
     auto& fact_list = context.interfaces<Effect::EffectFactoryList>();
 
 
@@ -88,9 +88,9 @@ void RemoveEffect::undo() const
     }
 }
 
-void RemoveEffect::redo() const
+void RemoveEffect::redo(const iscore::DocumentContext& ctx) const
 {
-    auto& process = m_model.find();
+    auto& process = m_model.find(ctx);
     process.removeEffect(m_id);
 }
 
@@ -118,15 +118,15 @@ MoveEffect::MoveEffect(
     m_oldPos = std::distance(order.begin(), ossia::find(order, m_id));
 }
 
-void MoveEffect::undo() const
+void MoveEffect::undo(const iscore::DocumentContext& ctx) const
 {
-    auto& process = m_model.find();
+    auto& process = m_model.find(ctx);
     process.moveEffect(m_id, m_oldPos);
 }
 
-void MoveEffect::redo() const
+void MoveEffect::redo(const iscore::DocumentContext& ctx) const
 {
-    auto& process = m_model.find();
+    auto& process = m_model.find(ctx);
     process.moveEffect(m_id, m_newPos);
 }
 

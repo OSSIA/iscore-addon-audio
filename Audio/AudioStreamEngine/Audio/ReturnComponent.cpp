@@ -22,7 +22,7 @@ ReturnComponent::ReturnComponent(
 
 optional<AudioGraphVertice> ReturnComponent::visit(AudioGraph& graph)
 {
-    auto send = process().send_ptr();
+    auto send = process().send_ptr(iscore::IDocument::documentContext(process()));
     if(send)
     {
         return ProcessComponent::visit(graph);
@@ -33,7 +33,7 @@ optional<AudioGraphVertice> ReturnComponent::visit(AudioGraph& graph)
 void ReturnComponent::makeStream(const Context& ctx)
 {
     // Find send
-    auto send = process().send_ptr();
+    auto send = process().send_ptr(ctx.doc);
     ISCORE_ASSERT(send);
 
     // Create stream from send

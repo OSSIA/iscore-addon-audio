@@ -25,7 +25,7 @@ namespace Audio
 {
 namespace AudioStreamEngine
 {
-AudioGraphBuilder::AudioGraphBuilder(Constraint &root)
+AudioGraphBuilder::AudioGraphBuilder(const iscore::DocumentContext& ctx, Constraint &root)
 {
     // 1. Create vertices
     root.visit(m_graph);
@@ -44,7 +44,7 @@ AudioGraphBuilder::AudioGraphBuilder(Constraint &root)
         // For all the returns
         if(auto return_vertice = dynamic_cast<ReturnComponent*>(m_graph[*it]))
         {
-            auto send = return_vertice->process().send_ptr();
+            auto send = return_vertice->process().send_ptr(ctx);
             if(!send)
                 continue;
 
