@@ -5,6 +5,7 @@
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
 #include <Audio/EffectProcess/Effect/EffectFactory.hpp>
 #include <iscore/application/ApplicationContext.hpp>
+#include <iscore/document/DocumentContext.hpp>
 namespace Audio
 {
 namespace Commands
@@ -32,7 +33,7 @@ void InsertEffect::undo(const iscore::DocumentContext& ctx) const
 void InsertEffect::redo(const iscore::DocumentContext& ctx) const
 {
     auto& process = m_model.find(ctx);
-    auto& fact_list = context.interfaces<Effect::EffectFactoryList>();
+    auto& fact_list = ctx.app.interfaces<Effect::EffectFactoryList>();
 
     if(Effect::EffectFactory* fact = fact_list.get(m_effectKind))
     {
@@ -73,8 +74,7 @@ RemoveEffect::RemoveEffect(
 void RemoveEffect::undo(const iscore::DocumentContext& ctx) const
 {
     auto& process = m_model.find(ctx);
-    auto& fact_list = context.interfaces<Effect::EffectFactoryList>();
-
+    auto& fact_list = ctx.app.interfaces<Effect::EffectFactoryList>();
 
     DataStream::Deserializer des{m_savedEffect};
     if(auto fx = deserialize_interface(fact_list, des, &process))

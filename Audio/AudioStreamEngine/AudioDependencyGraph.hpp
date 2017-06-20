@@ -1,6 +1,10 @@
 #pragma once
 #include <Audio/AudioStreamEngine/AudioGraphNode.hpp>
 #include <QByteArray>
+namespace iscore
+{
+class DocumentContext;
+}
 namespace Audio
 {
 namespace AudioStreamEngine
