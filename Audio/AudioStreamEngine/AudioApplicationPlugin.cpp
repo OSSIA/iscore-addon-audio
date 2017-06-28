@@ -203,7 +203,7 @@ struct LV2GlobalContext
         LV2_Feature state_make_path_feature{LV2_STATE__makePath, &state_make_path};
 
         LV2_Feature state_load_default_feature{LV2_STATE__loadDefaultState, nullptr};
-        LV2_Feature state_thread_safe_restore_feature{LV2_STATE__threadSafeRestore, nullptr};
+        //LV2_Feature state_thread_safe_restore_feature{LV2_STATE__threadSafeRestore, nullptr};
 
         LV2_Feature bounded{LV2_BUF_SIZE__boundedBlockLength, nullptr};
         LV2_Feature pow2{LV2_BUF_SIZE__powerOf2BlockLength, nullptr};
