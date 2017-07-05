@@ -9,6 +9,9 @@ endif()
 
 set(LIBAUDIOSTREAM_FRAMEWORK OFF)
 set(LIBAUDIOSTREAM_SHARED OFF)
+if(APPLE)
+set(OPENSSL_ROOT_DIR /usr/local/Cellar/openssl/1.0.2l)
+endif()
 add_subdirectory(3rdparty/libaudiostream)
 
 iscore_common_setup()
@@ -282,6 +285,9 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
                      iscore_lib_base iscore_plugin_engine LibAudioStream
 )
 if(NOT ANDROID)
+if(APPLE)
+target_link_libraries(${PROJECT_NAME} PUBLIC -L/usr/local/lib)
+endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC
             iscore_plugin_midi
             ${SNDFILE_LIBRARIES}

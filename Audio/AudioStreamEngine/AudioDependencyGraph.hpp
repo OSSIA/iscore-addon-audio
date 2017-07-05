@@ -3,7 +3,7 @@
 #include <QByteArray>
 namespace iscore
 {
-class DocumentContext;
+struct DocumentContext;
 }
 namespace Audio
 {
