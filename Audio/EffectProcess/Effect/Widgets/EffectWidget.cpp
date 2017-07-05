@@ -262,7 +262,7 @@ void EffectWidget::mousePressEvent(QMouseEvent* event)
 
         // TODO proper MIME serialization.
         mimeData->setData("application/x-iscore-effectdrag",
-                          marshall<DataStream>(make_path(m_effect)));
+                          iscore::marshall<DataStream>(make_path(m_effect)));
         drag->setMimeData(mimeData);
         QLabel label{m_effect.metadata().getLabel()};
         drag->setPixmap(label.grab());
@@ -277,7 +277,7 @@ void EffectWidget::dragEnterEvent(QDragEnterEvent* event)
     if(!event->mimeData()->hasFormat("application/x-iscore-effectdrag"))
         return;
 
-    auto path = unmarshall<Path<EffectModel>>(event->mimeData()->data("application/x-iscore-effectdrag"));
+    auto path = iscore::unmarshall<Path<EffectModel>>(event->mimeData()->data("application/x-iscore-effectdrag"));
     EffectModel* res = path.try_find(m_context);
     if(!res)
         return;
@@ -300,7 +300,7 @@ void EffectWidget::dragMoveEvent(QDragMoveEvent* event)
 void EffectWidget::dropEvent(QDropEvent* event)
 {
     // Get the process
-    auto path = unmarshall<Path<EffectModel>>(
+    auto path = iscore::unmarshall<Path<EffectModel>>(
                     event->mimeData()->data("application/x-iscore-effectdrag"));
 
 

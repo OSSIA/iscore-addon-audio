@@ -7,6 +7,8 @@
 
 #include <Audio/Settings/Card/CardSettingsModel.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
+#include <Engine/OSSIA2iscore.hpp>
+#include <Engine/iscore2OSSIA.hpp>
 
 #include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
 
@@ -79,6 +81,17 @@ QString AudioClockFactory::prettyName() const
     return QObject::tr("Audio");
 }
 
+std::function<ossia::time_value(const TimeVal&)>
+AudioClockFactory::makeTimeFunction(const iscore::DocumentContext& ctx) const
+{
+  return &Engine::iscore_to_ossia::defaultTime;
+}
+
+std::function<TimeVal (const ossia::time_value&)>
+AudioClockFactory::makeReverseTimeFunction(const iscore::DocumentContext& ctx) const
+{
+  return &Engine::ossia_to_iscore::defaultTime;
+}
 
 }
 }

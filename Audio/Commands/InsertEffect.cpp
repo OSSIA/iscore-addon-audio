@@ -65,7 +65,7 @@ RemoveEffect::RemoveEffect(
         const Effect::EffectModel& effect):
     m_model{model},
     m_id{effect.id()},
-    m_savedEffect{marshall<DataStream>(effect)}
+    m_savedEffect{iscore::marshall<DataStream>(effect)}
 {
     auto& order = model.effectsOrder();
     m_pos = std::distance(order.begin(), ossia::find(order,m_id));

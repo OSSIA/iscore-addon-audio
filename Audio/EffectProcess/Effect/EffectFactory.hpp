@@ -86,7 +86,7 @@ class EffectFactory_T final :
                 const VisitorVariant& vis,
                 QObject* parent) const final override
         {
-            return deserialize_dyn(vis, [&] (auto&& deserializer)
+            return iscore::deserialize_dyn(vis, [&] (auto&& deserializer)
             { return new Model_T{deserializer, parent}; });
         }
 };

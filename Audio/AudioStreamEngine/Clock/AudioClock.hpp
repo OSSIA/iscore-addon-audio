@@ -35,6 +35,10 @@ class AudioClockFactory final : public Engine::Execution::ClockManagerFactory
         QString prettyName() const override;
         std::unique_ptr<Engine::Execution::ClockManager> make(
             const Engine::Execution::Context& ctx) override;
+        std::function<ossia::time_value(const TimeVal&)>
+        makeTimeFunction(const iscore::DocumentContext& ctx) const override;
+        std::function<TimeVal(const ossia::time_value&)>
+        makeReverseTimeFunction(const iscore::DocumentContext& ctx) const override;
 };
 }
 }
