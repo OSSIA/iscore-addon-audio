@@ -15,7 +15,7 @@ namespace Audio
 namespace AudioStreamEngine
 {
 class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent :
-        public Scenario::ProcessComponent<Component>
+        public Process::ProcessComponent<Component>
 {
         ABSTRACT_COMPONENT_METADATA(ProcessComponent, "19b6c620-9beb-4271-8a2c-8b34a3c64deb")
     public:
@@ -48,10 +48,10 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent :
 template<typename Process_T,
          bool Input,
          bool Output>
-class ProcessComponent_T : public Scenario::GenericProcessComponent_T<ProcessComponent, Process_T>
+class ProcessComponent_T : public Process::GenericProcessComponent_T<ProcessComponent, Process_T>
 {
     public:
-        using Scenario::GenericProcessComponent_T<ProcessComponent, Process_T>::GenericProcessComponent_T;
+        using Process::GenericProcessComponent_T<ProcessComponent, Process_T>::GenericProcessComponent_T;
         static const constexpr bool has_input = Input;
         static const constexpr bool has_output = Output;
         bool hasInput() const override

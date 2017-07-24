@@ -1,5 +1,4 @@
 #include "TimeNodeComponent.hpp"
-#include <Scenario/Document/TimeNode/Trigger/TriggerModel.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 namespace Audio
 {

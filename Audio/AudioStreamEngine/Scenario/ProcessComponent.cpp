@@ -12,7 +12,7 @@ ProcessComponent::ProcessComponent(
         const Id<iscore::Component>& id,
         const QString& name,
         QObject* parent):
-    Scenario::ProcessComponent<Component>{process, doc, id, name, parent}
+    Process::ProcessComponent<Component>{process, doc, id, name, parent}
 {
 }
 

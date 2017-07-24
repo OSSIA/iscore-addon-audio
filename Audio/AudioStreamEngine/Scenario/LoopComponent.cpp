@@ -52,8 +52,8 @@ void LoopComponent::makeStream(const Context& ctx)
     auto& start_event = *events().begin();
     auto& end_node = *++timeNodes().begin();
 
-    if(!start_node.element.trigger()->active() &&
-            !end_node.element.trigger()->active() &&
+    if(!start_node.element.active() &&
+            !end_node.element.active() &&
             !start_event.element.condition().hasChildren())
     {
         m_stream = MakeSend(MakeFixedLoopSound(sound, system().toFrame(pattern_cst.element.duration.defaultDuration())));

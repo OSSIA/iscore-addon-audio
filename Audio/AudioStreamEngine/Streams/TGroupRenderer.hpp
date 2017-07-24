@@ -1,5 +1,5 @@
 #pragma once
-#include <TAudioRenderer.h>
+#include <renderer/TAudioRenderer.h>
 #include "TBufferManager.hpp"
 
 class TGroupRenderer final :

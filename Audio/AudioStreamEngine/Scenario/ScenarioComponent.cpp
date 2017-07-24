@@ -3,7 +3,6 @@
 #include <Audio/AudioStreamEngine/Utility.hpp>
 #include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
 #include <Scenario/Document/Constraint/ConstraintModel.hpp>
-#include <Scenario/Document/TimeNode/Trigger/TriggerModel.hpp>
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -114,7 +113,7 @@ void ScenarioComponent::makeStream(const Context& ctx)
     }
 
     // We already set stuff starting from the initial events.
-    if(!process().startTimeNode().trigger()->active())
+    if(!process().startTimeNode().active())
     {
         auto& start_node_id = process().startTimeNode().id();
 
@@ -214,7 +213,7 @@ void ScenarioComponent::onStartDateFixed(
     c.defaultDuration = system().toFrame(dur.defaultDuration());
 
     const Scenario::TimeNodeModel& end_tn = Scenario::endTimeNode(c.constraint(), process());
-    if(end_tn.trigger()->active())
+    if(end_tn.active())
         return;
 
     auto& end_tn_id = end_tn.id();
@@ -249,7 +248,7 @@ void ScenarioComponent::onSpeedChanged(const Constraint& c, double speed)
     SetSymbolicDate(m_groupPlayer, c.stopDate, end_date);
 
     const Scenario::TimeNodeModel& end_tn = Scenario::endTimeNode(c.constraint(), process());
-    if(end_tn.trigger()->active())
+    if(end_tn.active())
         return;
 
     auto& end_tn_id = end_tn.id();
