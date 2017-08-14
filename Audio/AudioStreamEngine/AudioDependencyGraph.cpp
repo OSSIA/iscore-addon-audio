@@ -7,7 +7,7 @@
 #include <Audio/MixProcess/MixProcessModel.hpp>
 #include <Audio/SendProcess/SendProcessModel.hpp>
 #include <Audio/ReturnProcess/ReturnProcessModel.hpp>
-#include <Audio/SoundProcess/SoundProcessModel.hpp>
+#include <Media/Sound/SoundModel.hpp>
 
 #include <Audio/AudioStreamEngine/Audio/EffectComponent.hpp>
 #include <Audio/AudioStreamEngine/Audio/SoundComponent.hpp>

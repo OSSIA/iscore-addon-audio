@@ -4,7 +4,6 @@
 #include <iscore/serialization/JSONVisitor.hpp>
 #include <iscore/serialization/VisitorCommon.hpp>
 #include <Audio/SendProcess/SendProcessMetadata.hpp>
-#include <Audio/MediaFileHandle.hpp>
 #include <unordered_set>
 
 #include <boost/multi_index/identity.hpp>

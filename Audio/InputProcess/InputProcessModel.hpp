@@ -4,7 +4,6 @@
 #include <iscore/serialization/JSONVisitor.hpp>
 #include <iscore/serialization/VisitorCommon.hpp>
 #include <Audio/InputProcess/InputProcessMetadata.hpp>
-#include <Audio/MediaFileHandle.hpp>
 #include <unordered_set>
 
 namespace Audio

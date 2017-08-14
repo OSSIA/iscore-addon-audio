@@ -1,11 +1,9 @@
 #include "iscore_plugin_audio.hpp"
-#include <Audio/SoundProcess/SoundProcessFactory.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 #include <Scenario/Application/ScenarioApplicationPlugin.hpp>
 #include <QAction>
 #include <Audio/Inspector/Factory.hpp>
 
-#include <Audio/SoundProcess/SoundProcessFactory.hpp>
 #include <Audio/EffectProcess/EffectProcessFactory.hpp>
 #include <Audio/MixProcess/MixProcessFactory.hpp>
 #include <Audio/SendProcess/SendProcessFactory.hpp>
@@ -16,7 +14,6 @@
 #include <Audio/Settings/Card/CardSettingsFactory.hpp>
 #include <Audio/Panel/TrackListPanelFactory.hpp>
 
-#include <Audio/SoundProcess/Drop/SoundDrop.hpp>
 #include <Audio/EffectProcess/Effect/EffectFactory.hpp>
 #include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
 
@@ -62,7 +59,6 @@ std::vector<std::unique_ptr<iscore::InterfaceBase>> iscore_plugin_audio::factori
     return instantiate_factories<
             iscore::ApplicationContext,
         FW<Process::ProcessModelFactory,
-            Audio::Sound::ProcessFactory,
             Audio::Effect::ProcessFactory,
             Audio::Mix::ProcessFactory,
             Audio::Send::ProcessFactory,
@@ -70,7 +66,6 @@ std::vector<std::unique_ptr<iscore::InterfaceBase>> iscore_plugin_audio::factori
             Audio::Input::ProcessFactory
             >,
         FW<Process::LayerFactory,
-            Audio::Sound::LayerFactory,
             Audio::Effect::LayerFactory,
             Audio::Mix::LayerFactory,
             Audio::Send::LayerFactory,
@@ -87,7 +82,6 @@ std::vector<std::unique_ptr<iscore::InterfaceBase>> iscore_plugin_audio::factori
             Audio::AudioStreamEngine::LoopComponentFactory
             >,
         FW<Process::InspectorWidgetDelegateFactory,
-            Audio::Sound::InspectorFactory,
             Audio::Mix::InspectorFactory,
             Audio::Return::InspectorFactory,
             Audio::Effect::InspectorFactory
@@ -107,11 +101,7 @@ std::vector<std::unique_ptr<iscore::InterfaceBase>> iscore_plugin_audio::factori
         FW<Engine::LocalTree::ProcessComponentFactory,
             Audio::Effect::LocalTree::EffectProcessComponentFactory>,
         FW<Engine::Execution::ClockManagerFactory,
-            Audio::AudioStreamEngine::AudioClockFactory>,
-        FW<Scenario::DropHandler,
-            Audio::Sound::DropHandler>,
-        FW<Scenario::ConstraintDropHandler,
-            Audio::Sound::ConstraintDropHandler>
+            Audio::AudioStreamEngine::AudioClockFactory>
     >(ctx, key);
 }
 

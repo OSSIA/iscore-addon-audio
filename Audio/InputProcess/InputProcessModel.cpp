@@ -4,7 +4,7 @@
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 #include <Scenario/Document/Constraint/ConstraintModel.hpp>
 #include <Scenario/Process/ScenarioModel.hpp>
-#include <Audio/SoundProcess/SoundProcessModel.hpp>
+#include <Media/Sound/SoundModel.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
 #include <Loop/LoopProcessModel.hpp>
 #include <QFile>

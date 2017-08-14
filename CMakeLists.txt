@@ -276,7 +276,7 @@ if(APPLE)
 target_link_libraries(${PROJECT_NAME} PUBLIC -L/usr/local/lib)
 endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC
-            iscore_plugin_midi
+            iscore_plugin_midi iscore_plugin_media
             ${SNDFILE_LIBRARIES}
             mediainfo)
 endif()
