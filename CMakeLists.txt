@@ -65,9 +65,6 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TSendAudioStream.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TSinusAudioStream.hpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioArray.hpp"
-
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/ChangeAudioFile.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/ChangeSend.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/CreateSoundBox.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/AudioCommandFactory.hpp"
@@ -76,7 +73,6 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/CreateEffectAutomation.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/Factory.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/EffectInspector.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/ReturnInspector.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/MixInspector.hpp"
@@ -86,16 +82,6 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsModel.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsPresenter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsView.hpp"
-
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessFactory.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessLayer.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessLayerPanelProxy.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessMetadata.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessModel.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessPresenter.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessView.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/Drop/SoundDrop.hpp"
-
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessFactory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessMetadata.hpp"
@@ -135,9 +121,6 @@ set(HDRS ${HDRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessMetadata.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessModel.hpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioDecoder.hpp"
-
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/Track.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/TrackListPanel.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/TrackListPanelFactory.hpp"
@@ -150,8 +133,6 @@ set(SRCS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectModelSerialization.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/Missing/MissingEffectModelSerialization.cpp"
-
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessModelSerialization.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessModelSerialization.cpp"
 
@@ -196,13 +177,11 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TSendAudioStream.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioStreamEngine/Streams/TSinusAudioStream.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/ChangeAudioFile.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/ChangeSend.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/AudioCommandFactory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/InsertEffect.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/UpdateMix.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/AudioInspector.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/EffectInspector.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/ReturnInspector.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Inspector/MixInspector.cpp"
@@ -210,11 +189,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsPresenter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Settings/Card/CardSettingsView.cpp"
-
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessModel.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessPresenter.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/SoundProcessView.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SoundProcess/Drop/SoundDrop.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/EffectProcessModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Effect/EffectModel.cpp"
@@ -233,9 +207,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/GenProcess/GenProcessModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/SendProcess/SendProcessModel.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/ReturnProcess/ReturnProcessModel.cpp"
-
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MediaFileHandle.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioDecoder.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/Track.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Panel/TrackListPanel.cpp"
@@ -273,7 +244,23 @@ if(TARGET Lilv)
         "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LV2/LV2EffectFactory.cpp"
     )
 endif()
-add_library(${PROJECT_NAME} ${SRCS} ${HDRS} ${QRCS} ${LV2_SRCS} ${LV2_HDRS} ${FAUST_HDRS} ${FAUST_SRCS})
+
+set(ENVELOPE_HDRS
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Envelope/EnvelopeEffectModel.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Envelope/EnvelopeEffectFactory.hpp"
+    )
+set(ENVELOPE_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Envelope/EnvelopeEffectModelSerialization.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Envelope/EnvelopeEffectModel.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/Envelope/EnvelopeEffectFactory.cpp"
+)
+add_library(${PROJECT_NAME}
+    ${SRCS} ${HDRS} ${QRCS}
+    ${LV2_SRCS} ${LV2_HDRS}
+    ${ENVELOPE_SRCS} ${ENVELOPE_HDRS}
+    ${FAUST_HDRS} ${FAUST_SRCS}
+
+    )
 set_property(TARGET ${PROJECT_NAME} PROPERTY COTIRE_ADD_UNITY_BUILD FALSE)
 set_property(TARGET ${PROJECT_NAME} PROPERTY ISCORE_TARGET_NO_LTO TRUE)
 set_property(TARGET ${PROJECT_NAME} PROPERTY ISCORE_TARGET_NO_SANITIZE TRUE)

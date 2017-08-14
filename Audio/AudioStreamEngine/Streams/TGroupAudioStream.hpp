@@ -261,7 +261,7 @@ class LV2AudioEffect : public TAudioEffectInterface
             return data.control_in_ports.size();
         }
 
-        long GetControlOutCount()
+        long GetControlOutCount() final override
         {
             return data.control_out_ports.size();
         }
@@ -285,7 +285,7 @@ class LV2AudioEffect : public TAudioEffectInterface
             GetControlParamImpl(param, label, min, max, init, data.control_in_ports);
         }
 
-        void GetControlOutParam(long param, char* label, float* min, float* max, float* init)
+        void GetControlOutParam(long param, char* label, float* min, float* max, float* init) final override
         {
             GetControlParamImpl(param, label, min, max, init, data.control_out_ports);
         }
@@ -331,7 +331,7 @@ class LV2AudioEffect : public TAudioEffectInterface
             return {};
         }
 
-        float GetControlOutValue(long param)
+        float GetControlOutValue(long param) final override
         {
             if(param >= 0 && param < (int64_t)data.control_out_ports.size())
                 return fOutControls[param];

@@ -48,10 +48,12 @@ AUDIOAPI AudioStream MakeFixedLoopSound(AudioStream s, long maxlength);
 AUDIOAPI AudioStream MakeSimpleBufferSound(float **buffer, long length, long channels);
 AUDIOAPI SymbolicDate GenPriorisedSymbolicDate(AudioPlayerPtr /*player*/, int64_t prio);
 
+AudioEffect MakeEnvelopeEffect();
+
 #if defined(LILV_SHARED)
-AUDIOAPI long GetLV2ControlOutCount(AudioEffect effect);
-AUDIOAPI void GetLV2ControlOutParam(AudioEffect effect, long control, char* label, float* min, float* max, float* init);
-AUDIOAPI float GetLV2ControlOutValue(AudioEffect effect, long control);
+AUDIOAPI long GetControlOutCount(AudioEffect effect);
+AUDIOAPI void GetControlOutParam(AudioEffect effect, long control, char* label, float* min, float* max, float* init);
+AUDIOAPI float GetControlOutValue(AudioEffect effect, long control);
 AUDIOAPI void SetLV2MidiSource(AudioEffect effect, Midi::Executor::ProcessExecutor*);
 AUDIOAPI void LV2MidiNotesOff(AudioEffect effect);
 AUDIOAPI AudioEffect MakeLV2AudioEffect(LV2HostContext* h, LV2EffectContext*);
@@ -178,6 +180,87 @@ AUDIOAPI SymbolicDate GenPriorisedSymbolicDate(AudioPlayerPtr /*player*/, int64_
 {
     return new TPriorisedSymbolicDate(prio);
 }
+template<int NumChans>
+class EnvelopeEffect : public TAudioEffectInterface
+{
+    std::array<float, NumChans> m_rms{};
+    std::array<float, NumChans> m_peak{};
+public:
+  void Process(float** input, float** output, long framesNum) override
+  {
+
+  }
+
+  TAudioEffectInterface*Copy() override
+  {
+    return new EnvelopeEffect{};
+  }
+
+  void Reset() override
+  {
+  }
+  long Inputs() override
+  {
+    return NumChans;
+  }
+  long Outputs() override
+  {
+    return 0;
+  }
+  long GetControlCount() override
+  {
+    return 0;
+  }
+
+  void GetControlParam(long param, char* label, float* min, float* max, float* init) override
+  {
+  }
+  void SetControlValue(long param, float value) override
+  {
+  }
+  void SetControlValue(const char* label, float value) override
+  {
+  }
+  float GetControlValue(long param) override
+  {
+    return 0;
+  }
+  float GetControlValue(const char* labe) override
+  {
+    return 0;
+  }
+
+
+  long GetControlOutCount() override
+  {
+    return NumChans * 2;
+  }
+
+  void GetControlOutParam(long param, char* label, float* min, float* max, float* init) override
+  {
+
+
+  }
+
+  float GetControlOutValue(long param)  override
+  {
+
+  }
+
+  void SetName(const std::string& name) override
+  {
+  }
+  std::string GetName() override
+  {
+    return "";
+  }
+};
+
+AudioEffect MakeEnvelopeEffect()
+{
+  return {};
+
+}
 
 #if defined(LILV_SHARED)
 LV2AudioEffect& get_lv2_fx(const AudioEffect& effect)
@@ -185,19 +268,19 @@ LV2AudioEffect& get_lv2_fx(const AudioEffect& effect)
     return *static_cast<LV2AudioEffect*>(static_cast<TAudioEffectInterfacePtr>(effect).getPointer());
 }
 
-AUDIOAPI long GetLV2ControlOutCount(AudioEffect effect)
+AUDIOAPI long GetControlOutCount(AudioEffect effect)
 {
-    return get_lv2_fx(effect).GetControlOutCount();
+    return effect->GetControlOutCount();
 }
 
-AUDIOAPI void GetLV2ControlOutParam(AudioEffect effect, long control, char* label, float* min, float* max, float* init)
+AUDIOAPI void GetControlOutParam(AudioEffect effect, long control, char* label, float* min, float* max, float* init)
 {
-    get_lv2_fx(effect).GetControlOutParam(control, label, min, max, init);
+    effect->GetControlOutParam(control, label, min, max, init);
 }
 
-AUDIOAPI float GetLV2ControlOutValue(AudioEffect effect, long control)
+AUDIOAPI float GetControlOutValue(AudioEffect effect, long control)
 {
-    return get_lv2_fx(effect).GetControlOutValue(control);
+    return effect->GetControlOutValue(control);
 }
 
 

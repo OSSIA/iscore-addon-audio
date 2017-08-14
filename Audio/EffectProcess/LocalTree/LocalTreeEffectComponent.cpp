@@ -121,11 +121,11 @@ void EffectComponent::recreate()
             else
               ossia::net::set_description(*param_node, ossia::none);
 
-            param_addr->push_value(float{GetLV2ControlOutValue(fx, parameter.id)});
+            param_addr->push_value(float{GetControlOutValue(fx, parameter.id)});
             m_outAddresses.push_back(std::make_tuple(parameter.id, param_addr, param_node));
         }
 
-        if(GetLV2ControlOutCount(fx) > 0)
+        if(GetControlOutCount(fx) > 0)
         {
             lv2_fx->effectContext.on_outControlsChanged = [&] {
                 auto fx = effect.effect();
@@ -134,7 +134,7 @@ void EffectComponent::recreate()
 
                 for(auto p : m_outAddresses)
                 {
-                    std::get<1>(p)->push_value(float{GetLV2ControlOutValue(fx, std::get<0>(p))});
+                    std::get<1>(p)->push_value(float{GetControlOutValue(fx, std::get<0>(p))});
                 }
             };
         }

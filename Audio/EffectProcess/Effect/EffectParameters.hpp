@@ -17,8 +17,8 @@ struct InParameter
 #if defined(LILV_SHARED)
 struct OutParameter
 {
-        static auto getControlCount() { return GetLV2ControlOutCount; }
-        static auto getControlParam() { return GetLV2ControlOutParam; }
+        static auto getControlCount() { return GetControlOutCount; }
+        static auto getControlParam() { return GetControlOutParam; }
 };
 #endif
 
