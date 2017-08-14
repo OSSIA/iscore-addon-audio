@@ -4,7 +4,6 @@
 #include <iscore/serialization/JSONVisitor.hpp>
 #include <iscore/serialization/VisitorCommon.hpp>
 #include <Audio/EffectProcess/EffectProcessMetadata.hpp>
-#include <Audio/MediaFileHandle.hpp>
 #include <iscore/model/EntityMap.hpp>
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
 namespace Audio

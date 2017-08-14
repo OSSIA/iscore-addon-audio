@@ -5,8 +5,7 @@
 #include <Scenario/Document/Constraint/ConstraintModel.hpp>
 #include <Scenario/Process/ScenarioModel.hpp>
 #include <Loop/LoopProcessModel.hpp>
-#include <Audio/SoundProcess/SoundProcessModel.hpp>
-#include <Audio/EffectProcess/EffectProcessModel.hpp>
+#include <Media/Sound/SoundModel.hpp>
 #include <Audio/SendProcess/SendProcessModel.hpp>
 #include <Audio/ReturnProcess/ReturnProcessModel.hpp>
 #include <Audio/AudioStreamEngine/Scenario/ProcessComponent.hpp>

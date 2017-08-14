@@ -3,7 +3,7 @@
 #include <Scenario/Process/ScenarioModel.hpp>
 #include <Loop/LoopProcessModel.hpp>
 #include <boost/multi_index_container.hpp>
-#include <Audio/SoundProcess/SoundProcessModel.hpp>
+#include <Media/Sound/SoundModel.hpp>
 #include <Audio/ReturnProcess/ReturnProcessModel.hpp>
 #include <Audio/SendProcess/SendProcessModel.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>

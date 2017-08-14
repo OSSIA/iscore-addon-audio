@@ -1,12 +1,9 @@
 #pragma once
 #include <Audio/AudioStreamEngine/Scenario/ProcessComponent.hpp>
-
+#include <Media/Sound/SoundModel.hpp>
 namespace Audio
 {
-namespace Sound
-{
-class ProcessModel;
-}
+namespace Sound = Media::Sound;
 namespace AudioStreamEngine
 {
 class SoundComponent final :
