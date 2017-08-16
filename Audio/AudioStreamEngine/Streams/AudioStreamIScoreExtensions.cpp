@@ -244,6 +244,7 @@ public:
 
   float GetControlOutValue(long param)  override
   {
+    return 0;
 
   }
 
