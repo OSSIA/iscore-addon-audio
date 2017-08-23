@@ -66,7 +66,7 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, bool is_output, QWid
 {
   m_param.about_to_be_deleted.connect<EffectSlider, &EffectSlider::on_paramDeleted>(this);
 
-  auto addr = m_param.get_address();
+  auto addr = m_param.get_parameter();
 
   auto dom = addr->get_domain();
 
@@ -85,7 +85,7 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, bool is_output, QWid
   lay->addWidget(m_slider);
   this->setLayout(lay);
 
-  auto cur_val = ossia::convert<float>(m_param.get_address()->value());
+  auto cur_val = ossia::convert<float>(m_param.get_parameter()->value());
   scaledValue = (cur_val - m_min) / (m_max - m_min);
   m_slider->setValue(scaledValue);
 
@@ -97,10 +97,10 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, bool is_output, QWid
           ISCORE_ASSERT(!m_paramIsDead);
           // TODO undo ???
           // v is between 0 - 1
-          auto cur = m_param.get_address()->value();
+          auto cur = m_param.get_parameter()->value();
           auto exp = float(m_min + (m_max - m_min) * v);
           if(ossia::convert<float>(cur) != exp)
-              m_param.get_address()->push_value(float{exp});
+              m_param.get_parameter()->push_value(float{exp});
 
       });
   }
@@ -118,7 +118,7 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, bool is_output, QWid
   connect(m_addAutomAction, &QAction::triggered,
           this, [=] () {
     ISCORE_ASSERT(!m_paramIsDead);
-    auto& ossia_addr = *m_param.get_address();
+    auto& ossia_addr = *m_param.get_parameter();
     auto& dom = ossia_addr.get_domain();
     auto addr = State::parseAddress(QString::fromStdString(ossia::net::address_string_from_node(ossia_addr)));
 
@@ -136,7 +136,7 @@ EffectSlider::~EffectSlider()
 {
     if(!m_paramIsDead)
     {
-        if(auto addr = m_param.get_address())
+        if(auto addr = m_param.get_parameter())
         {
           addr->remove_callback(m_callback);
         }
@@ -155,7 +155,7 @@ void EffectSlider::contextMenuEvent(QContextMenuEvent* event)
 
 void EffectSlider::on_paramDeleted(const ossia::net::node_base&)
 {
-    if(auto addr = m_param.get_address())
+    if(auto addr = m_param.get_parameter())
     {
       addr->remove_callback(m_callback);
     }

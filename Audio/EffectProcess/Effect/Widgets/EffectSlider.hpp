@@ -1,7 +1,7 @@
 #pragma once
 #include <QWidget>
 #include <State/Address.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 namespace ossia
 {
 namespace net
@@ -38,7 +38,7 @@ class EffectSlider :
         void on_paramDeleted(const ossia::net::node_base&);
 
         const ossia::net::node_base& m_param;
-        ossia::net::address_base::callback_index m_callback;
+        ossia::net::parameter_base::callback_index m_callback;
         float m_min{0.};
         float m_max{1.};
 
