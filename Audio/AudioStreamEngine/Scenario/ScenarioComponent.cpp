@@ -54,7 +54,7 @@ void ScenarioComponent::makeStream(const Context& ctx)
         p.component.onDateFixed = [&] (audio_frame_t t, bool force) { onDateFixed(p.component, t, force); };
     }
 
-    for(auto& p : timeNodes_pairs())
+    for(auto& p : timeSyncs_pairs())
     {
         p.component.onDateFixed = [&] (audio_frame_t t, bool force) { onDateFixed(p.component, t, force); };
     }
@@ -113,12 +113,12 @@ void ScenarioComponent::makeStream(const Context& ctx)
     }
 
     // We already set stuff starting from the initial events.
-    if(!process().startTimeNode().active())
+    if(!process().startTimeSync().active())
     {
-        auto& start_node_id = process().startTimeNode().id();
+        auto& start_node_id = process().startTimeSync().id();
 
-        auto it = ossia::find_if(timeNodes_pairs(), [=] (auto& p) { return p.element.id() == start_node_id; });
-        ISCORE_ASSERT(it != timeNodes_pairs().end());
+        auto it = ossia::find_if(timeSyncs_pairs(), [=] (auto& p) { return p.element.id() == start_node_id; });
+        ISCORE_ASSERT(it != timeSyncs_pairs().end());
         onDateFixed(it->component, audio_frame_t{0}, true);
 
     }
@@ -149,11 +149,11 @@ Event* ScenarioComponentBase::make<Event, Scenario::EventModel>(
 }
 
 template<>
-TimeNode* ScenarioComponentBase::make<TimeNode, Scenario::TimeNodeModel>(
+Sync* ScenarioComponentBase::make<Sync, Scenario::TimeSyncModel>(
         const Id<iscore::Component>& id,
-        Scenario::TimeNodeModel& elt)
+        Scenario::TimeSyncModel& elt)
 {
-    return new TimeNode{id, elt, system(), this};
+    return new Sync{id, elt, system(), this};
 }
 
 template<>
@@ -212,15 +212,15 @@ void ScenarioComponent::onStartDateFixed(
     SetSymbolicDate(m_groupPlayer, c.stopDate, end_date);
     c.defaultDuration = system().toFrame(dur.defaultDuration());
 
-    const Scenario::TimeNodeModel& end_tn = Scenario::endTimeNode(c.constraint(), process());
+    const Scenario::TimeSyncModel& end_tn = Scenario::endTimeSync(c.constraint(), process());
     if(end_tn.active())
         return;
 
     auto& end_tn_id = end_tn.id();
 
-    auto it = ossia::find_if(timeNodes_pairs(),
+    auto it = ossia::find_if(timeSyncs_pairs(),
                       [=] (auto& e) { return e.element.id() == end_tn_id; });
-    ISCORE_ASSERT(it != timeNodes_pairs().end());
+    ISCORE_ASSERT(it != timeSyncs_pairs().end());
     it->component.onDateFixed(end_date, force_update);
 }
 
@@ -247,26 +247,26 @@ void ScenarioComponent::onSpeedChanged(const Constraint& c, double speed)
     auto end_date = cur_date + remaining_samples;
     SetSymbolicDate(m_groupPlayer, c.stopDate, end_date);
 
-    const Scenario::TimeNodeModel& end_tn = Scenario::endTimeNode(c.constraint(), process());
+    const Scenario::TimeSyncModel& end_tn = Scenario::endTimeSync(c.constraint(), process());
     if(end_tn.active())
         return;
 
     auto& end_tn_id = end_tn.id();
 
-    auto it = ossia::find_if(timeNodes_pairs(),
+    auto it = ossia::find_if(timeSyncs_pairs(),
                       [=] (auto& e) { return e.element.id() == end_tn_id; });
-    ISCORE_ASSERT(it != timeNodes_pairs().end());
+    ISCORE_ASSERT(it != timeSyncs_pairs().end());
     it->component.onDateFixed(end_date, true);
 }
 
 void ScenarioComponent::onDateFixed(
-        const TimeNode& c,
+        const Sync& c,
         audio_frame_t time,
         bool force_update)
 {
-    // When a time node is set, this should ensure that we also recursively set
+    // When a time sync is set, this should ensure that we also recursively set
     // most following constraints / events.
-    // A timenode is a stop if it has a trigger.
+    // A timesync is a stop if it has a trigger.
     // An event is a stop if it has a condition.
     // Note : preserve sample-accuracy for conditions by
     // keeping the stuff but muting it in some way. How to do this in a sample-acurate way ?
@@ -275,13 +275,13 @@ void ScenarioComponent::onDateFixed(
 
     // TODO precompute dependency chains with boost.graph ?
 
-    // The date of this time node has been fixed as 't'.
+    // The date of this time sync has been fixed as 't'.
     // For each following constraint, we set :
     //  start = t + 1
     //  end = start + dur(cst)
     // Nothing is triggered however.
 
-    auto& next_ev = c.timeNode.events();
+    auto& next_ev = c.timeSync.events();
     for(auto& ev_id : next_ev)
     {
         Scenario::EventModel& ev = process().events.at(ev_id);

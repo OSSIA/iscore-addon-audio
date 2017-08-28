@@ -1,7 +1,7 @@
 #pragma once
 #include <Audio/AudioStreamEngine/Scenario/ConstraintComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/EventComponent.hpp>
-#include <Audio/AudioStreamEngine/Scenario/TimeNodeComponent.hpp>
+#include <Audio/AudioStreamEngine/Scenario/SyncComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/StateComponent.hpp>
 #include <Scenario/Document/Components/ScenarioComponent.hpp>
 #include <Loop/LoopProcessModel.hpp>
@@ -36,7 +36,7 @@ class LoopComponent final : public HierarchicalBaseScenario<
     Loop::ProcessModel,
     Constraint,
     Event,
-    TimeNode,
+    Sync,
     State>
 {
     public:
@@ -45,7 +45,7 @@ class LoopComponent final : public HierarchicalBaseScenario<
         Loop::ProcessModel,
         Constraint,
         Event,
-        TimeNode,
+        Sync,
         State>::HierarchicalBaseScenario;
 
         optional<AudioGraphVertice> visit(AudioGraph& graph) override;

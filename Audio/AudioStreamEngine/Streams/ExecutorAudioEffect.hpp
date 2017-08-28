@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/editor/scenario/time_constraint.hpp>
-#include <ossia/editor/scenario/time_node.hpp>
+#include <ossia/editor/scenario/time_sync.hpp>
 #include <TAudioStream.h>
 #include <iscore/tools/Todo.hpp>
 

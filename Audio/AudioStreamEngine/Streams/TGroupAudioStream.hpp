@@ -559,19 +559,19 @@ class MonoLV2AudioInstrument final : public LV2AudioEffect
 #endif
 /**/
 /**
- * @brief The TTimeNodeControlCommand struct
- * Only useful for interactive time nodes.
+ * @brief The TSyncControlCommand struct
+ * Only useful for interactive time syncs.
  * Maybe for events too ?
  */
-//struct TTimeNodeControlCommand : public TControlCommand
+//struct TSyncControlCommand : public TControlCommand
 //{
-//        TTimeNodeControlCommand(const Audio::AudioStreamEngine::TimeNodeComponent& ctx):
+//        TSyncControlCommand(const Audio::AudioStreamEngine::SyncComponent& ctx):
 //            m_audio_parent{ctx}
 //        {
 
 //        }
 
-//        const Audio::AudioStreamEngine::TimeNodeComponent& m_audio_parent;
+//        const Audio::AudioStreamEngine::SyncComponent& m_audio_parent;
 
 //        //std::vector<SymbolicDate> m_beforeDates;
 //        //std::vector<SymbolicDate> m_afterDates;
@@ -582,16 +582,16 @@ class MonoLV2AudioInstrument final : public LV2AudioEffect
 //                audio_frame_t cur_frame,
 //                long frames)
 //        {
-//            auto timenode_time = fStartDate->get_date();
-//            if (InBuffer(timenode_time, cur_frame, frames))
+//            auto timesync_time = fStartDate->get_date();
+//            if (InBuffer(timesync_time, cur_frame, frames))
 //            {
 //                m_audio_parent.onDateFixed(cur_frame);
 
 //                // Set stop date of all previous constraint to the TN frame
 //                for(SymbolicDate date : m_beforeDates)
-//                    date->setDate(timenode_time);
+//                    date->setDate(timesync_time);
 
-//                // Execute the time node.
+//                // Execute the time sync.
 //                // If we are here, it has already been triggered.
 //                // We only have to check the conditions.
 //                m_node.trigger();
@@ -599,7 +599,7 @@ class MonoLV2AudioInstrument final : public LV2AudioEffect
 //                // For all true events, set start date of all next constraints's start, and
 //                // trigger their start / their start + offset.
 //                for(SymbolicDate date : m_afterDates)
-//                    date->setDate(timenode_time + 1);
+//                    date->setDate(timesync_time + 1);
 
 
 //                // TODO after each command, the commands should be re-sorted.

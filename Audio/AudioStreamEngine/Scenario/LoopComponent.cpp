@@ -48,9 +48,9 @@ void LoopComponent::makeStream(const Context& ctx)
     // If we are in the "good" case of a non-interactive loop, we
     // can have sample-accurate looping : each loop iteration will be exactly one
     // sample after the following.
-    auto& start_node = *timeNodes().begin();
+    auto& start_node = *timeSyncs().begin();
     auto& start_event = *events().begin();
-    auto& end_node = *++timeNodes().begin();
+    auto& end_node = *++timeSyncs().begin();
 
     if(!start_node.element.active() &&
             !end_node.element.active() &&
@@ -117,11 +117,11 @@ Event* LoopComponentBase::make<Event, Scenario::EventModel>(
 }
 
 template<>
-TimeNode* LoopComponentBase::make<TimeNode, Scenario::TimeNodeModel>(
+Sync* LoopComponentBase::make<Sync, Scenario::TimeSyncModel>(
         const Id<iscore::Component>& id,
-        Scenario::TimeNodeModel& elt)
+        Scenario::TimeSyncModel& elt)
 {
-    return new TimeNode{id, elt, system(), this};
+    return new Sync{id, elt, system(), this};
 }
 
 template<>

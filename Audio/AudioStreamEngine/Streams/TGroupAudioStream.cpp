@@ -58,12 +58,12 @@ struct TLoopCommand : public TControlCommand
         }
 };
 
-ISCORE_PLUGIN_AUDIO_EXPORT void MakeScenarioTimeNodeCommand(
+ISCORE_PLUGIN_AUDIO_EXPORT void MakeScenarioSyncCommand(
         AudioPlayer player,
-        Audio::AudioStreamEngine::TimeNodeComponent& t
+        Audio::AudioStreamEngine::SyncComponent& t
         )
 {
-    auto cmd = new TTimeNodeControlCommand{t};
+    auto cmd = new TSyncControlCommand{t};
     player.fMixer->AddControlCommand(cmd);
 }
 }

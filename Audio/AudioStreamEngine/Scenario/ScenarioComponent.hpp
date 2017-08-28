@@ -1,7 +1,7 @@
 #pragma once
 #include <Audio/AudioStreamEngine/Scenario/ConstraintComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/EventComponent.hpp>
-#include <Audio/AudioStreamEngine/Scenario/TimeNodeComponent.hpp>
+#include <Audio/AudioStreamEngine/Scenario/SyncComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/StateComponent.hpp>
 #include <Scenario/Document/Components/ScenarioComponent.hpp>
 #include <QMetaObject>
@@ -38,7 +38,7 @@ class ScenarioComponent final : public HierarchicalScenarioComponent<
     Scenario::ProcessModel,
     Constraint,
     Event,
-    TimeNode,
+    Sync,
     State>
 {
     public:
@@ -47,7 +47,7 @@ class ScenarioComponent final : public HierarchicalScenarioComponent<
         Scenario::ProcessModel,
         Constraint,
         Event,
-        TimeNode,
+        Sync,
         State>::HierarchicalScenarioComponent;
         ~ScenarioComponent();
 
@@ -57,7 +57,7 @@ class ScenarioComponent final : public HierarchicalScenarioComponent<
 
         void stop() override;
     private:
-        void onDateFixed(const TimeNode& t, audio_frame_t time, bool force_update);
+        void onDateFixed(const Sync& t, audio_frame_t time, bool force_update);
         void onDateFixed(const Event& t, audio_frame_t time, bool force_update);
         void onStartDateFixed(Constraint& t, audio_frame_t time, bool force_update);
         void onStopDateFixed(const Constraint& t, audio_frame_t time);
