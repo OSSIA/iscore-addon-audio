@@ -70,3 +70,9 @@ TAudioStreamPtr TPlayerAudioStream::Copy()
     assert(false);
     return NULL;
 }
+
+long TPlayerAudioStream::SetPos(long frames)
+{
+  fMixer->SetPos(frames);
+  return 0;
+}

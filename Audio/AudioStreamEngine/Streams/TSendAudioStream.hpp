@@ -30,6 +30,8 @@ class TSendAudioStream final :
 
         TAudioStreamPtr Copy() override;
 
+        long SetPos(long frames) override;
+
         void RegisterReturn(TReturnAudioStream*);
         void UnregisterReturn(TReturnAudioStream*);
 };

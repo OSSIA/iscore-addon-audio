@@ -21,6 +21,7 @@ class TSimpleBufferAudioStream final :
         long Length() override;
         long Channels() override;
         void Reset() override;
+        long SetPos(long frames) override;
 
         TAudioStreamPtr CutBegin(long frames);
 

@@ -21,6 +21,8 @@ class TChannelAudioStream final :
 
         long Read(FLOAT_BUFFER buffer, long framesNum, long framePos) override;
 
+        long SetPos(long frames) override;
+
         TAudioStreamPtr Copy() override;
 };
 using TChannelAudioStreamPtr = LA_SMARTP<TChannelAudioStream>;

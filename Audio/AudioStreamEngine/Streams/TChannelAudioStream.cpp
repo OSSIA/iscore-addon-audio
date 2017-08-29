@@ -35,7 +35,12 @@ long TChannelAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePo
     return res;
 }
 
+long TChannelAudioStream::SetPos(long frames)
+{
+  return fStream->SetPos(frames);
+}
+
 TAudioStreamPtr TChannelAudioStream::Copy()
 {
-    return new TChannelAudioStream{fStream->Copy(), fVolume};
+  return new TChannelAudioStream{fStream->Copy(), fVolume};
 }

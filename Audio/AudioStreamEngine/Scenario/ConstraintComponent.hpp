@@ -73,7 +73,6 @@ class Constraint final :
         SymbolicDate startDate;
         SymbolicDate stopDate;
 
-        audio_frame_t defaultStartDate = INT64_MAX;
         audio_frame_t defaultDuration = INT64_MAX;
 
     private:

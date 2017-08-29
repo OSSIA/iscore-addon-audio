@@ -5,7 +5,7 @@
 #include <iscore/tools/Todo.hpp>
 
 
-class TExecutorAudioStream : public TDecoratedAudioStream
+class TExecutorAudioStream final : public TDecoratedAudioStream
 {
 private:
   ossia::time_constraint& m_root;
@@ -19,8 +19,7 @@ public:
   long Read(FLOAT_BUFFER buffer, long framesNum, long framePos) override
   {
     try {
-      const ossia::time_value rate{1000000. * (double)TAudioGlobals::fBufferSize / (double)TAudioGlobals::fSampleRate};
-      m_root.tick(rate);
+      m_root.tick(ossia::time_value(framesNum));
     }
     catch(...)
     {
@@ -32,6 +31,12 @@ public:
   long Write(FLOAT_BUFFER buffer, long framesNum, long framePos) override
   {
     return 0;
+  }
+
+  long SetPos(long frames) override
+  {
+      m_root.offset(ossia::time_value(frames));
+      return fStream->SetPos(frames);
   }
 
   TAudioStreamPtr CutBegin(long frames) override

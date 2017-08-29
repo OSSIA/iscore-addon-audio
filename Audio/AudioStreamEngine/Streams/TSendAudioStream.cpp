@@ -63,11 +63,16 @@ TAudioStreamPtr TSendAudioStream::Copy()
     return new TSendAudioStream{fStream->Copy()};
 }
 
+long TSendAudioStream::SetPos(long frames)
+{
+  return fStream->SetPos(frames);
+}
+
 void TSendAudioStream::RegisterReturn(TReturnAudioStream* ret)
 {
-    auto it = std::find(fReturns.begin(), fReturns.end(), ret);
-    if(it == fReturns.end())
-        fReturns.push_back(ret);
+  auto it = std::find(fReturns.begin(), fReturns.end(), ret);
+  if(it == fReturns.end())
+    fReturns.push_back(ret);
 }
 
 void TSendAudioStream::UnregisterReturn(TReturnAudioStream* ret)

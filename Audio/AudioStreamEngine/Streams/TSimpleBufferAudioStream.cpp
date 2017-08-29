@@ -74,5 +74,11 @@ TAudioStreamPtr TSimpleBufferAudioStream::CutBegin(long frames)
 
 void TSimpleBufferAudioStream::Reset()
 {
-    fPos = 0;
+  fPos = 0;
+}
+
+long TSimpleBufferAudioStream::SetPos(long frames)
+{
+  fPos = frames;
+  return fPos;
 }

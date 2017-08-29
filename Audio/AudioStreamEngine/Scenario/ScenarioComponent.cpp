@@ -192,48 +192,67 @@ void ScenarioComponent::onDateFixed(
 }
 
 void ScenarioComponent::onStartDateFixed(
-        Constraint& c,
-        audio_frame_t time,
-        bool force_update)
+    Constraint& c,
+    audio_frame_t time,
+    bool force_update)
 {
-    if(!c.startDate)
-        return;
-    if(GetSymbolicDate(m_groupPlayer, c.startDate) != INT64_MAX)
-        if(!force_update)
-            return; // this branch is already set.
+  if(!c.startDate)
+    return;
+  if(GetSymbolicDate(m_groupPlayer, c.startDate) != INT64_MAX)
+    if(!force_update)
+      return; // this branch is already set.
 
-    SetSymbolicDate(m_groupPlayer, c.startDate, time);
-    c.defaultStartDate = time;
-    const Scenario::ConstraintDurations& dur = c.constraint().duration;
-    if(!dur.isRigid())
-        return;
+  DocumentPlugin& ctx = system();
+  const Scenario::ConstraintModel& cst = c.constraint();
+  const Scenario::ConstraintDurations& dur = cst.duration;
+  audio_frame_t start_date{}, end_date{};
+  if(!ctx.offsetting)
+  {
+    start_date = time;
+    end_date = time + ctx.toFrame(dur.defaultDuration()) / dur.executionSpeed();
+  }
+  else
+  {
+    start_date = ctx.toFrame(c.constraint().startDate());
+    end_date = ctx.toFrame(cst.startDate()) + ctx.toFrame(dur.defaultDuration()) / dur.executionSpeed() ;
+  }
 
-    auto end_date = time + system().toFrame(dur.defaultDuration()) / dur.executionSpeed();
-    SetSymbolicDate(m_groupPlayer, c.stopDate, end_date);
-    c.defaultDuration = system().toFrame(dur.defaultDuration());
+  SetSymbolicDate(m_groupPlayer, c.startDate, start_date);
+  if(!dur.isRigid())
+    return;
 
-    const Scenario::TimeSyncModel& end_tn = Scenario::endTimeSync(c.constraint(), process());
-    if(end_tn.active())
-        return;
+  SetSymbolicDate(m_groupPlayer, c.stopDate, end_date);
+  c.defaultDuration = ctx.toFrame(dur.defaultDuration());
 
-    auto& end_tn_id = end_tn.id();
+  const Scenario::TimeSyncModel& end_tn = Scenario::endTimeSync(c.constraint(), process());
+  if(end_tn.active())
+    return;
 
-    auto it = ossia::find_if(timeSyncs_pairs(),
-                      [=] (auto& e) { return e.element.id() == end_tn_id; });
-    ISCORE_ASSERT(it != timeSyncs_pairs().end());
-    it->component.onDateFixed(end_date, force_update);
+  auto& end_tn_id = end_tn.id();
+
+  auto it = ossia::find_if(timeSyncs_pairs(),
+                           [=] (auto& e) { return e.element.id() == end_tn_id; });
+  ISCORE_ASSERT(it != timeSyncs_pairs().end());
+  it->component.onDateFixed(end_date, force_update);
 }
 
 void ScenarioComponent::onStopDateFixed(const Constraint& c, audio_frame_t time)
 {
-    if(!c.stopDate)
-        return;
-    if(GetSymbolicDate(m_groupPlayer, c.stopDate) != INT64_MAX)
-        return; // this branch is already set.
-
+  if(!c.stopDate)
+    return;
+  if(GetSymbolicDate(m_groupPlayer, c.stopDate) != INT64_MAX)
+    return; // this branch is already set.
+  DocumentPlugin& ctx = system();
+  if(ctx.offsetting)
+  {
+    SetSymbolicDate(m_groupPlayer, c.stopDate, time);
+  }
+  else
+  {
     SetSymbolicDate(m_groupPlayer, c.stopDate, time);
 
     // We don't have anything more to do (it is only called to end interactive constraints.
+  }
 }
 
 void ScenarioComponent::onSpeedChanged(const Constraint& c, double speed)
@@ -289,7 +308,7 @@ void ScenarioComponent::onDateFixed(
         {
             auto it = ossia::find_if(events_pairs(), [=] (auto& e) { return e.element.id() == ev_id; });
             ISCORE_ASSERT(it != events_pairs().end());
-            it->component.onDateFixed(time, force_update);
+            //it->component.onDateFixed(time, force_update);
         }
     }
 }

@@ -33,4 +33,7 @@ class TPlayerAudioStream final : public TAudioStream
         long Channels() override;
 
         TAudioStreamPtr Copy() override;
+
+        long SetPos(long frames) override;
+
 };

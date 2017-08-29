@@ -32,6 +32,7 @@ class ISCORE_PLUGIN_AUDIO_EXPORT DocumentPlugin : public iscore::DocumentPlugin
         }
 
 
+        bool offsetting = false;
         AudioStream makeStream(Scenario::ConstraintModel& cst);
         void stop();
 
