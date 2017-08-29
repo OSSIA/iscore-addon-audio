@@ -25,7 +25,8 @@ TAudioStreamPtr TFixedLoopAudioStream::Copy()
 long TFixedLoopAudioStream::SetPos(long frames)
 {
     long len = fStream->Length();
-    return fStream->SetPos(frames % len);
+    fPos = frames % len;
+    return fStream->SetPos(fPos);
 }
 
 long TFixedLoopAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos)
