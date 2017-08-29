@@ -40,6 +40,31 @@ Presenter::Presenter(
 
     v.setSampleRate(m.getRate());
 
+    // InChannels
+    con(m, &Model::InChannelsChanged, &v, &View::setInChannels);
+    con(v, &View::inChannelsChanged,
+        this, [&] (auto chan) {
+        if(chan != m.getInChannels())
+        {
+            m_disp.submitCommand<SetModelInChannels>(this->model(this), chan);
+        }
+    });
+
+    v.setInChannels(m.getInChannels());
+
+    // OutChannels
+    con(m, &Model::OutChannelsChanged, &v, &View::setOutChannels);
+    con(v, &View::outChannelsChanged,
+        this, [&] (auto chan) {
+      if(chan != m.getOutChannels())
+      {
+        qDebug() << chan;
+        m_disp.submitCommand<SetModelOutChannels>(this->model(this), chan);
+      }
+    });
+
+    v.setOutChannels(m.getOutChannels());
+
     // Driver
     con(m, &Model::DriverChanged, &v, &View::setDriver);
     con(v, &View::driverChanged,

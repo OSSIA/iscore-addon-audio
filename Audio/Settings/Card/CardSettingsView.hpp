@@ -3,6 +3,7 @@
 #include <iscore/plugins/settingsdelegate/SettingsDelegateView.hpp>
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
 
+class QSpinBox;
 class QComboBox;
 class QLabel;
 
@@ -17,6 +18,8 @@ public:
     void setCard(QString);
     void setBufferSize(int);
     void setSampleRate(int);
+    void setInChannels(int);
+    void setOutChannels(int);
     void setDriver(QString);
 
     long getDriver();
@@ -26,6 +29,8 @@ signals:
     void cardChanged(QString);
     void bufferSizeChanged(int);
     void rateChanged(int);
+    void inChannelsChanged(int);
+    void outChannelsChanged(int);
     void driverChanged(QString);
 
 private:
@@ -38,6 +43,8 @@ private:
     QComboBox* m_cardb{};
     QComboBox* m_bsb{};
     QComboBox* m_srb{};
+    QSpinBox* m_inChan{};
+    QSpinBox* m_outChan{};
 
     // Label displaying latency depending on selected options
     QLabel* m_ll{};

@@ -15,7 +15,7 @@ namespace Midi { namespace Executor { class ProcessExecutor; } }
 extern "C"
 {
 #endif
-AudioRendererPtr MakeGroupPlayer();
+AudioRendererPtr MakeGroupPlayer(int out_chan);
 
 // The stream takes ownership of the player
 AudioStream MakeGroupStream(AudioRendererPtr p);

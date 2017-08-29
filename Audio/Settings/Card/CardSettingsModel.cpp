@@ -16,9 +16,11 @@ namespace Parameters
         const iscore::sp<ModelCardParameter> Card{QStringLiteral("Audio/Card"), ""};
         const iscore::sp<ModelBufferSizeParameter> BufferSize{QStringLiteral("Audio/BufferSize"), 512};
         const iscore::sp<ModelRateParameter> Rate{QStringLiteral("Audio/SamplingRate"), 44100};
+        const iscore::sp<ModelInChannelsParameter> InChannels{QStringLiteral("Audio/InChannels"), 2};
+        const iscore::sp<ModelOutChannelsParameter> OutChannels{QStringLiteral("Audio/OutChannels"), 2};
 
         static auto list() {
-            return std::tie(Driver, Card, BufferSize, Rate);
+            return std::tie(Driver, Card, BufferSize, Rate, InChannels, OutChannels);
         }
 }
 
@@ -57,5 +59,7 @@ ISCORE_SETTINGS_PARAMETER_CPP(QString, Model, Driver)
 ISCORE_SETTINGS_PARAMETER_CPP(QString, Model, Card)
 ISCORE_SETTINGS_PARAMETER_CPP(int, Model, BufferSize)
 ISCORE_SETTINGS_PARAMETER_CPP(int, Model, Rate)
+ISCORE_SETTINGS_PARAMETER_CPP(int, Model, InChannels)
+ISCORE_SETTINGS_PARAMETER_CPP(int, Model, OutChannels)
 }
 }

@@ -313,6 +313,10 @@ void ApplicationPlugin::initialize()
         this, &ApplicationPlugin::startEngine);
     con(set, &Settings::Model::RateChanged,
         this, &ApplicationPlugin::startEngine);
+    con(set, &Settings::Model::InChannelsChanged,
+        this, &ApplicationPlugin::startEngine);
+    con(set, &Settings::Model::OutChannelsChanged,
+        this, &ApplicationPlugin::startEngine);
     startEngine();
 
    // startMTDSPFactories();
@@ -367,8 +371,15 @@ void ApplicationPlugin::startEngine()
              << dev.fDefaultBufferSize
              << dev.fDefaultSampleRate;
 
-    qDebug() << "opening audio with: " << stngs.getRate() << stngs.getBufferSize();
-    AudioGlobalsInit(2, 2, stngs.getRate(),
+    qDebug() << "opening audio with: "
+             << stngs.getInChannels()
+             << stngs.getOutChannels()
+             << stngs.getRate()
+             << stngs.getBufferSize();
+
+    AudioGlobalsInit(stngs.getInChannels(),
+                     stngs.getOutChannels(),
+                     stngs.getRate(),
                      stngs.getBufferSize(),
                      65536*4,
                      0,
@@ -378,7 +389,13 @@ void ApplicationPlugin::startEngine()
     m_ctx.sample_rate = stngs.getRate();
     m_ctx.buffer_size = stngs.getBufferSize();
     GetAudioRendererInfo(m_ctx.renderer, &m_ctx.renderer_info);
-    OpenAudioRenderer(m_ctx.renderer, card, card, 2, 2, stngs.getBufferSize(), stngs.getRate());
+    m_ctx.renderer_info.fInput = stngs.getInChannels();
+    m_ctx.renderer_info.fOutput = stngs.getOutChannels();
+    OpenAudioRenderer(m_ctx.renderer, card, card,
+                      stngs.getInChannels(),
+                      stngs.getOutChannels(),
+                      stngs.getBufferSize(),
+                      stngs.getRate());
 
     emit audioEngineRestarted();
 }

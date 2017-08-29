@@ -2,6 +2,7 @@
 #include "CardSettingsModel.hpp"
 #include <QLabel>
 #include <QComboBox>
+#include <QSpinBox>
 #include <sstream>
 #include <QFormLayout>
 #include <LibAudioStreamMC++.h>
@@ -22,6 +23,8 @@ View::View(AudioStreamEngine::ApplicationPlugin * p) :
     m_cardb{new QComboBox},
     m_bsb{new QComboBox},
     m_srb{new QComboBox},
+    m_inChan{new QSpinBox},
+    m_outChan{new QSpinBox},
     m_ll{new QLabel},
     m_infol{new QLabel},
     m_aseplug{p},
@@ -35,8 +38,13 @@ View::View(AudioStreamEngine::ApplicationPlugin * p) :
 
     m_infol->setTextFormat(Qt::RichText);
 
+    m_inChan->setRange(0, 1024);
+    m_outChan->setRange(0, 1024);
+
     lay->addRow(tr("Buffer size"), m_bsb);
     lay->addRow(tr("Sample rate (Hz)"), m_srb);
+    lay->addRow(tr("Inputs"), m_inChan);
+    lay->addRow(tr("Outputs"), m_outChan);
     lay->addRow(tr("Latency"), m_ll);
     lay->addRow(tr("Driver"), m_driverb);
     lay->addRow(tr("Audio device"), m_cardb);
@@ -54,6 +62,11 @@ View::View(AudioStreamEngine::ApplicationPlugin * p) :
             this, &View::displayInfos);
     connect(m_cardb, &QComboBox::currentTextChanged,
             this, &View::cardChanged);
+
+    connect(m_inChan, SignalUtils::QSpinBox_valueChanged_int(),
+            this, [=] (int v) { emit inChannelsChanged(v); });
+    connect(m_outChan, SignalUtils::QSpinBox_valueChanged_int(),
+            this, [=] (int v) { emit outChannelsChanged(v); });
 
     driversMapping.insert(std::pair<long, int> (kPortAudioRenderer, -1));
     driversMapping.insert(std::pair<long, int> (kJackRenderer, -1));
@@ -114,6 +127,24 @@ void View::setSampleRate(int sampleRate) {
             index = i;
     }
     setSampleRateFromIndex(index);
+}
+
+void View::setInChannels(int chan) {
+  int cur = m_inChan->value();
+  if(chan != cur)
+  {
+    m_inChan->setValue(chan);
+    emit inChannelsChanged(chan);
+  }
+}
+
+void View::setOutChannels(int chan) {
+  int cur = m_outChan->value();
+  if(chan != cur)
+  {
+    m_outChan->setValue(chan);
+    emit outChannelsChanged(chan);
+  }
 }
 
 void View::setSampleRateFromIndex(int index) {

@@ -21,7 +21,7 @@ long TPlayerAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos
 {
     assert_stream(framesNum, framePos);
 
-    auto& renderer = *fRenderer;
+    TGroupRenderer& renderer = *fRenderer;
     auto& mixer = *fMixer;
     if(fScheduleReset)
     {
@@ -35,9 +35,12 @@ long TPlayerAudioStream::Read(FLOAT_BUFFER buffer, long framesNum, long framePos
     renderer.Process(framesNum);
     auto out_buffer = renderer.GetOutputBuffer();
 
+    RendererInfo info;
+    renderer.GetInfo(&info);
+
     UAudioTools::MixFrameToFrameBlk1(buffer->GetFrame(framePos, temp1),
                                      out_buffer,
-                                     framesNum, TAudioGlobals::fOutput);
+                                     framesNum, std::min(buffer->GetChannels(), info.fOutput));
 
     return framesNum;
 }

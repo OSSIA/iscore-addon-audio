@@ -35,7 +35,7 @@ extern "C"
 {
 #endif
 // APIs
-AUDIOAPI AudioRendererPtr MakeGroupPlayer();
+AUDIOAPI AudioRendererPtr MakeGroupPlayer(int n_chan);
 AUDIOAPI AudioStream MakeGroupStream(AudioRendererPtr p);
 AUDIOAPI AudioStream MakeSinusStream(long length, float freq);
 
@@ -63,13 +63,10 @@ void CloseAudioPlayer(AudioPlayerPtr ext_player); // In libaudiostreammc
 #if defined(__cplusplus) && !defined(_MSC_VER)
 }
 #endif
-#include <QDebug>
 // Implementations
-AUDIOAPI AudioPlayerPtr MakeGroupPlayer()
+AUDIOAPI AudioPlayerPtr MakeGroupPlayer(int n_out_channels)
 {
     int res;
-    const int n_out_channels = 2;
-
     TAudioGlobals::ClearLibError();
 
     IntAudioPlayerPtr player = static_cast<IntAudioPlayerPtr>(calloc(1, sizeof(AudioPlayer)));

@@ -50,6 +50,8 @@ TGroupRenderer::~TGroupRenderer()
 long TGroupRenderer::Open(long inChan, long outChan, long bufferSize, long sampleRate)
 {
     TAudioRenderer::Open(inChan, outChan, bufferSize, sampleRate);
+    fInfo.fInput = inChan;
+    fInfo.fOutput = outChan;
     fBuffers = TBufferManager(inChan, outChan, bufferSize, sampleRate);
     return 0;
 }

@@ -60,7 +60,7 @@ void ScenarioComponent::makeStream(const Context& ctx)
     }
 
 
-    m_groupPlayer = MakeGroupPlayer();
+    m_groupPlayer = MakeGroupPlayer(ctx.audio.renderer_info.fOutput);
     std::list<ConstraintPair> topo_sorted;
 
     for(const auto& cst : constraints_pairs())

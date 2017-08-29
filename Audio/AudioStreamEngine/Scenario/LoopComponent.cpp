@@ -67,7 +67,7 @@ void LoopComponent::makeStream(const Context& ctx)
         // - interactive at only start
         // - interactive at only end
 
-        auto groupPlayer = MakeGroupPlayer();
+        auto groupPlayer = MakeGroupPlayer(ctx.audio.renderer_info.fOutput);
         auto groupStream = MakeGroupStream(groupPlayer);
 
         auto start_date = GenSymbolicDate(groupPlayer);
