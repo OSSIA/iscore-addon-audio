@@ -164,7 +164,7 @@ void AudioGraphBuilder::apply(const std::deque<int>& sorted_vertices, Context& c
         component->makeStream(ctx);
         if(!component->getStream())
         {
-            qDebug() << "Warning: component does not have a stream";
+            qDebug() << "Warning: component does not have a stream" << component;
         }
     }
 }

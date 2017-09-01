@@ -10,10 +10,10 @@
 #include <Audio/AudioStreamEngine/Utility.hpp>
 
 #include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
-#include <Audio/EffectProcess/LV2/LV2EffectModel.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectProcessComponent.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeFaustEffectComponent.hpp>
 #if defined(LILV_SHARED)
+#include <Audio/EffectProcess/LV2/LV2EffectModel.hpp>
 #include <Midi/MidiExecutor.hpp>
 #include <Midi/MidiProcess.hpp>
 #endif

@@ -252,10 +252,12 @@ void Constraint::makeStream(const Context& player)
         m_stream = MixNStreams(inputStreams);
         if(!realTime())
         {
+            auto stream = m_stream;
             m_stream = MakePitchSchiftTimeStretchSound(
-                        m_stream,
+                        stream,
                         &m_shift,
                         &m_stretch);
+            if(!m_stream) m_stream = stream;
         }
         m_stream = MakeFadeSound(m_stream, 100, 100);
     }

@@ -9,10 +9,16 @@ endif()
 
 set(LIBAUDIOSTREAM_FRAMEWORK OFF)
 set(LIBAUDIOSTREAM_SHARED OFF)
+set(LIBAUDIOSTREAM_CONTAINED ON)
 if(APPLE)
 set(OPENSSL_ROOT_DIR /usr/local/Cellar/openssl/1.0.2l)
 endif()
 add_subdirectory(3rdparty/libaudiostream)
+
+if(ISCORE_AUDIO_PLUGINS)
+  find_package(Lilv)
+  find_package(Faust)
+endif()
 
 iscore_common_setup()
 
@@ -215,7 +221,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/iscore_plugin_audio.cpp"
 )
 # Faust support
-find_package(Faust)
 if(${Faust_FOUND})
     set(FAUST_HDRS
         "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Commands/EditFaustEffect.hpp"
@@ -231,7 +236,6 @@ if(${Faust_FOUND})
 endif()
 
 # LV2 support
-find_package(Lilv)
 if(TARGET Lilv)
     set(LV2_HDRS
         "${CMAKE_CURRENT_SOURCE_DIR}/Audio/EffectProcess/LV2/LV2EffectModel.hpp"
@@ -275,13 +279,7 @@ if(APPLE)
 target_link_libraries(${PROJECT_NAME} PUBLIC -L/usr/local/lib)
 endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC
-            iscore_plugin_midi iscore_plugin_media
-            ${SNDFILE_LIBRARIES}
-            mediainfo)
-endif()
-if(${SNDFILE_FOUND})
-    target_include_directories(${PROJECT_NAME} PRIVATE
-                               ${SNDFILE_INCLUDE_DIR})
+            iscore_plugin_midi iscore_plugin_media)
 endif()
 
 if(${Faust_FOUND})

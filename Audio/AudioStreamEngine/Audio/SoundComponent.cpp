@@ -19,7 +19,7 @@ SoundComponent::SoundComponent(
 
 void SoundComponent::makeStream(const Context& ctx)
 {
-    auto& file = process().file();
+    const Media::MediaFileHandle& file = process().file();
     if(file.empty())
         return;
 
