@@ -19,12 +19,12 @@ class LoopComponentBase :
        LoopComponentBase(
                Loop::ProcessModel& scenario,
                DocumentPlugin& doc,
-               const Id<iscore::Component>& id,
+               const Id<score::Component>& id,
                QObject* parent_obj);
 
        template<typename Component_T, typename Element>
        Component_T* make(
-               const Id<iscore::Component>& id,
+               const Id<score::Component>& id,
                Element& elt);
 
        template<typename... Args>
@@ -34,7 +34,7 @@ class LoopComponentBase :
 class LoopComponent final : public HierarchicalBaseScenario<
     LoopComponentBase,
     Loop::ProcessModel,
-    Constraint,
+    Interval,
     Event,
     Sync,
     State>
@@ -43,7 +43,7 @@ class LoopComponent final : public HierarchicalBaseScenario<
         using HierarchicalBaseScenario<
         LoopComponentBase,
         Loop::ProcessModel,
-        Constraint,
+        Interval,
         Event,
         Sync,
         State>::HierarchicalBaseScenario;

@@ -6,7 +6,7 @@ namespace AudioStreamEngine
 {
 
 State::State(
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         Scenario::StateModel& state,
         const State::system_t& doc,
         QObject* parent_comp):

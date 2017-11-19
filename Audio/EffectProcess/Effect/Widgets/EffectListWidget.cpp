@@ -6,10 +6,10 @@
 #include <QFileInfo>
 #include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
 #include <Audio/EffectProcess/Effect/Widgets/EffectWidget.hpp>
-#include <iscore/widgets/ClearLayout.hpp>
+#include <score/widgets/ClearLayout.hpp>
 #include <Audio/Commands/InsertEffect.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
-#include <iscore/document/DocumentContext.hpp>
+#include <score/document/DocumentContext.hpp>
 
 #if defined(LILV_SHARED)
 #include <lilv/lilvmm.hpp>
@@ -22,7 +22,7 @@ namespace Effect
 {
 EffectListWidget::EffectListWidget(
         const ProcessModel &fx,
-        const iscore::DocumentContext &doc,
+        const score::DocumentContext &doc,
         QWidget *parent):
     QWidget{parent},
     m_effects{fx},
@@ -54,7 +54,7 @@ void EffectListWidget::on_effectRemoved(const EffectModel &fx)
 
 void EffectListWidget::setup()
 {
-    iscore::clearLayout(m_layout);
+    score::clearLayout(m_layout);
     for(auto& effect : m_effects.effects())
     {
         auto widg = new EffectWidget{effect, m_context, this};

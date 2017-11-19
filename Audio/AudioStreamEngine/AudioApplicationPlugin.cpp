@@ -7,7 +7,7 @@
 #include <QAction>
 #include <Audio/Settings/Card/CardSettingsModel.hpp>
 #include <LibAudioStreamMC++.h>
-#include <iscore/tools/IdentifierGeneration.hpp>
+#include <score/tools/IdentifierGeneration.hpp>
 #if defined(LILV_SHARED)
 
 #include <lv2/lv2plug.in/ns/ext/atom/atom.h>
@@ -119,12 +119,12 @@ struct LV2GlobalContext
         LV2_Event_Feature event{this,
             [] (auto ptr, auto cb) -> uint32_t
             {
-                ISCORE_TODO;
+                SCORE_TODO;
                 return 0;
             },
             [] (auto ptr, auto cb) -> uint32_t
             {
-                ISCORE_TODO;
+                SCORE_TODO;
                 return 0;
             }
         };
@@ -186,7 +186,7 @@ struct LV2GlobalContext
         LV2_State_Make_Path state_make_path{this,
             [] (LV2_State_Make_Path_Handle, const char*) -> char*
             {
-                ISCORE_TODO;
+                SCORE_TODO;
                 return nullptr;
             }
         };
@@ -280,8 +280,8 @@ struct LV2GlobalContext
 };
 #endif
 
-ApplicationPlugin::ApplicationPlugin(const iscore::ApplicationContext& app):
-    iscore::ApplicationPlugin{app},
+ApplicationPlugin::ApplicationPlugin(const score::ApplicationContext& app):
+    score::ApplicationPlugin{app},
     m_ctx{*this}
   #if defined(LILV_SHARED)
   , lv2_context{std::make_unique<LV2GlobalContext>(m_ctx, lv2_host_context)}
@@ -304,7 +304,7 @@ ApplicationPlugin::ApplicationPlugin(const iscore::ApplicationContext& app):
 void ApplicationPlugin::initialize()
 {
     // Restart everything if audio settings change.
-    auto& set = iscore::ApplicationPlugin::context.settings<Settings::Model>();
+    auto& set = score::ApplicationPlugin::context.settings<Settings::Model>();
     con(set, &Settings::Model::BufferSizeChanged,
         this, &ApplicationPlugin::startEngine);
     con(set, &Settings::Model::CardChanged,
@@ -348,7 +348,7 @@ void ApplicationPlugin::startEngine()
 {
     stopEngine();
 
-    auto& stngs = iscore::ApplicationPlugin::context.settings<Audio::Settings::Model>();
+    auto& stngs = score::ApplicationPlugin::context.settings<Audio::Settings::Model>();
     auto api = stngs.getDriverId();
     if(api == -1)
         return;
@@ -427,15 +427,15 @@ bool ApplicationPlugin::engineStatus() const
 }
 
 
-GUIApplicationPlugin::GUIApplicationPlugin(const iscore::GUIApplicationContext& app):
-  iscore::GUIApplicationPlugin{app}
+GUIApplicationPlugin::GUIApplicationPlugin(const score::GUIApplicationContext& app):
+  score::GUIApplicationPlugin{app}
 {
 
 }
 
-void GUIApplicationPlugin::on_createdDocument(iscore::Document& doc)
+void GUIApplicationPlugin::on_createdDocument(score::Document& doc)
 {
-    auto& audio_ctx = iscore::GUIApplicationPlugin::context.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().context() ;
+    auto& audio_ctx = score::GUIApplicationPlugin::context.applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().context() ;
     doc.model().addPluginModel(new DocumentPlugin{audio_ctx, doc.context(), getStrongId(doc.model().pluginModels()), &doc.model()});
 }
 

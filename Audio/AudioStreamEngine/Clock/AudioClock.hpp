@@ -30,15 +30,15 @@ class AudioClock final :
 
 class AudioClockFactory final : public Engine::Execution::ClockManagerFactory
 {
-        ISCORE_CONCRETE("97545b15-d9f5-4001-91e6-2c1fcd43b295")
+        SCORE_CONCRETE("97545b15-d9f5-4001-91e6-2c1fcd43b295")
 
         QString prettyName() const override;
         std::unique_ptr<Engine::Execution::ClockManager> make(
             const Engine::Execution::Context& ctx) override;
         std::function<ossia::time_value(const TimeVal&)>
-        makeTimeFunction(const iscore::DocumentContext& ctx) const override;
+        makeTimeFunction(const score::DocumentContext& ctx) const override;
         std::function<TimeVal(const ossia::time_value&)>
-        makeReverseTimeFunction(const iscore::DocumentContext& ctx) const override;
+        makeReverseTimeFunction(const score::DocumentContext& ctx) const override;
 };
 }
 }

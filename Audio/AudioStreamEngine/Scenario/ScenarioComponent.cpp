@@ -2,7 +2,7 @@
 #include <Scenario/Process/Algorithms/Accessors.hpp>
 #include <Audio/AudioStreamEngine/Utility.hpp>
 #include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
-#include <Scenario/Document/Constraint/ConstraintModel.hpp>
+#include <Scenario/Document/Interval/IntervalModel.hpp>
 namespace Audio
 {
 namespace AudioStreamEngine
@@ -11,7 +11,7 @@ namespace AudioStreamEngine
 ScenarioComponentBase::ScenarioComponentBase(
         Scenario::ProcessModel& scenario,
         DocumentPlugin& doc,
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         QObject* parent_obj):
     ProcessComponent_T{scenario, doc, id, "ScenarioComponent", parent_obj}
 {
@@ -25,9 +25,9 @@ optional<AudioGraphVertice> ScenarioComponent::visit(AudioGraph& graph)
 {
     auto res = boost::add_vertex(this, graph);
 
-    for(auto& constraint : constraints_pairs())
+    for(auto& interval : intervals_pairs())
     {
-        if(auto cst_vtx = constraint.component.visit(graph))
+        if(auto cst_vtx = interval.component.visit(graph))
         {
             boost::add_edge(*cst_vtx, res, graph);
         }
@@ -43,7 +43,7 @@ void ScenarioComponent::makeStream(const Context& ctx)
     m_connections.clear();
 
     // Initialization of the streams
-    for(auto& p : constraints_pairs())
+    for(auto& p : intervals_pairs())
     {
         p.component.onStartDateFixed = [&] (audio_frame_t t, bool force) { onStartDateFixed(p.component, t, force); };
         p.component.onStopDateFixed = [&] (audio_frame_t t) { onStopDateFixed(p.component, t); };
@@ -61,9 +61,9 @@ void ScenarioComponent::makeStream(const Context& ctx)
 
 
     m_groupPlayer = MakeGroupPlayer(ctx.audio.renderer_info.fOutput);
-    std::list<ConstraintPair> topo_sorted;
+    std::list<IntervalPair> topo_sorted;
 
-    for(const auto& cst : constraints_pairs())
+    for(const auto& cst : intervals_pairs())
     {
         auto sound = cst.component.getStream();
         if(!sound)
@@ -71,7 +71,7 @@ void ScenarioComponent::makeStream(const Context& ctx)
         topo_sorted.push_back(cst);
     }
 
-    topo_sorted.sort([] (const ConstraintPair& lhs, const ConstraintPair& rhs)
+    topo_sorted.sort([] (const IntervalPair& lhs, const IntervalPair& rhs)
     {
          return lhs.component.priority < rhs.component.priority;
     });
@@ -80,7 +80,7 @@ void ScenarioComponent::makeStream(const Context& ctx)
     {
         auto sound = cst.component.getStream();
         {
-            auto start_con = con(cst.element, &Scenario::ConstraintModel::executionStarted,
+            auto start_con = con(cst.element, &Scenario::IntervalModel::executionStarted,
                                  this, [=] () {
                 onStartDateFixed(cst.component, GetAudioPlayerDateInFrame(m_groupPlayer), true);
             }, Qt::DirectConnection);
@@ -88,7 +88,7 @@ void ScenarioComponent::makeStream(const Context& ctx)
         }
 
         {
-            auto stop_con = con(cst.element, &Scenario::ConstraintModel::executionStopped,
+            auto stop_con = con(cst.element, &Scenario::IntervalModel::executionStopped,
                                 this, [=] () {
                 onStopDateFixed(cst.component, GetAudioPlayerDateInFrame(m_groupPlayer));
             }, Qt::DirectConnection);
@@ -97,7 +97,7 @@ void ScenarioComponent::makeStream(const Context& ctx)
         }
 
         {
-            auto speed_con = con(cst.element.duration, &Scenario::ConstraintDurations::executionSpeedChanged,
+            auto speed_con = con(cst.element.duration, &Scenario::IntervalDurations::executionSpeedChanged,
                                 this, [=] (double s) {
                 // The new end duration is the "base" end multiplied by the speed.
                 onSpeedChanged(cst.component, s);
@@ -106,9 +106,9 @@ void ScenarioComponent::makeStream(const Context& ctx)
             m_connections.push_back(speed_con);
         }
 
-        cst.component.startDate = GenPriorisedSymbolicDate(m_groupPlayer, cst.component.priority);
+        cst.component.date = GenPriorisedSymbolicDate(m_groupPlayer, cst.component.priority);
         cst.component.stopDate = GenPriorisedSymbolicDate(m_groupPlayer, cst.component.priority);
-        StartSound(m_groupPlayer, sound, cst.component.startDate);
+        StartSound(m_groupPlayer, sound, cst.component.date);
         StopSound(m_groupPlayer, sound, cst.component.stopDate);
     }
 
@@ -118,7 +118,7 @@ void ScenarioComponent::makeStream(const Context& ctx)
         auto& start_node_id = process().startTimeSync().id();
 
         auto it = ossia::find_if(timeSyncs_pairs(), [=] (auto& p) { return p.element.id() == start_node_id; });
-        ISCORE_ASSERT(it != timeSyncs_pairs().end());
+        SCORE_ASSERT(it != timeSyncs_pairs().end());
         onDateFixed(it->component, audio_frame_t{0}, true);
 
     }
@@ -128,21 +128,21 @@ void ScenarioComponent::makeStream(const Context& ctx)
 
 void ScenarioComponent::stop()
 {
-  for(auto& constraint : constraints_pairs())
-    constraint.component.stop();
+  for(auto& interval : intervals_pairs())
+    interval.component.stop();
 }
 
 template<>
-Constraint* ScenarioComponentBase::make<Constraint, Scenario::ConstraintModel>(
-    const Id<iscore::Component>& id,
-    Scenario::ConstraintModel& elt)
+Interval* ScenarioComponentBase::make<Interval, Scenario::IntervalModel>(
+    const Id<score::Component>& id,
+    Scenario::IntervalModel& elt)
 {
-    return new Constraint{elt, system(), id, this};
+    return new Interval{elt, system(), id, this};
 }
 
 template<>
 Event* ScenarioComponentBase::make<Event, Scenario::EventModel>(
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         Scenario::EventModel& elt)
 {
     return new Event{id, elt, system(), this};
@@ -150,7 +150,7 @@ Event* ScenarioComponentBase::make<Event, Scenario::EventModel>(
 
 template<>
 Sync* ScenarioComponentBase::make<Sync, Scenario::TimeSyncModel>(
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         Scenario::TimeSyncModel& elt)
 {
     return new Sync{id, elt, system(), this};
@@ -158,7 +158,7 @@ Sync* ScenarioComponentBase::make<Sync, Scenario::TimeSyncModel>(
 
 template<>
 State* ScenarioComponentBase::make<State, Scenario::StateModel>(
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         Scenario::StateModel& elt)
 {
     return nullptr;
@@ -173,38 +173,38 @@ void ScenarioComponent::onDateFixed(
     for(auto& st_id : states)
     {
         Scenario::StateModel& st = process().states.at(st_id);
-        if(auto& prev_cst_id = st.previousConstraint())
+        if(auto& prev_cst_id = st.previousInterval())
         {
-            auto it = ossia::find_if(constraints_pairs(),
+            auto it = ossia::find_if(intervals_pairs(),
                               [=] (auto& e) { return e.element.id() == prev_cst_id; });
-            ISCORE_ASSERT(it != constraints_pairs().end());
+            SCORE_ASSERT(it != intervals_pairs().end());
             it->component.onStopDateFixed(time);
         }
 
-        if(auto& next_cst_id = st.nextConstraint())
+        if(auto& next_cst_id = st.nextInterval())
         {
-            auto it = ossia::find_if(constraints_pairs(),
+            auto it = ossia::find_if(intervals_pairs(),
                               [=] (auto& e) { return e.element.id() == next_cst_id; });
-            ISCORE_ASSERT(it != constraints_pairs().end());
+            SCORE_ASSERT(it != intervals_pairs().end());
             it->component.onStartDateFixed(time + 1, force_update); // ** pay attention to the +1 **
         }
     }
 }
 
 void ScenarioComponent::onStartDateFixed(
-    Constraint& c,
+    Interval& c,
     audio_frame_t time,
     bool force_update)
 {
-  if(!c.startDate)
+  if(!c.date)
     return;
-  if(GetSymbolicDate(m_groupPlayer, c.startDate) != INT64_MAX)
+  if(GetSymbolicDate(m_groupPlayer, c.date) != INT64_MAX)
     if(!force_update)
       return; // this branch is already set.
 
   DocumentPlugin& ctx = system();
-  const Scenario::ConstraintModel& cst = c.constraint();
-  const Scenario::ConstraintDurations& dur = cst.duration;
+  const Scenario::IntervalModel& cst = c.interval();
+  const Scenario::IntervalDurations& dur = cst.duration;
   audio_frame_t start_date{}, end_date{};
   if(!ctx.offsetting)
   {
@@ -213,18 +213,18 @@ void ScenarioComponent::onStartDateFixed(
   }
   else
   {
-    start_date = ctx.toFrame(c.constraint().startDate());
-    end_date = ctx.toFrame(cst.startDate()) + ctx.toFrame(dur.defaultDuration()) / dur.executionSpeed() ;
+    start_date = ctx.toFrame(c.interval().date());
+    end_date = ctx.toFrame(cst.date()) + ctx.toFrame(dur.defaultDuration()) / dur.executionSpeed() ;
   }
 
-  SetSymbolicDate(m_groupPlayer, c.startDate, start_date);
+  SetSymbolicDate(m_groupPlayer, c.date, start_date);
   if(!dur.isRigid())
     return;
 
   SetSymbolicDate(m_groupPlayer, c.stopDate, end_date);
   c.defaultDuration = ctx.toFrame(dur.defaultDuration());
 
-  const Scenario::TimeSyncModel& end_tn = Scenario::endTimeSync(c.constraint(), process());
+  const Scenario::TimeSyncModel& end_tn = Scenario::endTimeSync(c.interval(), process());
   if(end_tn.active())
     return;
 
@@ -232,11 +232,11 @@ void ScenarioComponent::onStartDateFixed(
 
   auto it = ossia::find_if(timeSyncs_pairs(),
                            [=] (auto& e) { return e.element.id() == end_tn_id; });
-  ISCORE_ASSERT(it != timeSyncs_pairs().end());
+  SCORE_ASSERT(it != timeSyncs_pairs().end());
   it->component.onDateFixed(end_date, force_update);
 }
 
-void ScenarioComponent::onStopDateFixed(const Constraint& c, audio_frame_t time)
+void ScenarioComponent::onStopDateFixed(const Interval& c, audio_frame_t time)
 {
   if(!c.stopDate)
     return;
@@ -251,22 +251,22 @@ void ScenarioComponent::onStopDateFixed(const Constraint& c, audio_frame_t time)
   {
     SetSymbolicDate(m_groupPlayer, c.stopDate, time);
 
-    // We don't have anything more to do (it is only called to end interactive constraints.
+    // We don't have anything more to do (it is only called to end interactive intervals.
   }
 }
 
-void ScenarioComponent::onSpeedChanged(const Constraint& c, double speed)
+void ScenarioComponent::onSpeedChanged(const Interval& c, double speed)
 {
-    const Scenario::ConstraintDurations& dur = c.constraint().duration;
+    const Scenario::IntervalDurations& dur = c.interval().duration;
     if(!dur.isRigid())
         return;
 
     auto cur_date = GetAudioPlayerDateInFrame(m_groupPlayer);
-    auto remaining_samples = (c.defaultDuration * (1. - c.constraint().duration.playPercentage())) / speed;
+    auto remaining_samples = (c.defaultDuration * (1. - c.interval().duration.playPercentage())) / speed;
     auto end_date = cur_date + remaining_samples;
     SetSymbolicDate(m_groupPlayer, c.stopDate, end_date);
 
-    const Scenario::TimeSyncModel& end_tn = Scenario::endTimeSync(c.constraint(), process());
+    const Scenario::TimeSyncModel& end_tn = Scenario::endTimeSync(c.interval(), process());
     if(end_tn.active())
         return;
 
@@ -274,7 +274,7 @@ void ScenarioComponent::onSpeedChanged(const Constraint& c, double speed)
 
     auto it = ossia::find_if(timeSyncs_pairs(),
                       [=] (auto& e) { return e.element.id() == end_tn_id; });
-    ISCORE_ASSERT(it != timeSyncs_pairs().end());
+    SCORE_ASSERT(it != timeSyncs_pairs().end());
     it->component.onDateFixed(end_date, true);
 }
 
@@ -284,7 +284,7 @@ void ScenarioComponent::onDateFixed(
         bool force_update)
 {
     // When a time sync is set, this should ensure that we also recursively set
-    // most following constraints / events.
+    // most following intervals / events.
     // A timesync is a stop if it has a trigger.
     // An event is a stop if it has a condition.
     // Note : preserve sample-accuracy for conditions by
@@ -295,7 +295,7 @@ void ScenarioComponent::onDateFixed(
     // TODO precompute dependency chains with boost.graph ?
 
     // The date of this time sync has been fixed as 't'.
-    // For each following constraint, we set :
+    // For each following interval, we set :
     //  start = t + 1
     //  end = start + dur(cst)
     // Nothing is triggered however.
@@ -307,7 +307,7 @@ void ScenarioComponent::onDateFixed(
         if(!ev.condition().hasChildren())
         {
             auto it = ossia::find_if(events_pairs(), [=] (auto& e) { return e.element.id() == ev_id; });
-            ISCORE_ASSERT(it != events_pairs().end());
+            SCORE_ASSERT(it != events_pairs().end());
             //it->component.onDateFixed(time, force_update);
         }
     }

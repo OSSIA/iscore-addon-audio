@@ -18,12 +18,12 @@ class ScenarioComponentBase :
        ScenarioComponentBase(
                Scenario::ProcessModel& scenario,
                DocumentPlugin& doc,
-                const Id<iscore::Component>& id,
+                const Id<score::Component>& id,
                QObject* parent_obj);
 
        template<typename Component_T, typename Element>
        Component_T* make(
-               const Id<iscore::Component>& id,
+               const Id<score::Component>& id,
                Element& elt);
 
        template<typename... Args>
@@ -36,7 +36,7 @@ class ScenarioComponentBase :
 class ScenarioComponent final : public HierarchicalScenarioComponent<
     ScenarioComponentBase,
     Scenario::ProcessModel,
-    Constraint,
+    Interval,
     Event,
     Sync,
     State>
@@ -45,7 +45,7 @@ class ScenarioComponent final : public HierarchicalScenarioComponent<
         using HierarchicalScenarioComponent<
         ScenarioComponentBase,
         Scenario::ProcessModel,
-        Constraint,
+        Interval,
         Event,
         Sync,
         State>::HierarchicalScenarioComponent;
@@ -59,9 +59,9 @@ class ScenarioComponent final : public HierarchicalScenarioComponent<
     private:
         void onDateFixed(const Sync& t, audio_frame_t time, bool force_update);
         void onDateFixed(const Event& t, audio_frame_t time, bool force_update);
-        void onStartDateFixed(Constraint& t, audio_frame_t time, bool force_update);
-        void onStopDateFixed(const Constraint& t, audio_frame_t time);
-        void onSpeedChanged(const Constraint& t, double speed);
+        void onStartDateFixed(Interval& t, audio_frame_t time, bool force_update);
+        void onStopDateFixed(const Interval& t, audio_frame_t time);
+        void onSpeedChanged(const Interval& t, double speed);
 
         AudioRendererPtr m_groupPlayer;
         std::vector<QMetaObject::Connection> m_connections;

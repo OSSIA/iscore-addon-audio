@@ -1,8 +1,8 @@
 #pragma once
 #include <Process/Process.hpp>
-#include <iscore/serialization/DataStreamVisitor.hpp>
-#include <iscore/serialization/JSONVisitor.hpp>
-#include <iscore/serialization/VisitorCommon.hpp>
+#include <score/serialization/DataStreamVisitor.hpp>
+#include <score/serialization/JSONVisitor.hpp>
+#include <score/serialization/VisitorCommon.hpp>
 #include <Audio/MixProcess/MixProcessMetadata.hpp>
 #include <unordered_set>
 
@@ -29,7 +29,7 @@ class ProcessModel final :
         public Process::ProcessModel,
         public Nano::Observer
 {
-        ISCORE_SERIALIZE_FRIENDS
+        SCORE_SERIALIZE_FRIENDS
         PROCESS_METADATA_IMPL(Audio::Mix::ProcessModel)
         Q_OBJECT
     public:
@@ -113,7 +113,7 @@ class ProcessModel final :
                 }
                 else
                 {
-                    ISCORE_ABORT;
+                    SCORE_ABORT;
                 }
             }
 

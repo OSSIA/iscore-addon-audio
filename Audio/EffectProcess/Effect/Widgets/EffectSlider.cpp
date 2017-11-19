@@ -1,12 +1,12 @@
 #include "EffectSlider.hpp"
 #include <ossia/network/domain/domain.hpp>
 #include <State/Expression.hpp>
-#include <iscore/widgets/DoubleSlider.hpp>
-#include <iscore/widgets/MarginLess.hpp>
+#include <score/widgets/DoubleSlider.hpp>
+#include <score/widgets/MarginLess.hpp>
 #include <Device/Node/NodeListMimeSerialization.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/editor/value/value_conversion.hpp>
-#include <Engine/OSSIA2iscore.hpp>
+#include <Engine/OSSIA2score.hpp>
 #include <QMenu>
 #include <QLabel>
 #include <QDrag>
@@ -37,7 +37,7 @@ class AddressLabel : public QLabel
         {
             if (event->button() == Qt::LeftButton)
             {
-                auto as = Engine::ossia_to_iscore::ToFullAddressSettings(m_node);
+                auto as = Engine::ossia_to_score::ToFullAddressSettings(m_node);
 
                 auto drag = new QDrag(this);
                 auto mimeData = new QMimeData;
@@ -73,13 +73,13 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, bool is_output, QWid
   if(auto f = dom.maybe_min<float>()) m_min = *f;
   if(auto f = dom.maybe_max<float>()) m_max = *f;
 
-  auto lay = new iscore::MarginLess<QVBoxLayout>;
+  auto lay = new score::MarginLess<QVBoxLayout>;
   lay->addWidget(new AddressLabel{
                      m_param,
                      QString::fromStdString(
                       ossia::get_value_or(ossia::net::get_description(m_param), "nothing")),
                      this});
-  m_slider = new iscore::DoubleSlider{this};
+  m_slider = new score::DoubleSlider{this};
   m_slider->setEnabled(!is_output);
   m_slider->setForegroundRole(QPalette::AlternateBase);
   lay->addWidget(m_slider);
@@ -91,10 +91,10 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, bool is_output, QWid
 
   if(!is_output)
   {
-      connect(m_slider, &iscore::DoubleSlider::valueChanged,
+      connect(m_slider, &score::DoubleSlider::valueChanged,
               this, [=] (double v)
       {
-          ISCORE_ASSERT(!m_paramIsDead);
+          SCORE_ASSERT(!m_paramIsDead);
           // TODO undo ???
           // v is between 0 - 1
           auto cur = m_param.get_parameter()->value();
@@ -117,7 +117,7 @@ EffectSlider::EffectSlider(const ossia::net::node_base& fx, bool is_output, QWid
   m_addAutomAction = new QAction{tr("Add automation"), this};
   connect(m_addAutomAction, &QAction::triggered,
           this, [=] () {
-    ISCORE_ASSERT(!m_paramIsDead);
+    SCORE_ASSERT(!m_paramIsDead);
     auto& ossia_addr = *m_param.get_parameter();
     auto& dom = ossia_addr.get_domain();
     auto addr = State::parseAddress(QString::fromStdString(ossia::net::address_string_from_node(ossia_addr)));

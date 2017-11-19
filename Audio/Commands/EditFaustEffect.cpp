@@ -1,7 +1,7 @@
 #include "EditFaustEffect.hpp"
 
-#include <iscore/tools/IdentifierGeneration.hpp>
-#include <iscore/model/path/PathSerialization.hpp>
+#include <score/tools/IdentifierGeneration.hpp>
+#include <score/model/path/PathSerialization.hpp>
 #include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
 namespace Audio
 {
@@ -17,12 +17,12 @@ EditFaustEffect::EditFaustEffect(
 {
 }
 
-void EditFaustEffect::undo(const iscore::DocumentContext& ctx) const
+void EditFaustEffect::undo(const score::DocumentContext& ctx) const
 {
     m_model.find(ctx).setText(m_old);
 }
 
-void EditFaustEffect::redo(const iscore::DocumentContext& ctx) const
+void EditFaustEffect::redo(const score::DocumentContext& ctx) const
 {
     m_model.find(ctx).setText(m_new);
 }

@@ -2,7 +2,7 @@
 #include <Audio/EffectProcess/Effect/Faust/FaustEffectModel.hpp>
 #include <Audio/Commands/InsertEffect.hpp>
 #include <Audio/Commands/EditFaustEffect.hpp>
-#include <iscore/document/DocumentContext.hpp>
+#include <score/document/DocumentContext.hpp>
 
 #if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
 #include <lilv/lilvmm.hpp>
@@ -56,7 +56,7 @@ struct FaustEditDialog : public QDialog
 
 InspectorWidget::InspectorWidget(
         const Effect::ProcessModel &object,
-        const iscore::DocumentContext &doc,
+        const score::DocumentContext &doc,
         QWidget *parent):
     InspectorWidgetDelegate_T {object, parent},
     m_dispatcher{doc.commandStack}
@@ -117,7 +117,7 @@ InspectorWidget::InspectorWidget(
     auto add_lv2 = new QPushButton{tr("Add (LV2)")};
     connect(add_lv2, &QPushButton::pressed,
             this, [=] () {
-        auto& world = iscore::AppComponents().applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().lilv;
+        auto& world = score::AppComponents().applicationPlugin<Audio::AudioStreamEngine::ApplicationPlugin>().lilv;
 
         auto plugs = world.get_all_plugins();
 
@@ -174,7 +174,7 @@ void InspectorWidget::recreate()
         EffectModel& fx = process().effects().at(fx_id);
         auto item = new ListWidgetItem(fx.metadata().getLabel(), m_list);
 
-        con(fx.metadata(), &iscore::ModelMetadata::LabelChanged,
+        con(fx.metadata(), &score::ModelMetadata::LabelChanged,
             item, [=] (const auto& txt) { item->setText(txt); });
         item->setData(Qt::UserRole, QVariant::fromValue(fx_id));
         m_list->addItem(item);

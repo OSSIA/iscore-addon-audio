@@ -36,7 +36,7 @@ ProcessModel::~ProcessModel()
 
 }
 
-const Send::ProcessModel* ProcessModel::send_ptr(const iscore::DocumentContext& ctx) const
+const Send::ProcessModel* ProcessModel::send_ptr(const score::DocumentContext& ctx) const
 {
     auto maybe_send = m_sendPath.try_find(ctx);
     if(!maybe_send)

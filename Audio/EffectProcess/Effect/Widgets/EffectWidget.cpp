@@ -7,17 +7,17 @@
 #include <QDrag>
 #include <QTimer>
 #include <QApplication>
-#include <iscore/widgets/DoubleSlider.hpp>
+#include <score/widgets/DoubleSlider.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp>
-#include <Scenario/Commands/Constraint/AddLayerInNewSlot.hpp>
-#include <Scenario/Commands/Constraint/AddProcessToConstraint.hpp>
+#include <Scenario/Commands/Interval/AddLayerInNewSlot.hpp>
+#include <Scenario/Commands/Interval/AddProcessToInterval.hpp>
 #include <Automation/AutomationModel.hpp>
-#include <Scenario/Document/Constraint/ConstraintModel.hpp>
-#include <iscore/command/Dispatchers/MacroCommandDispatcher.hpp>
+#include <Scenario/Document/Interval/IntervalModel.hpp>
+#include <score/command/Dispatchers/MacroCommandDispatcher.hpp>
 #include <Audio/Commands/CreateEffectAutomation.hpp>
 #include <Automation/Commands/InitAutomation.hpp>
 #include <Audio/EffectProcess/Effect/Widgets/EffectSlider.hpp>
-#include <iscore/widgets/MarginLess.hpp>
+#include <score/widgets/MarginLess.hpp>
 namespace Audio
 {
 namespace Effect
@@ -26,7 +26,7 @@ namespace Effect
 
 EffectWidget::EffectWidget(
         EffectModel& fx,
-        const iscore::DocumentContext& doc,
+        const score::DocumentContext& doc,
         QWidget* parent):
     QFrame{parent},
     m_effect{fx},
@@ -35,15 +35,15 @@ EffectWidget::EffectWidget(
     // Setup ui
     setObjectName("EffectWidget");
     setStyleSheet("QFrame#EffectWidget { border: 1px solid black; border-radius: 10px; }");
-    auto lay = new iscore::MarginLess<QVBoxLayout>;
-    m_layout = new iscore::MarginLess<QGridLayout>;
+    auto lay = new score::MarginLess<QVBoxLayout>;
+    m_layout = new score::MarginLess<QGridLayout>;
 
     {
         auto title = new QWidget;
-        auto title_lay = new iscore::MarginLess<QHBoxLayout>;
+        auto title_lay = new score::MarginLess<QHBoxLayout>;
         title->setLayout(title_lay);
 
-        auto label = new iscore::ReactiveLabel<iscore::ModelMetadataNameParameter>(fx.metadata(), this);
+        auto label = new score::ReactiveLabel<score::ModelMetadataNameParameter>(fx.metadata(), this);
         label->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
         title_lay->addWidget(label);
         title_lay->addStretch();
@@ -59,7 +59,7 @@ EffectWidget::EffectWidget(
                 this, [&] () {
             this->m_timer.stop();
 
-            iscore::clearLayout(this->m_layout);
+            score::clearLayout(this->m_layout);
             m_sliders.clear();
             emit removeRequested();
         });
@@ -74,7 +74,7 @@ EffectWidget::EffectWidget(
     this->setLayout(lay);
     lay->addStretch();
 
-    auto comp = iscore::findComponent<LocalTree::EffectComponent>(m_effect.components());
+    auto comp = score::findComponent<LocalTree::EffectComponent>(m_effect.components());
     if(!comp)
     {
         m_effect.components().added.connect<EffectWidget, &EffectWidget::componentAdded>(this);
@@ -96,10 +96,10 @@ void EffectWidget::on_createAutomation(const State::Address& addr, double min, d
     while(obj)
     {
         auto parent = obj->parent();
-        if(auto cst = dynamic_cast<Scenario::ConstraintModel*>(parent))
+        if(auto cst = dynamic_cast<Scenario::IntervalModel*>(parent))
         {
             RedoMacroCommandDispatcher<Commands::CreateEffectAutomation> macro{m_context.commandStack};
-            auto make_cmd = new Scenario::Command::AddOnlyProcessToConstraint{
+            auto make_cmd = new Scenario::Command::AddOnlyProcessToInterval{
                         *cst,
                         Metadata<ConcreteKey_k, Automation::ProcessModel>::get()};
             macro.submitCommand(make_cmd);
@@ -124,10 +124,10 @@ void EffectWidget::setup()
 {
     m_timer.stop();
 
-    iscore::clearLayout(m_layout);
+    score::clearLayout(m_layout);
     m_sliders.clear();
 
-    LocalTree::EffectComponent* comp = iscore::findComponent<LocalTree::EffectComponent>(m_effect.components());
+    LocalTree::EffectComponent* comp = score::findComponent<LocalTree::EffectComponent>(m_effect.components());
     if(!comp)
         return;
 
@@ -220,11 +220,11 @@ void EffectWidget::reflow()
 
 void EffectWidget::clear()
 {
-    iscore::clearLayout(m_layout);
+    score::clearLayout(m_layout);
     m_sliders.clear();
 }
 
-void EffectWidget::componentAdded(const iscore::Component& c)
+void EffectWidget::componentAdded(const score::Component& c)
 {
     auto comp = dynamic_cast<const LocalTree::EffectComponent*>(&c);
     if(!comp)
@@ -262,7 +262,7 @@ void EffectWidget::mousePressEvent(QMouseEvent* event)
 
         // TODO proper MIME serialization.
         mimeData->setData("application/x-iscore-effectdrag",
-                          iscore::marshall<DataStream>(make_path(m_effect)));
+                          score::marshall<DataStream>(make_path(m_effect)));
         drag->setMimeData(mimeData);
         QLabel label{m_effect.metadata().getLabel()};
         drag->setPixmap(label.grab());
@@ -277,7 +277,7 @@ void EffectWidget::dragEnterEvent(QDragEnterEvent* event)
     if(!event->mimeData()->hasFormat("application/x-iscore-effectdrag"))
         return;
 
-    auto path = iscore::unmarshall<Path<EffectModel>>(event->mimeData()->data("application/x-iscore-effectdrag"));
+    auto path = score::unmarshall<Path<EffectModel>>(event->mimeData()->data("application/x-iscore-effectdrag"));
     EffectModel* res = path.try_find(m_context);
     if(!res)
         return;
@@ -300,7 +300,7 @@ void EffectWidget::dragMoveEvent(QDragMoveEvent* event)
 void EffectWidget::dropEvent(QDropEvent* event)
 {
     // Get the process
-    auto path = iscore::unmarshall<Path<EffectModel>>(
+    auto path = score::unmarshall<Path<EffectModel>>(
                     event->mimeData()->data("application/x-iscore-effectdrag"));
 
 

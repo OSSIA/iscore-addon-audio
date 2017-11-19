@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iscore/plugins/settingsdelegate/SettingsDelegateView.hpp>
+#include <score/plugins/settingsdelegate/SettingsDelegateView.hpp>
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
 
 class QSpinBox;
@@ -9,7 +9,7 @@ class QLabel;
 
 namespace Audio {
 namespace Settings {
-class View : public iscore::SettingsDelegateView {
+class View : public score::SettingsDelegateView {
     Q_OBJECT
 public:
     View();

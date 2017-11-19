@@ -13,7 +13,7 @@ namespace AudioStreamEngine
 ReturnComponent::ReturnComponent(
         Return::ProcessModel& sound,
         DocumentPlugin& doc,
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         QObject* parent_obj):
     ProcessComponent_T{sound, doc, id, "ReturnComponent", parent_obj}
 {
@@ -22,7 +22,7 @@ ReturnComponent::ReturnComponent(
 
 optional<AudioGraphVertice> ReturnComponent::visit(AudioGraph& graph)
 {
-    auto send = process().send_ptr(iscore::IDocument::documentContext(process()));
+    auto send = process().send_ptr(score::IDocument::documentContext(process()));
     if(send)
     {
         return ProcessComponent::visit(graph);
@@ -34,12 +34,12 @@ void ReturnComponent::makeStream(const Context& ctx)
 {
     // Find send
     auto send = process().send_ptr(ctx.doc);
-    ISCORE_ASSERT(send);
+    SCORE_ASSERT(send);
 
     // Create stream from send
     m_stream = MakeSend(
                    MakeReturn(
-                       iscore::component<SendComponent>(send->components()).getStream()));
+                       score::component<SendComponent>(send->components()).getStream()));
 }
 
 }

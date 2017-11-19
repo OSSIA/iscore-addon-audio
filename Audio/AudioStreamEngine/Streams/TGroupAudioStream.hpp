@@ -17,11 +17,12 @@
 #include <cmath>
 #include <unordered_map>
 #include <ossia/detail/math.hpp>
-#include <iscore/tools/Todo.hpp>
+#include <score/tools/Todo.hpp>
 #include <ossia/detail/logger.hpp>
 // TODO rename this file
 
 #include "LV2Context.hpp"
+namespace Midi { namespace Executor { class ProcessExecutor; } }
 struct LV2Data
 {
         LV2Data(LV2HostContext& h, LV2EffectContext& ctx):
@@ -344,6 +345,7 @@ class LV2AudioEffect : public TAudioEffectInterface
 
         void AllNotesOff()
         {
+          /*
           if(fMidiSource)
           {
             for(AtomBuffer& port : fMidiIns)
@@ -359,11 +361,11 @@ class LV2AudioEffect : public TAudioEffectInterface
 
               Process(+stopbuf, +stopbuf, 0);
             }
-          }
+          }*/
         }
 
         void preProcess()
-        {
+        {/*
           if(fMidiSource)
           {
             for(AtomBuffer& port : fMidiIns)
@@ -383,7 +385,7 @@ class LV2AudioEffect : public TAudioEffectInterface
             }
             fMidiSource->timedState.currentAudioStart.clear();
             fMidiSource->timedState.currentAudioStop.clear();
-          }
+          }*/
         }
 
         void postProcess()
@@ -587,7 +589,7 @@ class MonoLV2AudioInstrument final : public LV2AudioEffect
 //            {
 //                m_audio_parent.onDateFixed(cur_frame);
 
-//                // Set stop date of all previous constraint to the TN frame
+//                // Set stop date of all previous interval to the TN frame
 //                for(SymbolicDate date : m_beforeDates)
 //                    date->setDate(timesync_time);
 
@@ -596,7 +598,7 @@ class MonoLV2AudioInstrument final : public LV2AudioEffect
 //                // We only have to check the conditions.
 //                m_node.trigger();
 
-//                // For all true events, set start date of all next constraints's start, and
+//                // For all true events, set start date of all next intervals's start, and
 //                // trigger their start / their start + offset.
 //                for(SymbolicDate date : m_afterDates)
 //                    date->setDate(timesync_time + 1);

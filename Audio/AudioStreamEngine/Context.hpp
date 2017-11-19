@@ -2,7 +2,7 @@
 #include <LibAudioStreamMC++.h>
 #include <Process/TimeValue.hpp>
 
-namespace iscore
+namespace score
 {
 struct DocumentContext;
 }
@@ -33,14 +33,14 @@ struct AudioContext
 
 struct Context
 {
-      Context(const iscore::DocumentContext& d, AudioContext& a) :
+      Context(const score::DocumentContext& d, AudioContext& a) :
         doc(d),
         audio(a)
       {
 
     }
 
-        const iscore::DocumentContext& doc;
+        const score::DocumentContext& doc;
         AudioContext& audio;
 
         long time(const TimeVal& t)

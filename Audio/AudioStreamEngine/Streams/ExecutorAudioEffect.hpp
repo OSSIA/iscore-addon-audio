@@ -1,16 +1,16 @@
 #pragma once
-#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <TAudioStream.h>
-#include <iscore/tools/Todo.hpp>
+#include <score/tools/Todo.hpp>
 
 
 class TExecutorAudioStream final : public TDecoratedAudioStream
 {
 private:
-  ossia::time_constraint& m_root;
+  ossia::time_interval& m_root;
 public:
-  TExecutorAudioStream(TAudioStreamPtr stream, ossia::time_constraint& cst):
+  TExecutorAudioStream(TAudioStreamPtr stream, ossia::time_interval& cst):
     m_root{cst}
   {
     fStream = stream;
@@ -23,7 +23,7 @@ public:
     }
     catch(...)
     {
-      ISCORE_TODO;
+      SCORE_TODO;
     }
     return fStream->Read(buffer, framesNum, framePos);
   }

@@ -25,7 +25,7 @@ void DataStreamWriter::write(Audio::Effect::ProcessModel& proc)
         if(fx)
             proc.insertEffect(fx, i++);
         else
-            ISCORE_TODO;
+            SCORE_TODO;
     }
 
     proc.m_effectOrder.clear();
@@ -54,7 +54,7 @@ void JSONObjectWriter::write(Audio::Effect::ProcessModel& proc)
         if(fx)
             proc.insertEffect(fx, i++);
         else
-            ISCORE_TODO;
+            SCORE_TODO;
     }
 
     proc.m_effectOrder.clear();

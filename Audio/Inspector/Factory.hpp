@@ -17,7 +17,7 @@ namespace Mix
 class InspectorFactory final :
         public Process::InspectorWidgetDelegateFactory_T<ProcessModel, InspectorWidget>
 {
-        ISCORE_CONCRETE("60efbf22-8374-4923-8a07-8caa4d242954")
+        SCORE_CONCRETE("60efbf22-8374-4923-8a07-8caa4d242954")
 };
 }
 
@@ -26,7 +26,7 @@ namespace Return
 class InspectorFactory final :
         public Process::InspectorWidgetDelegateFactory_T<ProcessModel, InspectorWidget>
 {
-        ISCORE_CONCRETE("a5afd64d-750b-47c4-90ea-9788f47df9b8")
+        SCORE_CONCRETE("a5afd64d-750b-47c4-90ea-9788f47df9b8")
 };
 }
 
@@ -35,7 +35,7 @@ namespace Effect
 class InspectorFactory final :
         public Process::InspectorWidgetDelegateFactory_T<ProcessModel, InspectorWidget>
 {
-        ISCORE_CONCRETE("cc8ceff3-ef93-4b73-865a-a9f870d6e898")
+        SCORE_CONCRETE("cc8ceff3-ef93-4b73-865a-a9f870d6e898")
 };
 }
 }

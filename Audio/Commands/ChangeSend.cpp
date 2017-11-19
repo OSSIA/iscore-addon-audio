@@ -1,6 +1,6 @@
 #include "ChangeSend.hpp"
 
-#include <iscore/model/path/PathSerialization.hpp>
+#include <score/model/path/PathSerialization.hpp>
 #include <Audio/SendProcess/SendProcessModel.hpp>
 #include <Audio/ReturnProcess/ReturnProcessModel.hpp>
 namespace Audio
@@ -17,12 +17,12 @@ ChangeSend::ChangeSend(
     m_old = model.send();
 }
 
-void ChangeSend::undo(const iscore::DocumentContext& ctx) const
+void ChangeSend::undo(const score::DocumentContext& ctx) const
 {
     m_model.find(ctx).setSend(m_old);
 }
 
-void ChangeSend::redo(const iscore::DocumentContext& ctx) const
+void ChangeSend::redo(const score::DocumentContext& ctx) const
 {
     m_model.find(ctx).setSend(m_new);
 }

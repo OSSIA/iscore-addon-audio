@@ -9,7 +9,7 @@ namespace AudioStreamEngine
 ProcessComponent::ProcessComponent(
         Process::ProcessModel& process,
         DocumentPlugin& doc,
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         const QString& name,
         QObject* parent):
     Process::ProcessComponent<Component>{process, doc, id, name, parent}

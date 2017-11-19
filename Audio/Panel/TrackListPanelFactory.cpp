@@ -4,8 +4,8 @@
 namespace Audio {
 namespace Panel {
 
-std::unique_ptr<iscore::PanelDelegate> TrackListPanelFactory::make(
-        const iscore::GUIApplicationContext &ctx)
+std::unique_ptr<score::PanelDelegate> TrackListPanelFactory::make(
+        const score::GUIApplicationContext &ctx)
 {
     return std::make_unique<TrackListPanel>(ctx);
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include <Process/Inspector/ProcessInspectorWidgetDelegate.hpp>
-#include <iscore/command/Dispatchers/QuietOngoingCommandDispatcher.hpp>
+#include <score/command/Dispatchers/QuietOngoingCommandDispatcher.hpp>
 #include <Audio/MixProcess/MixProcessModel.hpp>
 
 class QTableWidget;
@@ -20,7 +20,7 @@ class MixWidget : public QWidget
     public:
         MixWidget(
                 const Mix::ProcessModel &object,
-                const iscore::DocumentContext &doc,
+                const score::DocumentContext &doc,
                 QWidget* parent);
 
     signals:
@@ -36,10 +36,10 @@ class MixWidget : public QWidget
         const Mix::ProcessModel& m_process;
         QTableWidget* m_table{};
 
-        const iscore::CommandStackFacade& m_dispatcher;
+        const score::CommandStackFacade& m_dispatcher;
 
-        iscore::hash_map<Routing, RoutingTableWidget*> m_routings;
-        iscore::hash_map<DirectMix, DirectMixTableWidget*> m_directs;
+        score::hash_map<Routing, RoutingTableWidget*> m_routings;
+        score::hash_map<DirectMix, DirectMixTableWidget*> m_directs;
 
 };
 
@@ -49,7 +49,7 @@ class InspectorWidget final :
     public:
         explicit InspectorWidget(
                 const ProcessModel& object,
-                const iscore::DocumentContext& doc,
+                const score::DocumentContext& doc,
                 QWidget* parent);
 
 };

@@ -2,8 +2,8 @@
 #include <Engine/LocalTree/LocalTreeComponent.hpp>
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
 #include <Audio/EffectProcess/Effect/EffectComponent.hpp>
-#include <iscore/model/ComponentFactory.hpp>
-#include <iscore/plugins/customfactory/ModelFactory.hpp>
+#include <score/model/ComponentFactory.hpp>
+#include <score/plugins/customfactory/ModelFactory.hpp>
 
 namespace Audio
 {
@@ -23,7 +23,7 @@ class EffectComponent :
                 ossia::net::node_base& node,
                 Effect::EffectModel& proc,
                 Engine::LocalTree::DocumentPlugin& doc,
-                const Id<iscore::Component>& id,
+                const Id<score::Component>& id,
                 const QString& name,
                 QObject* parent);
 

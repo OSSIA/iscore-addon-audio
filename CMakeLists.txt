@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.1)
-project(iscore_plugin_audio LANGUAGES CXX)
+project(score_plugin_audio LANGUAGES CXX)
 
 # Dependencies
 
-if(NOT TARGET iscore_plugin_engine)
+if(NOT TARGET score_plugin_engine)
     return()
 endif()
 
@@ -14,13 +14,13 @@ if(APPLE)
 set(OPENSSL_ROOT_DIR /usr/local/Cellar/openssl/1.0.2l)
 endif()
 add_subdirectory(3rdparty/libaudiostream)
-
-if(ISCORE_AUDIO_PLUGINS)
+#set(SCORE_AUDIO_PLUGINS 1)
+if(SCORE_AUDIO_PLUGINS)
   find_package(Lilv)
   find_package(Faust)
 endif()
 
-iscore_common_setup()
+score_common_setup()
 
 # Packages
 find_package(Qt5 5.3 REQUIRED COMPONENTS Core Widgets Multimedia)
@@ -265,21 +265,21 @@ add_library(${PROJECT_NAME}
 
     )
 set_property(TARGET ${PROJECT_NAME} PROPERTY COTIRE_ADD_UNITY_BUILD FALSE)
-set_property(TARGET ${PROJECT_NAME} PROPERTY ISCORE_TARGET_NO_LTO TRUE)
-set_property(TARGET ${PROJECT_NAME} PROPERTY ISCORE_TARGET_NO_SANITIZE TRUE)
+set_property(TARGET ${PROJECT_NAME} PROPERTY SCORE_TARGET_NO_LTO TRUE)
+set_property(TARGET ${PROJECT_NAME} PROPERTY SCORE_TARGET_NO_SANITIZE TRUE)
 
 
-iscore_generate_command_list_file(${PROJECT_NAME} "${HDRS};${LV2_HDRS};${FAUST_HDRS}")
+score_generate_command_list_file(${PROJECT_NAME} "${HDRS};${LV2_HDRS};${FAUST_HDRS}")
 target_link_libraries(${PROJECT_NAME} PUBLIC
                      Qt5::Core Qt5::Widgets Qt5::Multimedia
-                     iscore_lib_base iscore_plugin_engine LibAudioStream
+                     score_lib_base score_plugin_engine LibAudioStream
 )
 if(NOT ANDROID)
 if(APPLE)
 target_link_libraries(${PROJECT_NAME} PUBLIC -L/usr/local/lib)
 endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC
-            iscore_plugin_midi iscore_plugin_media)
+            score_plugin_midi score_plugin_media)
 endif()
 
 if(${Faust_FOUND})
@@ -295,7 +295,7 @@ if(${Faust_FOUND})
   target_link_libraries(${PROJECT_NAME}  PUBLIC ${FAUST_LIBRARIES})
   target_include_directories(${PROJECT_NAME}  PRIVATE ${FAUST_INCLUDE_DIR})
 endif()
-setup_iscore_plugin(${PROJECT_NAME})
+setup_score_plugin(${PROJECT_NAME})
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-error=return-type-c-linkage")
 endif()

@@ -1,7 +1,7 @@
 #pragma once
-#include <iscore/command/Command.hpp>
+#include <score/command/Command.hpp>
 #include <Audio/Commands/AudioCommandFactory.hpp>
-#include <iscore/model/path/Path.hpp>
+#include <score/model/path/Path.hpp>
 
 namespace Audio
 {
@@ -11,16 +11,16 @@ class FaustEffectModel;
 
 namespace Commands
 {
-class EditFaustEffect final : public iscore::Command
+class EditFaustEffect final : public score::Command
 {
-           ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), EditFaustEffect, "Edit Faust effect")
+           SCORE_COMMAND_DECL(Audio::CommandFactoryName(), EditFaustEffect, "Edit Faust effect")
     public:
         EditFaustEffect(
                 const Effect::FaustEffectModel& model,
                 const QString& text);
 
-        void undo(const iscore::DocumentContext& ctx) const override;
-        void redo(const iscore::DocumentContext& ctx) const override;
+        void undo(const score::DocumentContext& ctx) const override;
+        void redo(const score::DocumentContext& ctx) const override;
 
     protected:
         void serializeImpl(DataStreamInput & s) const override;

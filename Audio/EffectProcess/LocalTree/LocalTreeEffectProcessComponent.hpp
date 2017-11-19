@@ -8,8 +8,8 @@
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp>
 
 #include <Audio/AudioStreamEngine/Audio/EffectComponent.hpp>
-#include <iscore/tools/IdentifierGeneration.hpp>
-#include <iscore/model/ComponentHierarchy.hpp>
+#include <score/tools/IdentifierGeneration.hpp>
+#include <score/model/ComponentHierarchy.hpp>
 
 namespace Audio
 {
@@ -33,7 +33,7 @@ class EffectProcessComponentBase :
             using component_t = EffectComponent;
 
        EffectProcessComponentBase(
-               const Id<iscore::Component>& id,
+               const Id<score::Component>& id,
                ossia::net::node_base& parent,
                Effect::ProcessModel& scenario,
                Engine::LocalTree::DocumentPlugin& doc,
@@ -41,7 +41,7 @@ class EffectProcessComponentBase :
 
 
        EffectComponent* make(
-               const Id<iscore::Component> & id,
+               const Id<score::Component> & id,
                Effect::EffectModel &process);
 
        void removing(const Effect::EffectModel& cst, const EffectComponent& comp);
@@ -64,12 +64,12 @@ class EffectProcessComponentBase :
 };
 
 class EffectProcessComponent final :
-        public iscore::ComponentHierarchy<EffectProcessComponentBase>
+        public score::ComponentHierarchy<EffectProcessComponentBase>
 {
     public:
         template<typename... Args>
         EffectProcessComponent(Args&&... args):
-            iscore::ComponentHierarchy<EffectProcessComponentBase>(std::forward<Args>(args)...)
+            score::ComponentHierarchy<EffectProcessComponentBase>(std::forward<Args>(args)...)
         {
 
         }

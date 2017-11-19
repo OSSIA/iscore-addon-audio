@@ -1,6 +1,6 @@
 #include "SendComponent.hpp"
 #include <Audio/SendProcess/SendProcessModel.hpp>
-#include <Scenario/Document/Constraint/ConstraintModel.hpp>
+#include <Scenario/Document/Interval/IntervalModel.hpp>
 #include <Audio/AudioStreamEngine/Scenario/ConstraintComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/LoopComponent.hpp>
@@ -100,7 +100,7 @@ class TCircularNonInterleavedAudioBuffer
 SendComponent::SendComponent(
         Send::ProcessModel& sound,
         DocumentPlugin& doc,
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         QObject* parent_obj):
     ProcessComponent_T{sound, doc, id, "SendComponent", parent_obj}
 {
@@ -109,11 +109,11 @@ SendComponent::SendComponent(
 
 void SendComponent::makeStream(const Context& ctx)
 {
-    // For all "generative" streams in the parent constraint,
+    // For all "generative" streams in the parent interval,
     // take their "send" streams, create returns, mix the returns,
     // put it on input of the effect, create a send, return the output
-    auto parent_cst = safe_cast<Scenario::ConstraintModel*>(process().parent());
-    Constraint& cst_comp = iscore::component<Constraint>(parent_cst->components());
+    auto parent_cst = safe_cast<Scenario::IntervalModel*>(process().parent());
+    Interval& cst_comp = score::component<Interval>(parent_cst->components());
 
     m_stream = MakeSend(cst_comp.makeInputMix(this->process().id()));
 }

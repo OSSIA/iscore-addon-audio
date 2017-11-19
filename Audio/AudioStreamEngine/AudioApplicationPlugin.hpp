@@ -1,23 +1,23 @@
 #pragma once
-#include <iscore/plugins/application/GUIApplicationPlugin.hpp>
+#include <score/plugins/application/GUIApplicationPlugin.hpp>
 #include <Audio/AudioStreamEngine/Context.hpp>
 
 #if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
 #include <lilv/lilvmm.hpp>
 #include <Audio/AudioStreamEngine/Streams/LV2Context.hpp>
 #endif
-#include <iscore_plugin_audio_export.h>
+#include <score_plugin_audio_export.h>
 struct LV2HostContext;
 namespace Audio
 {
 namespace AudioStreamEngine
 {
 struct LV2GlobalContext;
-class ISCORE_PLUGIN_AUDIO_EXPORT ApplicationPlugin : public QObject, public iscore::ApplicationPlugin
+class SCORE_PLUGIN_AUDIO_EXPORT ApplicationPlugin : public QObject, public score::ApplicationPlugin
 {
         Q_OBJECT
     public:
-        ApplicationPlugin(const iscore::ApplicationContext& app);
+        ApplicationPlugin(const score::ApplicationContext& app);
         ~ApplicationPlugin();
 
         void startEngine();
@@ -47,11 +47,11 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ApplicationPlugin : public QObject, public isco
 
 };
 
-class GUIApplicationPlugin : public iscore::GUIApplicationPlugin
+class GUIApplicationPlugin : public score::GUIApplicationPlugin
 {
 public:
-  GUIApplicationPlugin(const iscore::GUIApplicationContext& app);
-  void on_createdDocument(iscore::Document& doc) override;
+  GUIApplicationPlugin(const score::GUIApplicationContext& app);
+  void on_createdDocument(score::Document& doc) override;
 
 };
 }

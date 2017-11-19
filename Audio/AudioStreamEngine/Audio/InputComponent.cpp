@@ -10,7 +10,7 @@ namespace AudioStreamEngine
 InputComponent::InputComponent(
         Input::ProcessModel& Input,
         DocumentPlugin& doc,
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         QObject* parent_obj):
     ProcessComponent_T{Input, doc, id, "InputComponent", parent_obj}
 {
@@ -24,11 +24,11 @@ void InputComponent::makeStream(const Context& ctx)
         return;
 
     auto in = MakeInputSound();
-    ISCORE_ASSERT(in);
+    SCORE_ASSERT(in);
     auto sel = MakeSelectSound(in, (long*)inputs.inputs.data(), inputs.inputs.size());
-    ISCORE_ASSERT(sel);
+    SCORE_ASSERT(sel);
     m_stream = MakeSend(sel);
-    ISCORE_ASSERT(m_stream);
+    SCORE_ASSERT(m_stream);
 }
 
 }

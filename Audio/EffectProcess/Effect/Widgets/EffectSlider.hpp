@@ -9,7 +9,7 @@ namespace net
 class node_base;
 }
 }
-namespace iscore
+namespace score
 {
 class DoubleSlider;
 }
@@ -29,7 +29,7 @@ class EffectSlider :
         ~EffectSlider();
 
         double scaledValue;
-        iscore::DoubleSlider* m_slider{};
+        score::DoubleSlider* m_slider{};
     signals:
         void createAutomation(const State::Address&, double min, double max);
 

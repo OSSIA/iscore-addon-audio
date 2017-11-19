@@ -33,36 +33,36 @@ static const double* one() {
     return &val;
 }
 
-ConstraintBase::ConstraintBase(
-        Scenario::ConstraintModel& constraint,
-        ConstraintBase::system_t& doc,
-        const Id<iscore::Component>& id,
+IntervalBase::IntervalBase(
+        Scenario::IntervalModel& interval,
+        IntervalBase::system_t& doc,
+        const Id<score::Component>& id,
         QObject* parent_comp):
-    Scenario::ConstraintComponent<Component>{constraint, doc, id, "ConstraintComponent", parent_comp}
+    Scenario::IntervalComponent<Component>{interval, doc, id, "IntervalComponent", parent_comp}
 {
 }
 
-Constraint::Constraint(
-        Scenario::ConstraintModel& constraint,
-        ConstraintBase::system_t& doc,
-        const Id<iscore::Component>& id,
+Interval::Interval(
+        Scenario::IntervalModel& interval,
+        IntervalBase::system_t& doc,
+        const Id<score::Component>& id,
         QObject* parent_comp):
-    parent_t{constraint, doc, id, parent_comp}
+    parent_t{interval, doc, id, parent_comp}
 {
-    con(constraint.duration, &Scenario::ConstraintDurations::executionSpeedChanged,
+    con(interval.duration, &Scenario::IntervalDurations::executionSpeedChanged,
         this, [=] (double d) {
         if(d > 0.01)
             m_stretch = d;
     });
-    if(constraint.duration.executionSpeed() > 0.01)
-        m_stretch = constraint.duration.executionSpeed();
+    if(interval.duration.executionSpeed() > 0.01)
+        m_stretch = interval.duration.executionSpeed();
 }
 
-Constraint::~Constraint()
+Interval::~Interval()
 {
 }
 
-optional<AudioGraphVertice> Constraint::visit(AudioGraph& graph)
+optional<AudioGraphVertice> Interval::visit(AudioGraph& graph)
 {
     int n_proc = this->children().size();
     std::vector<AudioGraphVertice> processes;
@@ -136,8 +136,8 @@ optional<AudioGraphVertice> Constraint::visit(AudioGraph& graph)
     {
         auto res = boost::add_vertex(this, graph);
 
-        // Add edge from all processes to the constraint mix stream
-        // Even for the sends : the constraint "pulls" the send process
+        // Add edge from all processes to the interval mix stream
+        // Even for the sends : the interval "pulls" the send process
         // to ensure that it is up-to-date.
         for(auto proc : processes)
         {
@@ -150,14 +150,14 @@ optional<AudioGraphVertice> Constraint::visit(AudioGraph& graph)
     return {};
 }
 
-ConstraintBase::~ConstraintBase()
+IntervalBase::~IntervalBase()
 {
 }
 
 
-void Constraint::makeStream(const Context& player)
+void Interval::makeStream(const Context& player)
 {
-    if(constraint().processes.empty())
+    if(interval().processes.empty())
     {
         // Silence
     }
@@ -189,7 +189,7 @@ void Constraint::makeStream(const Context& player)
             if(stream)
             {
                 auto dur = GetLengthSound(stream);
-                auto& cst_dur = constraint().duration;
+                auto& cst_dur = interval().duration;
 
                 AudioStream extended_stream;
                 TimeVal def = cst_dur.defaultDuration();
@@ -270,7 +270,7 @@ void Constraint::makeStream(const Context& player)
     // Then look for the "Mix" process and do the mix
 }
 
-AudioStream Constraint::makeInputMix(
+AudioStream Interval::makeInputMix(
         const Id<Process::ProcessModel>& target)
 {
     std::vector<AudioStream> inputStreams;
@@ -298,15 +298,15 @@ AudioStream Constraint::makeInputMix(
 
     auto make_stream_impl = [&] (const auto& pair)
     {
-        ISCORE_ASSERT(pair.component->getStream());
+        SCORE_ASSERT(pair.component->getStream());
         auto channel = MakeChannelSound(
                            MakeReturn(pair.component->getStream()),
                            getTarget(pair.model->id(), target));
-        ISCORE_ASSERT(channel);
+        SCORE_ASSERT(channel);
         inputStreams.push_back(channel);
     };
 
-    ISCORE_ASSERT(children().size() > 0);
+    SCORE_ASSERT(children().size() > 0);
 
     for(auto pair : children())
     {
@@ -328,14 +328,14 @@ AudioStream Constraint::makeInputMix(
         else
         {
             // We disable effect -> effect when there is no mix.
-            // the better way would be to automatically get a mix component on "audio" constraints...
+            // the better way would be to automatically get a mix component on "audio" intervals...
             // but this needs serializable components...
             // Find target
             auto target_proc_it = ossia::find_if(children(),
                                           [=] (const auto& p) {
                 return p.model->id() == target;
             });
-            ISCORE_ASSERT(target_proc_it != children().end());
+            SCORE_ASSERT(target_proc_it != children().end());
             auto& target_comp = target_proc_it->component;
             if(pair.component->hasInput() && pair.component->hasOutput() &&
                target_comp->hasInput() && target_comp->hasOutput())
@@ -357,8 +357,8 @@ AudioStream Constraint::makeInputMix(
 }
 
 
-ProcessComponent* ConstraintBase::make(
-        const Id<iscore::Component>& id,
+ProcessComponent* IntervalBase::make(
+        const Id<score::Component>& id,
         ProcessComponentFactory& factory,
         Process::ProcessModel& process)
 {
@@ -366,23 +366,23 @@ ProcessComponent* ConstraintBase::make(
 }
 
 
-bool ConstraintBase::removing(
+bool IntervalBase::removing(
         const Process::ProcessModel& cst,
         const ProcessComponent& comp)
 {
   return true;
 }
 
-Mix::ProcessModel* Constraint::findMix() const
+Mix::ProcessModel* Interval::findMix() const
 {
-    auto& procs = constraint().processes;
+    auto& procs = interval().processes;
     auto it = ossia::find_if(procs, [] (auto& val) {
         return dynamic_cast<Mix::ProcessModel*>(&val);
     });
     return it != procs.end() ? static_cast<Mix::ProcessModel*>(&(*it)) : nullptr;
 }
 
-void Constraint::stop()
+void Interval::stop()
 {
   for(auto& proc : children())
   {

@@ -1,11 +1,11 @@
 #pragma once
 #include <Audio/EffectProcess/Effect/EffectFactory.hpp>
-#include <iscore/model/Entity.hpp>
+#include <score/model/Entity.hpp>
 
-#include <iscore/model/Component.hpp>
-#include <iscore/model/IdentifiedObject.hpp>
-#include <iscore/plugins/customfactory/SerializableInterface.hpp>
-#include <iscore_plugin_audio_export.h>
+#include <score/model/Component.hpp>
+#include <score/model/IdentifiedObject.hpp>
+#include <score/plugins/customfactory/SerializableInterface.hpp>
+#include <score_plugin_audio_export.h>
 
 #include <LibAudioStreamMC++.h>
 namespace Audio
@@ -21,12 +21,12 @@ namespace Effect
  * of FaustEffectModel could be a different effect (e.g.
  * reverb, distorsion, etc.)
  */
-class ISCORE_PLUGIN_AUDIO_EXPORT EffectModel :
-        public iscore::Entity<EffectModel>,
-        public iscore::SerializableInterface<EffectFactory>
+class SCORE_PLUGIN_AUDIO_EXPORT EffectModel :
+        public score::Entity<EffectModel>,
+        public score::SerializableInterface<EffectFactory>
 {
         Q_OBJECT
-        ISCORE_SERIALIZE_FRIENDS
+        SCORE_SERIALIZE_FRIENDS
     public:
         EffectModel(
                 const Id<EffectModel>&,

@@ -6,8 +6,8 @@
 #include <QTimer>
 #include <State/Address.hpp>
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
-#include <iscore/widgets/ClearLayout.hpp>
-#include <iscore/widgets/ReactiveLabel.hpp>
+#include <score/widgets/ClearLayout.hpp>
+#include <score/widgets/ReactiveLabel.hpp>
 
 namespace Audio
 {
@@ -28,7 +28,7 @@ class EffectWidget final :
     public:
         EffectWidget(
                 EffectModel& fx,
-                const iscore::DocumentContext& doc,
+                const score::DocumentContext& doc,
                 QWidget* parent);
 
         auto& effect() const { return m_effect; }
@@ -58,10 +58,10 @@ class EffectWidget final :
         void reflow();
         void clear();
 
-        void componentAdded(const iscore::Component &);
+        void componentAdded(const score::Component &);
         void updateSliders();
         EffectModel& m_effect;
-        const iscore::DocumentContext& m_context;
+        const score::DocumentContext& m_context;
         QGridLayout* m_layout{};
         std::vector<EffectSlider*> m_sliders;
         QTimer m_timer;

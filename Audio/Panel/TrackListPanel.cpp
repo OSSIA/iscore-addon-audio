@@ -1,5 +1,5 @@
 #include "TrackListPanel.hpp"
-#include <iscore/widgets/QmlContainerPanel.hpp>
+#include <score/widgets/QmlContainerPanel.hpp>
 #include "TrackModel.hpp"
 #include <QQuickWidget>
 #include <QQmlEngine>
@@ -10,8 +10,8 @@
 namespace Audio {
 namespace Panel {
 
-TrackListPanel::TrackListPanel(const iscore::GUIApplicationContext &ctx):
-    iscore::PanelDelegate{ctx},
+TrackListPanel::TrackListPanel(const score::GUIApplicationContext &ctx):
+    score::PanelDelegate{ctx},
     m_widget{new QWidget},
     m_trackModel(new TrackModel),
     m_layout{new QVBoxLayout},
@@ -38,8 +38,8 @@ QWidget *TrackListPanel::widget()
     return m_widget;
 }
 
-const iscore::PanelStatus& TrackListPanel::defaultPanelStatus() const {
-    static const iscore::PanelStatus status {
+const score::PanelStatus& TrackListPanel::defaultPanelStatus() const {
+    static const score::PanelStatus status {
         true,
         Qt::BottomDockWidgetArea,
                 1,
@@ -51,8 +51,8 @@ const iscore::PanelStatus& TrackListPanel::defaultPanelStatus() const {
 }
 
 void TrackListPanel::on_modelChanged(
-        iscore::MaybeDocument oldm,
-        iscore::MaybeDocument newm) {
+        score::MaybeDocument oldm,
+        score::MaybeDocument newm) {
 
 }
 

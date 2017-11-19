@@ -6,9 +6,9 @@
 #include <sstream>
 #include <QFormLayout>
 #include <LibAudioStreamMC++.h>
-#include <iscore/application/ApplicationContext.hpp>
+#include <score/application/ApplicationContext.hpp>
 #include <Audio/AudioStreamEngine/AudioApplicationPlugin.hpp>
-#include <iscore/widgets/SignalUtils.hpp>
+#include <score/widgets/SignalUtils.hpp>
 
 namespace Audio {
 namespace Settings {

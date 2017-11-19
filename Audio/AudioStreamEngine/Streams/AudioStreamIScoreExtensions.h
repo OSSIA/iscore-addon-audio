@@ -8,7 +8,7 @@
 #endif
 // This file provides a C-like API to allow use with the other
 // functions in the C API of the LibAudioStream.
-namespace ossia { class time_constraint; }
+namespace ossia { class time_interval; }
 namespace Midi { namespace Executor { class ProcessExecutor; } }
 
 #if defined(__cplusplus) && !defined(_MSC_VER)
@@ -28,7 +28,7 @@ AudioStream MakeReturn(AudioStream s);
 AudioStream MakeChannelSound(AudioStream s, double const * volume);
 
 AudioStream MakeSimpleBufferSound(float** buffer, long length, long channels);
-AudioStream MakeIScoreExecutor(AudioStream s, ossia::time_constraint& t);
+AudioStream MakeIScoreExecutor(AudioStream s, ossia::time_interval& t);
 
 AudioStream MakeFixedLoopSound(AudioStream s, long maxlength);
 SymbolicDate GenPriorisedSymbolicDate(AudioPlayerPtr /*player*/, int64_t prio);

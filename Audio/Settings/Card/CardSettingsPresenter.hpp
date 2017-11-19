@@ -1,12 +1,12 @@
 #pragma once
-#include <iscore/plugins/settingsdelegate/SettingsDelegatePresenter.hpp>
+#include <score/plugins/settingsdelegate/SettingsDelegatePresenter.hpp>
 
 namespace Audio {
 namespace Settings {
 
 class Model;
 class View;
-class Presenter : public iscore::SettingsDelegatePresenter {
+class Presenter : public score::SettingsDelegatePresenter {
 public:
     using model_type = Model;
     using view_type = View;

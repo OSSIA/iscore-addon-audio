@@ -13,7 +13,7 @@ EffectFactoryList::object_type*EffectFactoryList::loadMissing(
         const VisitorVariant& vis,
         QObject* parent) const
 {
-    ISCORE_TODO;
+    SCORE_TODO;
     return nullptr;
 }
 

@@ -1,10 +1,10 @@
 #pragma once
 #include <Process/Process.hpp>
-#include <iscore/serialization/DataStreamVisitor.hpp>
-#include <iscore/serialization/JSONVisitor.hpp>
-#include <iscore/serialization/VisitorCommon.hpp>
+#include <score/serialization/DataStreamVisitor.hpp>
+#include <score/serialization/JSONVisitor.hpp>
+#include <score/serialization/VisitorCommon.hpp>
 #include <Audio/EffectProcess/EffectProcessMetadata.hpp>
-#include <iscore/model/EntityMap.hpp>
+#include <score/model/EntityMap.hpp>
 #include <Audio/EffectProcess/Effect/EffectModel.hpp>
 namespace Audio
 {
@@ -26,7 +26,7 @@ class ProcessModel;
  */
 class ProcessModel final : public Process::ProcessModel
 {
-        ISCORE_SERIALIZE_FRIENDS
+        SCORE_SERIALIZE_FRIENDS
         PROCESS_METADATA_IMPL(Audio::Effect::ProcessModel)
 
         Q_OBJECT
@@ -52,7 +52,7 @@ class ProcessModel final : public Process::ProcessModel
             vis.writeTo(*this);
         }
 
-        const iscore::EntityMap<EffectModel>& effects() const
+        const score::EntityMap<EffectModel>& effects() const
         { return m_effects; }
         const auto& effectsOrder() const
         { return m_effectOrder; }
@@ -68,7 +68,7 @@ class ProcessModel final : public Process::ProcessModel
 
     private:
         // The actual effect instances
-        iscore::EntityMap<EffectModel> m_effects;
+        score::EntityMap<EffectModel> m_effects;
 
         // The effect chain.
         QList<Id<EffectModel>> m_effectOrder;

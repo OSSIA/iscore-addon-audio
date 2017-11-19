@@ -1,7 +1,7 @@
 #include "UpdateMix.hpp"
 #include <Audio/MixProcess/MixProcessModel.hpp>
-#include <iscore/tools/IdentifierGeneration.hpp>
-#include <iscore/model/path/PathSerialization.hpp>
+#include <score/tools/IdentifierGeneration.hpp>
+#include <score/model/path/PathSerialization.hpp>
 namespace Audio
 {
 namespace Commands
@@ -14,17 +14,17 @@ UpdateRouting::UpdateRouting(
     m_new{newmix}
 {
     auto it = model.routings().find(newmix);
-    ISCORE_ASSERT(it != model.routings().end());
+    SCORE_ASSERT(it != model.routings().end());
     m_old = *it;
 }
 
-void UpdateRouting::undo(const iscore::DocumentContext& ctx) const
+void UpdateRouting::undo(const score::DocumentContext& ctx) const
 {
     Mix::ProcessModel& process = m_model.find(ctx);
     process.updateRouting(m_old);
 }
 
-void UpdateRouting::redo(const iscore::DocumentContext& ctx) const
+void UpdateRouting::redo(const score::DocumentContext& ctx) const
 {
     Mix::ProcessModel& process = m_model.find(ctx);
     process.updateRouting(m_new);
@@ -61,18 +61,18 @@ UpdateDirect::UpdateDirect(
         }
         else
         {
-            ISCORE_ABORT;
+            SCORE_ABORT;
         }
     }
 }
 
-void UpdateDirect::undo(const iscore::DocumentContext& ctx) const
+void UpdateDirect::undo(const score::DocumentContext& ctx) const
 {
     Mix::ProcessModel& process = m_model.find(ctx);
     process.updateDirectMix(m_old);
 }
 
-void UpdateDirect::redo(const iscore::DocumentContext& ctx) const
+void UpdateDirect::redo(const score::DocumentContext& ctx) const
 {
     Mix::ProcessModel& process = m_model.find(ctx);
     process.updateDirectMix(m_new);

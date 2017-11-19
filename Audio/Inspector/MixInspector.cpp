@@ -1,9 +1,9 @@
 #include "MixInspector.hpp"
 #include <Audio/Commands/UpdateMix.hpp>
-#include <Scenario/Document/Constraint/ConstraintModel.hpp>
-#include <iscore/widgets/SignalUtils.hpp>
-#include <iscore/widgets/MarginLess.hpp>
-#include <iscore/document/DocumentContext.hpp>
+#include <Scenario/Document/Interval/IntervalModel.hpp>
+#include <score/widgets/SignalUtils.hpp>
+#include <score/widgets/MarginLess.hpp>
+#include <score/document/DocumentContext.hpp>
 #include <QCheckBox>
 #include <QSpinBox>
 #include <QTableWidget>
@@ -16,7 +16,7 @@ namespace Mix
 {
 InspectorWidget::InspectorWidget(
         const Mix::ProcessModel &object,
-        const iscore::DocumentContext &doc,
+        const score::DocumentContext &doc,
         QWidget *parent):
     InspectorWidgetDelegate_T {object, parent}
 {
@@ -44,7 +44,7 @@ class DirectMixTableWidget : public QWidget
     public:
         DirectMixTableWidget(
                 QWidget* parent,
-                const iscore::CommandStackFacade& stack,
+                const score::CommandStackFacade& stack,
                 const Mix::ProcessModel& mix,
                 const Id<Process::ProcessModel>& column):
             QWidget{parent},
@@ -76,7 +76,7 @@ class DirectMixTableWidget : public QWidget
 
     private:
         MixSpinBox* const spinBox{};
-        iscore::QuietOngoingCommandDispatcher dispatcher;
+        score::QuietOngoingCommandDispatcher dispatcher;
 
 };
 
@@ -85,7 +85,7 @@ class RoutingTableWidget : public QWidget
     public:
         RoutingTableWidget(
                 QWidget* parent,
-                const iscore::CommandStackFacade& stack,
+                const score::CommandStackFacade& stack,
                 const Mix::ProcessModel& mix,
                 const Id<Process::ProcessModel>& column,
                 const Id<Process::ProcessModel>& row):
@@ -144,18 +144,18 @@ class RoutingTableWidget : public QWidget
     private:
         QCheckBox* const checkBox{};
         MixSpinBox* const spinBox{};
-        iscore::QuietOngoingCommandDispatcher dispatcher;
+        score::QuietOngoingCommandDispatcher dispatcher;
 };
 
 MixWidget::MixWidget(
         const Mix::ProcessModel &object,
-        const iscore::DocumentContext &doc,
+        const score::DocumentContext &doc,
         QWidget* parent):
     QWidget{parent},
     m_process{object},
     m_dispatcher{doc.commandStack}
 {
-    auto lay = new iscore::MarginLess<QVBoxLayout>();
+    auto lay = new score::MarginLess<QVBoxLayout>();
     this->setLayout(lay);
 
 
@@ -201,7 +201,7 @@ void MixWidget::recreate()
     m_table->setRowCount(n_row);
     m_table->setColumnCount(n_col);
 
-    auto cst = safe_cast<const Scenario::ConstraintModel*>(m_process.parent());
+    auto cst = safe_cast<const Scenario::IntervalModel*>(m_process.parent());
 
     // For each direct data, create relevant items.
     auto pretty_name = [&] (const Id<Process::ProcessModel>& dmx) {
@@ -305,7 +305,7 @@ void MixWidget::recreate()
 void MixWidget::updateRouting(const Routing & r)
 {
     auto it = m_routings.find(r);
-    ISCORE_ASSERT(it != m_routings.end());
+    SCORE_ASSERT(it != m_routings.end());
 
     it->second->setMix(r.mix);
     it->second->setEnabled(r.enabled);
@@ -315,7 +315,7 @@ void MixWidget::updateRouting(const Routing & r)
 void MixWidget::updateDirectMix(const DirectMix & d)
 {
     auto it = m_directs.find(d);
-    ISCORE_ASSERT(it != m_directs.end());
+    SCORE_ASSERT(it != m_directs.end());
 
     it->second->setMix(d.mix);
 }

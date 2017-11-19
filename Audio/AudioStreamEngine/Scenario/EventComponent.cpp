@@ -5,7 +5,7 @@ namespace Audio
 namespace AudioStreamEngine
 {
 Event::Event(
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         Scenario::EventModel& ev,
         const DocumentPlugin& doc,
         QObject* parent_comp):

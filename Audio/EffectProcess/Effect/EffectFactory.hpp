@@ -1,7 +1,7 @@
 #pragma once
-#include <iscore/plugins/customfactory/FactoryInterface.hpp>
-#include <iscore/serialization/VisitorCommon.hpp>
-#include <iscore_plugin_audio_export.h>
+#include <score/plugins/customfactory/FactoryInterface.hpp>
+#include <score/serialization/VisitorCommon.hpp>
+#include <score_plugin_audio_export.h>
 
 namespace Audio
 {
@@ -21,10 +21,10 @@ class EffectModel;
  * of various plug-in APIs this may change.
  *
  */
-class ISCORE_PLUGIN_AUDIO_EXPORT EffectFactory :
-        public iscore::Interface<EffectFactory>
+class SCORE_PLUGIN_AUDIO_EXPORT EffectFactory :
+        public score::Interface<EffectFactory>
 {
-        ISCORE_INTERFACE("3ffe0073-dfe0-4a7f-862f-220380ebcf08")
+        SCORE_INTERFACE("3ffe0073-dfe0-4a7f-862f-220380ebcf08")
     public:
         virtual ~EffectFactory();
 
@@ -86,7 +86,7 @@ class EffectFactory_T final :
                 const VisitorVariant& vis,
                 QObject* parent) const final override
         {
-            return iscore::deserialize_dyn(vis, [&] (auto&& deserializer)
+            return score::deserialize_dyn(vis, [&] (auto&& deserializer)
             { return new Model_T{deserializer, parent}; });
         }
 };
@@ -99,8 +99,8 @@ class EffectFactory_T final :
  * (for instance AU plug-in on Windows),
  * a MissingEffectModel should be returned.
  */
-class ISCORE_PLUGIN_AUDIO_EXPORT EffectFactoryList final :
-        public iscore::InterfaceList<EffectFactory>
+class SCORE_PLUGIN_AUDIO_EXPORT EffectFactoryList final :
+        public score::InterfaceList<EffectFactory>
 {
     public:
         using object_type = Audio::Effect::EffectModel;

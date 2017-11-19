@@ -17,7 +17,7 @@ class EnvelopeEffectModel :
         public EffectModel
 {
         Q_OBJECT
-        ISCORE_SERIALIZE_FRIENDS
+        SCORE_SERIALIZE_FRIENDS
         MODEL_METADATA_IMPL(EnvelopeEffectModel)
     public:
         EnvelopeEffectModel(

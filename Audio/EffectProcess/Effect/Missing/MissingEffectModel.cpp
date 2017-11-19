@@ -10,7 +10,7 @@ MissingEffectModel::MissingEffectModel(
         QObject* parent):
     EffectModel{id, parent}
 {
-    ISCORE_TODO;
+    SCORE_TODO;
 }
 
 MissingEffectModel::MissingEffectModel(
@@ -19,12 +19,12 @@ MissingEffectModel::MissingEffectModel(
         QObject* parent):
     EffectModel{id, parent}
 {
-    ISCORE_TODO;
+    SCORE_TODO;
 }
 
 MissingEffectModel*MissingEffectModel::clone(const Id<EffectModel>& newId, QObject* parent) const
 {
-    ISCORE_TODO;
+    SCORE_TODO;
     return nullptr;
 }
 

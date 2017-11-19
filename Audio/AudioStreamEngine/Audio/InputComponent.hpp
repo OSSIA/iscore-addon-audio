@@ -18,7 +18,7 @@ class InputComponent final :
             InputComponent(
                 Input::ProcessModel&,
                 DocumentPlugin& doc,
-                const Id<iscore::Component>& id,
+                const Id<score::Component>& id,
                 QObject* parent_obj);
 
         void makeStream(const Context& ctx) override;

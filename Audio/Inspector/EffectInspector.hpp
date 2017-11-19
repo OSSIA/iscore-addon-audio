@@ -1,6 +1,6 @@
 #pragma once
 #include <Process/Inspector/ProcessInspectorWidgetDelegate.hpp>
-#include <iscore/command/Dispatchers/CommandDispatcher.hpp>
+#include <score/command/Dispatchers/CommandDispatcher.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
 
 class QListWidget;
@@ -16,7 +16,7 @@ class InspectorWidget final :
     public:
         explicit InspectorWidget(
                 const ProcessModel& object,
-                const iscore::DocumentContext& doc,
+                const score::DocumentContext& doc,
                 QWidget* parent);
 
     private:

@@ -2,7 +2,7 @@
 
 #include <Explorer/DocumentPlugin/DeviceDocumentPlugin.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
-#include <Scenario/Document/Constraint/ConstraintModel.hpp>
+#include <Scenario/Document/Interval/IntervalModel.hpp>
 #include <Scenario/Process/ScenarioModel.hpp>
 #include <Loop/LoopProcessModel.hpp>
 #include <Media/Sound/SoundModel.hpp>
@@ -52,7 +52,7 @@ ProcessModel::~ProcessModel()
 double ProcessModel::mix(const Routing & r) const
 {
     auto it = m_routings.find(r);
-    ISCORE_ASSERT(it != m_routings.end());
+    SCORE_ASSERT(it != m_routings.end());
 
     return it->mix;
 }
@@ -66,7 +66,7 @@ double ProcessModel::mix(const DirectMix & dmx) const
 const double* ProcessModel::mix_ptr(const Routing & r) const
 {
     auto it = m_routings.find(r);
-    ISCORE_ASSERT(it != m_routings.end());
+    SCORE_ASSERT(it != m_routings.end());
 
     return &(it->mix);
 }
@@ -80,7 +80,7 @@ const double* ProcessModel::mix_ptr(const DirectMix & dmx) const
 void ProcessModel::updateRouting(const Routing & r)
 {
     auto it = m_routings.find(r);
-    ISCORE_ASSERT(it != m_routings.end());
+    SCORE_ASSERT(it != m_routings.end());
 
     m_routings.modify(it, [&] (auto& obj) {
         obj.mix = r.mix;
@@ -100,7 +100,7 @@ void ProcessModel::updateDirectMix(const DirectMix & dmx)
 
 void ProcessModel::init()
 {
-    if(auto ptr_cst = dynamic_cast<Scenario::ConstraintModel*>(parent()))
+    if(auto ptr_cst = dynamic_cast<Scenario::IntervalModel*>(parent()))
     {
         auto& cst = *ptr_cst;
         for(auto& proc : cst.processes)
@@ -115,7 +115,7 @@ void ProcessModel::init()
 
 void ProcessModel::on_processAdded(const Process::ProcessModel & proc)
 {
-    auto fac = iscore::AppComponents().interfaces<Audio::AudioStreamEngine::ProcessComponentFactoryList>().factory(proc);
+    auto fac = score::AppComponents().interfaces<Audio::AudioStreamEngine::ProcessComponentFactoryList>().factory(proc);
     if(!fac)
         return;
 
@@ -184,7 +184,7 @@ void ProcessModel::on_processAdded(const Process::ProcessModel & proc)
 void ProcessModel::on_processRemoved(const Process::ProcessModel & proc)
 {
     auto proc_id = proc.id();
-    auto fac = iscore::AppComponents().interfaces<Audio::AudioStreamEngine::ProcessComponentFactoryList>().factory(proc);
+    auto fac = score::AppComponents().interfaces<Audio::AudioStreamEngine::ProcessComponentFactoryList>().factory(proc);
     if(!fac)
         return;
 

@@ -1,6 +1,6 @@
 #include "EffectComponent.hpp"
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
-#include <Scenario/Document/Constraint/ConstraintModel.hpp>
+#include <Scenario/Document/Interval/IntervalModel.hpp>
 #include <Audio/AudioStreamEngine/Scenario/ConstraintComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/ScenarioComponent.hpp>
 #include <Audio/AudioStreamEngine/Scenario/LoopComponent.hpp>
@@ -25,7 +25,7 @@ namespace AudioStreamEngine
 EffectProcessComponent::EffectProcessComponent(
         Effect::ProcessModel& sound,
         DocumentPlugin& doc,
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         QObject* parent_obj):
     ProcessComponent_T{sound, doc, id, "EffectComponent", parent_obj}
 {
@@ -34,15 +34,15 @@ EffectProcessComponent::EffectProcessComponent(
 
 void EffectProcessComponent::makeStream(const Context& ctx)
 {
-    // For all "generative" streams in the parent constraint,
+    // For all "generative" streams in the parent interval,
     // take their "send" streams, create returns, mix the returns,
     // put it on input of the effect, create a send, return the output
-    auto parent_cst = safe_cast<Scenario::ConstraintModel*>(process().parent());
+    auto parent_cst = safe_cast<Scenario::IntervalModel*>(process().parent());
 
     // Get its audio component
-    Constraint& cst_comp = iscore::component<Constraint>(parent_cst->components());
+    Interval& cst_comp = score::component<Interval>(parent_cst->components());
 
-    // The constraint has the mix information, hence we request it to create
+    // The interval has the mix information, hence we request it to create
     // the mix.
     AudioStream sound = cst_comp.makeInputMix(this->process().id());
 
@@ -56,15 +56,15 @@ void EffectProcessComponent::makeStream(const Context& ctx)
 #if defined(LILV_SHARED)
     // Berk, moveme, refactorme, whatever
     Midi::Executor::ProcessExecutor* midi_source{};
-    auto& procs = cst_comp.constraint().processes;
+    auto& procs = cst_comp.interval().processes;
     for(auto& proc : procs)
     {
       if(auto ptr = dynamic_cast<Midi::ProcessModel*>(&proc))
       {
-        auto comp = iscore::findComponent<Midi::Executor::Component>(ptr->components());
+        auto comp = score::findComponent<Midi::Executor::Component>(ptr->components());
         if(comp)
         {
-          midi_source = &comp->OSSIAProcess();
+          //midi_source = &comp->OSSIAProcess();
           break;
         }
       }

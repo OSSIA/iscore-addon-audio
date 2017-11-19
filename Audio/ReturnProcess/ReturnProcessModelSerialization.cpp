@@ -1,5 +1,5 @@
 #include "ReturnProcessModel.hpp"
-#include <iscore/model/path/PathSerialization.hpp>
+#include <score/model/path/PathSerialization.hpp>
 #include <Audio/SendProcess/SendProcessModel.hpp>
 
 template <>

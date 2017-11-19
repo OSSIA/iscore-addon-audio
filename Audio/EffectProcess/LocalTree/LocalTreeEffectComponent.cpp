@@ -20,7 +20,7 @@ EffectComponent::EffectComponent(
         ossia::net::node_base& n,
         EffectModel& model,
         Engine::LocalTree::DocumentPlugin& doc,
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         const QString& name,
         QObject* parent):
     parent_t{n, model.metadata(), model, doc, id, "EffectComponent", parent},

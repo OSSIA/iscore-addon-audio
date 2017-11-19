@@ -2,13 +2,13 @@
 #include <Engine/Executor/ExecutorContext.hpp>
 #include <Engine/Executor/DocumentPlugin.hpp>
 #include <Engine/Executor/BaseScenarioComponent.hpp>
-#include <Engine/Executor/ConstraintComponent.hpp>
+#include <Engine/Executor/IntervalComponent.hpp>
 #include <Engine/Executor/Settings/ExecutorModel.hpp>
 
 #include <Audio/Settings/Card/CardSettingsModel.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
-#include <Engine/OSSIA2iscore.hpp>
-#include <Engine/iscore2OSSIA.hpp>
+#include <Engine/OSSIA2score.hpp>
+#include <Engine/score2OSSIA.hpp>
 
 #include <Audio/AudioStreamEngine/Streams/AudioStreamIScoreExtensions.h>
 
@@ -33,7 +33,7 @@ void AudioClock::play_impl(
         const TimeVal& t,
         Engine::Execution::BaseScenarioElement& bs)
 {
-    auto stream = m_audioPlug.makeStream(bs.baseConstraint().iscoreConstraint());
+    auto stream = m_audioPlug.makeStream(bs.baseInterval().scoreInterval());
     if(!stream)
     {
         qDebug("No stream!");
@@ -41,7 +41,7 @@ void AudioClock::play_impl(
     }
 
     m_default.play(t);
-    AudioStream finals = MakeIScoreExecutor(stream, *bs.baseConstraint().OSSIAConstraint());
+    AudioStream finals = MakeIScoreExecutor(stream, *bs.baseInterval().OSSIAInterval());
 
     auto& player = m_audioPlug.audioContext.audio.player;
     StartSound(player, finals, GenRealDate(player, 0));
@@ -85,7 +85,7 @@ QString AudioClockFactory::prettyName() const
 }
 
 std::function<ossia::time_value (const TimeVal&)>
-AudioClockFactory::makeTimeFunction(const iscore::DocumentContext& ctx) const
+AudioClockFactory::makeTimeFunction(const score::DocumentContext& ctx) const
 {
   auto rate = ctx.app.settings<Audio::Settings::Model>().getRate();
   return [=] (const TimeVal& v) -> ossia::time_value {
@@ -99,7 +99,7 @@ AudioClockFactory::makeTimeFunction(const iscore::DocumentContext& ctx) const
 }
 
 std::function<TimeVal(const ossia::time_value&)>
-AudioClockFactory::makeReverseTimeFunction(const iscore::DocumentContext& ctx) const
+AudioClockFactory::makeReverseTimeFunction(const score::DocumentContext& ctx) const
 {
   auto rate = ctx.app.settings<Audio::Settings::Model>().getRate();
   return [=] (const ossia::time_value& v) -> TimeVal {

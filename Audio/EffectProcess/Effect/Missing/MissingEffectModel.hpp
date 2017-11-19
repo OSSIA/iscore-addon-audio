@@ -19,7 +19,7 @@ class MissingEffectModel :
         public EffectModel
 {
         Q_OBJECT
-        ISCORE_SERIALIZE_FRIENDS
+        SCORE_SERIALIZE_FRIENDS
     public:
         MissingEffectModel(
                 const QByteArray& data,

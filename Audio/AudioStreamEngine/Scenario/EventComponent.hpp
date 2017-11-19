@@ -8,12 +8,12 @@ namespace Audio
 namespace AudioStreamEngine
 {
 class Event final :
-        public iscore::Component
+        public score::Component
 {
         COMMON_COMPONENT_METADATA("080226c0-b415-448d-977c-21d2996f63fd")
     public:
         Event(
-                const Id<iscore::Component>& id,
+                const Id<score::Component>& id,
                 Scenario::EventModel& event,
                 const DocumentPlugin& doc,
                 QObject* parent_comp);

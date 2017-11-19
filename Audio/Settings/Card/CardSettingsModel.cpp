@@ -3,7 +3,7 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <LibAudioStreamMC++.h>
-#include <iscore/model/Skin.hpp>
+#include <score/model/Skin.hpp>
 
 namespace Audio
 {
@@ -12,12 +12,12 @@ namespace Settings
 
 namespace Parameters
 {
-        const iscore::sp<ModelDriverParameter> Driver{QStringLiteral("Audio/Driver"), "Offline"};
-        const iscore::sp<ModelCardParameter> Card{QStringLiteral("Audio/Card"), ""};
-        const iscore::sp<ModelBufferSizeParameter> BufferSize{QStringLiteral("Audio/BufferSize"), 512};
-        const iscore::sp<ModelRateParameter> Rate{QStringLiteral("Audio/SamplingRate"), 44100};
-        const iscore::sp<ModelInChannelsParameter> InChannels{QStringLiteral("Audio/InChannels"), 2};
-        const iscore::sp<ModelOutChannelsParameter> OutChannels{QStringLiteral("Audio/OutChannels"), 2};
+        const score::sp<ModelDriverParameter> Driver{QStringLiteral("Audio/Driver"), "Offline"};
+        const score::sp<ModelCardParameter> Card{QStringLiteral("Audio/Card"), ""};
+        const score::sp<ModelBufferSizeParameter> BufferSize{QStringLiteral("Audio/BufferSize"), 512};
+        const score::sp<ModelRateParameter> Rate{QStringLiteral("Audio/SamplingRate"), 44100};
+        const score::sp<ModelInChannelsParameter> InChannels{QStringLiteral("Audio/InChannels"), 2};
+        const score::sp<ModelOutChannelsParameter> OutChannels{QStringLiteral("Audio/OutChannels"), 2};
 
         static auto list() {
             return std::tie(Driver, Card, BufferSize, Rate, InChannels, OutChannels);
@@ -25,9 +25,9 @@ namespace Parameters
 }
 
 
-Model::Model(QSettings& set, const iscore::ApplicationContext&)
+Model::Model(QSettings& set, const score::ApplicationContext&)
 {
-    iscore::setupDefaultSettings(set, Parameters::list(), *this);
+    score::setupDefaultSettings(set, Parameters::list(), *this);
 }
 
 int Model::getDriverId() const
@@ -55,11 +55,11 @@ const QMap<QString, int>& DriverNameMap()
     return idmap;
 }
 
-ISCORE_SETTINGS_PARAMETER_CPP(QString, Model, Driver)
-ISCORE_SETTINGS_PARAMETER_CPP(QString, Model, Card)
-ISCORE_SETTINGS_PARAMETER_CPP(int, Model, BufferSize)
-ISCORE_SETTINGS_PARAMETER_CPP(int, Model, Rate)
-ISCORE_SETTINGS_PARAMETER_CPP(int, Model, InChannels)
-ISCORE_SETTINGS_PARAMETER_CPP(int, Model, OutChannels)
+SCORE_SETTINGS_PARAMETER_CPP(QString, Model, Driver)
+SCORE_SETTINGS_PARAMETER_CPP(QString, Model, Card)
+SCORE_SETTINGS_PARAMETER_CPP(int, Model, BufferSize)
+SCORE_SETTINGS_PARAMETER_CPP(int, Model, Rate)
+SCORE_SETTINGS_PARAMETER_CPP(int, Model, InChannels)
+SCORE_SETTINGS_PARAMETER_CPP(int, Model, OutChannels)
 }
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include <iscore/plugins/panel/PanelDelegate.hpp>
+#include <score/plugins/panel/PanelDelegate.hpp>
 
 class QWidget;
 class QMLContainerPanel;
@@ -11,19 +11,19 @@ namespace Panel {
 class TrackModel;
 class Track;
 
-class TrackListPanel final: public iscore::PanelDelegate
+class TrackListPanel final: public score::PanelDelegate
 {
     public:
-        TrackListPanel(const iscore::GUIApplicationContext &ctx);
+        TrackListPanel(const score::GUIApplicationContext &ctx);
 
     private:
         QWidget* widget() override;
 
-        const iscore::PanelStatus& defaultPanelStatus() const override;
+        const score::PanelStatus& defaultPanelStatus() const override;
 
         void on_modelChanged(
-                iscore::MaybeDocument oldm,
-                iscore::MaybeDocument newm) override;
+                score::MaybeDocument oldm,
+                score::MaybeDocument newm) override;
 
         QWidget* m_widget{};
         TrackModel* m_trackModel{};

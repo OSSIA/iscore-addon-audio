@@ -17,8 +17,8 @@ namespace Audio
 namespace AudioStreamEngine
 {
 
-DocumentPlugin::DocumentPlugin(AudioContext& ctx, const iscore::DocumentContext& doc, Id<iscore::DocumentPlugin> id, QObject* parent):
-  iscore::DocumentPlugin{doc, std::move(id), "AudioDocumentPlugin", parent},
+DocumentPlugin::DocumentPlugin(AudioContext& ctx, const score::DocumentContext& doc, Id<score::DocumentPlugin> id, QObject* parent):
+  score::DocumentPlugin{doc, std::move(id), "AudioDocumentPlugin", parent},
   audioContext{doc, ctx}
 {
 
@@ -29,9 +29,9 @@ DocumentPlugin::~DocumentPlugin()
 
 }
 
-AudioStream DocumentPlugin::makeStream(Scenario::ConstraintModel& cst)
+AudioStream DocumentPlugin::makeStream(Scenario::IntervalModel& cst)
 {
-  // First find the root constraint
+  // First find the root interval
   auto doc = dynamic_cast<Scenario::ScenarioDocumentModel*>(&audioContext.doc.document.model().modelDelegate());
   if(!doc)
     return nullptr;
@@ -44,7 +44,7 @@ AudioStream DocumentPlugin::makeStream(Scenario::ConstraintModel& cst)
     openPlayer();
 
     // Create our tree
-    m_comp = new Constraint{cst, *this, getStrongId(cst.components()), this};
+    m_comp = new Interval{cst, *this, getStrongId(cst.components()), this};
     cst.components().add(m_comp);
 
     AudioGraphBuilder graph{m_context, *m_comp};
@@ -78,7 +78,7 @@ void DocumentPlugin::stop()
         if(m_comp)
         {
             m_comp->stop();
-            m_comp->constraint().components().remove(m_comp->id());
+            m_comp->interval().components().remove(m_comp->id());
             m_comp = nullptr;
         }
     }

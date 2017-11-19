@@ -25,7 +25,7 @@ struct SendEnumeratorDialog : public QDialog
         Send::ProcessModel* m_selected{};
 
     public:
-        SendEnumeratorDialog(const iscore::DocumentContext & doc):
+        SendEnumeratorDialog(const score::DocumentContext & doc):
             m_sends(doc.document.findChildren<Send::ProcessModel*>())
         {
             for(auto elt : m_sends)
@@ -70,7 +70,7 @@ struct SendEnumeratorDialog : public QDialog
 
 InspectorWidget::InspectorWidget(
         const Return::ProcessModel &object,
-        const iscore::DocumentContext &doc,
+        const score::DocumentContext &doc,
         QWidget *parent):
     InspectorWidgetDelegate_T {object, parent},
     m_dispatcher{doc.commandStack}

@@ -6,7 +6,7 @@ namespace AudioStreamEngine
 {
 
 Sync::Sync(
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         Scenario::TimeSyncModel& tn,
         const Sync::system_t& doc,
         QObject* parent_comp):

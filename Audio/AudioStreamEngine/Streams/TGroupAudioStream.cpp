@@ -19,7 +19,7 @@
 //////////////////////////
 
 
-#include <iscore_plugin_audio_export.h>
+#include <score_plugin_audio_export.h>
 /*
 extern "C" {
 struct TLoopCommand : public TControlCommand
@@ -58,7 +58,7 @@ struct TLoopCommand : public TControlCommand
         }
 };
 
-ISCORE_PLUGIN_AUDIO_EXPORT void MakeScenarioSyncCommand(
+SCORE_PLUGIN_AUDIO_EXPORT void MakeScenarioSyncCommand(
         AudioPlayer player,
         Audio::AudioStreamEngine::SyncComponent& t
         )

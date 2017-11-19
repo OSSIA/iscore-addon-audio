@@ -3,7 +3,7 @@
 #include <Explorer/DocumentPlugin/DeviceDocumentPlugin.hpp>
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 
-#include <iscore/tools/Clamp.hpp>
+#include <score/tools/Clamp.hpp>
 #include <QFile>
 
 namespace Audio

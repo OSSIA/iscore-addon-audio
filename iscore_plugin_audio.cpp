@@ -29,35 +29,35 @@
 
 #include <Audio/AudioStreamEngine/Clock/AudioClock.hpp>
 
-#include <iscore/plugins/application/GUIApplicationPlugin.hpp>
-#include <iscore/plugins/customfactory/FactoryFamily.hpp>
-#include <iscore/plugins/customfactory/FactorySetup.hpp>
+#include <score/plugins/application/GUIApplicationPlugin.hpp>
+#include <score/plugins/customfactory/FactoryFamily.hpp>
+#include <score/plugins/customfactory/FactorySetup.hpp>
 #include <core/document/Document.hpp>
 #include <core/document/DocumentModel.hpp>
-#include <iscore_plugin_audio_commands_files.hpp>
+#include <score_plugin_audio_commands_files.hpp>
 
 #if defined(LILV_SHARED) // TODO instead add a proper preprocessor macro that also works in static case
 #include <Audio/EffectProcess/LV2/LV2EffectModel.hpp>
 #endif
-std::pair<const CommandGroupKey, CommandGeneratorMap> iscore_plugin_audio::make_commands()
+std::pair<const CommandGroupKey, CommandGeneratorMap> SCORE_plugin_audio::make_commands()
 {
     using namespace Audio::Commands;
     std::pair<const CommandGroupKey, CommandGeneratorMap> cmds{Audio::CommandFactoryName(), CommandGeneratorMap{}};
 
     using Types = TypeList<
-#include <iscore_plugin_audio_commands.hpp>
+#include <score_plugin_audio_commands.hpp>
       >;
-    for_each_type<Types>(iscore::commands::FactoryInserter{cmds.second});
+    for_each_type<Types>(score::commands::FactoryInserter{cmds.second});
 
     return cmds;
 }
 
-std::vector<std::unique_ptr<iscore::InterfaceBase>> iscore_plugin_audio::factories(
-        const iscore::ApplicationContext& ctx,
-        const iscore::InterfaceKey& key) const
+std::vector<std::unique_ptr<score::InterfaceBase>> SCORE_plugin_audio::factories(
+        const score::ApplicationContext& ctx,
+        const score::InterfaceKey& key) const
 {
     return instantiate_factories<
-            iscore::ApplicationContext,
+            score::ApplicationContext,
         FW<Process::ProcessModelFactory,
             Audio::Effect::ProcessFactory,
             Audio::Mix::ProcessFactory,
@@ -86,9 +86,9 @@ std::vector<std::unique_ptr<iscore::InterfaceBase>> iscore_plugin_audio::factori
             Audio::Return::InspectorFactory,
             Audio::Effect::InspectorFactory
             >,
-        FW<iscore::SettingsDelegateFactory,
+        FW<score::SettingsDelegateFactory,
             Audio::Settings::Factory>,/*
-        FW<iscore::PanelDelegateFactory,
+        FW<score::PanelDelegateFactory,
             Audio::Panel::TrackListPanelFactory>,*/
         FW<Audio::Effect::EffectFactory
 #if defined(HAS_FAUST)
@@ -105,30 +105,30 @@ std::vector<std::unique_ptr<iscore::InterfaceBase>> iscore_plugin_audio::factori
     >(ctx, key);
 }
 
-iscore_plugin_audio::iscore_plugin_audio()
+SCORE_plugin_audio::SCORE_plugin_audio()
 {
 
 }
 
-iscore_plugin_audio::~iscore_plugin_audio()
+SCORE_plugin_audio::~SCORE_plugin_audio()
 {
 
 }
 
-iscore::ApplicationPlugin*iscore_plugin_audio::make_applicationPlugin(
-    const iscore::ApplicationContext& app)
+score::ApplicationPlugin*SCORE_plugin_audio::make_applicationPlugin(
+    const score::ApplicationContext& app)
 {
   return new Audio::AudioStreamEngine::ApplicationPlugin{app};
 }
-iscore::GUIApplicationPlugin*iscore_plugin_audio::make_guiApplicationPlugin(
-        const iscore::GUIApplicationContext& app)
+score::GUIApplicationPlugin*SCORE_plugin_audio::make_guiApplicationPlugin(
+        const score::GUIApplicationContext& app)
 {
     return new Audio::AudioStreamEngine::GUIApplicationPlugin{app};
 }
 
-std::vector<std::unique_ptr<iscore::InterfaceListBase> > iscore_plugin_audio::factoryFamilies()
+std::vector<std::unique_ptr<score::InterfaceListBase> > SCORE_plugin_audio::factoryFamilies()
 {
-    return make_ptr_vector<iscore::InterfaceListBase,
+    return make_ptr_vector<score::InterfaceListBase,
             Audio::AudioStreamEngine::ProcessComponentFactoryList,
             Audio::Effect::EffectFactoryList>();
 }

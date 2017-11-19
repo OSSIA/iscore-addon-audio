@@ -1,7 +1,7 @@
 #pragma once
-#include <iscore/command/Command.hpp>
+#include <score/command/Command.hpp>
 #include <Audio/Commands/AudioCommandFactory.hpp>
-#include <iscore/model/path/Path.hpp>
+#include <score/model/path/Path.hpp>
 #include <Audio/MixProcess/Mix.hpp>
 
 namespace Audio
@@ -18,16 +18,16 @@ class ProcessModel;
 
 namespace Commands
 {
-class UpdateRouting final : public iscore::Command
+class UpdateRouting final : public score::Command
 {
-           ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), UpdateRouting, "Update routing")
+           SCORE_COMMAND_DECL(Audio::CommandFactoryName(), UpdateRouting, "Update routing")
     public:
         UpdateRouting(
                 const Mix::ProcessModel& model,
                 Mix::Routing newmix);
 
-        void undo(const iscore::DocumentContext& ctx) const override;
-        void redo(const iscore::DocumentContext& ctx) const override;
+        void undo(const score::DocumentContext& ctx) const override;
+        void redo(const score::DocumentContext& ctx) const override;
 
         void update(
                 const Mix::ProcessModel&,
@@ -45,16 +45,16 @@ class UpdateRouting final : public iscore::Command
         Mix::Routing m_old, m_new;
 };
 
-class UpdateDirect final : public iscore::Command
+class UpdateDirect final : public score::Command
 {
-           ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), UpdateDirect, "Update direct")
+           SCORE_COMMAND_DECL(Audio::CommandFactoryName(), UpdateDirect, "Update direct")
     public:
         UpdateDirect(
                 const Mix::ProcessModel& model,
                 Mix::DirectMix newmix);
 
-        void undo(const iscore::DocumentContext& ctx) const override;
-        void redo(const iscore::DocumentContext& ctx) const override;
+        void undo(const score::DocumentContext& ctx) const override;
+        void redo(const score::DocumentContext& ctx) const override;
 
         void update(
                 const Mix::ProcessModel&,

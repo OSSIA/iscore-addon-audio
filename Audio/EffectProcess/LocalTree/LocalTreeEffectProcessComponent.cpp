@@ -1,7 +1,7 @@
 #include "LocalTreeEffectProcessComponent.hpp"
 #include <Engine/LocalTree/Scenario/MetadataParameters.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
-#include <iscore/tools/IdentifierGeneration.hpp>
+#include <score/tools/IdentifierGeneration.hpp>
 #include <Audio/EffectProcess/LocalTree/LocalTreeEffectComponent.hpp>
 #include <ossia/editor/state/state_element.hpp>
 
@@ -13,7 +13,7 @@ namespace LocalTree
 {
 ///////// Process component
 EffectProcessComponentBase::EffectProcessComponentBase(
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         ossia::net::node_base& parent,
         Effect::ProcessModel& scenario,
         Engine::LocalTree::DocumentPlugin& doc,
@@ -24,7 +24,7 @@ EffectProcessComponentBase::EffectProcessComponentBase(
 }
 
 EffectComponent*EffectProcessComponentBase::make(
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         EffectModel& model)
 {
     return new EffectComponent{m_effectsNode, model, this->system(), id, "EffectComponent", this};

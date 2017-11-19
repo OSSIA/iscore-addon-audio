@@ -1,7 +1,7 @@
 #pragma once
-#include <iscore/command/Command.hpp>
+#include <score/command/Command.hpp>
 #include <Audio/Commands/AudioCommandFactory.hpp>
-#include <iscore/model/path/Path.hpp>
+#include <score/model/path/Path.hpp>
 
 namespace Audio
 {
@@ -13,9 +13,9 @@ class EffectFactory;
 
 namespace Commands
 {
-class InsertEffect final : public iscore::Command
+class InsertEffect final : public score::Command
 {
-           ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), InsertEffect, "Insert effect")
+           SCORE_COMMAND_DECL(Audio::CommandFactoryName(), InsertEffect, "Insert effect")
     public:
         InsertEffect(
                 const Effect::ProcessModel& model,
@@ -23,8 +23,8 @@ class InsertEffect final : public iscore::Command
                 const QString& text,
                 int effectPos);
 
-        void undo(const iscore::DocumentContext& ctx) const override;
-        void redo(const iscore::DocumentContext& ctx) const override;
+        void undo(const score::DocumentContext& ctx) const override;
+        void redo(const score::DocumentContext& ctx) const override;
 
     protected:
         void serializeImpl(DataStreamInput & s) const override;
@@ -40,16 +40,16 @@ class InsertEffect final : public iscore::Command
 
 
 // MOVEME
-class RemoveEffect final : public iscore::Command
+class RemoveEffect final : public score::Command
 {
-           ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), RemoveEffect, "Remove effect")
+           SCORE_COMMAND_DECL(Audio::CommandFactoryName(), RemoveEffect, "Remove effect")
     public:
         RemoveEffect(
                 const Effect::ProcessModel& model,
                 const Effect::EffectModel& effect);
 
-        void undo(const iscore::DocumentContext& ctx) const override;
-        void redo(const iscore::DocumentContext& ctx) const override;
+        void undo(const score::DocumentContext& ctx) const override;
+        void redo(const score::DocumentContext& ctx) const override;
 
     protected:
         void serializeImpl(DataStreamInput & s) const override;
@@ -63,17 +63,17 @@ class RemoveEffect final : public iscore::Command
 };
 
 
-class MoveEffect final : public iscore::Command
+class MoveEffect final : public score::Command
 {
-           ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), MoveEffect, "Move effect")
+           SCORE_COMMAND_DECL(Audio::CommandFactoryName(), MoveEffect, "Move effect")
     public:
         MoveEffect(
                 const Effect::ProcessModel& model,
                  Id<Effect::EffectModel> id,
                  int new_pos);
 
-        void undo(const iscore::DocumentContext& ctx) const override;
-        void redo(const iscore::DocumentContext& ctx) const override;
+        void undo(const score::DocumentContext& ctx) const override;
+        void redo(const score::DocumentContext& ctx) const override;
 
     protected:
         void serializeImpl(DataStreamInput & s) const override;

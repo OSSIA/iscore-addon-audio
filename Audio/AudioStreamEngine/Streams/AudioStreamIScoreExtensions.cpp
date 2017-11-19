@@ -39,7 +39,7 @@ AUDIOAPI AudioRendererPtr MakeGroupPlayer(int n_chan);
 AUDIOAPI AudioStream MakeGroupStream(AudioRendererPtr p);
 AUDIOAPI AudioStream MakeSinusStream(long length, float freq);
 
-AUDIOAPI AudioStream MakeIScoreExecutor(AudioStream s, ossia::time_constraint& t);
+AUDIOAPI AudioStream MakeIScoreExecutor(AudioStream s, ossia::time_interval& t);
 
 AUDIOAPI AudioStream MakeSend(AudioStream s);
 AUDIOAPI AudioStream MakeReturn(AudioStream s);
@@ -132,7 +132,7 @@ AUDIOAPI AudioStream MakeChannelSound(AudioStream s, double const * volume)
     return new TChannelAudioStream{static_cast<TAudioStreamPtr>(s), volume};
 }
 
-AUDIOAPI AudioStream MakeIScoreExecutor(AudioStream s, ossia::time_constraint& t)
+AUDIOAPI AudioStream MakeIScoreExecutor(AudioStream s, ossia::time_interval& t)
 {
     return new TExecutorAudioStream{s, t};
 }

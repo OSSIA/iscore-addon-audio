@@ -1,26 +1,26 @@
 #pragma once
-#include <iscore/plugins/documentdelegate/plugin/DocumentPlugin.hpp>
+#include <score/plugins/documentdelegate/plugin/DocumentPlugin.hpp>
 #include <core/document/Document.hpp>
 #include <Audio/AudioStreamEngine/Context.hpp>
 #include <Process/TimeValue.hpp>
 #include <Audio/AudioStreamEngine/AudioGraphNode.hpp>
-#include <iscore_plugin_audio_export.h>
+#include <score_plugin_audio_export.h>
 namespace Scenario
 {
-class ConstraintModel;
+class IntervalModel;
 }
 namespace Audio
 {
 namespace AudioStreamEngine
 {
-class Constraint;
-class ISCORE_PLUGIN_AUDIO_EXPORT DocumentPlugin : public iscore::DocumentPlugin
+class Interval;
+class SCORE_PLUGIN_AUDIO_EXPORT DocumentPlugin : public score::DocumentPlugin
 {
     public:
         DocumentPlugin(
                 AudioContext& ctx,
-                const iscore::DocumentContext& doc,
-                Id<iscore::DocumentPlugin> id,
+                const score::DocumentContext& doc,
+                Id<score::DocumentPlugin> id,
                 QObject* parent);
         ~DocumentPlugin();
 
@@ -33,14 +33,14 @@ class ISCORE_PLUGIN_AUDIO_EXPORT DocumentPlugin : public iscore::DocumentPlugin
 
 
         bool offsetting = false;
-        AudioStream makeStream(Scenario::ConstraintModel& cst);
+        AudioStream makeStream(Scenario::IntervalModel& cst);
         void stop();
 
         void on_documentClosing() override;
     private:
         void openPlayer();
 
-        Constraint* m_comp{};
+        Interval* m_comp{};
 };
 
 }

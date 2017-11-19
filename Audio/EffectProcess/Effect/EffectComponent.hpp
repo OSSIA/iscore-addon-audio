@@ -31,7 +31,7 @@ using EffectComponent = EffectComponentBase<Effect::EffectModel, Component_T>;
 
 template<typename System_T>
 using GenericEffectComponent =
-    Effect::EffectComponent<iscore::GenericComponent<System_T>>;
+    Effect::EffectComponent<score::GenericComponent<System_T>>;
 
 
 

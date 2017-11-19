@@ -10,7 +10,7 @@ namespace AudioStreamEngine
 LoopComponentBase::LoopComponentBase(
         Loop::ProcessModel& scenario,
         DocumentPlugin& doc,
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         QObject* parent_obj):
     ProcessComponent_T{scenario, doc, id, "LoopComponent", parent_obj}
 {
@@ -20,9 +20,9 @@ optional<AudioGraphVertice> LoopComponent::visit(AudioGraph& graph)
 {
     auto res = boost::add_vertex(this, graph);
 
-    for(auto& constraint : constraints())
+    for(auto& interval : intervals())
     {
-        if(auto cst_vtx = constraint.component.visit(graph))
+        if(auto cst_vtx = interval.component.visit(graph))
         {
             boost::add_edge(*cst_vtx, res, graph);
         }
@@ -39,7 +39,7 @@ void LoopComponent::makeStream(const Context& ctx)
     }
     m_connections.clear();
 
-    auto& pattern_cst = *constraints().begin();
+    auto& pattern_cst = *intervals().begin();
     auto sound = pattern_cst.component.getStream();
     if(!sound)
         return;
@@ -71,14 +71,14 @@ void LoopComponent::makeStream(const Context& ctx)
         auto groupStream = MakeGroupStream(groupPlayer);
 
         auto start_date = GenSymbolicDate(groupPlayer);
-        auto start_con = con(pattern_cst.element, &Scenario::ConstraintModel::executionStarted,
+        auto start_con = con(pattern_cst.element, &Scenario::IntervalModel::executionStarted,
                              this, [=] () {
             SetSymbolicDate(groupPlayer, start_date, GetAudioPlayerDateInFrame(groupPlayer));
         }, Qt::QueuedConnection);
         m_connections.push_back(start_con);
 
         auto stop_date = GenSymbolicDate(groupPlayer);
-        auto stop_con = con(pattern_cst.element, &Scenario::ConstraintModel::executionStopped,
+        auto stop_con = con(pattern_cst.element, &Scenario::IntervalModel::executionStopped,
                             this, [=] () {
             SetSymbolicDate(groupPlayer, stop_date, GetAudioPlayerDateInFrame(groupPlayer));
             ResetSound(groupStream);
@@ -96,21 +96,21 @@ void LoopComponent::makeStream(const Context& ctx)
 
 void LoopComponent::stop()
 {
-  for(auto& constraint : constraints())
-    constraint.component.stop();
+  for(auto& interval : intervals())
+    interval.component.stop();
 }
 
 template<>
-Constraint* LoopComponentBase::make<Constraint, Scenario::ConstraintModel>(
-        const Id<iscore::Component>& id,
-        Scenario::ConstraintModel& elt)
+Interval* LoopComponentBase::make<Interval, Scenario::IntervalModel>(
+        const Id<score::Component>& id,
+        Scenario::IntervalModel& elt)
 {
-    return new Constraint{elt, system(), id, this};
+    return new Interval{elt, system(), id, this};
 }
 
 template<>
 Event* LoopComponentBase::make<Event, Scenario::EventModel>(
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         Scenario::EventModel& elt)
 {
     return new Event{id, elt, system(), this};
@@ -118,7 +118,7 @@ Event* LoopComponentBase::make<Event, Scenario::EventModel>(
 
 template<>
 Sync* LoopComponentBase::make<Sync, Scenario::TimeSyncModel>(
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         Scenario::TimeSyncModel& elt)
 {
     return new Sync{id, elt, system(), this};
@@ -126,10 +126,10 @@ Sync* LoopComponentBase::make<Sync, Scenario::TimeSyncModel>(
 
 template<>
 State* LoopComponentBase::make<State, Scenario::StateModel>(
-        const Id<iscore::Component>& id,
+        const Id<score::Component>& id,
         Scenario::StateModel& elt)
 {
-    // TODO if the state is missing, an assert is triggered in HierarchicalBaseConstraint's
+    // TODO if the state is missing, an assert is triggered in HierarchicalBaseInterval's
     // setup. Fix this to do nothing if there is no component
     return new State{id, elt, system(), this};
 }

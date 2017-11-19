@@ -9,14 +9,14 @@ namespace AudioStreamEngine
 {
 class DocumentPlugin;
 class Sync final :
-        public iscore::Component
+        public score::Component
 {
         COMMON_COMPONENT_METADATA("76c10344-74ed-44fb-8e13-cf7907759e1a")
     public:
         using system_t = Audio::AudioStreamEngine::DocumentPlugin;
 
         Sync(
-                const Id<iscore::Component>& id,
+                const Id<score::Component>& id,
                 Scenario::TimeSyncModel& timeSync,
                 const system_t& doc,
                 QObject* parent_comp);

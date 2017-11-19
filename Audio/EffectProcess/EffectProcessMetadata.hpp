@@ -1,6 +1,6 @@
 #pragma once
 #include <Process/ProcessMetadata.hpp>
-#include <iscore_plugin_audio_export.h>
+#include <score_plugin_audio_export.h>
 
 namespace Audio
 {
@@ -11,7 +11,7 @@ class ProcessModel;
 }
 
 PROCESS_METADATA(
-        ISCORE_PLUGIN_AUDIO_EXPORT,
+        SCORE_PLUGIN_AUDIO_EXPORT,
         Audio::Effect::ProcessModel,
         "d27bc0ed-a93e-434c-913d-ccab0b22b4e8",
         "Effects",

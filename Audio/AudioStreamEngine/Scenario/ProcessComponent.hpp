@@ -2,11 +2,11 @@
 #include <Audio/AudioStreamEngine/AudioDocumentPlugin.hpp>
 #include <Audio/AudioStreamEngine/AudioComponent.hpp>
 #include <Process/Process.hpp>
-#include <iscore/model/Component.hpp>
-#include <iscore/model/ComponentFactory.hpp>
-#include <iscore_plugin_audio_export.h>
+#include <score/model/Component.hpp>
+#include <score/model/ComponentFactory.hpp>
+#include <score_plugin_audio_export.h>
 #include <Scenario/Document/Components/ProcessComponent.hpp>
-#include <iscore/plugins/customfactory/ModelFactory.hpp>
+#include <score/plugins/customfactory/ModelFactory.hpp>
 #include <Audio/AudioStreamEngine/AudioDependencyGraph.hpp>
 
 // TODO clean me up
@@ -14,7 +14,7 @@ namespace Audio
 {
 namespace AudioStreamEngine
 {
-class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent :
+class SCORE_PLUGIN_AUDIO_EXPORT ProcessComponent :
         public Process::ProcessComponent<Component>
 {
         ABSTRACT_COMPONENT_METADATA(ProcessComponent, "19b6c620-9beb-4271-8a2c-8b34a3c64deb")
@@ -24,7 +24,7 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponent :
         ProcessComponent(
                 Process::ProcessModel& proc,
                 DocumentPlugin& doc,
-                const Id<iscore::Component>& id,
+                const Id<score::Component>& id,
                 const QString& name,
                 QObject* parent);
 
@@ -61,21 +61,21 @@ class ProcessComponent_T : public Process::GenericProcessComponent_T<ProcessComp
 };
 
 
-class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponentFactory :
-        public iscore::GenericComponentFactory<
+class SCORE_PLUGIN_AUDIO_EXPORT ProcessComponentFactory :
+        public score::GenericComponentFactory<
             Process::ProcessModel,
             DocumentPlugin,
             ProcessComponentFactory>,
-        public iscore::GenericComponentFactory_Make<
+        public score::GenericComponentFactory_Make<
             ProcessComponent,
-            iscore::MakeArgs<
+            score::MakeArgs<
                 Process::ProcessModel&,
                 DocumentPlugin&,
-                const Id<iscore::Component>&,
+                const Id<score::Component>&,
                 QObject*>
         >
 {
-        ISCORE_ABSTRACT_COMPONENT_FACTORY(ProcessComponent)
+        SCORE_ABSTRACT_COMPONENT_FACTORY(ProcessComponent)
     public:
         virtual ~ProcessComponentFactory();
 
@@ -85,13 +85,13 @@ class ISCORE_PLUGIN_AUDIO_EXPORT ProcessComponentFactory :
 
 template<typename ProcessComponent_T>
 class ProcessComponentFactory_T :
-        public iscore::GenericComponentFactoryImpl<ProcessComponent_T, ProcessComponentFactory>
+        public score::GenericComponentFactoryImpl<ProcessComponent_T, ProcessComponentFactory>
 {
     public:
         ProcessComponent* make(
                 Process::ProcessModel& proc,
                 DocumentPlugin& doc,
-                const Id<iscore::Component>& id,
+                const Id<score::Component>& id,
                 QObject* paren_objt) const final override
         {
             return new ProcessComponent_T{static_cast< typename ProcessComponent_T::model_type&>(proc), doc, id, paren_objt};
@@ -105,7 +105,7 @@ class ProcessComponentFactory_T :
 
 
 using ProcessComponentFactoryList =
-    iscore::GenericComponentFactoryList<
+    score::GenericComponentFactoryList<
             Process::ProcessModel,
             DocumentPlugin,
             ProcessComponentFactory>;

@@ -1,11 +1,11 @@
 #include "InsertEffect.hpp"
 
-#include <iscore/tools/IdentifierGeneration.hpp>
-#include <iscore/model/path/PathSerialization.hpp>
+#include <score/tools/IdentifierGeneration.hpp>
+#include <score/model/path/PathSerialization.hpp>
 #include <Audio/EffectProcess/EffectProcessModel.hpp>
 #include <Audio/EffectProcess/Effect/EffectFactory.hpp>
-#include <iscore/application/ApplicationContext.hpp>
-#include <iscore/document/DocumentContext.hpp>
+#include <score/application/ApplicationContext.hpp>
+#include <score/document/DocumentContext.hpp>
 namespace Audio
 {
 namespace Commands
@@ -24,13 +24,13 @@ InsertEffect::InsertEffect(
 {
 }
 
-void InsertEffect::undo(const iscore::DocumentContext& ctx) const
+void InsertEffect::undo(const score::DocumentContext& ctx) const
 {
     auto& process = m_model.find(ctx);
     process.removeEffect(m_id);
 }
 
-void InsertEffect::redo(const iscore::DocumentContext& ctx) const
+void InsertEffect::redo(const score::DocumentContext& ctx) const
 {
     auto& process = m_model.find(ctx);
     auto& fact_list = ctx.app.interfaces<Effect::EffectFactoryList>();
@@ -42,7 +42,7 @@ void InsertEffect::redo(const iscore::DocumentContext& ctx) const
     }
     else
     {
-        ISCORE_TODO;
+        SCORE_TODO;
         // Insert a fake effect ?
     }
 }
@@ -65,13 +65,13 @@ RemoveEffect::RemoveEffect(
         const Effect::EffectModel& effect):
     m_model{model},
     m_id{effect.id()},
-    m_savedEffect{iscore::marshall<DataStream>(effect)}
+    m_savedEffect{score::marshall<DataStream>(effect)}
 {
     auto& order = model.effectsOrder();
     m_pos = std::distance(order.begin(), ossia::find(order,m_id));
 }
 
-void RemoveEffect::undo(const iscore::DocumentContext& ctx) const
+void RemoveEffect::undo(const score::DocumentContext& ctx) const
 {
     auto& process = m_model.find(ctx);
     auto& fact_list = ctx.app.interfaces<Effect::EffectFactoryList>();
@@ -83,12 +83,12 @@ void RemoveEffect::undo(const iscore::DocumentContext& ctx) const
     }
     else
     {
-        ISCORE_TODO;
+        SCORE_TODO;
         // Insert a fake effect ?
     }
 }
 
-void RemoveEffect::redo(const iscore::DocumentContext& ctx) const
+void RemoveEffect::redo(const score::DocumentContext& ctx) const
 {
     auto& process = m_model.find(ctx);
     process.removeEffect(m_id);
@@ -118,13 +118,13 @@ MoveEffect::MoveEffect(
     m_oldPos = std::distance(order.begin(), ossia::find(order, m_id));
 }
 
-void MoveEffect::undo(const iscore::DocumentContext& ctx) const
+void MoveEffect::undo(const score::DocumentContext& ctx) const
 {
     auto& process = m_model.find(ctx);
     process.moveEffect(m_id, m_oldPos);
 }
 
-void MoveEffect::redo(const iscore::DocumentContext& ctx) const
+void MoveEffect::redo(const score::DocumentContext& ctx) const
 {
     auto& process = m_model.find(ctx);
     process.moveEffect(m_id, m_newPos);

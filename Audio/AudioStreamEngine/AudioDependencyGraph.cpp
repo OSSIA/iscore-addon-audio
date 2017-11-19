@@ -25,7 +25,7 @@ namespace Audio
 {
 namespace AudioStreamEngine
 {
-AudioGraphBuilder::AudioGraphBuilder(const iscore::DocumentContext& ctx, Constraint &root)
+AudioGraphBuilder::AudioGraphBuilder(const score::DocumentContext& ctx, Interval &root)
 {
     // 1. Create vertices
     root.visit(m_graph);
@@ -50,12 +50,12 @@ AudioGraphBuilder::AudioGraphBuilder(const iscore::DocumentContext& ctx, Constra
 
             // We actually add an edge not to the send, but to the parent constraint
             // of the send.
-            auto send_parent = dynamic_cast<Scenario::ConstraintModel*>(send->parent());
+            auto send_parent = dynamic_cast<Scenario::IntervalModel*>(send->parent());
             if(!send_parent)
                 return;
 
 
-            auto& cst_comp = iscore::component<Constraint>(send_parent->components());
+            auto& cst_comp = score::component<Interval>(send_parent->components());
 
             // Then find the corresponding send
             for(auto it_k = vertices.first; it_k != vertices.second; ++it_k)

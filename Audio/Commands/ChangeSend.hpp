@@ -1,7 +1,7 @@
 #pragma once
-#include <iscore/command/Command.hpp>
+#include <score/command/Command.hpp>
 #include <Audio/Commands/AudioCommandFactory.hpp>
-#include <iscore/model/path/Path.hpp>
+#include <score/model/path/Path.hpp>
 namespace Audio
 {
 namespace Send{
@@ -13,16 +13,16 @@ class ProcessModel;
 
 namespace Commands
 {
-class ChangeSend final : public iscore::Command
+class ChangeSend final : public score::Command
 {
-           ISCORE_COMMAND_DECL(Audio::CommandFactoryName(), ChangeSend, "Change send")
+           SCORE_COMMAND_DECL(Audio::CommandFactoryName(), ChangeSend, "Change send")
     public:
         ChangeSend(
                const Return::ProcessModel& model,
                 const Path<Send::ProcessModel>& text);
 
-        void undo(const iscore::DocumentContext& ctx) const override;
-        void redo(const iscore::DocumentContext& ctx) const override;
+        void undo(const score::DocumentContext& ctx) const override;
+        void redo(const score::DocumentContext& ctx) const override;
 
     protected:
         void serializeImpl(DataStreamInput & s) const override;

@@ -1,12 +1,12 @@
 #pragma once
 #include <QWidget>
-#include <iscore/command/Dispatchers/CommandDispatcher.hpp>
+#include <score/command/Dispatchers/CommandDispatcher.hpp>
 #include <nano_observer.hpp>
-#include <iscore/model/path/Path.hpp>
+#include <score/model/path/Path.hpp>
 namespace Scenario
 {
 }
-namespace iscore
+namespace score
 {
 struct DocumentContext;
 }
@@ -26,7 +26,7 @@ class EffectListWidget final :
     public:
         EffectListWidget(
                 const Effect::ProcessModel& fx,
-                const iscore::DocumentContext& doc,
+                const score::DocumentContext& doc,
                 QWidget* parent);
 
         void on_effectRemoved(const EffectModel& fx);
@@ -43,7 +43,7 @@ class EffectListWidget final :
         void dropEvent(QDropEvent *event) override;
 
         const Effect::ProcessModel& m_effects;
-        const iscore::DocumentContext& m_context;
+        const score::DocumentContext& m_context;
         CommandDispatcher<> m_dispatcher;
 
         QHBoxLayout* m_layout{};

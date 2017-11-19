@@ -18,7 +18,7 @@ class ReturnComponent final :
        ReturnComponent(
                Return::ProcessModel& sound,
                DocumentPlugin& doc,
-                const Id<iscore::Component>& id,
+                const Id<score::Component>& id,
                QObject* parent_obj);
 
         optional<AudioGraphVertice> visit(AudioGraph& graph) override;
